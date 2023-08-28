@@ -7,4 +7,4 @@ WORKDIR	/app
 COPY	./ft_crepesv2/* /app/
 
 RUN		npm update && npm install
-CMD		["npm", "dev"]
+CMD		["npm", "start"]
