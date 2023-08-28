@@ -1,9 +1,5 @@
-all: volumes
+all:
 	docker-compose --project-directory srcs up -d --build
-
-volumes:
-	mkdir -p /home/$(USER)/data/wordpress
-	mkdir -p /home/$(USER)/data/mariadb
 
 down :
 	docker-compose --project-directory srcs down -v
@@ -13,8 +9,6 @@ clean: down
 
 fclean: down
 	docker system prune -af --volumes
-	rm -rf /home/$(USER)/data/wordpress
-	rm -rf /home/$(USER)/data/mariadb
 
 re: fclean all
 
