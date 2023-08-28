@@ -1,0 +1,73 @@
+version: "3"
+
+services:
+  nginx:
+    container_name: nginx
+    volumes:
+      - front:/var/www/html/front
+    networks:
+      - front
+    depends_on:
+      - front
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+
+  front:
+    container_name: front
+    networks:
+      - front
+      - back
+    build:
+      context: front
+      dockerfile: Dockerfile
+
+  back:
+    container_name: back
+    networks:
+      - back
+      - db
+    build:
+      context: back
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+
+  db:
+    container_name: db
+    networks:
+      - db
+    build:
+      context: back
+      dockerfile: Dockerfile
+
+volumes:
+  front:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/nfs/homes/marobert/transcendance/data/front'
+  back:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/nfs/homes/marobert/transcendance/data/back'
+  db:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/nfs/homes/marobert/transcendance/data/db'
+
+
+networks:
+  front:
+    driver: bridge
+  back:
+    driver: bridge
+  db:
+    driver: bridge
