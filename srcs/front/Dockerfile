@@ -1,4 +1,10 @@
-FROM	node:buster
+FROM	node:latest
 
-RUN		npm run build
-RUN		npx serve
+RUN		#npm run build
+
+WORKDIR	/app
+
+COPY	./ft_crepesv2/* /app/
+
+RUN		npm update && npm install
+CMD		["npm", "dev"]
