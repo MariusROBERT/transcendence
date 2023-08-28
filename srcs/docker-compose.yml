@@ -1,19 +1,19 @@
 version: "3"
 
 services:
-  nginx:
-    container_name: nginx
-    volumes:
-      - front:/var/www/html/front
-    networks:
-      - front
-    depends_on:
-      - front
-    build:
-      context: nginx
-      dockerfile: Dockerfile
-    ports:
-      - "443:443"
+#  nginx:
+#    container_name: nginx
+#    volumes:
+#      - front:/var/www/html/front
+#    networks:
+#      - front
+#    depends_on:
+#      - front
+#    build:
+#      context: nginx
+#      dockerfile: Dockerfile
+#    ports:
+#      - "443:443"
 
   front:
     container_name: front
@@ -23,25 +23,28 @@ services:
     build:
       context: front
       dockerfile: Dockerfile
+    volumes:
+      - front:/app
+    restart: always
 
-  back:
-    container_name: back
-    networks:
-      - back
-      - db
-    build:
-      context: back
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-
-  db:
-    container_name: db
-    networks:
-      - db
-    build:
-      context: back
-      dockerfile: Dockerfile
+#  back:
+#    container_name: back
+#    networks:
+#      - back
+#      - db
+#    build:
+#      context: back
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - db
+#
+#  db:
+#    container_name: db
+#    networks:
+#      - db
+#    build:
+#      context: back
+#      dockerfile: Dockerfile
 
 volumes:
   front:
@@ -49,19 +52,19 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/nfs/homes/marobert/transcendance/data/front'
-  back:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/nfs/homes/marobert/transcendance/data/back'
-  db:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/nfs/homes/marobert/transcendance/data/db'
+      device: '/nfs/homes/marobert/transcendance/srcs/front/ft_crepesv2'
+#  back:
+#    driver: local
+#    driver_opts:
+#      type: 'none'
+#      o: 'bind'
+#      device: '/nfs/homes/marobert/transcendance/data/back'
+#  db:
+#    driver: local
+#    driver_opts:
+#      type: 'none'
+#      o: 'bind'
+#      device: '/nfs/homes/marobert/transcendance/data/db'
 
 
 networks:
