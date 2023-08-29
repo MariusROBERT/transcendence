@@ -25,6 +25,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - front:/app
+    ports:
+      - "3000:3000"
     restart: always
 
 #  back:
@@ -52,7 +54,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/nfs/homes/marobert/transcendance/srcs/front/ft_crepesv2'
+      device: '/nfs/homes/marobert/transcendence/front/docker-storage'
 #  back:
 #    driver: local
 #    driver_opts:

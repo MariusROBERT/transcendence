@@ -1,8 +1,8 @@
 all:
-	docker-compose --project-directory srcs up -d --build
+	docker-compose up -d --build
 
 down :
-	docker-compose --project-directory srcs down -v
+	docker-compose down -v
 
 clean: down
 	docker system prune -af --volumes
@@ -10,6 +10,7 @@ clean: down
 fclean: down
 	docker system prune -af --volumes
 
-re: fclean all
+re: fclean
+	@make all
 
 .PHONY: all volumes down clean fclean re
