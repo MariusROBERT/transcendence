@@ -17,9 +17,6 @@ services:
 
   front:
     container_name: front
-    networks:
-      - front
-      - back
     build:
       context: front
       dockerfile: Dockerfile
@@ -29,14 +26,17 @@ services:
       - "3000:3000"
     restart: always
 
-#  back:
-#    container_name: back
-#    networks:
-#      - back
-#      - db
-#    build:
-#      context: back
-#      dockerfile: Dockerfile
+  back:
+    container_name: back
+    networks:
+      - db
+    build:
+      context: back
+      dockerfile: Dockerfile
+    volumes:
+      - back:/app
+    ports:
+      - "3001:3000"
 #    depends_on:
 #      - db
 #
@@ -55,12 +55,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/nfs/homes/marobert/transcendence/front/docker-storage'
-#  back:
-#    driver: local
-#    driver_opts:
-#      type: 'none'
-#      o: 'bind'
-#      device: '/nfs/homes/marobert/transcendance/data/back'
+  back:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/nfs/homes/marobert/transcendence/back/docker-storage'
 #  db:
 #    driver: local
 #    driver_opts:
@@ -70,9 +70,5 @@ volumes:
 
 
 networks:
-  front:
-    driver: bridge
-  back:
-    driver: bridge
   db:
     driver: bridge
