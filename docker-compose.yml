@@ -29,7 +29,7 @@ services:
   back:
     container_name: back
     networks:
-      - db
+      - database
     build:
       context: back
       dockerfile: Dockerfile
@@ -37,16 +37,21 @@ services:
       - back:/app
     ports:
       - "3001:3000"
-#    depends_on:
-#      - db
-#
-#  db:
-#    container_name: db
-#    networks:
-#      - db
-#    build:
-#      context: back
-#      dockerfile: Dockerfile
+    depends_on:
+      - databaseb
+    restart: always
+
+  databaseb:
+    image: postgres
+    container_name: database
+    networks:
+      - database
+    volumes:
+      - database:/app
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_USER: $POSTGRES_USER
+    restart: always
 
 volumes:
   front:
@@ -54,21 +59,21 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/nfs/homes/marobert/transcendence/front/docker-storage'
+      device: 'front/docker-storage'
   back:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/nfs/homes/marobert/transcendence/back/docker-storage'
-#  db:
-#    driver: local
-#    driver_opts:
-#      type: 'none'
-#      o: 'bind'
-#      device: '/nfs/homes/marobert/transcendance/data/db'
+      device: 'back/docker-storage'
+  database:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'database/docker-storage'
 
 
 networks:
-  db:
+  database:
     driver: bridge
