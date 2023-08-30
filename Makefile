@@ -1,4 +1,5 @@
 all:
+	mkdir -p front/docker-storage back/docker-storage database/docker-storage
 	docker-compose up -d --build
 
 down :
