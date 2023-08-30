@@ -1,19 +1,6 @@
 version: "3"
 
 services:
-#  nginx:
-#    container_name: nginx
-#    volumes:
-#      - front:/var/www/html/front
-#    networks:
-#      - front
-#    depends_on:
-#      - front
-#    build:
-#      context: nginx
-#      dockerfile: Dockerfile
-#    ports:
-#      - "443:443"
 
   front:
     container_name: front
@@ -38,10 +25,10 @@ services:
     ports:
       - "3001:3000"
     depends_on:
-      - databaseb
+      - database
     restart: always
 
-  databaseb:
+  database:
     image: postgres
     container_name: database
     networks:

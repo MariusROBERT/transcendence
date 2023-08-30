@@ -8,5 +8,7 @@ RUN		npm uninstall -g create-react-app
 RUN		npx create-react-app app --template typescript
 
 WORKDIR	/app
-RUN		npm update
-CMD		["npm", "start"]
+
+COPY	script.sh /
+RUN		chmod +x /script.sh
+CMD		["/script.sh"]
