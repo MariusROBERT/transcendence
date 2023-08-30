@@ -1,6 +1,19 @@
 version: "3"
 
 services:
+#  nginx:
+#    container_name: nginx
+#    volumes:
+#      - front:/var/www/html/front
+#    networks:
+#      - front
+#    depends_on:
+#      - front
+#    build:
+#      context: nginx
+#      dockerfile: Dockerfile
+#    ports:
+#      - "443:443"
 
   front:
     container_name: front
@@ -25,17 +38,10 @@ services:
     ports:
       - "3001:3000"
     depends_on:
-<<<<<<< HEAD
       - databaseb
     restart: always
 
   databaseb:
-=======
-      - database
-    restart: always
-
-  database:
->>>>>>> 5f795de6644904df33e8794438e5fdcf5d317ec1
     image: postgres
     container_name: database
     networks:
@@ -43,13 +49,8 @@ services:
     volumes:
       - database:/app
     environment:
-<<<<<<< HEAD
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_USER: $POSTGRES_USER
-=======
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
->>>>>>> 5f795de6644904df33e8794438e5fdcf5d317ec1
     restart: always
 
 volumes:
