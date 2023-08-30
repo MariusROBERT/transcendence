@@ -1,3 +1,3 @@
 yarn install
 yarn upgrade
-yarn start
+yarn start:dev
