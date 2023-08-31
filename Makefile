@@ -14,4 +14,11 @@ fclean: down
 re: fclean
 	@make all
 
+ls:
+	@docker ps -a
+	@echo ""
+	@docker volume ls
+	@echo ""
+	@docker images
+
 .PHONY: all volumes down clean fclean re
