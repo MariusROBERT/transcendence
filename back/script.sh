@@ -3,7 +3,6 @@ then
   nest new /app --package-manager yarn
   rm -rf /app/.git
 fi
-
-yarn install
-yarn upgrade
-yarn start:dev
+npm install
+npm update
+npm run start:dev
