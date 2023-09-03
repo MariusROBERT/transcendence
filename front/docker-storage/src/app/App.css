@@ -6,6 +6,17 @@
     --white: #F3F3F3;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
 @font-face {
     font-family: 'title';
     src: local('techno_hideo'),
@@ -24,6 +35,7 @@ body {
     margin: 0;
     padding: 0;
     cursor: url('../imgs/cursor/cursor.png'), default;
+    background-color: var(--clear);
 }
 
 .cursor_default{
@@ -37,9 +49,11 @@ body {
 div {
 }
 
-h1 {
+h2 {
+    text-align: center;
     font-family: 'title', sans-serif;
     font-size: xxx-large;
+    text-shadow: 4px 4px 4px black;
 }
 
 p, input {
@@ -48,10 +62,17 @@ p, input {
     font-size: large;
 }
 
+p {
+    text-shadow: 2px 2px 2px black;
+}
+
 button {
     cursor: url('../imgs/cursor/pointer.png'), pointer;
 }
 
+button p {
+    text-shadow: none;
+}
 
 .button-30 {
    align-items: center;
