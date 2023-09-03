@@ -5,4 +5,4 @@ fi
 
 npm install
 npm update
-npm start
+npm run start
