@@ -13,8 +13,10 @@ interface Props {
     flex_alignItems?: 'stretch' | 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly';
     flex_gap?: string;
 
-    padding?: string
-    margin?: string
+    padding?: string;
+    margin?: string;
+
+    fixed?: boolean;
 }
 
 function Background({   children,
@@ -27,6 +29,7 @@ function Background({   children,
                         flex_gap='5px 5px',
                         padding='0',
                         margin='0',
+                        fixed=false,
                                                         }: Props)
 {
     const style = {
@@ -43,7 +46,9 @@ function Background({   children,
         flexWrap: flex_wrap,
         justifyContent: flex_justifyContent,
         alignItems: flex_alignItems,
-        gap: flex_gap
+        gap: flex_gap,
+        overflow: 'hidden',
+        backgroundAttachment: fixed ? 'fixed' : 'scroll'
     }
 
     return (

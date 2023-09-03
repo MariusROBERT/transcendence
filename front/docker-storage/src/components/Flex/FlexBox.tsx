@@ -13,7 +13,6 @@ interface Props {
 export function Flex({children, flex_direction='column', flex_wrap='nowrap', flex_justifyContent='center', flex_alignItems='center', flex_gap='5px 5px'}: Props)
 {
     const style = {
-
         display: 'flex',
         flexDirection: flex_direction,
         flexWrap: flex_wrap,

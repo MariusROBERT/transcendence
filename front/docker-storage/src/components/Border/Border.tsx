@@ -14,8 +14,10 @@ interface Props {
 export function Border({children, borderRadius = 5, borderSize = 2, borderColor = color.white, width = 0, height = 0}: Props)
 {
     const style = {
-        width: width === 0 ? '' : width + 'px',
-        height: height === 0 ? '' : height + 'px',
+        minWidth: width === 0 ? '' : width + 'px',
+        minHeight: height === 0 ? '' : height + 'px',
+        Width: width === 0 ? '' : width + 'px',
+        Height: height === 0 ? '' : height + 'px',
         display: "flex",
         borderRadius: borderRadius + 'px',
         overflow:'hidden',
