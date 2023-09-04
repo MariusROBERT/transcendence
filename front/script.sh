@@ -1,8 +1,14 @@
+echo "script started !"
+
 if [ ! -d /app ]
 then
-  npx create-react-app /app --template typescript
+  npm create-react-app /app --template typescript
 fi
 
+echo "create app done !"
 npm install
+echo "npm install done !"
 npm update
-npm start
+echo "npm update done !"
+npm run start
+echo "npm start done !"

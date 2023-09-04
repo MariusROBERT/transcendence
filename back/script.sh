@@ -6,4 +6,4 @@ fi
 
 yarn install
 yarn upgrade
-yarn start:dev
+yarn start
