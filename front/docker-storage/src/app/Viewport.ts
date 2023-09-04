@@ -1,5 +1,4 @@
 import {useEffect} from "react";
-
 export interface Viewport{
     isLandscape:boolean,
     height: number,

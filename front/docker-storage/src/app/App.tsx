@@ -5,10 +5,8 @@ import {backgroundImage} from "../Global";
 import styleSheet from './App.css';
 
 import {Login} from "../components/Login/Login";
-import {Border} from "../components/Border/Border";
-import {Button} from "../components/Button/Button";
 import {Viewport, useEffectViewport} from "./Viewport";
-import {SidePanel} from "../components/SidePanel/SidePanel";
+import {MainPage} from "../components/MainPage/MainPage"
 
 const SIZE = 350;
 
@@ -26,27 +24,7 @@ function App(){
         <div className={'cursor_perso'} style={{height:viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE*2) + 'px', width:'100%', color:color.white, overflow:'hidden'}}>
             <Background image={backgroundImage} fixed={true}>
                 <Login viewport={viewport} isConnected={isConnected} setIsConnected={setIsConnected}></Login>
-                { isConnected &&
-                    <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={"space-between"} flex_alignItems={'stretch'}>
-                        <SidePanel viewport={viewport} width={SIZE} isLeftPanel={true} duration_ms={1500}>
-                            <Background>
-                                <p>contact pannel</p>
-                            </Background>
-                        </SidePanel>
-                        <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-                            <input/>
-                            <Button onClick={() => console.log('play clicked')}>
-                                Play
-                            </Button>
-                            <br/>
-                        </Background>
-                        <SidePanel viewport={viewport} width={SIZE} isLeftPanel={false} duration_ms={1500}>
-                            <Background>
-                                <p>chat pannel</p>
-                            </Background>
-                        </SidePanel>
-                    </Background>
-                }
+                { isConnected && <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>}
             </Background>
         </div>
     );
