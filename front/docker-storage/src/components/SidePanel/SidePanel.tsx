@@ -24,16 +24,20 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
         if (isMoving) return;
         setIsAnim(true);
         await delay(duration_ms / 3);
-        setIsAnim(false);
         setIsHiding(true);
+        setIsAnim(false);
         await delay(duration_ms);
         setIsOpen(false);
         setIsHiding(false);
     }
+
     async function Open()
     {
         if (isMoving) return;
+        setIsAnim(true);
+        await delay(duration_ms);
         setIsShowing(true);
+        setIsAnim(false);
         await delay(duration_ms);
         setIsOpen(true);
         setIsShowing(false);
@@ -46,23 +50,23 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
             height:'100%',
             position:'absolute',
             left: '0px',
-            transition: '0s'
+            transition: '0s ease'
         }
         if (isAnim)
         {
             style.width = width + 50 + 'px'
             style.left = (isLeftPanel ? 0 : viewport.width - width - 50) + 'px'
-            style.transition = duration_ms / 3 + 'ms'
+            style.transition = (isOpen ? duration_ms / 3 : duration_ms) + 'ms ease'
         }
         else if (isShowing)
         {
             style.left = (isLeftPanel ? 0 : viewport.width - width) + 'px'
-            style.transition = duration_ms + 'ms'
+            style.transition = duration_ms / 3 + 'ms ease'
         }
         else if (isHiding)
         {
             style.left = (isLeftPanel ? -width : viewport.width) + 'px'
-            style.transition = duration_ms + 'ms'
+            style.transition = duration_ms + 'ms ease'
         }
         else if (isOpen)
         {
@@ -84,7 +88,7 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
         backgroundImage: 'url(' + require('../../imgs/side_panel_button.png') + ')',
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
-        transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms'
+        transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease'
     }
 
     if (!isMoving && !isOpen) {
@@ -94,6 +98,7 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
             </div>
         );
     }
+
     return (
         <div style={getStyle()}>
             <button style={buttonStyle} onClick={isOpen ? Close : Open}></button>

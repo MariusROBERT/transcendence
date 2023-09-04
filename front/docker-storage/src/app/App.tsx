@@ -8,7 +8,7 @@ import {Login} from "../components/Login/Login";
 import {Viewport, useEffectViewport} from "./Viewport";
 import {MainPage} from "../components/MainPage/MainPage"
 
-const SIZE = 350;
+const SIZE = 500;
 
 function App(){
     const view: Viewport = {

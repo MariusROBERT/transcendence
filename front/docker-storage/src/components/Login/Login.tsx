@@ -11,21 +11,22 @@ import {delay} from "../../UtilityFunctions";
 const SIZE: number = 350
 
 interface Props{
+    duration_ms?: number,
     viewport: Viewport,
     isConnected: boolean,
     setIsConnected: (state: boolean) => void,
 }
 
 
-export function Login({viewport, isConnected, setIsConnected} : Props)
+export function Login({duration_ms = 900, viewport, isConnected, setIsConnected} : Props)
 {
     async function OnConnect()
     {
         setIsAnim(true);
-        await delay(500);
+        await delay(duration_ms / 3);
         setIsConnecting(true);
         setIsAnim(false);
-        await delay(2001);
+        await delay(duration_ms);
         setIsConnected(true);
         setIsConnecting(false);
     }
@@ -45,7 +46,7 @@ export function Login({viewport, isConnected, setIsConnected} : Props)
         width:'100%',
         position: "absolute",
         top: '50px',
-        transition:'0.5s ease'
+        transition: duration_ms / 3 + 'ms ease'
     }
 
     const connectingStyle: React.CSSProperties = {
@@ -53,7 +54,7 @@ export function Login({viewport, isConnected, setIsConnected} : Props)
         width:'100%',
         position: "absolute",
         top:viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
-        transition:'2s ease'
+        transition: duration_ms + 'ms ease'
     }
 
     const connectedStyle: React.CSSProperties = {

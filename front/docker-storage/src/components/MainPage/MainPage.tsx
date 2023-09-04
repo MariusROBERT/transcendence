@@ -6,6 +6,8 @@ import React from "react";
 import { Viewport } from "../../app/Viewport";
 import { ContactPanel } from "../ContactPanel/ContactPanel";
 import { ChatPanel } from "../ChatPanel/ChatPanel";
+import { Input } from "../Input/Input";
+import { SearchBar } from "../SearchBar/SearchBar";
 
 interface Props{
     panelWidth:number
@@ -18,12 +20,12 @@ export function MainPage({panelWidth, viewport}:Props)
         <>
             <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={"space-between"} flex_alignItems={'stretch'}>
                 <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
-                    <Background>
-                        <ContactPanel></ContactPanel>
+                    <Background flex_justifyContent={'flex-start'}>
+                        <ContactPanel viewport={viewport}></ContactPanel>
                     </Background>
                 </SidePanel>
                 <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-                    <input/>
+                    <SearchBar>Leader Board..</SearchBar>
                     <Button onClick={() => console.log('play clicked')}>
                         Play
                     </Button>
