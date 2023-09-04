@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 
-export function ChatPanel() : ReactNode
+export function ChatPanel()
 {
 
     return (

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 
-export function ContactPanel() : ReactNode
+export function ContactPanel()
 {
 
     return (
