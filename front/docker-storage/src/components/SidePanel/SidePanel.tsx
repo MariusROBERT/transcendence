@@ -2,6 +2,7 @@ import {delay} from "../../UtilityFunctions";
 import React, {ReactNode, useState} from "react";
 import {color} from "../../Global";
 import {Viewport} from "../../app/Viewport";
+import { RoundButton } from "../RoundButton/RoundButton";
 
 interface Props{
     children:ReactNode;
@@ -46,6 +47,7 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
     function getStyle(): React.CSSProperties
     {
         let style:React.CSSProperties = {
+            zIndex:'100',
             width: width + 'px',
             height:'100%',
             position:'absolute',
@@ -80,28 +82,27 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
     }
 
     const buttonStyle:React.CSSProperties = {
-        width:'30px', height:'30px',
-        border: 'solid 2px ' + color.grey, borderRadius:'15px',
         position:'absolute',
-        top:'50%', left:(isLeftPanel ? (isAnim ? width - 15 + 50 : width - 15) : -15) + 'px',
+        top:'50%', left:(isLeftPanel ? (isAnim ? width + 50 : width) : 0)-30 + 'px',
         rotate:((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
-        backgroundImage: 'url(' + require('../../imgs/side_panel_button.png') + ')',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
         transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease'
     }
 
     if (!isMoving && !isOpen) {
         return (
             <div style={{position:"absolute", height:'100%', left:getStyle().left}}>
-                <button style={buttonStyle} onClick={isOpen ? Close : Open}></button>
+                <div style={buttonStyle}>
+                    <RoundButton icon_size={50} icon={require('../../imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
+                </div>
             </div>
         );
     }
 
     return (
         <div style={getStyle()}>
-            <button style={buttonStyle} onClick={isOpen ? Close : Open}></button>
+            <div style={buttonStyle}>
+                <RoundButton icon_size={50} icon={require('../../imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
+            </div>
             <div style={{overflow:'hidden', display:"flex", height:'100%'}}>
                 {children}
             </div>
