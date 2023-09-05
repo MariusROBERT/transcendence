@@ -6,15 +6,13 @@
     --white: #F3F3F3;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 ::-webkit-scrollbar {
     display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 body {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 @font-face {
@@ -24,7 +22,7 @@ body {
 }
 
 @font-face {
-    font-family: 'text';
+    font-family: 'robot_font';
     src: local('robot'),
     url('../fonts/Robot_Font.otf') format('truetype');
 }
@@ -46,9 +44,6 @@ body {
     cursor: url('../imgs/cursor/pointer.png'), pointer;
 }
 
-div {
-}
-
 h2 {
     text-align: center;
     font-family: 'title', sans-serif;
@@ -57,7 +52,7 @@ h2 {
 }
 
 p, input {
-    font-family: 'text', sans-serif;
+    font-family: 'robot_font', sans-serif;
     letter-spacing: .1rem;
     font-size: large;
 }
@@ -134,4 +129,10 @@ button p {
 .color-4{
     background: var(--black);
     color: var(--white)
+}
+
+.inside-border{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
