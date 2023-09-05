@@ -8,6 +8,7 @@ import { ContactPanel } from "../ContactPanel/ContactPanel";
 import { ChatPanel } from "../ChatPanel/ChatPanel";
 import { Input } from "../Input/Input";
 import { SearchBar } from "../SearchBar/SearchBar";
+import { RoundButton } from "../RoundButton/RoundButton";
 
 interface Props{
     panelWidth:number
@@ -26,14 +27,12 @@ export function MainPage({panelWidth, viewport}:Props)
                 </SidePanel>
                 <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
                     <SearchBar>Leader Board..</SearchBar>
-                    <Button onClick={() => console.log('play clicked')}>
-                        Play
-                    </Button>
-                    <br/>
+                    <RoundButton icon_size={200} icon={require('../../imgs/icon_play.png')} onClick={() => {console.log('match making')}}></RoundButton>
+                    <div style={{height:'60px'}} />
                 </Background>
                 <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
                     <Background>
-                        <ChatPanel></ChatPanel>
+                        <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
                     </Background>
                 </SidePanel>
             </Background>
