@@ -1,8 +1,6 @@
 import { ReactNode, useState } from "react";
-import { Border } from "../Border/Border";
-import Background from "../Background/Background";
+import { Border, Background, RoundButton } from "..";
 import { color } from "../../Global";
-import { RoundButton } from "../RoundButton/RoundButton";
 
 interface Props{
     children?:ReactNode,

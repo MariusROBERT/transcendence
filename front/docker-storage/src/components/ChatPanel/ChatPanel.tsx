@@ -1,14 +1,13 @@
 import { ReactNode, useState } from "react";
-import { Border } from "../Border/Border";
 import { Viewport } from "../../app/Viewport";
 import { color } from "../../Global";
-import Background from "../Background/Background";
-
+import { Background } from "..";
 
 interface Props{
     viewport:Viewport,
     width:number
 }
+
 export function ChatPanel({viewport, width}:Props)
 {
     const [inputValue, setInputValue] = useState<string>('');

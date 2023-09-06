@@ -1,8 +1,7 @@
-import {delay} from "../../UtilityFunctions";
-import React, {ReactNode, useState} from "react";
-import {color} from "../../Global";
-import {Viewport} from "../../app/Viewport";
-import { RoundButton } from "../RoundButton/RoundButton";
+import { delay } from "../../UtilityFunctions";
+import React, { ReactNode, useState } from "react";
+import { Viewport } from "../../app/Viewport";
+import { RoundButton } from "..";
 
 interface Props{
     children:ReactNode;

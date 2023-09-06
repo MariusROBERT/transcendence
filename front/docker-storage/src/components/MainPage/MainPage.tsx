@@ -1,14 +1,6 @@
-import {color} from "../../Global";
-import {SidePanel} from "../SidePanel/SidePanel";
-import Background from "../Background/Background";
-import {Button} from "../Button/Button";
-import React from "react";
+import { color } from "../../Global";
 import { Viewport } from "../../app/Viewport";
-import { ContactPanel } from "../ContactPanel/ContactPanel";
-import { ChatPanel } from "../ChatPanel/ChatPanel";
-import { Input } from "../Input/Input";
-import { SearchBar } from "../SearchBar/SearchBar";
-import { RoundButton } from "../RoundButton/RoundButton";
+import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton } from "..";
 
 interface Props{
     panelWidth:number

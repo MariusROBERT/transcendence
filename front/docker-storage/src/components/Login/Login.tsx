@@ -1,12 +1,8 @@
-import {Border} from "../Border/Border";
-import {backgroundImage, color} from "../../Global";
-import Background from "../Background/Background";
-import {Button} from "../Button/Button";
-import {Input} from "../Input/Input";
-import {Flex} from "../Flex/FlexBox";
-import React, {useEffect, useState} from "react";
-import {Viewport} from "../../app/Viewport";
+import { color } from "../../Global";
 import {delay} from "../../UtilityFunctions";
+import {Viewport} from "../../app/Viewport";
+import { Border, Button, Input, Flex, Background } from "..";
+import React, {useEffect, useState} from "react";
 
 const SIZE: number = 350
 
@@ -16,7 +12,6 @@ interface Props{
     isConnected: boolean,
     setIsConnected: (state: boolean) => void,
 }
-
 
 export function Login({duration_ms = 900, viewport, isConnected, setIsConnected} : Props)
 {
@@ -30,6 +25,7 @@ export function Login({duration_ms = 900, viewport, isConnected, setIsConnected}
         setIsConnected(true);
         setIsConnecting(false);
     }
+
     const [signIn, setSign] = useState(true)
     const [isConnecting, setIsConnecting] = useState(false)
     const [isAnim, setIsAnim] = useState(false)

@@ -1,12 +1,6 @@
-import { ReactNode } from "react";
-import { Border } from "../Border/Border";
-import Background from "../Background/Background";
+import { Border, Background, GroupItems, SearchBar, User } from "..";
 import { color } from "../../Global";
-import { GroupItems } from "../GroupItems/GroupItems";
 import { Viewport } from "../../app/Viewport";
-import { SearchBar } from "../SearchBar/SearchBar";
-import { User } from "../User/User";
-
 
 interface Props {
     viewport:Viewport,
@@ -44,7 +38,6 @@ export function ContactPanel({viewport}:Props)
                     </Border>
                 </Background>
             </div>
-            {/* <div style={{height:15 + 'px'}}></div> */}
             <SearchBar>Search for friend or group here..</SearchBar>
         </>
     );

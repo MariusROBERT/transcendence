@@ -1,4 +1,3 @@
-import "../../app/App.css"
 import {ReactNode} from "react";
 
 interface Props {
