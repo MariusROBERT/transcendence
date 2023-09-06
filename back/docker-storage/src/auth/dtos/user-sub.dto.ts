@@ -26,5 +26,4 @@ export class UserSubDto {
     @IsString()
     secret2fa?: string;
 
-
 }

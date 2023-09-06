@@ -1,46 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
 import { ChanStateEnum } from "../enums/channel.enum";
 
-// CHANNEL :
-
-export class CreateChannelDto {
-
-    @IsNotEmpty()
-    @IsString()
-    name: string;
-
-    @IsOptional()
-    @IsString()
-    password: string;
-
-    @IsOptional() // because public by default
-    @IsEnum(ChanStateEnum)
-    chan_status: ChanStateEnum;
-}
-
-// GET CHANNEL AND DISPLAY INFO
-export class ChannelDto {
-
-    @IsNotEmpty()
-    @IsString()
-    name: string;
-
-    @IsOptional() // because public by default
-    @IsEnum(ChanStateEnum)
-    chan_status: ChanStateEnum;
-}
-
-export class UpdateChannelDto {
-
-    @IsOptional()
-    @IsString()
-    name: string;
-
-    @IsOptional()
-    @IsString()
-    password: string;
-    
-}
 
 // MESSAGES :
 

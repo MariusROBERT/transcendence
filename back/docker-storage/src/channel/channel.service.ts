@@ -1,13 +1,13 @@
-import { Injectable, } from '@nestjs/common';
+import { Injectable, NotFoundException, } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 
 @Injectable()
 export class ChannelService {
-
     constructor (
         @InjectRepository(ChannelEntity) 
         private ChannelRepository: Repository<ChannelEntity>,
@@ -15,14 +15,24 @@ export class ChannelService {
     ) {
     }
 
-    async getAllChannel(user: UserEntity): Promise<ChannelEntity[]>
-    {
-        return await this.ChannelRepository.find({
-            where: {
-                users: { id: user.id }
-            }
-        })
+    async createChannel(channel: CreateChannelDto, user: UserEntity): Promise<ChannelEntity> {
+        const newChannel = this.ChannelRepository.create(channel)
+        newChannel.owner = user
+        newChannel.admin.push(user)      
+        return await this.ChannelRepository.save(newChannel)
     }
 
+    // UpdateChannelDto
+
+    async updateChannel(id: number, channel: UpdateChannelDto, user: UserEntity): Promise<ChannelEntity> {
+        const newChannel = await this.ChannelRepository.preload({
+            id, // search user == id
+            ...channel // modif seulement les differences
+        })
+        if (!newChannel)
+            throw new NotFoundException(`le user ${id} n'existe pas`)
+        if (this.authService.isOwner(newChannel, user))
+            return await this.ChannelRepository.save(newChannel)
+    }
  
 }

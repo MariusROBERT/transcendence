@@ -1,9 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { User } from 'src/utils/decorators/user.decorator';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 
 @Controller('channel')
 export class ChannelController {
@@ -12,11 +13,23 @@ export class ChannelController {
     ) {
     }
 
-    @Get()
+    @Post()
     @UseGuards(JwtAuthGuard) 
-    async getChannel(
-        @User() user: UserEntity
-    ): Promise<ChannelEntity[]> {
-        return await this.ChannelService.getAllChannel(user);
+    async CreateChannel(
+        @Body() createChannelDto: CreateChannelDto,
+        @User() user: UserEntity,
+    ): Promise<ChannelEntity> {
+        return await this.ChannelService.createChannel(createChannelDto, user)
     }
+
+    @Patch('/:id')
+    @UseGuards(JwtAuthGuard) 
+    async UpdateChannel(
+        @Body() updateChannelDto: UpdateChannelDto,
+        @Param('id', ParseIntPipe) id: number,
+        @User() user: UserEntity,
+    ): Promise<ChannelEntity> {
+        return await this.ChannelService.updateChannel(id, updateChannelDto, user)
+    }
+
 }

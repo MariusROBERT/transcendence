@@ -33,23 +33,42 @@ export class UserService {
     }
 
     async getProfile(id: number, user: UserEntity): Promise<UserEntity> {
-        return await 
+        const profile = await this.UserRepository.findOne({ where: {id} });
+        if (!profile)
+            throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
+        if (this.authService.isOwner(profile, user))
+            return profile
     }
 
 // CHANNEL :
 
-    async IsInChannel(id: number, channel: ChannelEntity) {
+    async getChannels(user: UserEntity, channel: ChannelEntity[]): Promise<ChannelEntity[]> {
+        // return await this.ChannelRepository
+        // .createQueryBuilder('channel')
+        // .innerJoin('channel.users', 'user') // Supposons que "users" est le nom de la colonne de jointure entre ChannelEntity et UserEntity
+        // .where('user.id = :userId', { userId: user.id })
+        // .getMany();
+
+        return await this.ChannelRepository
+            .createQueryBuilder('channels')
+            .leftJoinAndSelect('channels.users', 'user')
+            .where('user.id = :userId', { userId: user.id })
+            .getMany();
+
+    }
+
+    async isInChannel(id: number, channel: ChannelEntity) {
         const user = await this.ChannelRepository.findOne( {where: {id}} )
         if (!user)
             return false
         return true
     }
 
-    async getMsgByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
+    async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
         const channel = await this.ChannelRepository.findOne( {where: {id}} )
         if (!channel)
             throw new NotFoundException(`le channel d'id ${id} n'existe pas`)
-        if (this.IsInChannel(user.id, channel))
+        if (this.isInChannel(user.id, channel))
             return channel.messages
         else
             throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)

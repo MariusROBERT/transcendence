@@ -9,10 +9,19 @@ import { UpdateUserDto } from 'src/user/dto/user.dto';
 
 @Controller('user')
 export class UserController {
-
     constructor (
         private UserService: UserService
     ) {
+    }
+
+// get_profile
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    async GetProfile(
+        @User() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return await this.UserService.getProfile(id, user)
     }
 
 // update_profile
@@ -26,38 +35,26 @@ export class UserController {
         return await this.UserService.updateProfile(id, updateUserDto, user);
     }
 
-// get img
-
-    @Get('/:id')
-    @UseGuards(JwtAuthGuard)
-    async GetProfile(
-        @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-    ) {
-        return await this.UserService.getProfile(id, user)
-    }
-
-    @Get('/msg/:id_chan')
+// get_message_from_channel 
+    @Get('/get_msg/:id_chan')
     @UseGuards(JwtAuthGuard) 
-    async getMessage(
+    async getMessages(
         @User() user: UserEntity,
         @Param('id_chan', ParseIntPipe) id: number,
-        channel: ChannelEntity[]
+        channels: ChannelEntity[]
     ): Promise<MessageEntity[]> {
-        return await this.UserService.getMsgByChannel(user, channel, id)
+        return await this.UserService.getMsgsByChannel(user, channels, id)
     }
 
-    // async is_in_channel(user: UserEntity) {
-    //     // for ()
-    // }
-
-    // @Get('channels') // peut etre que les nom ou status
-    // @UseGuards(JwtAuthGuard)
-    // async get_channel(user: UserEntity)  { // get param = user: UserEntity
-    //     const userChannels = new Set();
-    //     // for (all channel)
-    //     //      if (this.is_in_channel(channel, user))
-    //     //          mySet.add(channel);
-    //     return mySet;
-    // }
+// get_channels_from_user
+    @Get('get_channels_user/:id_user')
+    @UseGuards(JwtAuthGuard) 
+    async GetChannels(
+        @User() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+        channel: ChannelEntity[]
+    ) {
+        return await this.UserService.getChannels(user, channel)
+    }
+        
 }
