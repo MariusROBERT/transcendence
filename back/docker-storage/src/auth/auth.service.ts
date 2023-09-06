@@ -64,8 +64,6 @@ export class AuthService {
         }
     }
 
-    isOwner(objet: any, user: UserEntity): boolean {
-        return (objet.user && user.id === objet.user.id)
-    }
+
 
 }

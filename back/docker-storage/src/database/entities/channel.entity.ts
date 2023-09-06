@@ -45,9 +45,7 @@ export class ChannelEntity {
     
 // MESSAGES :
 
-    // @OneToMany(type => MessageEntity, message => message.channel)
+    @OneToMany(type => MessageEntity, message => message.channel, {onDelete: 'CASCADE'})
     messages: MessageEntity[];
-
-    // msg_unread: msgUnread[] ??
 
 }

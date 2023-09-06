@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
@@ -30,6 +30,15 @@ export class ChannelController {
         @User() user: UserEntity,
     ): Promise<ChannelEntity> {
         return await this.ChannelService.updateChannel(id, updateChannelDto, user)
+    }
+
+    @Delete('/:id')
+    @UseGuards(JwtAuthGuard)
+    async RemoveChannel(
+        @Param('id', ParseIntPipe) id: number,
+        @User() user: UserEntity
+    ): Promise<ChannelEntity> {
+        return await this.ChannelService.removeChannel(id, user) // check si admin ou owner
     }
 
 }

@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChannelController } from './channel/channel.controller';
 import { ChannelModule } from './channel/channel.module';
+import { MessagesService } from './messages/messages.service';
+import { MessagesModule } from './messages/messages.module';
 
 
 @Module({
@@ -26,10 +28,11 @@ import { ChannelModule } from './channel/channel.module';
   }),
   AuthModule,
   UserModule,
-  ChannelModule
+  ChannelModule,
+  MessagesModule
   ],
   controllers: [AppController, ChannelController],
-  providers: [AppService],
+  providers: [AppService, MessagesService],
   exports: [AppService]
 })
 export class AppModule {}

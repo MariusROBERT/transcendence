@@ -28,7 +28,7 @@ export class UserService {
         })
         if (!newProfil)
             throw new NotFoundException(`le user ${id} n'existe pas`)
-        if (this.authService.isOwner(newProfil, user))
+        if (this.isOwner(newProfil, user))
             return await this.UserRepository.save(newProfil)
     }
 
@@ -36,7 +36,7 @@ export class UserService {
         const profile = await this.UserRepository.findOne({ where: {id} });
         if (!profile)
             throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
-        if (this.authService.isOwner(profile, user))
+        if (this.isOwner(profile, user))
             return profile
     }
 
@@ -75,6 +75,22 @@ export class UserService {
 
     }
 
+// UTILS : 
 
+    isOwner(objet: any, user: UserEntity): boolean {
+        return (objet.user && user.id === objet.user.id)
+    }
+
+    isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
+        return (channel.owner.id == user.id)
+    }
+
+    isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
+        if (!channel.admin)
+            return false;
+        // Vérifiez si l'utilisateur existe dans la liste des administrateurs
+        const isAdmin = channel.admin.some(adminUser => adminUser.id === user.id);
+        return isAdmin;
+    }
 
 }

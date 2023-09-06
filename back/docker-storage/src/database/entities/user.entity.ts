@@ -62,13 +62,17 @@ export class UserEntity {
     @OneToMany(type => MessageEntity, message => message.sender)
     messages: MessageEntity[];
 
-// FRIENDS & BLOCKED :
+// FRIENDS & INVITE & BLOCKED :
+
+    @ManyToMany(() => UserEntity, (user) => user.friends, {onDelete: 'CASCADE'} )
+    friends: UserEntity[];
+
+    @ManyToMany(() => UserEntity, (user) => user.invites, {onDelete: 'CASCADE'} )
+    invites: UserEntity[];
 
     @ManyToMany(() => UserEntity, (user) => user.blocked, {onDelete: 'CASCADE'} )
     blocked: UserEntity[];
 
-    @ManyToMany(() => UserEntity, (user) => user.friends, {onDelete: 'CASCADE'} )
-    friends: UserEntity[];
 
 // GAME :
 
