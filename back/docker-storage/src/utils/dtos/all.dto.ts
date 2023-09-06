@@ -39,6 +39,18 @@ export class CreateChannelDto {
     chan_status: ChanStateEnum;
 }
 
+// GET CHANNEL AND DISPLAY INFO
+export class ChannelDto {
+
+    @IsNotEmpty()
+    @IsString()
+    name: string;
+
+    @IsOptional() // because public by default
+    @IsEnum(ChanStateEnum)
+    chan_status: ChanStateEnum;
+}
+
 export class UpdateChannelDto {
 
     @IsOptional()

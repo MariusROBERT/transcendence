@@ -45,7 +45,7 @@ export class ChannelEntity {
     
 // MESSAGES :
 
-    @OneToMany(type => MessageEntity, message => message.channel)
+    // @OneToMany(type => MessageEntity, message => message.channel)
     messages: MessageEntity[];
 
     // msg_unread: msgUnread[] ??

@@ -25,8 +25,7 @@ export class AuthController {
         // @Res() res: Response
     ) {
         console.log("Uuuuuuuuuuuuu");
+        //
         return await this.authService.login(credentials);// return acces_token
     }
-
-
 }
