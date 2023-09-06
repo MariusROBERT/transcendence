@@ -38,7 +38,7 @@ export class UserEntity {
     secret2fa?: string;
 
     @Column({ type: 'enum', enum: UserStateEnum, default: UserStateEnum.ON })
-    user_status!: string;
+    user_status!: UserStateEnum;
 
 // CHANNEL :
 

@@ -4,7 +4,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { MessageEntity } from 'src/database/entities/message.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
-import { UpdateUserDto } from 'src/user/dto/user.dto';
+import { PublicProfileDto, UpdateUserDto } from 'src/user/dto/user.dto';
+import { UserStateEnum } from 'src/utils/enums/user.enum';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -21,23 +22,50 @@ export class UserService {
 
 // PROFILE :
 
-    async updateProfile(id: number, profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
+    async updateProfile(profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
+        const id:number = user.id;
         const newProfil = await this.UserRepository.preload({
             id, // search user == id
             ...profil // modif seulement les differences
         })
-        if (!newProfil)
-            throw new NotFoundException(`le user ${id} n'existe pas`)
         if (this.isOwner(newProfil, user))
             return await this.UserRepository.save(newProfil)
     }
 
-    async getProfile(id: number, user: UserEntity): Promise<UserEntity> {
+    async getOwnProfile(user: UserEntity): Promise<UserEntity> {
+        return user;
+    }
+
+    async getPublicProfile(id: number, user: UserEntity): Promise<PublicProfileDto> {
         const profile = await this.UserRepository.findOne({ where: {id} });
         if (!profile)
             throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
-        if (this.isOwner(profile, user))
-            return profile
+        const PublicProfile = new PublicProfileDto();
+        PublicProfile.id = profile.id;
+        PublicProfile.username = profile.username;
+        PublicProfile.urlImg = profile.urlImg;
+        PublicProfile.user_status = profile.user_status;
+        PublicProfile.winrate = profile.winrate;
+        if (user.friends.some(friend => friend.id === profile.id))
+            PublicProfile.friend = true
+            else
+            PublicProfile.friend = false
+        return PublicProfile;
+    }
+
+    async getAllProfile(): Promise<PublicProfileDto[]> {
+        const users = await this.UserRepository.find();
+        // Créez un tableau pour stocker les profils
+        const publicProfiles: PublicProfileDto[] = [];
+        for (const user of users) {
+            const publicProfile = new PublicProfileDto();
+            publicProfile.username = user.username;
+            publicProfile.urlImg = user.urlImg;
+            publicProfile.user_status = user.user_status;
+            publicProfile.winrate = user.winrate;
+            publicProfiles.push(publicProfile);
+        }
+        return publicProfiles;
     }
 
 // FRIEND'S DEMAND :
@@ -47,7 +75,7 @@ export class UserService {
         const userAsked = await this.UserRepository.findOne({where: {id}})
         if (!userAsked)
             throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-        if (userAsked.user_status == 'ON')
+        if (userAsked.user_status == UserStateEnum.ON)
             // passer par les socket
             console.log("coucou");
         else {

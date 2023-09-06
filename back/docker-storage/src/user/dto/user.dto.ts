@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum, IsBoolean } from "class-validator";
 import { UserRoleEnum, UserStateEnum } from "../../utils/enums/user.enum";
 
 
@@ -35,4 +35,35 @@ export class UpdateUserDto {
     @IsString()
     salt: string;
 
+    @IsOptional()
+    @IsNumber()
+    winrate: number;
+
+}
+
+export class PublicProfileDto {
+    
+    @IsNotEmpty()
+    @IsNumber()
+    id: number;
+
+    @IsNotEmpty()
+    @IsString()
+    username: string;
+
+    @IsNotEmpty()
+    @IsString()
+    urlImg!: string;
+
+    @IsNotEmpty()
+    @IsEnum(UserStateEnum)
+    user_status: UserStateEnum;
+
+    @IsNotEmpty()
+    @IsNumber()
+    winrate: number;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    friend: boolean;
 }
