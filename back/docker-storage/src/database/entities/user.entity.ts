@@ -1,4 +1,4 @@
-import { UserStateEnum, userRoleEnum } from "src/utils/enums/user.enum";
+import { UserStateEnum, UserRoleEnum } from "src/utils/enums/user.enum";
 import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
 import { GameEntity } from "./game.entity";
@@ -19,10 +19,10 @@ export class UserEntity {
     // @Column({ unique: true })
     // email: string; // pour le 2fa ??
 
-    @Column({ type: 'enum', enum: userRoleEnum, default: userRoleEnum.USER })
-    role!: string;
+    @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
+    role!: UserRoleEnum;
 
-    @Column()
+    @Column({ default: 'url_img_profil_default' })
     urlImg!: string;
 
     @Column()

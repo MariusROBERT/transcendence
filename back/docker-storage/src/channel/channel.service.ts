@@ -9,8 +9,8 @@ import { UserEntity } from 'src/database/entities/user.entity';
 export class ChannelService {
 
     constructor (
-        @InjectRepository(ChannelEntity) // injection du repo dans le service. Un repo a deja des fonctionnalités prêtes a l'emplois. Chaque entité a un repo
-        private ChannelRepository: Repository<ChannelEntity>, // typé avec le type Repository<CvEntity>, indiquant qu'il s'agit d'un objet qui peut être utilisé pour effectuer des opérations de base de données sur l'entité CvEntity.
+        @InjectRepository(ChannelEntity) 
+        private ChannelRepository: Repository<ChannelEntity>,
         private authService: AuthService
     ) {
     }

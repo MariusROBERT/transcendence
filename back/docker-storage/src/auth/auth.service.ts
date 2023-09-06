@@ -6,8 +6,6 @@ import { Repository } from 'typeorm';
 import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
-import { userRoleEnum } from 'src/utils/enums/user.enum';
-
 
 @Injectable()
 export class AuthService {
@@ -30,7 +28,7 @@ export class AuthService {
         } catch (e) {
             throw new ConflictException(`username or password already used`)
         }
-
+// METTRE UNE IMG PAR DEFAULT
         return {
             id: user.id,
             username: user.username,
@@ -66,9 +64,8 @@ export class AuthService {
         }
     }
 
-    // isOwnerOrAdmin(objet: any, user: UserEntity): boolean {
-    //     console.log(objet.user); // undefined -> psq j'ai pas de column user dans mon objet...
-    //     return (user.role === userRoleEnum.ADMIN || (objet.user && user.id === objet.user.id))
-    // }
+    isOwner(objet: any, user: UserEntity): boolean {
+        return (objet.user && user.id === objet.user.id)
+    }
 
 }

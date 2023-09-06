@@ -1,10 +1,11 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { MessageEntity } from 'src/database/entities/message.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { User } from 'src/utils/decorators/user.decorator';
 import { UserService } from './user.service';
+import { UpdateUserDto } from 'src/user/dto/user.dto';
 
 @Controller('user')
 export class UserController {
@@ -14,16 +15,27 @@ export class UserController {
     ) {
     }
 
-    // get img
+// update_profile
+    @Patch('/:id')
+    @UseGuards(JwtAuthGuard)
+    async UpdateProfile(
+        @Body() updateUserDto: UpdateUserDto,
+        @Param('id', ParseIntPipe) id: number,
+        @User() user: UserEntity
+    ): Promise<UserEntity> {
+        return await this.UserService.updateProfile(id, updateUserDto, user);
+    }
 
-    // post img
+// get img
 
-    // change 2fa active
-
-    // change pwd
-
-    // change pseudo
-
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    async GetProfile(
+        @User() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return await this.UserService.getProfile(id, user)
+    }
 
     @Get('/msg/:id_chan')
     @UseGuards(JwtAuthGuard) 

@@ -1,27 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
 import { ChanStateEnum } from "../enums/channel.enum";
 
-// USER :
-
-export class UpdateUserDto {
-
-    @IsOptional()
-    @IsString()
-    username: string;
-
-    @IsOptional()
-    @IsString()
-    password: string;
-
-    @IsOptional()
-    @IsString()
-    urlImg!: string;
-
-    @IsOptional()
-    is2fa_active!: boolean;
-
-}
-
 // CHANNEL :
 
 export class CreateChannelDto {

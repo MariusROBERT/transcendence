@@ -10,7 +10,6 @@ export class AuthController {
         private authService: AuthService
     ) {}
 
-
     @Post('/signup')
     async register(
         @Body() userData: UserSubDto
@@ -25,7 +24,6 @@ export class AuthController {
         // @Res() res: Response
     ) {
         console.log("Uuuuuuuuuuuuu");
-        //
         return await this.authService.login(credentials);// return acces_token
     }
 }
