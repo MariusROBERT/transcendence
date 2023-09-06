@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { MessageEntity } from 'src/database/entities/message.entity';
@@ -13,6 +13,8 @@ export class UserController {
         private UserService: UserService
     ) {
     }
+
+// --- PROFILE --- :
 
 // get_profile
     @Get('/:id')
@@ -34,6 +36,8 @@ export class UserController {
     ): Promise<UserEntity> {
         return await this.UserService.updateProfile(id, updateUserDto, user);
     }
+
+// --- MSG & CHANNEL --- :
 
 // get_message_from_channel 
     @Get('/get_msg/:id_chan')
@@ -57,4 +61,30 @@ export class UserController {
         return await this.UserService.getChannels(user, channel)
     }
         
+// ask_friend
+    @Post('demand/:id')
+    @UseGuards(JwtAuthGuard) 
+    async FriendsDemand(
+        @User() user: UserEntity,
+        users: UserEntity[],
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<UserEntity> {
+        return await this.UserService.askFriend(user, id, users);
+    }
+
+// accept_or_denied_aks
+    @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
+    @UseGuards(JwtAuthGuard) 
+    async responseAsks(
+        @User() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+        users: UserEntity[],
+        @Param('bool', ParseIntPipe) bool: number,
+    ) {
+        if (bool >= 0 && bool <= 1)
+            return await this.UserService.handleAsk(user, id, users, bool)
+        else
+            throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
+    }
+
 }

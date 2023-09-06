@@ -40,6 +40,35 @@ export class UserService {
             return profile
     }
 
+// FRIEND'S DEMAND :
+
+    async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
+        // check si le user demandé est connecté
+        const userAsked = await this.UserRepository.findOne({where: {id}})
+        if (!userAsked)
+            throw new NotFoundException(`le user d'id ${id} n'existe pas`);
+        if (userAsked.user_status == 'ON')
+            // passer par les socket
+            console.log("coucou");
+        else {
+            user.invited.push(userAsked);
+            userAsked.invites.push(user);
+        }
+        return userAsked
+    }
+
+    async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
+        const userInvites = await this.UserRepository.findOne({where: {id}}) // search le user d'id :id
+        if (!userInvites)
+            throw new NotFoundException(`le user d'id: ${id} n'existe pas`)
+        const indexToRemove = user.invites.indexOf(userInvites); // recuperer l index du user dans la liste d'invites
+        if (indexToRemove !== -1)
+            throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
+        user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
+        if (bool == 1) // si il a été accepter, on l'ajoute dans la liste friends
+            user.friends.push(userInvites);
+    }
+
 // CHANNEL :
 
     async getChannels(user: UserEntity, channel: ChannelEntity[]): Promise<ChannelEntity[]> {

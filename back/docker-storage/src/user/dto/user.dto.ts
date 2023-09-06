@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
-import { ChanStateEnum } from "../../utils/enums/channel.enum";
 import { UserRoleEnum, UserStateEnum } from "../../utils/enums/user.enum";
 
 

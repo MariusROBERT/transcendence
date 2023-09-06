@@ -9,6 +9,7 @@ import { ChannelController } from './channel/channel.controller';
 import { ChannelModule } from './channel/channel.module';
 import { MessagesService } from './messages/messages.service';
 import { MessagesModule } from './messages/messages.module';
+import { MutedController } from './muted/muted.controller';
 
 
 @Module({
@@ -31,7 +32,7 @@ import { MessagesModule } from './messages/messages.module';
   ChannelModule,
   MessagesModule
   ],
-  controllers: [AppController, ChannelController],
+  controllers: [AppController, ChannelController, MutedController],
   providers: [AppService, MessagesService],
   exports: [AppService]
 })

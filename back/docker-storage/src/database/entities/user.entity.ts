@@ -70,6 +70,9 @@ export class UserEntity {
     @ManyToMany(() => UserEntity, (user) => user.invites, {onDelete: 'CASCADE'} )
     invites: UserEntity[];
 
+    @ManyToMany(() => UserEntity, (user) => user.invited, {onDelete: 'CASCADE'} )
+    invited: UserEntity[];
+
     @ManyToMany(() => UserEntity, (user) => user.blocked, {onDelete: 'CASCADE'} )
     blocked: UserEntity[];
 
