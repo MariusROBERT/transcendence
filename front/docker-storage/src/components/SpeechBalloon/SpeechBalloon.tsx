@@ -13,11 +13,18 @@ export function SpeechBalloon({children, isOwnMessage, user_icon}:Props){
     return (
         <div style={{display:'flex', flexDirection: isOwnMessage ? 'row' : 'row-reverse'}}>
             <RoundButton icon={user_icon} onClick={() => {}}></RoundButton>
-            <Border borderColor={color.black}>
+            <div style={{
+                    flex: 'auto',
+                    width: '100%',
+                    display: "flex",
+                    borderRadius: 10 + 'px',
+                    overflow:'hidden',
+                    border:'solid ' + color.black + ' ' + 2 + 'px'
+            }}>
                 <Background bg_color={color.white}>
                     <p>{children}</p>
                 </Background>
-            </Border>
+            </div>
         </div>
     );
 }
