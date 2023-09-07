@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import Background from "../components/Background/Background";
-import {color} from "../Global";
-import {backgroundImage} from "../Global";
+import Background from "./components/Background/Background";
+import {color} from "./utils/Global";
+import {backgroundImage} from "./utils/Global";
 import styleSheet from './App.css';
 
-import {Login} from "../components/Login/Login";
-import {Viewport, useEffectViewport} from "./Viewport";
-import {MainPage} from "../components/MainPage/MainPage"
+import {Login} from "./components/Login/Login";
+import {Viewport, useEffectViewport} from "./utils/Viewport";
+import {MainPage} from "./components/MainPage/MainPage"
 
 const SIZE = 500;
 

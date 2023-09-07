@@ -18,13 +18,13 @@ body {
 @font-face {
     font-family: 'title';
     src: local('techno_hideo'),
-    url('../fonts/techno_hideo.woff') format('woff');
+    url('assets/fonts/techno_hideo.woff') format('woff');
 }
 
 @font-face {
     font-family: 'robot_font';
     src: local('robot'),
-    url('../fonts/Robot_Font.otf') format('truetype');
+    url('assets/fonts/Robot_Font.otf') format('truetype');
 }
 
 body {
@@ -32,16 +32,16 @@ body {
     width: 100%;
     margin: 0;
     padding: 0;
-    cursor: url('../imgs/cursor/cursor.png'), default;
+    cursor: url('assets/imgs/cursor/cursor.png'), default;
     background-color: var(--clear);
 }
 
 .cursor_default{
-    cursor: url('../imgs/cursor/cursor.png'), default;
+    cursor: url('assets/imgs/cursor/cursor.png'), default;
 }
 
 .cursor_pointer{
-    cursor: url('../imgs/cursor/pointer.png'), pointer;
+    cursor: url('assets/imgs/cursor/pointer.png'), pointer;
 }
 
 h2 {
@@ -62,7 +62,7 @@ p {
 }
 
 button {
-    cursor: url('../imgs/cursor/pointer.png'), pointer;
+    cursor: url('assets/imgs/cursor/pointer.png'), pointer;
 }
 
 button p {
