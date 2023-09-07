@@ -1,5 +1,5 @@
 import { hover } from "@testing-library/user-event/dist/hover";
-import { color } from "../../Global";
+import { color } from "../../utils/Global";
 import Background from "../Background/Background";
 import { Border } from "../Border/Border";
 import { RoundButton } from "../RoundButton/RoundButton";
@@ -12,7 +12,7 @@ interface Props{
     is_friend?:boolean
 }
 
-export function User({icon_url = require('../../imgs/icon_user.png'), user_name = 'Jean Michel', is_friend=false}:Props)
+export function User({icon_url = require('../../assets/imgs/icon_user.png'), user_name = 'Jean Michel', is_friend=false}:Props)
 {
     function openProfile(){
         console.log('open profile from ' + user_name);
@@ -45,11 +45,11 @@ export function User({icon_url = require('../../imgs/icon_user.png'), user_name 
                 <p>{user_name}</p>
             </Flex>
             <Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
-                {is_friend && <RoundButton icon={require('../../imgs/icon_chat.png')} onClick={openChat}></RoundButton>}
-                {is_friend && <RoundButton icon={require('../../imgs/icon_play.png')} onClick={sendGameInvite}></RoundButton>}
-                {is_friend && <RoundButton icon={require('../../imgs/icon_look_game.png')} onClick={lookGame}></RoundButton>}
-                {!is_friend && <RoundButton icon={require('../../imgs/icon_add_friend.png')} onClick={sendFriendInvite}></RoundButton>}
-                <RoundButton icon={require('../../imgs/icon_options.png')} onClick={openOptionDropdown}></RoundButton>
+                {is_friend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={openChat}></RoundButton>}
+                {is_friend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={sendGameInvite}></RoundButton>}
+                {is_friend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={lookGame}></RoundButton>}
+                {!is_friend && <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={sendFriendInvite}></RoundButton>}
+                <RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={openOptionDropdown}></RoundButton>
             </Flex>
         </div>
     );
