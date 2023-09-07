@@ -1,4 +1,4 @@
-import "../../app/App.css"
+import "../../App.css"
 
 interface Props {
     children?: string,

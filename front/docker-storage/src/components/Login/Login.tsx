@@ -1,6 +1,6 @@
-import { color } from "../../Global";
-import {delay} from "../../UtilityFunctions";
-import {Viewport} from "../../app/Viewport";
+import { color } from "../../utils/Global";
+import {delay} from "../../utils/UtilityFunctions";
+import {Viewport} from "../../utils/Viewport";
 import { Border, Button, Input, Flex, Background } from "..";
 import React, {useEffect, useState} from "react";
 
@@ -97,7 +97,7 @@ export function Login({duration_ms = 900, viewport, isConnected, setIsConnected}
                         <br/>
                         <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                             <p>or sign in with Intra42</p>
-                            <Button icon={require('../../imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
+                            <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
                         </Flex>
                     </Background>
                 </Border>

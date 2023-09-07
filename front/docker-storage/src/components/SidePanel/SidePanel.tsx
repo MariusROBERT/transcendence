@@ -1,6 +1,6 @@
-import { delay } from "../../UtilityFunctions";
+import { delay } from "../../utils/UtilityFunctions";
 import React, { ReactNode, useState } from "react";
-import { Viewport } from "../../app/Viewport";
+import { Viewport } from "../../utils/Viewport";
 import { RoundButton } from "..";
 
 interface Props{
@@ -91,7 +91,7 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
         return (
             <div style={{position:"absolute", height:'100%', left:getStyle().left}}>
                 <div style={buttonStyle}>
-                    <RoundButton icon_size={50} icon={require('../../imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
+                    <RoundButton icon_size={50} icon={require('../../assets/imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
                 </div>
             </div>
         );
@@ -100,7 +100,7 @@ export function SidePanel({children, viewport, width, isLeftPanel, duration_ms =
     return (
         <div style={getStyle()}>
             <div style={buttonStyle}>
-                <RoundButton icon_size={50} icon={require('../../imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
+                <RoundButton icon_size={50} icon={require('../../assets/imgs/side_panel_button.png')} onClick={isOpen ? Close : Open}></RoundButton>
             </div>
             <div style={{overflow:'hidden', display:"flex", height:'100%'}}>
                 {children}
