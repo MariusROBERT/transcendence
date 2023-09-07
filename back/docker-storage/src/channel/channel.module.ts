@@ -11,6 +11,6 @@ import { ChannelEntity } from 'src/database/entities/channel.entity';
     AuthModule,
   ],
   controllers: [ChannelController],
-  providers: [ChannelService],
+  providers: [ChannelService]
 })
 export class ChannelModule {}

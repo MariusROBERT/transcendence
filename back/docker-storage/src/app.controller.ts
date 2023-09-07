@@ -10,8 +10,4 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get("test")
-  test(): string {
-    return 'this is a test';
-  }
 }

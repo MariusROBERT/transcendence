@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
+import { UserStateEnum } from 'src/utils/enums/user.enum';
 
 @Injectable()
 export class AuthService {
@@ -23,12 +24,12 @@ export class AuthService {
         });
         user.salt = await bcrypt.genSalt() // genere le salt
         user.password = await bcrypt.hash(user.password, user.salt) // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
+        user.user_status = UserStateEnum.ON
         try {
             await this.userRepository.save(user) // save user in DB
         } catch (e) {
             throw new ConflictException(`username or password already used`)
         }
-// METTRE UNE IMG PAR DEFAULT
         return {
             id: user.id,
             username: user.username,
@@ -55,15 +56,19 @@ export class AuthService {
                 username,
                 role: user.role
             }
-            console.log("coucou");
             const jwt = await this.jwtService.sign(payload)
-            console.log(jwt);
+            user.user_status = UserStateEnum.ON
             return { 'access-token': jwt }
         } else {
             throw new NotFoundException(`wrong password`)
         }
     }
 
+    // async delog(user: UserEntity) {
+    //     user.user_status = UserStateEnum.OFF
+        
+    //     // recuperer date dernier message
 
+    // }
 
 }

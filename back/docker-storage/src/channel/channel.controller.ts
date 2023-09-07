@@ -13,32 +13,32 @@ export class ChannelController {
     ) {
     }
 
-    @Post()
-    @UseGuards(JwtAuthGuard) 
-    async CreateChannel(
-        @Body() createChannelDto: CreateChannelDto,
-        @User() user: UserEntity,
-    ): Promise<ChannelEntity> {
-        return await this.ChannelService.createChannel(createChannelDto, user)
-    }
+    // @Post()
+    // @UseGuards(JwtAuthGuard) 
+    // async CreateChannel(
+    //     @Body() createChannelDto: CreateChannelDto,
+    //     @User() user: UserEntity,
+    // ): Promise<ChannelEntity> {
+    //     return await this.ChannelService.createChannel(createChannelDto, user)
+    // }
 
-    @Patch('/:id')
-    @UseGuards(JwtAuthGuard) 
-    async UpdateChannel(
-        @Body() updateChannelDto: UpdateChannelDto,
-        @Param('id', ParseIntPipe) id: number,
-        @User() user: UserEntity,
-    ): Promise<ChannelEntity> {
-        return await this.ChannelService.updateChannel(id, updateChannelDto, user)
-    }
+    // @Patch('/:id')
+    // @UseGuards(JwtAuthGuard) 
+    // async UpdateChannel(
+    //     @Body() updateChannelDto: UpdateChannelDto,
+    //     @Param('id', ParseIntPipe) id: number,
+    //     @User() user: UserEntity,
+    // ): Promise<ChannelEntity> {
+    //     return await this.ChannelService.updateChannel(id, updateChannelDto, user)
+    // }
 
-    @Delete('/:id')
-    @UseGuards(JwtAuthGuard)
-    async RemoveChannel(
-        @Param('id', ParseIntPipe) id: number,
-        @User() user: UserEntity
-    ): Promise<ChannelEntity> {
-        return await this.ChannelService.removeChannel(id, user) // check si admin ou owner
-    }
+    // @Delete('/:id')
+    // @UseGuards(JwtAuthGuard)
+    // async RemoveChannel(
+    //     @Param('id', ParseIntPipe) id: number,
+    //     @User() user: UserEntity
+    // ): Promise<ChannelEntity> {
+    //     return await this.ChannelService.removeChannel(id, user) // check si admin ou owner
+    // }
 
 }

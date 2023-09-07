@@ -25,17 +25,20 @@ export class ChannelEntity {
 
 // USERS :
 
-    @ManyToMany(() => UserEntity, (user) => user.channels, {onDelete: 'CASCADE'} )
+    // @ManyToMany(() => UserEntity, (user) => user.channels, {onDelete: 'CASCADE'} )
+    // users?: UserEntity[];
+    
+    @ManyToMany(() => UserEntity, (user) => user.channels, {eager: true} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
     users?: UserEntity[];
 
-    @ManyToMany(() => UserEntity, (user) => user.admin_chan, {onDelete: 'CASCADE'} )
+    @ManyToMany(() => UserEntity, (user) => user.admin_chan, {eager: true} )
     admin!: UserEntity[];
 
-    @ManyToOne(() => UserEntity, (user) => user.own_chan, {onDelete: 'CASCADE'} )
+    @ManyToOne(() => UserEntity, (user) => user.own_chan, {eager: true} ) // indique que chaque canal (ChannelEntity) est associé à un utilisateur (UserEntity) en tant que propriétaire
     @JoinColumn({ name: 'owner_id' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
     owner!: UserEntity;
 
-    @ManyToMany(() => UserEntity, (user) => user.ban_chan, {onDelete: 'CASCADE'} )
+    @ManyToMany(() => UserEntity, (user) => user.ban_chan, {eager: true} )
     banned?: UserEntity[];
 
 // MUTED :

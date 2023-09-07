@@ -1,12 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
-import { MessageEntity } from 'src/database/entities/message.entity';
-import { UserEntity } from 'src/database/entities/user.entity';
-import { PublicProfileDto, UpdateUserDto } from 'src/user/dto/user.dto';
-import { UserStateEnum } from 'src/utils/enums/user.enum';
-import { Repository } from 'typeorm';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AuthService } from "src/auth/auth.service";
+import { ChannelEntity } from "src/database/entities/channel.entity";
+import { UserEntity } from "src/database/entities/user.entity";
+import { Repository } from "typeorm";
+import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
+import { UserStateEnum } from "src/utils/enums/user.enum";
+import { MessageEntity } from "src/database/entities/message.entity";
+import { error } from "console";
+import { validate } from "class-validator";
+
 
 @Injectable()
 export class UserService {
@@ -20,52 +23,62 @@ export class UserService {
     ) {
     }
 
-// PROFILE :
+// --------- PROFILE --------- :
+// -- PRIVATE -- :
 
     async updateProfile(profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
         const id:number = user.id;
+        const errors = await validate(profil);
+        console.log(profil);
+        
+        console.log(errors);
+        
+        if (errors.length > 0) {
+            throw new BadRequestException(errors);
+        }
+
         const newProfil = await this.UserRepository.preload({
             id, // search user == id
             ...profil // modif seulement les differences
         })
-        if (this.isOwner(newProfil, user))
-            return await this.UserRepository.save(newProfil)
+        if (!newProfil) {
+            throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
+        }
+        return await this.UserRepository.save(newProfil)
     }
 
-    async getOwnProfile(user: UserEntity): Promise<UserEntity> {
-        return user;
-    }
+// -- PUBLIC -- :
 
-    async getPublicProfile(id: number, user: UserEntity): Promise<PublicProfileDto> {
+    async getPublicProfile(id: number, user: UserEntity): Promise<PublicProfileDto> {        
         const profile = await this.UserRepository.findOne({ where: {id} });
         if (!profile)
-            throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
+            throw new NotFoundException(`le user ${id} n'existe pas`)
+
         const PublicProfile = new PublicProfileDto();
         PublicProfile.id = profile.id;
         PublicProfile.username = profile.username;
         PublicProfile.urlImg = profile.urlImg;
         PublicProfile.user_status = profile.user_status;
         PublicProfile.winrate = profile.winrate;
-        if (user.friends.some(friend => friend.id === profile.id))
-            PublicProfile.friend = true
-            else
-            PublicProfile.friend = false
+
+        if (user && user.friends && Array.isArray(user.friends)) {
+            PublicProfile.is_friend = user.friends.some(friend => friend === profile.id);
+        } else {
+            PublicProfile.is_friend = false;
+        }
         return PublicProfile;
     }
 
-    async getAllProfile(): Promise<PublicProfileDto[]> {
+    async getAllProfile(user: UserEntity): Promise<PublicProfileDto[]> {
+        console.log("user: ", user);
         const users = await this.UserRepository.find();
         // Créez un tableau pour stocker les profils
-        const publicProfiles: PublicProfileDto[] = [];
-        for (const user of users) {
-            const publicProfile = new PublicProfileDto();
-            publicProfile.username = user.username;
-            publicProfile.urlImg = user.urlImg;
-            publicProfile.user_status = user.user_status;
-            publicProfile.winrate = user.winrate;
-            publicProfiles.push(publicProfile);
+        const PublicProfiles: PublicProfileDto[] = [];
+        for (const profile of users) {
+            const PublicProfile = await this.getPublicProfile(profile.id, user)
+            PublicProfiles.push(PublicProfile);
         }
-        return publicProfiles;
+        return PublicProfiles;
     }
 
 // FRIEND'S DEMAND :
@@ -79,8 +92,8 @@ export class UserService {
             // passer par les socket
             console.log("coucou");
         else {
-            user.invited.push(userAsked);
-            userAsked.invites.push(user);
+            user.invited.push(userAsked.id);
+            userAsked.invites.push(user.id);
         }
         return userAsked
     }
@@ -89,12 +102,12 @@ export class UserService {
         const userInvites = await this.UserRepository.findOne({where: {id}}) // search le user d'id :id
         if (!userInvites)
             throw new NotFoundException(`le user d'id: ${id} n'existe pas`)
-        const indexToRemove = user.invites.indexOf(userInvites); // recuperer l index du user dans la liste d'invites
+        const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
         if (indexToRemove !== -1)
             throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
         user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
         if (bool == 1) // si il a été accepter, on l'ajoute dans la liste friends
-            user.friends.push(userInvites);
+            user.friends.push(userInvites.id);
     }
 
 // CHANNEL :

@@ -11,8 +11,7 @@ import { PublicProfileDto, UpdateUserDto } from 'src/user/dto/user.dto';
 export class UserController {
     constructor (
         private UserService: UserService
-    ) {
-    }
+    ) {}
 
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
@@ -22,9 +21,8 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     async GetOwnProfile(
         @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
     ) {
-        return await this.UserService.getOwnProfile(user)
+        return user
     }
 
 // update_profile
@@ -42,12 +40,14 @@ export class UserController {
 // get_all_public_profile => pour le leaderboard donc seulement les infos public
     @Get('get_all_public_profile')
     @UseGuards(JwtAuthGuard)
-    async GetAllPublicProfile(): Promise<PublicProfileDto[]> {
-        return await this.UserService.getAllProfile()
+    async GetAllPublicProfile(
+        @User() user: UserEntity
+    ): Promise<PublicProfileDto[]> {
+        return await this.UserService.getAllProfile(user)
     }
 
 // get_a_public_profile_by_id
-    @Get('get_a_public_profile/:id')
+    @Get('get_public_profile_by_id/:id')
     @UseGuards(JwtAuthGuard)
     async GetProfile(
         @User() user: UserEntity,

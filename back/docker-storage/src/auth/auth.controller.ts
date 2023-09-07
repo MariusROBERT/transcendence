@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -10,20 +10,30 @@ export class AuthController {
         private authService: AuthService
     ) {}
 
-    @Post('/signup')
-    async register(
+    @Post('/register')
+    async Register(
         @Body() userData: UserSubDto
     ): Promise<Partial<UserEntity>> {
         console.log("allé ca va");
         return await this.authService.register(userData)
     }
 
-    @Post('/signin')
-    async login(
+    @Post('/login')
+    async Login(
         @Body() credentials: LoginCreditDto,
         // @Res() res: Response
     ) {
         console.log("Uuuuuuuuuuuuu");
         return await this.authService.login(credentials);// return acces_token
     }
+
+    // @Post('/delog')
+    // @UseGuards(JwtAuthGuard)
+    // async Delog(
+    //     @User() user: UserEntity,
+    //     @Body() credentials: LoginCreditDto,
+    //     // @Res() res: Response
+    // ) {
+    //     return await this.authService.delog(user);
+    // }
 }

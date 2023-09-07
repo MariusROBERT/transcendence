@@ -11,19 +11,4 @@ export class UserSubDto {
     @IsString()
     password: string;
 
-    @IsEnum(UserRoleEnum)
-    user_role: UserRoleEnum;
-
-    @IsEnum(UserStateEnum)
-    user_status: UserStateEnum;
-
-    @IsString()
-    urlImg: string;
-
-    @IsBoolean()
-    is2fa_active!: boolean;
-
-    @IsString()
-    secret2fa?: string;
-
 }
