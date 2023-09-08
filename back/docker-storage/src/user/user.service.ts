@@ -7,8 +7,7 @@ import { Repository } from "typeorm";
 import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
 import { UserStateEnum } from "src/utils/enums/user.enum";
 import { validate } from "class-validator";
-import { ChannelService } from "src/channel/channel.service";
-
+import { MessageEntity } from "src/database/entities/message.entity";
 
 @Injectable()
 export class UserService {
@@ -25,7 +24,7 @@ export class UserService {
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
 
-    // get invites (for notif)
+    // TODO : get invites (for notif)
 
     async updateProfile(profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
         const id:number = user.id;
@@ -126,20 +125,26 @@ export class UserService {
 
 // CHANNEL :
 
-    // async getChannels(user: UserEntity, channel: ChannelEntity[]): Promise<ChannelEntity[]> {
-    //     // return await this.ChannelRepository
-    //     // .createQueryBuilder('channel')
-    //     // .innerJoin('channel.users', 'user') // Supposons que "users" est le nom de la colonne de jointure entre ChannelEntity et UserEntity
-    //     // .where('user.id = :userId', { userId: user.id })
-    //     // .getMany();
+    async getChannels(user: UserEntity, channel: ChannelEntity[]): Promise<ChannelEntity[]> {
+        return await this.ChannelRepository
+            .createQueryBuilder('channels')
+            .leftJoinAndSelect('channels.users', 'user')
+            .where('user.id = :userId', { userId: user.id })
+            .getMany();
 
-    //     return await this.ChannelRepository
-    //         .createQueryBuilder('channels')
-    //         .leftJoinAndSelect('channels.users', 'user')
-    //         .where('user.id = :userId', { userId: user.id })
-    //         .getMany();
+    }
 
-    // }
+    async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
+        const channel = await this.ChannelRepository.findOne( {where: {id}} )
+        if (!channel)
+            throw new NotFoundException(`le channel d'id ${id} n'existe pas`)
+        if (this.isInChannel(user.id, channel))
+            return channel.messages
+        else
+            throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
+    }
+
+// UTILS : 
 
     async isInChannel(id: number, channel: ChannelEntity) {
         const user = await this.ChannelRepository.findOne( {where: {id}} )
@@ -147,18 +152,6 @@ export class UserService {
             return false
         return true
     }
-
-    // async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
-    //     const channel = await this.ChannelRepository.findOne( {where: {id}} )
-    //     if (!channel)
-    //         throw new NotFoundException(`le channel d'id ${id} n'existe pas`)
-    //     if (this.isInChannel(user.id, channel))
-    //         return channel.messages
-    //     else
-    //         throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
-    // }
-
-// UTILS : 
 
     async getUserById(id: number): Promise<UserEntity> {
         try {
