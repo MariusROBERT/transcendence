@@ -19,27 +19,27 @@ export class ChannelEntity {
 	password?: string;
 
     @Column({ type: 'enum', enum: ChanStateEnum, default: ChanStateEnum.PUBLIC })
-    chan_status!: string;
+    chan_status!: ChanStateEnum;
 
 // -------- LINKS TO OTHER TABLES --------
 
 // USERS :
 
-    // @ManyToMany(() => UserEntity, (user) => user.channels, {onDelete: 'CASCADE'} )
-    // users?: UserEntity[];
-    
-    @ManyToMany(() => UserEntity, (user) => user.channels, {eager: true} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
+    @ManyToMany(() => UserEntity, (user) => user.channels, {eager: true, nullable: false} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
+    @JoinColumn({ name: 'users' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
     users?: UserEntity[];
 
-    @ManyToMany(() => UserEntity, (user) => user.admin_chan, {eager: true} )
+    @ManyToMany(() => UserEntity, (user) => user.admin, {eager: true, nullable: false} )
+    @JoinColumn({ name: 'admins' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
     admin!: UserEntity[];
 
-    @ManyToOne(() => UserEntity, (user) => user.own_chan, {eager: true} ) // indique que chaque canal (ChannelEntity) est associé à un utilisateur (UserEntity) en tant que propriétaire
+    @ManyToOne(() => UserEntity, (user) => user.own, {eager: true} ) // indique que chaque canal (ChannelEntity) est associé à un utilisateur (UserEntity) en tant que propriétaire
     @JoinColumn({ name: 'owner_id' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
     owner!: UserEntity;
 
-    @ManyToMany(() => UserEntity, (user) => user.ban_chan, {eager: true} )
-    banned?: UserEntity[];
+    @ManyToMany(() => UserEntity, (user) => user.baned, {eager: true} )
+    @JoinColumn({ name: 'baned' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
+    baned?: UserEntity[];
 
 // MUTED :
 

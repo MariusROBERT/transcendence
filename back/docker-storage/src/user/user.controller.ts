@@ -21,24 +21,25 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     async GetOwnProfile(
         @User() user: UserEntity,
-    ) {
-        return user
+    ): Promise<UserEntity> {
+        return user;
     }
 
-// update_profile
+// update_profile 
     @Patch()
     @UseGuards(JwtAuthGuard)
     async UpdateProfile(
         @Body() updateUserDto: UpdateUserDto,
         @User() user: UserEntity
     ): Promise<UserEntity> {
+        // si le gars modifie son username il faut refaire un jwt car le token se base sur le username donc ca sera plus le meme
         return await this.UserService.updateProfile(updateUserDto, user);
     }
 
 // -- PUBLIC -- :
 
-// get_all_public_profile => pour le leaderboard donc seulement les infos public
-    @Get('get_all_public_profile')
+// get_all_public_user => pour le leaderboard donc seulement les infos public
+    @Get('get_all_public_user')
     @UseGuards(JwtAuthGuard)
     async GetAllPublicProfile(
         @User() user: UserEntity
@@ -46,43 +47,44 @@ export class UserController {
         return await this.UserService.getAllProfile(user)
     }
 
-// get_a_public_profile_by_id
-    @Get('get_public_profile_by_id/:id')
+// get_public_user_by_id
+    @Get('get_public_user_by_id/:id')
     @UseGuards(JwtAuthGuard)
     async GetProfile(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<PublicProfileDto> {
-        return await this.UserService.getPublicProfile(id, user)
+        return await this.UserService.getPublicProfileById(id)
     }
-
 
 // --------- MSG & CHANNEL --------- :
 
 // get_message_from_channel 
-    @Get('/get_msg/:id_chan')
-    @UseGuards(JwtAuthGuard) 
-    async getMessages(
-        @User() user: UserEntity,
-        @Param('id_chan', ParseIntPipe) id: number,
-        channels: ChannelEntity[]
-    ): Promise<MessageEntity[]> {
-        return await this.UserService.getMsgsByChannel(user, channels, id)
-    }
+//     @Get('/get_msg/:id_chan')
+//     @UseGuards(JwtAuthGuard) 
+//     async getMessages(
+//         @User() user: UserEntity,
+//         @Param('id_chan', ParseIntPipe) id: number,
+//         channels: ChannelEntity[]
+//     ): Promise<MessageEntity[]> {
+//         return await this.UserService.getMsgsByChannel(user, channels, id)
+//     }
 
-// get_channels_from_user
-    @Get('get_channels_user/:id_user')
-    @UseGuards(JwtAuthGuard) 
-    async GetChannels(
-        @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-        channel: ChannelEntity[]
-    ) {
-        return await this.UserService.getChannels(user, channel)
-    }
+// // get_channels_from_user
+//     @Get('get_channels_user/:id_user')
+//     @UseGuards(JwtAuthGuard) 
+//     async GetChannels(
+//         @User() user: UserEntity,
+//         @Param('id', ParseIntPipe) id: number,
+//         channel: ChannelEntity[]
+//     ) {
+//         return await this.UserService.getChannels(user, channel)
+//     }
+
+// --------- FRIENDS --------- :
         
 // ask_friend
-    @Post('demand/:id')
+    @Post('demand_friend/:id')
     @UseGuards(JwtAuthGuard) 
     async FriendsDemand(
         @User() user: UserEntity,
@@ -93,18 +95,27 @@ export class UserController {
     }
 
 // accept_or_denied_aks
-    @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
+    // @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
+    // @UseGuards(JwtAuthGuard) 
+    // async responseAsks(
+    //     @User() user: UserEntity,
+    //     @Param('id', ParseIntPipe) id: number,
+    //     users: UserEntity[],
+    //     @Param('bool', ParseIntPipe) bool: number,
+    // ) {
+    //     if (bool >= 0 && bool <= 1)
+    //         return await this.UserService.handleAsk(user, id, users, bool)
+    //     else
+    //         throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
+    // }
+
+    @Post('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
     @UseGuards(JwtAuthGuard) 
-    async responseAsks(
+    async AddFriend(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
-        users: UserEntity[],
-        @Param('bool', ParseIntPipe) bool: number,
-    ) {
-        if (bool >= 0 && bool <= 1)
-            return await this.UserService.handleAsk(user, id, users, bool)
-        else
-            throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
+    ): Promise<UserEntity> {
+        return await this.UserService.addFriend(user, id)
     }
 
 }

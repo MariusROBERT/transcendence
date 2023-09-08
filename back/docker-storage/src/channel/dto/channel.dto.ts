@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum, isNotEmpty } from "class-validator";
 import { ChanStateEnum } from "../../utils/enums/channel.enum";
 import { UserEntity } from "src/database/entities/user.entity";
 
@@ -19,39 +19,46 @@ export class CreateChannelDto {
     @IsEnum(ChanStateEnum)
     chan_status: ChanStateEnum;
 
-    @IsNotEmpty()
+    @IsOptional()
     owner: UserEntity
-
-    @IsNotEmpty()
-    admin: UserEntity[];
-
 }
 
 // GET CHANNEL AND DISPLAY INFO
 export class ChannelDto {
 
     @IsNotEmpty()
+    id: number;
+
+    @IsNotEmpty()
     @IsString()
-    name: string;
+    channel_name: string;
 
     @IsOptional() // because public by default
     @IsEnum(ChanStateEnum)
     chan_status: ChanStateEnum;
+
+    @IsOptional()
+    @IsNotEmpty()
+    password: string;
+
+
 }
 
 export class UpdateChannelDto {
 
     @IsOptional()
     @IsString()
-    name: string;
+    channel_name: string;
 
     @IsOptional()
     @IsString()
     password: string;
 
-    @IsOptional()
-    owner: UserEntity
+    @IsOptional() // because public by default
+    @IsEnum(ChanStateEnum)
+    chan_status: ChanStateEnum;
 
     @IsOptional()
-    admin: UserEntity[];
+    owner_id: UserEntity
+
 }
