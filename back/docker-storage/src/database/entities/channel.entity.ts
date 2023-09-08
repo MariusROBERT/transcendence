@@ -31,11 +31,11 @@ export class ChannelEntity {
 
     @ManyToMany(() => UserEntity, (user) => user.admin, {eager: true, nullable: false} )
     @JoinColumn({ name: 'admins' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
-    admin!: UserEntity[];
+    admins!: UserEntity[];
 
-    @ManyToOne(() => UserEntity, (user) => user.own, {eager: true} ) // indique que chaque canal (ChannelEntity) est associé à un utilisateur (UserEntity) en tant que propriétaire
+    @ManyToOne(() => UserEntity, (user) => user.own, {eager: true, nullable: false} ) // indique que chaque canal (ChannelEntity) est associé à un utilisateur (UserEntity) en tant que propriétaire
     @JoinColumn({ name: 'owner_id' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
-    owner!: UserEntity;
+    public owner!: UserEntity;
 
     @ManyToMany(() => UserEntity, (user) => user.baned, {eager: true} )
     @JoinColumn({ name: 'baned' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne

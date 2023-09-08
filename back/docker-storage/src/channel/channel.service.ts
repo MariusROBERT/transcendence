@@ -19,61 +19,45 @@ export class ChannelService {
         try {
             await this.ChannelRepository.findOne({ where: { channel_name: channel.channel_name } });
         }
-        catch (e) {
-            try {
-                const newChannel = this.ChannelRepository.create({
-                    ...channel,
-                });
-                await this.ChannelRepository.save(newChannel);
-                newChannel.owner = user;
-                newChannel.admin = [];
-                newChannel.admin.push(user);
-                return newChannel
-            } catch (e) {
-            }
+        catch (e) {            
+                const chan = this.ChannelRepository.create({
+                    ...channel
+                })
+                chan.owner = user
+                chan.admins = []
+                chan.admins.push(user)
+                try {
+                    await this.ChannelRepository.save(chan);
+                } catch (e) {
+                    throw new ConflictException('alreday used')
+                }
+                return chan;
         }
         throw new ConflictException(`Le channel_name: ${channel.channel_name} est déjà utilisé.`)
     }
 
-    async getChannelById(id: number): Promise<ChannelDto> { // meme ca ca marche pas zbi alors que getUserById fonctionne sur le meme putain de principe 
-        const channel = await this.ChannelRepository.findOne({ where: {id}});
+    async getChannelById(id: number): Promise<ChannelEntity> {
+        const channel = await this.ChannelRepository.findOne({
+            where: { id },
+            relations: ['admins']
+        });
         if (!channel)
-            throw new NotFoundException(`le channel ${id} n'existe pas`)
-
-        const chan = new ChannelDto();
-        chan.id = channel.id;
-        chan.channel_name = channel.channel_name;
-        chan.chan_status = channel.chan_status;
-        return chan;
+            throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`)
+        return channel
     }
 
     async updateChannel(id: number, channelDto: UpdateChannelDto, user: UserEntity): Promise<ChannelEntity> {
-        try {
-            const chan = await this.getChannelById(id);
-        } catch (e)
-        {
-            // c'est pas normal que ca existe pas
-            throw new NotFoundException(`la channel d'id: ${id} n'existe pas TA MERE`)
-        }
+        const chan = await this.getChannelById(id);
         const channelToUpdate = await this.ChannelRepository.preload({
             id, // search user == id
             ...channelDto // modif seulement les differences
         })
         if (!channelToUpdate)
-            throw new NotFoundException(`la channel d'id: ${id} n'existe pas`)
-        
-        if (this.userService.isChanOwner(user, channelToUpdate)) // marche pas --> voir fonction isChanOwner
+            throw new NotFoundException(`la channel d'id: ${id} n'existe pas`)        
+        if (this.userService.isChanOwner(user, chan) || this.userService.isChanAdmin(user, chan))
             return await this.ChannelRepository.save(channelToUpdate) // la modification fonctionne en revanche
         else
             throw new UnauthorizedException(`You're not authorize to update this channel because you're the owner or an admin`)
-    }
-
-    async removeChannel(id: number, user: UserEntity): Promise<ChannelEntity> {
-        const chanToRemove = await this .ChannelRepository.findOne({where: {id}})
-        if (this.userService.isChanOwner(user, chanToRemove) || this.userService.isChanAdmin(user, chanToRemove))
-            return await this.ChannelRepository.remove(chanToRemove)
-        else
-            throw new UnauthorizedException(`Vous n'etes pas autorisé à supprimer cette channel`)
     }
 
 }

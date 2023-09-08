@@ -20,12 +20,16 @@ export class CreateChannelDto {
     chan_status: ChanStateEnum;
 
     @IsOptional()
-    owner: UserEntity
+    owner_id: UserEntity
+
+    @IsOptional()
+    admins: UserEntity[]
 }
 
 // GET CHANNEL AND DISPLAY INFO
 export class ChannelDto {
 
+    @IsNumber()
     @IsNotEmpty()
     id: number;
 
@@ -33,14 +37,12 @@ export class ChannelDto {
     @IsString()
     channel_name: string;
 
-    @IsOptional() // because public by default
+    @IsNotEmpty()
     @IsEnum(ChanStateEnum)
     chan_status: ChanStateEnum;
 
-    @IsOptional()
     @IsNotEmpty()
-    password: string;
-
+    owner_id: UserEntity
 
 }
 

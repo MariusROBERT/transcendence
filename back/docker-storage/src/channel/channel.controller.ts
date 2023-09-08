@@ -16,7 +16,7 @@ export class ChannelController {
     @Get('/:id')
     async GetChannelById(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<ChannelDto> {
+    ): Promise<ChannelEntity> {
         return await this.ChannelService.getChannelById(id);
     }
 
@@ -26,7 +26,11 @@ export class ChannelController {
         @Body() createChannelDto: CreateChannelDto,
         @User() user: UserEntity,
     ): Promise<ChannelEntity> {
-        return await this.ChannelService.createChannel(createChannelDto, user);
+        const chan = await this.ChannelService.createChannel(createChannelDto, user);
+        console.log("chan: ", chan);
+        console.log("chan.admins: ", chan.admins);
+        return chan;
+        
     }
 
     @Patch('/:id')
@@ -39,13 +43,13 @@ export class ChannelController {
         return await this.ChannelService.updateChannel(id, updateChannelDto, user);
     }
 
-    @Delete('/:id')
-    @UseGuards(JwtAuthGuard)
-    async RemoveChannel(
-        @Param('id', ParseIntPipe) id: number,
-        @User() user: UserEntity
-    ): Promise<ChannelEntity> {
-        return await this.ChannelService.removeChannel(id, user); // check si admin ou owner
-    }
+    // @Delete('/:id')
+    // @UseGuards(JwtAuthGuard)
+    // async RemoveChannel(
+    //     @Param('id', ParseIntPipe) id: number,
+    //     @User() user: UserEntity
+    // ): Promise<ChannelEntity> {
+    //     return await this.ChannelService.removeChannel(id, user); // check si admin ou owner
+    // }
 
 }

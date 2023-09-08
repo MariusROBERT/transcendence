@@ -164,15 +164,13 @@ export class UserService {
     }
 
     isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
-        console.log(channel.owner); // pourquoi j arrive pas a recuperer ce putain de owner de channel
         return (channel.owner.id == user.id)
     }
 
     isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
-        if (!channel.admin)
+        if (!channel.admins)
             return false;
-        // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-        const isAdmin = channel.admin.some(adminUser => adminUser.id === user.id);
+        const isAdmin = channel.admins.some(adminUser => adminUser.id === user.id);
         return isAdmin;
     }
 

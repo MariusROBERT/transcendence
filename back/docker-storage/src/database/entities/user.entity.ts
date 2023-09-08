@@ -45,30 +45,30 @@ export class UserEntity {
 // CHANNEL :
 
     @ManyToMany(() => ChannelEntity, (channel) => channel.users)
-    // @JoinTable()
-    channels: ChannelEntity[];
+    @JoinTable()
+    public channels: ChannelEntity[];
 
-    @ManyToMany(type => ChannelEntity, channel => channel.admin)
-    // @JoinTable()
-    admin: ChannelEntity[];
+    @ManyToMany(type => ChannelEntity, channel => channel.admins)
+    @JoinTable()
+    public admin: ChannelEntity[];
 
     @OneToMany(type => ChannelEntity, channel => channel.owner)
-    // @JoinTable()
-    own: ChannelEntity[];
+    @JoinTable()
+    public own: ChannelEntity[];
 
     @ManyToMany(type => ChannelEntity, channel => channel.baned)
-    // @JoinTable()
-    baned: ChannelEntity[];
+    @JoinTable()
+    public baned: ChannelEntity[];
 
     @OneToMany(type => MutedEntity, muted => muted.user)
-    // @JoinTable()
-    muted: MutedEntity[];
+    @JoinTable()
+    public muted: MutedEntity[];
 
 // MESSAGE :
 
     @OneToMany(type => MessageEntity, message => message.sender)
     @JoinTable()
-    messages: MessageEntity[];
+    public messages: MessageEntity[];
 
 // FRIENDS & INVITE & BLOCKED :
 

@@ -51,7 +51,7 @@ export class PublicProfileDto {
 
     @IsNotEmpty()
     @IsString()
-    urlImg!: string;
+    urlImg: string;
 
     @IsNotEmpty()
     @IsEnum(UserStateEnum)
