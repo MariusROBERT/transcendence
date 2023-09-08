@@ -2,8 +2,11 @@ all:
 	mkdir -p front/docker-storage back/docker-storage database/docker-storage
 	docker-compose up -d --build
 
-down :
+down:
 	docker-compose down -v
+
+up:
+	docker-compose up -d
 
 clean: down
 	docker system prune -af --volumes

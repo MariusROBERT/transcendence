@@ -2,7 +2,7 @@ FROM	node:latest
 
 WORKDIR	/
 
-RUN		npm update -g
+#RUN		npm update -g
 #RUN		npm uninstall -g create-react-app
 
 WORKDIR	/app
