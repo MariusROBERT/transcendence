@@ -25,6 +25,8 @@ export class UserService {
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
 
+    // get invites (for notif)
+
     async updateProfile(profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
         const id:number = user.id;
         const errors = await validate(profil);
@@ -77,50 +79,50 @@ export class UserService {
 // FRIEND'S DEMAND :
 
 // our user ask in friend another user:
-//     async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
-//         // check si le user demandé est connecté
-//         const userAsked = await this.UserRepository.findOne({where: {id}})
-//         if (!userAsked)
-//             throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-//         if (userAsked.user_status == UserStateEnum.ON)
-//             // passer par les socket
-//             console.log("coucou");
-//         else {
-//             // user.invited.push(userAsked.id);
-//             // userAsked.invites.push(user.id);
-//         }
-//         return userAsked
-//     }
+    async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
+        const userAsked = await this.UserRepository.findOne({where: {id}})
+        if (!userAsked)
+            throw new NotFoundException(`le user d'id ${id} n'existe pas`);
+        if (userAsked.user_status == UserStateEnum.ON)
+            // passer par les socket
+            console.log("coucou");
+        else {
+            user.inviteds.push(userAsked);
+            userAsked.invites.push(user);
+        }
+        return userAsked
+    }
 
-// // add the user in friends' list of our user
-//     async addFriend(user: UserEntity, id: number): Promise<UserEntity> {
-//         const friendToAdd = await this.UserRepository.findOne({ where: {id} })
-//         if (!friendToAdd)
-//             throw new Error('Friend not found');
-//         if (!user.friends)
-//         {
-//             console.log("ntm");
-//             user.friends = []
-//         }
-//         user.friends.push(friendToAdd);
-//         return await this.UserRepository.save(user);
-//     }
+// add the user in friends' list of our user
+    async addFriend(user: UserEntity, id: number): Promise<UserEntity> {
+        const friendToAdd = await this.getPublicProfileById(id, user);
+        if (!friendToAdd)
+            throw new Error('Friend not found');
+        if (friendToAdd.is_friend == true)
+            throw new Error('already a friend');
+        if (!user.friends)
+        {
+            console.log("ntm");
+            user.friends = []
+        }
+        const newFriend = await this.getUserById(id);
+        user.friends.push(newFriend)
+        return await this.UserRepository.save(user);
+    }
 
 // // when our user handle a demand: 
 // //                      - he accept (bool 1) --> addFriend 
 // //                      - he refuse (bool 0) --> do nothing
 // //                  - in all case --> remove from invites
-//     async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
-//         const userInvites = await this.UserRepository.findOne({where: {id}}) // search le user d'id :id
-//         if (!userInvites)
-//             throw new NotFoundException(`le user d'id: ${id} n'existe pas`)
-//         // const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
-//         // if (indexToRemove !== -1)
-//         //     throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
-//         // user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
-//         // if (bool == 1) // si il a été accepter, on l'ajoute dans la liste friends
-//         //     this.addFriend(user, id);
-//     }
+    async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
+        const userInvites = await this.getUserById(id) // search le user d'id :id
+        const indexToRemove = user.invites.indexOf(userInvites); // recuperer l index du user dans la liste d'invites
+        if (indexToRemove !== -1)
+            throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
+        user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
+        if (bool == 1) // si il a été accepter, on l'ajoute dans la liste friends
+            this.addFriend(user, id);
+    }
 
 // CHANNEL :
 
@@ -157,6 +159,14 @@ export class UserService {
     // }
 
 // UTILS : 
+
+    async getUserById(id: number): Promise<UserEntity> {
+        try {
+            return await this.UserRepository.findOne({where: {id}});
+        } catch (e) {
+            throw new NotFoundException(`le user d'id: ${id} n'existe pas`)
+        }
+    }
 
     isOwner(objet: any, user: UserEntity): boolean {
         return (objet.owner && user.id === objet.owner.id)

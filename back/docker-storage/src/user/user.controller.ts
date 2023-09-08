@@ -82,17 +82,17 @@ export class UserController {
     // }
 
 // --------- FRIENDS --------- :
-        
+
 // ask_friend
-    // @Post('demand_friend/:id')
-    // @UseGuards(JwtAuthGuard) 
-    // async FriendsDemand(
-    //     @User() user: UserEntity,
-    //     users: UserEntity[],
-    //     @Param('id', ParseIntPipe) id: number,
-    // ): Promise<UserEntity> {
-    //     return await this.UserService.askFriend(user, id, users);
-    // }
+    @Post('demand_friend/:id')
+    @UseGuards(JwtAuthGuard) 
+    async FriendsDemand(
+        @User() user: UserEntity,
+        users: UserEntity[],
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<UserEntity> {
+        return await this.UserService.askFriend(user, id, users);
+    }
 
 // accept_or_denied_aks
     // @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
