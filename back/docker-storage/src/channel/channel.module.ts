@@ -6,6 +6,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { MessageEntity } from 'src/database/entities/message.entity';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { UserService } from 'src/user/user.service';
     AuthModule,
   ],
   controllers: [ChannelController],
-  providers: [ChannelService, UserService]
+  providers: [ChannelService, UserService],
 })
 export class ChannelModule {}

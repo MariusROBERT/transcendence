@@ -54,7 +54,7 @@ export class UserController {
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<PublicProfileDto> {
-        return await this.UserService.getPublicProfileById(id)
+        return await this.UserService.getPublicProfileById(id, user)
     }
 
 // --------- MSG & CHANNEL --------- :
@@ -70,29 +70,29 @@ export class UserController {
 //         return await this.UserService.getMsgsByChannel(user, channels, id)
 //     }
 
-// // get_channels_from_user
-//     @Get('get_channels_user/:id_user')
-//     @UseGuards(JwtAuthGuard) 
-//     async GetChannels(
-//         @User() user: UserEntity,
-//         @Param('id', ParseIntPipe) id: number,
-//         channel: ChannelEntity[]
-//     ) {
-//         return await this.UserService.getChannels(user, channel)
-//     }
+// get_channels_from_user
+    // @Get('get_channels/:id_user')
+    // @UseGuards(JwtAuthGuard) 
+    // async GetChannels(
+    //     @User() user: UserEntity,
+    //     @Param('id', ParseIntPipe) id: number,
+    //     channel: ChannelEntity[]
+    // ) {
+    //     return await this.UserService.getChannels(user, channel)
+    // }
 
 // --------- FRIENDS --------- :
         
 // ask_friend
-    @Post('demand_friend/:id')
-    @UseGuards(JwtAuthGuard) 
-    async FriendsDemand(
-        @User() user: UserEntity,
-        users: UserEntity[],
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<UserEntity> {
-        return await this.UserService.askFriend(user, id, users);
-    }
+    // @Post('demand_friend/:id')
+    // @UseGuards(JwtAuthGuard) 
+    // async FriendsDemand(
+    //     @User() user: UserEntity,
+    //     users: UserEntity[],
+    //     @Param('id', ParseIntPipe) id: number,
+    // ): Promise<UserEntity> {
+    //     return await this.UserService.askFriend(user, id, users);
+    // }
 
 // accept_or_denied_aks
     // @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
@@ -109,13 +109,13 @@ export class UserController {
     //         throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
     // }
 
-    @Post('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
-    @UseGuards(JwtAuthGuard) 
-    async AddFriend(
-        @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<UserEntity> {
-        return await this.UserService.addFriend(user, id)
-    }
+    // @Post('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
+    // @UseGuards(JwtAuthGuard) 
+    // async AddFriend(
+    //     @User() user: UserEntity,
+    //     @Param('id', ParseIntPipe) id: number,
+    // ): Promise<UserEntity> {
+    //     return await this.UserService.addFriend(user, id)
+    // }
 
 }

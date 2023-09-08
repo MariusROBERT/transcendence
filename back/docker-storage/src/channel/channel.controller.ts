@@ -43,13 +43,16 @@ export class ChannelController {
         return await this.ChannelService.updateChannel(id, updateChannelDto, user);
     }
 
-    // @Delete('/:id')
-    // @UseGuards(JwtAuthGuard)
-    // async RemoveChannel(
-    //     @Param('id', ParseIntPipe) id: number,
-    //     @User() user: UserEntity
-    // ): Promise<ChannelEntity> {
-    //     return await this.ChannelService.removeChannel(id, user); // check si admin ou owner
-    // }
+    @Post('add_user/:id_chan')
+    @UseGuards(JwtAuthGuard)
+    async AddUserInChannel(
+        @User() user: UserEntity,
+        @Param('id_chan', ParseIntPipe) id: number,
+    )
+    {
+        const chan = await this.ChannelService.addUserInChannel(user, id);
+        console.log(chan.users);
+        return chan;
+    }
 
 }

@@ -60,4 +60,11 @@ export class ChannelService {
             throw new UnauthorizedException(`You're not authorize to update this channel because you're the owner or an admin`)
     }
 
+    async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+        const channel = await this.getChannelById(id);
+        channel.users = [...channel.users, user]
+        // channel.users.push(user);
+        return channel;
+    }
+
 }
