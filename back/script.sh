@@ -7,4 +7,4 @@ fi
 npm install
 #npm upgrade
 
-npm start
+nest start --watch
