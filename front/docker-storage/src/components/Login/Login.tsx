@@ -1,34 +1,31 @@
-import {Border} from "../Border/Border";
-import {backgroundImage, color} from "../../Global";
-import Background from "../Background/Background";
-import {Button} from "../Button/Button";
-import {Input} from "../Input/Input";
-import {Flex} from "../Flex/FlexBox";
+import { color } from "../../utils/Global";
+import {delay} from "../../utils/UtilityFunctions";
+import {Viewport} from "../../utils/Viewport";
+import { Border, Button, Input, Flex, Background } from "..";
 import React, {useEffect, useState} from "react";
-import {Viewport} from "../../app/Viewport";
-import {delay} from "../../UtilityFunctions";
 
 const SIZE: number = 350
 
 interface Props{
+    duration_ms?: number,
     viewport: Viewport,
     isConnected: boolean,
     setIsConnected: (state: boolean) => void,
 }
 
-
-export function Login({viewport, isConnected, setIsConnected} : Props)
+export function Login({duration_ms = 900, viewport, isConnected, setIsConnected} : Props)
 {
     async function OnConnect()
     {
         setIsAnim(true);
-        await delay(500);
+        await delay(duration_ms / 3);
         setIsConnecting(true);
         setIsAnim(false);
-        await delay(2001);
+        await delay(duration_ms);
         setIsConnected(true);
         setIsConnecting(false);
     }
+
     const [signIn, setSign] = useState(true)
     const [isConnecting, setIsConnecting] = useState(false)
     const [isAnim, setIsAnim] = useState(false)
@@ -45,7 +42,7 @@ export function Login({viewport, isConnected, setIsConnected} : Props)
         width:'100%',
         position: "absolute",
         top: '50px',
-        transition:'0.5s ease'
+        transition: duration_ms / 3 + 'ms ease'
     }
 
     const connectingStyle: React.CSSProperties = {
@@ -53,7 +50,7 @@ export function Login({viewport, isConnected, setIsConnected} : Props)
         width:'100%',
         position: "absolute",
         top:viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
-        transition:'2s ease'
+        transition: duration_ms + 'ms ease'
     }
 
     const connectedStyle: React.CSSProperties = {
@@ -100,7 +97,7 @@ export function Login({viewport, isConnected, setIsConnected} : Props)
                         <br/>
                         <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                             <p>or sign in with Intra42</p>
-                            <Button icon={require('../../imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
+                            <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
                         </Flex>
                     </Background>
                 </Border>
