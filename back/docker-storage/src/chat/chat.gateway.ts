@@ -1,5 +1,6 @@
 import {
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -11,15 +12,20 @@ import { Server } from 'http';
     origin: ['http://localhost:3000'],
   },
 })
-export class ChatGateway implements OnGatewayConnection {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   async handleConnection() {
-    console.log('Server Chokbar\n');
+    console.log("Server co\n");
+  }
+
+  async handleDisconnect() {
+    console.log("Server deco\n");
   }
 
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any): string {
+    console.log("kk");
     return 'Hello world!';
   }
 }

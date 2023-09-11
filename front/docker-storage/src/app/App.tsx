@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import Background from '../components/Background/Background';
-import { color } from '../Global';
-import { backgroundImage } from '../Global';
+import { backgroundImage, color } from '../Global';
 
 import { Login } from '../components/Login/Login';
-import { Viewport, useEffectViewport } from './Viewport';
+import { useEffectViewport, Viewport } from './Viewport';
 import { MainPage } from '../components/MainPage/MainPage';
+// import { io } from 'socket.io-client';
 
 const SIZE = 350;
 
 function App() {
   const view: Viewport = {
-    isLandscape:
-      window.innerWidth >= SIZE * 2 &&
-      window.innerWidth / window.innerHeight > 0.9,
+    isLandscape: window.innerWidth >= SIZE * 2 && window.innerWidth / window.innerHeight > 0.9,
     width: window.innerWidth,
     height: window.innerHeight,
   };
@@ -21,18 +19,16 @@ function App() {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffectViewport(viewport, SIZE, setViewport);
 
+  // console.log('Client Chokbar\n');
+  // const socket = io('http://127.0.0.1:3001');
+  // socket.on('connected', function() {
+  //   console.log('connected !');
+  // });
+  // socket.connect();
+
   return (
-    <div
-      className={'cursor_perso'}
-      style={{
-        height: viewport.isLandscape
-          ? Math.max(viewport.height, SIZE)
-          : Math.max(viewport.height, SIZE * 2) + 'px',
-        width: '100%',
-        color: color.white,
-        overflow: 'hidden',
-      }}
-    >
+    <div className={'cursor_perso'}
+         style={{ height: viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE * 2) + 'px', width: '100%', color: color.white, overflow: 'hidden' }}>
       <Background image={backgroundImage} fixed={true}>
         <Login
           viewport={viewport}
