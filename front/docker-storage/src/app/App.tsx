@@ -27,6 +27,7 @@ function App(){
         console.log("connected !");
     });
     socket.connect();
+    socket.emit("message");
 
     return (
         <div className={'cursor_perso'} style={{height:viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE*2) + 'px', width:'100%', color:color.white, overflow:'hidden'}}>
