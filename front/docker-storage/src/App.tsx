@@ -1,14 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Background from "./components/Background/Background";
-import {color} from "./utils/Global";
-import {backgroundImage} from "./utils/Global";
-import styleSheet from './App.css';
+import {color, backgroundImage, Viewport, useEffectViewport} from "./utils/index";
+import {Login, MainPage} from "./components";
 
-import {Login} from "./components/Login/Login";
-import {Viewport, useEffectViewport} from "./utils/Viewport";
-import {MainPage} from "./components/MainPage/MainPage"
-
-const SIZE = 500;
+const SIZE: number = 500;
 
 function App(){
     const view: Viewport = {
