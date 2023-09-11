@@ -11,6 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService)
 
+  console.log("Start");
   const config = new DocumentBuilder()
     .setTitle('Transcendence')
     .build();

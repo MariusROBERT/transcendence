@@ -15,6 +15,7 @@ import { MutedService } from './muted/muted.service';
 import { MessagesController } from './messages/messages.controller';
 import { ChannelModule } from './channel/channel.module';
 import { UserModule } from './user/user.module';
+import { ChatGateway } from './chat/chat.gateway';
 
 
 @Module({
@@ -37,7 +38,7 @@ import { UserModule } from './user/user.module';
     MessagesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
   exports: [AppService]
 })
 export class AppModule {}
