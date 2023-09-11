@@ -1,36 +1,27 @@
 import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm'; // ==> npm install --save @nestjs/typeorm typeorm mysql2
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ConfigModule } from "@nestjs/config";
+import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { MessagesModule } from './messages/messages.module';
 import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
-
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true // module vue par tous les modules
     }),
-    TypeOrmModule.forRoot({ // config DB mysql
-    type: 'mysql',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    entities: ["dist/**/*.entity{.ts,.js}"], // a chaque modif des fichiers entity, mettre a jour la DB
-    synchronize: true,
-  }),
+    DatabaseModule,
     AuthModule,
     UserModule,
     ChannelModule,
     MessagesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService], // on mettra les gateway ici
   exports: [AppService]
 })
 export class AppModule {}

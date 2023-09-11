@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum, IsBoolean } from "class-validator";
 import { UserRoleEnum, UserStateEnum } from "../../utils/enums/user.enum";
 import { Type } from "class-transformer";
+import { UserEntity } from "src/database/entities/user.entity";
 
 
 export class UpdateUserDto {
@@ -60,4 +61,5 @@ export class PublicProfileDto {
     @IsNotEmpty()
     @IsBoolean()
     is_friend: boolean;
+
 }

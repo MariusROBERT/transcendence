@@ -72,25 +72,17 @@ export class UserEntity {
 
 // FRIENDS & INVITE & BLOCKED :
 
-    @ManyToOne(type => UserEntity, user => user.friends)
-    public friend: UserEntity;
-    @OneToMany(type=> UserEntity, user => user.friend)
-    public friends: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
+    friends: number[];
 
-    @ManyToOne(type => UserEntity, user => user.invites)
-    public invite: UserEntity;
-    @OneToMany(type=> UserEntity, user => user.invite)
-    public invites: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
+    invites: number[];
 
-    @ManyToOne(type => UserEntity, user => user.inviteds)
-    public invited: UserEntity;
-    @OneToMany(type=> UserEntity, user => user.invited)
-    public inviteds: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
+    invited: number[];
 
-    @ManyToOne(type => UserEntity, user => user.blockeds)
-    public blocked: UserEntity;
-    @OneToMany(type=> UserEntity, user => user.blocked)
-    public blockeds: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
+    blocked: number[];
 
 // GAME :
 

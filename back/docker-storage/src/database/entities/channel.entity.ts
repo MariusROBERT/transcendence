@@ -52,3 +52,5 @@ export class ChannelEntity {
     messages: MessageEntity[];
 
 }
+export { MessageEntity, UserEntity };
+

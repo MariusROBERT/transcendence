@@ -56,7 +56,7 @@ export class UserService {
 
 // a tester :
         if (user && user.friends && Array.isArray(user.friends)) {
-            PublicProfile.is_friend = user.friends.some(friend => friend === profile);
+            PublicProfile.is_friend = user.friends.some(friend => friend === profile.id);
         } else {
             PublicProfile.is_friend = false;
         }
@@ -86,8 +86,8 @@ export class UserService {
             // passer par les socket
             console.log("coucou");
         else {
-            user.inviteds.push(userAsked);
-            userAsked.invites.push(user);
+            user.invited.push(userAsked.id);
+            userAsked.invites.push(user.id);
         }
         return userAsked
     }
@@ -99,13 +99,8 @@ export class UserService {
             throw new Error('Friend not found');
         if (friendToAdd.is_friend == true)
             throw new Error('already a friend');
-        if (!user.friends)
-        {
-            console.log("ntm");
-            user.friends = []
-        }
         const newFriend = await this.getUserById(id);
-        user.friends.push(newFriend)
+        user.friends.push(newFriend.id);
         return await this.UserRepository.save(user);
     }
 
@@ -115,7 +110,7 @@ export class UserService {
 // //                  - in all case --> remove from invites
     async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
         const userInvites = await this.getUserById(id) // search le user d'id :id
-        const indexToRemove = user.invites.indexOf(userInvites); // recuperer l index du user dans la liste d'invites
+        const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
         if (indexToRemove !== -1)
             throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
         user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
@@ -131,7 +126,6 @@ export class UserService {
             .leftJoinAndSelect('channels.users', 'user')
             .where('user.id = :userId', { userId: user.id })
             .getMany();
-
     }
 
     async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {

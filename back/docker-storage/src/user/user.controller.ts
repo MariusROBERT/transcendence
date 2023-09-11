@@ -16,7 +16,7 @@ export class UserController {
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
 
-// get_his_own_profile
+get_his_own_profile
     @Get()
     @UseGuards(JwtAuthGuard)
     async GetOwnProfile(
@@ -109,13 +109,13 @@ export class UserController {
             throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
     }
 
-    @Post('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
+    @Patch('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
     @UseGuards(JwtAuthGuard) 
     async AddFriend(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<UserEntity> {
-        return await this.UserService.addFriend(user, id)
+        return await this.UserService.addFriend(user, id);;
     }
 
 }

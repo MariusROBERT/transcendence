@@ -1,20 +1,14 @@
 if [ ! -d /app ]
 then
-  nest new /app --package-manager yarn
+  nest new /app --package-manager npm
   rm -rf /app/.git
 fi
 
-yarn install
-yarn upgrade
+npm install
+npm upgrade
 
 
 # Accédez au répertoire /app
 cd /app
 
-# Installation des dépendances spécifiées
-yarn install --save @nestjs/config
-yarn add @nestjs/typeorm typeorm mysql2 class-validator class-transformer @nestjs/websockets @nestjs/platform-socket.io bcrypt
-yarn add --dev @types/bcrypt @nestjs/passport passport @nestjs/jwt passport-jwt
-
-
-yarn start
+npm run start:dev
