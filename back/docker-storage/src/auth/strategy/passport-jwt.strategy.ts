@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         //  passport va authentifier les requetes qui vont venir
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // recup le jwt de la requet en utilisant tel requet 
       ignoreExpiration: false, // verifie la date d'expiration
-      secretOrKey: 'Super42Awesome69Secret42Token69_', // get la secret key pr jwt
+      secretOrKey: process.env.JWT_SECRET, // get la secret key pr jwt
     });
   }
 

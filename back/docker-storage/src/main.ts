@@ -23,6 +23,6 @@ async function bootstrap() {
     whitelist: true, // accepte seulement ce qu'on a demandé au client (evite les injections sql par exemple)
     forbidNonWhitelisted: true // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
   }));
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.BACK_PORT));
 }
 bootstrap();
