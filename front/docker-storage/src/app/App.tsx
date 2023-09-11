@@ -5,7 +5,7 @@ import { backgroundImage, color } from '../Global';
 import { Login } from '../components/Login/Login';
 import { useEffectViewport, Viewport } from './Viewport';
 import { MainPage } from '../components/MainPage/MainPage';
-// import { io } from 'socket.io-client';
+import { socket } from '../socket';
 
 const SIZE = 350;
 
@@ -19,12 +19,11 @@ function App() {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffectViewport(viewport, SIZE, setViewport);
 
-  // console.log('Client Chokbar\n');
-  // const socket = io('http://127.0.0.1:3001');
-  // socket.on('connected', function() {
-  //   console.log('connected !');
-  // });
-  // socket.connect();
+  console.log('Client\n');
+  socket.emit('joinChat', 0);
+  socket.emit('message', [0, 'chokbar']);
+  socket.emit('leaveChat', 0);
+  socket.connect();
 
   return (
     <div className={'cursor_perso'}
