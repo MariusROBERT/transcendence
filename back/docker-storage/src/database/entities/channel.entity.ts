@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { ChanStateEnum } from "src/utils/enums/channel.enum";
 import { MessageEntity } from "./message.entity";
@@ -26,7 +26,7 @@ export class ChannelEntity {
 // USERS :
 
     @ManyToMany(() => UserEntity, (user) => user.channels, {eager: true, nullable: false} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
-    @JoinColumn({ name: 'users' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
+    @JoinTable()
     users?: UserEntity[];
 
     @ManyToMany(() => UserEntity, (user) => user.admin, {eager: true, nullable: false} )

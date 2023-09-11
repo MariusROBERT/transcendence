@@ -67,18 +67,25 @@ get_his_own_profile
         @Param('id_chan', ParseIntPipe) id: number,
         channels: ChannelEntity[]
     ): Promise<MessageEntity[]> {
-        return await this.UserService.getMsgsByChannel(user, channels, id)
+        return await this.UserService.getMsgsByChannel(user, channels, id);
+    }
+
+// get last message 
+    @Get('get_last_msg')
+    @UseGuards(JwtAuthGuard) 
+    async GetLastMsg(
+        @User() user: UserEntity,
+    ) {
+        return await this.UserService.getLastMsg(user);
     }
 
 // get_channels_of_user
-    @Get('get_channels/:id') // id_user
+    @Get('get_channels')
     @UseGuards(JwtAuthGuard) 
     async GetChannelsByUserId(
         @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-        channel: ChannelEntity[]
     ) {
-        return await this.UserService.getChannels(user, channel)
+        return await this.UserService.getChannels(user);
     }
 
 // --------- FRIENDS --------- : a tester

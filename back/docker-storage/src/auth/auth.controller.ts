@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { LoginCreditDto } from './dtos/login-credit.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guards';
+import { User } from 'src/utils/decorators/user.decorator';
 // import { Response } from 'express'; 
 
 @Controller('auth')
@@ -16,7 +18,7 @@ export class AuthController {
         @Body() userData: UserSubDto
     ): Promise<Partial<UserEntity>> {
         console.log("allé ca va");
-        return await this.authService.register(userData)
+        return await this.authService.register(userData);
     }
 
     @Post('/login')
@@ -31,13 +33,13 @@ export class AuthController {
         // return { message: 'Connecté avec succès' };
     }
 
-    // @Post('/delog')
-    // @UseGuards(JwtAuthGuard)
-    // async Delog(
-    //     @User() user: UserEntity,
-    //     @Body() credentials: LoginCreditDto,
-    //     // @Res() res: Response
-    // ) {
-    //     return await this.authService.delog(user);
-    // }
+    @Post('/logout')
+    @UseGuards(JwtAuthGuard)
+    async Delog(
+        @User() user: UserEntity,
+        @Body() credentials: LoginCreditDto,
+        // @Res() res: Response
+    ) {
+        return await this.authService.logout(user);
+    }
 }
