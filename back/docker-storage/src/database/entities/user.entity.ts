@@ -44,9 +44,9 @@ export class UserEntity {
 
 // CHANNEL :
 
-    @ManyToMany(() => ChannelEntity, (channel) => channel.users)
+    @ManyToMany(() => ChannelEntity, (channel) => channel.users, { eager: true, nullable: false })
     @JoinTable()
-    public channels: ChannelEntity[];
+    public channels?: ChannelEntity[];
 
     @ManyToMany(type => ChannelEntity, channel => channel.admins)
     @JoinTable()

@@ -15,7 +15,7 @@ export class AuthController {
         @Body() userData: UserSubDto
     ): Promise<Partial<UserEntity>> {
         console.log("allé ca va");
-        return await this.authService.register(userData)
+        return await this.authService.register(userData);
     }
 
     @Post('/login')
