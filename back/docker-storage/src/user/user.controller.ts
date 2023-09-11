@@ -28,7 +28,7 @@ get_his_own_profile
 // update_profile 
     @Patch()
     @UseGuards(JwtAuthGuard)
-    async UpdateProfile(
+    async UpdateProfileUser(
         @Body() updateUserDto: UpdateUserDto,
         @User() user: UserEntity
     ): Promise<UserEntity> {
@@ -50,7 +50,7 @@ get_his_own_profile
 // get_public_user_by_id
     @Get('get_public_user_by_id/:id')
     @UseGuards(JwtAuthGuard)
-    async GetProfile(
+    async GetProfileUserById(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<PublicProfileDto> {
@@ -60,9 +60,9 @@ get_his_own_profile
 // --------- MSG & CHANNEL --------- :
 
 // get_message_from_channel 
-    @Get('/get_msg/:id_chan')
+    @Get('/get_msg/:id') // id_chan
     @UseGuards(JwtAuthGuard) 
-    async getMessages(
+    async getMessagesByChannel(
         @User() user: UserEntity,
         @Param('id_chan', ParseIntPipe) id: number,
         channels: ChannelEntity[]
@@ -70,10 +70,10 @@ get_his_own_profile
         return await this.UserService.getMsgsByChannel(user, channels, id)
     }
 
-// get_channels_from_user
-    @Get('get_channels/:id_user')
+// get_channels_of_user
+    @Get('get_channels/:id') // id_user
     @UseGuards(JwtAuthGuard) 
-    async GetChannels(
+    async GetChannelsByUserId(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
         channel: ChannelEntity[]
@@ -81,10 +81,10 @@ get_his_own_profile
         return await this.UserService.getChannels(user, channel)
     }
 
-// --------- FRIENDS --------- :
+// --------- FRIENDS --------- : a tester
 
 // ask_friend
-    @Post('demand_friend/:id')
+    @Post('demand_friend/:id') // id_user du friend
     @UseGuards(JwtAuthGuard) 
     async FriendsDemand(
         @User() user: UserEntity,
@@ -109,13 +109,13 @@ get_his_own_profile
             throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
     }
 
-    @Patch('add_friend/:id') // ça ajoute bien le user d'id {id} sur le coup mais des que ca sort de cette fonction, le tableau se remet a vide...
-    @UseGuards(JwtAuthGuard) 
-    async AddFriend(
-        @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<UserEntity> {
-        return await this.UserService.addFriend(user, id);;
-    }
+    // @Patch('add_friend/:id') // id_user
+    // @UseGuards(JwtAuthGuard) 
+    // async AddFriend(
+    //     @User() user: UserEntity,
+    //     @Param('id', ParseIntPipe) id: number,
+    // ): Promise<UserEntity> {
+    //     return await this.UserService.addFriend(user, id);;
+    // }
 
 }

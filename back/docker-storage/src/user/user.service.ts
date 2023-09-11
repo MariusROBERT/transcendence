@@ -78,16 +78,16 @@ export class UserService {
 // FRIEND'S DEMAND :
 
 // our user ask in friend another user:
-    async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
+    async askFriend(user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
         const userAsked = await this.UserRepository.findOne({where: {id}})
         if (!userAsked)
             throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-        if (userAsked.user_status == UserStateEnum.ON)
+        if (userAsked.user_status == UserStateEnum.ON) // s'il le futur friend est en ligne
             // passer par les socket
             console.log("coucou");
         else {
-            user.invited.push(userAsked.id);
-            userAsked.invites.push(user.id);
+            user.invited.push(userAsked.id); // est-ce qu'il ne faudrait pas l'ajouter dans les invited meme s'il est en ligne ?
+            userAsked.invites.push(user.id); // pareil ?
         }
         return userAsked
     }
@@ -99,8 +99,7 @@ export class UserService {
             throw new Error('Friend not found');
         if (friendToAdd.is_friend == true)
             throw new Error('already a friend');
-        const newFriend = await this.getUserById(id);
-        user.friends.push(newFriend.id);
+        user.friends.push(friendToAdd.id);
         return await this.UserRepository.save(user);
     }
 
@@ -109,7 +108,7 @@ export class UserService {
 // //                      - he refuse (bool 0) --> do nothing
 // //                  - in all case --> remove from invites
     async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
-        const userInvites = await this.getUserById(id) // search le user d'id :id
+        const userInvites = await this.getUserById(id) // search le user d'id :id (friend)
         const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
         if (indexToRemove !== -1)
             throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)

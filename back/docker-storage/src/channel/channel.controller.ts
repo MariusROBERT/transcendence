@@ -16,7 +16,7 @@ export class ChannelController {
     @Get('/:id')
     async GetChannelById(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<ChannelEntity> {
+    ): Promise<ChannelEntity> {                             // ==> renvoi toutes les infos channels 
         return await this.ChannelService.getChannelById(id);
     }
 
@@ -30,10 +30,9 @@ export class ChannelController {
         console.log("chan: ", chan);
         console.log("chan.admins: ", chan.admins);
         return chan;
-        
     }
 
-    @Patch('/:id')
+    @Patch('/:id') // id_chan
     @UseGuards(JwtAuthGuard) 
     async UpdateChannel(
         @Body() updateChannelDto: UpdateChannelDto,
@@ -43,7 +42,7 @@ export class ChannelController {
         return await this.ChannelService.updateChannel(id, updateChannelDto, user);
     }
 
-    @Post('add_user/:id_chan')
+    @Patch('add_user/:id') // id_chan
     @UseGuards(JwtAuthGuard)
     async AddUserInChannel(
         @User() user: UserEntity,

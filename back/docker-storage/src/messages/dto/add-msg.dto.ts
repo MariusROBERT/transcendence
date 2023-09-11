@@ -14,8 +14,4 @@ export class AddMsgDto {
     @IsNotEmpty()
     channel: ChannelEntity;
 
-    @IsNotEmpty()
-    @IsDate()
-    date: Date;
-
 }

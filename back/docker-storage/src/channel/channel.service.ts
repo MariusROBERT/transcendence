@@ -16,24 +16,19 @@ export class ChannelService {
     }
 
     async createChannel(channel: CreateChannelDto, user: UserEntity): Promise<ChannelEntity> {
+        const chan = this.ChannelRepository.create({
+            ...channel
+        })
+        
+        chan.owner = user
+        chan.admins = []
+        chan.admins.push(user)
         try {
-            await this.ChannelRepository.findOne({ where: { channel_name: channel.channel_name } });
+            await this.ChannelRepository.save(chan);
+        } catch (e) {
+            throw new ConflictException('alreday used')
         }
-        catch (e) {            
-                const chan = this.ChannelRepository.create({
-                    ...channel
-                })
-                chan.owner = user
-                chan.admins = []
-                chan.admins.push(user)
-                try {
-                    await this.ChannelRepository.save(chan);
-                } catch (e) {
-                    throw new ConflictException('alreday used')
-                }
-                return chan;
-        }
-        throw new ConflictException(`Le channel_name: ${channel.channel_name} est déjà utilisé.`)
+        return chan;
     }
 
     async getChannelById(id: number): Promise<ChannelEntity> {
@@ -63,7 +58,7 @@ export class ChannelService {
     async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
         const channel = await this.getChannelById(id);
         channel.users = [...channel.users, user]
-        // channel.users.push(user);
+        await this.ChannelRepository.save(channel)
         return channel;
     }
 
