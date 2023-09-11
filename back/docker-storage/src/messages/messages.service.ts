@@ -4,7 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { MessageEntity } from 'src/database/entities/message.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { AddMsgDto } from './add-msg.dto';
+import { AddMsgDto } from './dto/add-msg.dto';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 
 @Injectable()

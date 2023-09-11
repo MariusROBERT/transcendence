@@ -1,5 +1,5 @@
 import { UserStateEnum, UserRoleEnum } from "src/utils/enums/user.enum";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
 import { GameEntity } from "./game.entity";
 import { MessageEntity } from "./message.entity";
@@ -31,7 +31,7 @@ export class UserEntity {
     salt: string;
 
     @Column({ unique: true })
-    password: string; // hashPwd
+    password!: string; // hashPwd
 
     @Column({ default: false })
     is2fa_active!: boolean;
@@ -44,54 +44,45 @@ export class UserEntity {
 
 // CHANNEL :
 
-    @ManyToMany(() => ChannelEntity, (channel) => channel.users, {onDelete: 'CASCADE'})
+    @ManyToMany(() => ChannelEntity, (channel) => channel.users)
     @JoinTable()
-    channels: ChannelEntity[];
+    public channels: ChannelEntity[];
 
-    @ManyToMany(type => ChannelEntity, channel => channel.admin)
+    @ManyToMany(type => ChannelEntity, channel => channel.admins)
     @JoinTable()
-    admin_chan: ChannelEntity[];
+    public admin: ChannelEntity[];
 
     @OneToMany(type => ChannelEntity, channel => channel.owner)
     @JoinTable()
-    own_chan: ChannelEntity[];
+    public own: ChannelEntity[];
 
-    @ManyToMany(type => ChannelEntity, channel => channel.banned)
+    @ManyToMany(type => ChannelEntity, channel => channel.baned)
     @JoinTable()
-    ban_chan: ChannelEntity[];
+    public baned: ChannelEntity[];
 
-    @OneToMany(type => MutedEntity, mutedUser => mutedUser.user)
+    @OneToMany(type => MutedEntity, muted => muted.user)
     @JoinTable()
-    mutedChannels: MutedEntity[];
+    public muted: MutedEntity[];
 
 // MESSAGE :
 
     @OneToMany(type => MessageEntity, message => message.sender)
     @JoinTable()
-    messages: MessageEntity[];
+    public messages: MessageEntity[];
 
 // FRIENDS & INVITE & BLOCKED :
 
-    @ManyToMany(() => UserEntity, (user) => user.friends, {onDelete: 'CASCADE'} )
-    // friends: UserEntity[];
-    @JoinColumn({ name: 'friend_id'})
+    @Column('integer', { array: true, nullable: true })
     friends: number[];
 
-    @ManyToMany(() => UserEntity, (user) => user.invites, {onDelete: 'CASCADE'} )
-    @JoinColumn({ name: 'invites_id'})
-    // invites: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
     invites: number[];
 
-    @ManyToMany(() => UserEntity, (user) => user.invited, {onDelete: 'CASCADE'} )
-    @JoinColumn({ name: 'invited_id'})
-    // invited: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
     invited: number[];
 
-    @ManyToMany(() => UserEntity, (user) => user.blocked, {onDelete: 'CASCADE'} )
-    @JoinColumn({ name: 'blocked_id'})
-    // blocked: UserEntity[];
+    @Column('integer', { array: true, nullable: true })
     blocked: number[];
-
 
 // GAME :
 

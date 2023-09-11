@@ -11,4 +11,4 @@ RUN		chmod +x /script.sh
 CMD		["/script.sh"]
 
 #RUN yarn install && yarn upgrade
-#CMD ["yarn", "start:dev"]
+# CMD ["npm", " run start:dev"]

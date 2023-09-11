@@ -15,16 +15,18 @@ export class AuthService {
         private userRepository: Repository<UserEntity>,
         private jwtService: JwtService,
     ) {}
-    
       
     async register(userData: UserSubDto): Promise<Partial<UserEntity>> { // on veut crypter le pwd avec la bibliotheque bcrypt
         // Create User
         const user = this.userRepository.create({
             ...userData
         });
+        console.log("ohouiouiouiii");
+        
         user.salt = await bcrypt.genSalt() // genere le salt
         user.password = await bcrypt.hash(user.password, user.salt) // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
         user.user_status = UserStateEnum.ON
+        // user.friends = []
         try {
             await this.userRepository.save(user) // save user in DB
         } catch (e) {

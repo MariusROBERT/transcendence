@@ -16,29 +16,30 @@ export class UserController {
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
 
-// get_his_own_profile
+get_his_own_profile
     @Get()
     @UseGuards(JwtAuthGuard)
     async GetOwnProfile(
         @User() user: UserEntity,
-    ) {
-        return user
+    ): Promise<UserEntity> {
+        return user;
     }
 
-// update_profile
+// update_profile 
     @Patch()
     @UseGuards(JwtAuthGuard)
-    async UpdateProfile(
+    async UpdateProfileUser(
         @Body() updateUserDto: UpdateUserDto,
         @User() user: UserEntity
     ): Promise<UserEntity> {
+        // si le gars modifie son username il faut refaire un jwt car le token se base sur le username donc ca sera plus le meme
         return await this.UserService.updateProfile(updateUserDto, user);
     }
 
 // -- PUBLIC -- :
 
-// get_all_public_profile => pour le leaderboard donc seulement les infos public
-    @Get('get_all_public_profile')
+// get_all_public_user => pour le leaderboard donc seulement les infos public
+    @Get('get_all_public_user')
     @UseGuards(JwtAuthGuard)
     async GetAllPublicProfile(
         @User() user: UserEntity
@@ -46,23 +47,22 @@ export class UserController {
         return await this.UserService.getAllProfile(user)
     }
 
-// get_a_public_profile_by_id
-    @Get('get_public_profile_by_id/:id')
+// get_public_user_by_id
+    @Get('get_public_user_by_id/:id')
     @UseGuards(JwtAuthGuard)
-    async GetProfile(
+    async GetProfileUserById(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<PublicProfileDto> {
-        return await this.UserService.getPublicProfile(id, user)
+        return await this.UserService.getPublicProfileById(id, user)
     }
-
 
 // --------- MSG & CHANNEL --------- :
 
 // get_message_from_channel 
-    @Get('/get_msg/:id_chan')
+    @Get('/get_msg/:id') // id_chan
     @UseGuards(JwtAuthGuard) 
-    async getMessages(
+    async getMessagesByChannel(
         @User() user: UserEntity,
         @Param('id_chan', ParseIntPipe) id: number,
         channels: ChannelEntity[]
@@ -70,19 +70,21 @@ export class UserController {
         return await this.UserService.getMsgsByChannel(user, channels, id)
     }
 
-// get_channels_from_user
-    @Get('get_channels_user/:id_user')
+// get_channels_of_user
+    @Get('get_channels/:id') // id_user
     @UseGuards(JwtAuthGuard) 
-    async GetChannels(
+    async GetChannelsByUserId(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
         channel: ChannelEntity[]
     ) {
         return await this.UserService.getChannels(user, channel)
     }
-        
+
+// --------- FRIENDS --------- : a tester
+
 // ask_friend
-    @Post('demand/:id')
+    @Post('demand_friend/:id') // id_user du friend
     @UseGuards(JwtAuthGuard) 
     async FriendsDemand(
         @User() user: UserEntity,
@@ -106,5 +108,14 @@ export class UserController {
         else
             throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
     }
+
+    // @Patch('add_friend/:id') // id_user
+    // @UseGuards(JwtAuthGuard) 
+    // async AddFriend(
+    //     @User() user: UserEntity,
+    //     @Param('id', ParseIntPipe) id: number,
+    // ): Promise<UserEntity> {
+    //     return await this.UserService.addFriend(user, id);;
+    // }
 
 }
