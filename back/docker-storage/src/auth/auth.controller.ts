@@ -1,9 +1,8 @@
-import { Controller, Post, Body, UseGuards, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { LoginCreditDto } from './dtos/login-credit.dto';
-// import { Response } from 'express'; 
 
 @Controller('auth')
 export class AuthController {
@@ -24,20 +23,8 @@ export class AuthController {
         @Body() credentials: LoginCreditDto,
         // @Res() res: Response
     ) {
-        console.log("Connecté");
+        console.log("Uuuuuuuuuuuuu");
         return await this.authService.login(credentials);// return acces_token
-        // const token = await this.authService.login(credentials);
-        // res.cookie('token', token, { httpOnly: true, secure: true });
-        // return { message: 'Connecté avec succès' };
     }
 
-    // @Post('/delog')
-    // @UseGuards(JwtAuthGuard)
-    // async Delog(
-    //     @User() user: UserEntity,
-    //     @Body() credentials: LoginCreditDto,
-    //     // @Res() res: Response
-    // ) {
-    //     return await this.authService.delog(user);
-    // }
 }

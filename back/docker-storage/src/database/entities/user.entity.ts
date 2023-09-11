@@ -70,6 +70,9 @@ export class UserEntity {
     @JoinTable()
     public messages: MessageEntity[];
 
+    @Column({ nullable: true })
+    last_msg_date: Date;
+
 // FRIENDS & INVITE & BLOCKED :
 
     @Column('integer', { array: true, nullable: true })

@@ -10,7 +10,7 @@ import { MessageEntity } from 'src/database/entities/message.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChannelEntity, UserEntity]),
+    TypeOrmModule.forFeature([ChannelEntity, UserEntity, MessageEntity]),
     AuthModule,
   ],
   controllers: [ChannelController],
