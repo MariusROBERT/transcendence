@@ -14,15 +14,21 @@ import { Socket } from 'socket.io-client';
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
+  @WebSocketServer()
+  server: Server;
+  clients: Socket[] = [];
 
   async handleConnection(client: Socket) {
-    console.log(`Server co id:${client.id}\n`);
+    this.clients.push(client);
+
+    console.log(`Server co id:${client.id} | clients: ${this.clients.length}\n`);
     this.server.emit('connect_ok');
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Server deco id:${client.id}\n`);
+    var id = this.clients.indexOf(client);
+    this.clients.splice(id);
+    console.log(`Server deco id:${client.id} | clients: ${this.clients.length}\n`);
     this.server.emit('disconnect_ok');
   }
 
