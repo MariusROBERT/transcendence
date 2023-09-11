@@ -25,7 +25,7 @@ export class ChannelEntity {
 
 // USERS :
 
-    @ManyToMany(() => UserEntity, (user) => user.channels, {eager: true, nullable: false} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
+    @ManyToMany(() => UserEntity, (user) => user.channels, { nullable: false} )  // lorsqu'un Channel est chargée à partir de la DB, la relation owner sera également chargée automatiquement avec les données de l'entité ChannelEntity.
     @JoinTable()
     users?: UserEntity[];
 

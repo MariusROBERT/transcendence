@@ -84,20 +84,6 @@ export class UserService {
 
 // FRIEND'S DEMAND :
 
-
-// des qu'il se log ==> return ChannelEntity[] ou null si aucun message
-    async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
-        // est ce quil a des new msg et si oui de quel cahnnel
-        const lastMsg = await this.getLastMsg(user);
-        if (lastMsg.createdAt > user.last_msg_date)
-        {
-            // pour chaque channel aller voir s'il y a des new msg;
-            // stocker les channel et les retourner
-        }
-        else return null;
-    }
-
-
     async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
         // check si le user demandé est connecté
         const userAsked = await this.UserRepository.findOne({where: {id}})
@@ -127,28 +113,6 @@ export class UserService {
 
 // CHANNEL & MESSAGE :
 
-    async getLastMsg(user: UserEntity): Promise<MessageEntity> {
-        const userChannels = await this.getChannels(user);
-        if (!userChannels || userChannels.length === 0)
-            return null;
-        let latestMessage: MessageEntity | null = null;
-        // Itérer sur les chaînes pour trouver le dernier message
-        for (const channel of userChannels) {
-          const messagesInChannel = await this.MessageRepository.find({
-            where: { channel: { id: channel.id } },
-            order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-            take: 1, // Récupérez seulement le premier (le plus récent) message
-          });
-          if (messagesInChannel && messagesInChannel.length > 0) {
-            const lastMessageInChannel = messagesInChannel[0];
-            if (!latestMessage || lastMessageInChannel.createdAt > latestMessage.createdAt) {
-              latestMessage = lastMessageInChannel;
-            }
-          }
-        }
-        return latestMessage;
-    }
-
     async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
         return await this.ChannelRepository
             .createQueryBuilder('channels')
@@ -169,7 +133,7 @@ export class UserService {
     async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
         // est ce quil a des new msg et si oui de quel cahnnel
         const lastMsg = await this.getLastMsg(user);
-        if (lastMsg.createdAt > user.last_msg_date.createdAt)
+        if (lastMsg.createdAt > user.last_msg_date)
         {
             // pour chaque channel aller voir s'il y a des new msg;
             // stocker les channel et les retourner
