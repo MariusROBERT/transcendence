@@ -36,6 +36,7 @@ import { ChatGateway } from './chat/chat.gateway';
     AuthModule,
     UserModule,
     MessagesModule,
+    ChannelModule,
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway],

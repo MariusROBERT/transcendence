@@ -25,6 +25,8 @@ export class CreateChannelDto {
     @IsNotEmpty()
     admin: UserEntity[];
 
+    @IsNotEmpty()
+    priv_msg: boolean;
 }
 
 // GET CHANNEL AND DISPLAY INFO

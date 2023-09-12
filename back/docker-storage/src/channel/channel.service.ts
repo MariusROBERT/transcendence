@@ -13,8 +13,21 @@ export class ChannelService {
         @InjectRepository(ChannelEntity) 
         private ChannelRepository: Repository<ChannelEntity>,
         private authService: AuthService,
-        private userService: UserService
+        //private userService: UserService
     ) {
+    }
+
+    async newChannel(chanDto: CreateChannelDto)
+    {
+        const channel = {
+            channel_name: chanDto.channel_name,
+            password: chanDto.password,
+            chan_status: chanDto.chan_status,
+            owner: chanDto.owner,
+            admin: chanDto.admin,
+            priv_msg: chanDto.priv_msg
+        }
+        return channel;
     }
 
     // async createChannel(channel: CreateChannelDto, user: UserEntity): Promise<ChannelEntity> {

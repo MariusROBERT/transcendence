@@ -13,6 +13,24 @@ export class ChannelController {
     ) {
     }
 
+    @Post('new')
+    //@UseGuards(JwtAuthGuard)
+    async newChannel( @Body() chanDto: CreateChannelDto)
+    {
+        return this.ChannelService.newChannel(chanDto);
+    }
+
+    @Post('test')
+    async test(@Body() b)
+    {
+        console.log("test");
+    }
+//
+    @Get('Ali')
+    async Ali()
+    {
+        return "hello";
+    }
     // @Post()
     // @UseGuards(JwtAuthGuard) 
     // async CreateChannel(
