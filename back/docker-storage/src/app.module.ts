@@ -15,6 +15,7 @@ import { MutedService } from './muted/muted.service';
 import { MessagesController } from './messages/messages.controller';
 import { ChannelModule } from './channel/channel.module';
 import { UserModule } from './user/user.module';
+import { GameModule } from './game/game.module';
 
 
 @Module({
@@ -35,6 +36,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     UserModule,
     MessagesModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
