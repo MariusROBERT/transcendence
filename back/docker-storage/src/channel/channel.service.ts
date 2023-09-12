@@ -26,6 +26,7 @@ export class ChannelService {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
+
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
@@ -72,7 +73,6 @@ export class ChannelService {
   }
 
   async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
-    // ali a rajouter si la channel est private ou non
     const channel = await this.getChannelById(id);
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
