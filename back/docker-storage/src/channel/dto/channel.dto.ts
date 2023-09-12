@@ -9,6 +9,46 @@ export class CreateChannelDto {
   @IsString()
   channel_name: string;
 
+  @IsOptional()
+  @IsString()
+  password: string;
+
+  @IsOptional() // because public by default
+  @IsEnum(ChanStateEnum)
+  chan_status: ChanStateEnum;
+
+  @IsNotEmpty()
+  owner: UserEntity;
+
+  @IsNotEmpty()
+  admin: UserEntity[];
+
+  @IsNotEmpty()
+  priv_msg: boolean;
+}
+
+// GET CHANNEL AND DISPLAY INFO
+export class ChannelDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsEnum(ChanStateEnum)
+  chan_status: ChanStateEnum;
+
+  @IsNotEmpty()
+  owner_id: UserEntity;
+}
+
+export class UpdateChannelDto {
+  @IsNotEmpty()
+  @IsString()
+  channel_name: string;
   @IsNotEmpty()
   priv: boolean;
 
@@ -25,39 +65,4 @@ export class CreateChannelDto {
 
   @IsOptional()
   admins: UserEntity[];
-}
-
-// GET CHANNEL AND DISPLAY INFO
-export class ChannelDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
-
-  @IsNotEmpty()
-  @IsString()
-  channel_name: string;
-
-  @IsNotEmpty()
-  @IsEnum(ChanStateEnum)
-  chan_status: ChanStateEnum;
-
-  @IsNotEmpty()
-  owner_id: UserEntity;
-}
-
-export class UpdateChannelDto {
-  @IsOptional()
-  @IsString()
-  channel_name: string;
-
-  @IsOptional()
-  @IsString()
-  password: string;
-
-  @IsOptional() // because public by default
-  @IsEnum(ChanStateEnum)
-  chan_status: ChanStateEnum;
-
-  @IsOptional()
-  owner_id: UserEntity;
 }

@@ -18,6 +18,7 @@ import { MessagesModule } from './messages/messages.module';
     UserModule,
     ChannelModule,
     MessagesModule,
+    ChannelModule,
   ],
   controllers: [AppController],
   providers: [AppService], // on mettra les gateway ici

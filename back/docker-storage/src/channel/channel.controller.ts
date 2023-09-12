@@ -9,22 +9,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
-import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private ChannelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {}
 
   @Get('/:id')
   async GetChannelById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ChannelEntity> {
     // ==> renvoi toutes les infos channels
-    return await this.ChannelService.getChannelById(id);
+    return await this.channelService.getChannelById(id);
   }
 
   @Post()
@@ -33,13 +33,19 @@ export class ChannelController {
     @Body() createChannelDto: CreateChannelDto,
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
-    const chan = await this.ChannelService.createChannel(
+    const chan = await this.channelService.createChannel(
       createChannelDto,
       user,
     );
     console.log('chan: ', chan);
     console.log('chan.admins: ', chan.admins);
     return chan;
+  }
+
+  @Post('new')
+  //@UseGuards(JwtAuthGuard)
+  async newChannel(@Body() chanDto: CreateChannelDto) {
+    return this.channelService.newChannel(chanDto);
   }
 
   @Patch('/:id') // id_chan
@@ -49,7 +55,7 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
-    return await this.ChannelService.updateChannel(id, updateChannelDto, user);
+    return await this.channelService.updateChannel(id, updateChannelDto, user);
   }
 
   @Patch('add_user/:id') // id_chan
@@ -58,7 +64,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.ChannelService.addUserInChannel(user, id);
+    const chan = await this.channelService.addUserInChannel(user, id);
     console.log(chan.users);
     return chan;
   }
