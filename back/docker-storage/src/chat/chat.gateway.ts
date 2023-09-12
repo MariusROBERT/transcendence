@@ -23,14 +23,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     this.clients.push(client);
 
-    console.log(`Server co id:${client.id} | clients: ${this.clients.length}\n`);
+    console.log(
+      `Server co id:${client.id} | clients: ${this.clients.length}\n`,
+    );
     this.server.emit('connect_ok');
   }
 
   async handleDisconnect(client: Socket) {
     var id = this.clients.indexOf(client);
     this.clients.splice(id);
-    console.log(`Server deco id:${client.id} | clients: ${this.clients.length}\n`);
+    console.log(
+      `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
+    );
     this.server.emit('disconnect_ok');
   }
 
@@ -38,6 +42,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinChatRoom(client: Socket, room_id: number) {
     console.log(`Client:${client} join chat room id ${room_id}`);
     this.server.emit('joinChat');
+    try {
+      const chatEnt = this.chanService.getChannelById(room_id);
+    } catch {
+      console.log('Channel does not exist');
+    }
+    //  Verifier si le chan existe, si non crée le chan
+    //  Find a way to get UserEntity
+    this.chanService.addUserInChannel(null, room_id);
   }
 
   @SubscribeMessage('leaveChat')
