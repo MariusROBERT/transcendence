@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'http';
-import { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io';
 import { ChannelService } from 'src/channel/channel.service';
 import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { MessagesService } from 'src/messages/messages.service';
@@ -38,6 +38,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(
       `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
     );
+    console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
 
