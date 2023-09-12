@@ -15,7 +15,7 @@ export class AuthController {
         @Body() userData: UserSubDto
     ): Promise<Partial<UserEntity>> {
         console.log("allé ca va");
-        return await this.authService.register(userData)
+        return await this.authService.register(userData);
     }
 
     @Post('/login')
@@ -27,13 +27,4 @@ export class AuthController {
         return await this.authService.login(credentials);// return acces_token
     }
 
-    // @Post('/delog')
-    // @UseGuards(JwtAuthGuard)
-    // async Delog(
-    //     @User() user: UserEntity,
-    //     @Body() credentials: LoginCreditDto,
-    //     // @Res() res: Response
-    // ) {
-    //     return await this.authService.delog(user);
-    // }
 }

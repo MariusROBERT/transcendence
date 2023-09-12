@@ -7,6 +7,7 @@ import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from 'src/utils/enums/user.enum';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -26,9 +27,9 @@ export class AuthService {
         user.password = await bcrypt.hash(user.password, user.salt) // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
         user.user_status = UserStateEnum.ON
         try {
-            await this.userRepository.save(user) // save user in DB
+            await this.userRepository.save(user); // save user in DB
         } catch (e) {
-            throw new ConflictException(`username or password already used`)
+            throw new ConflictException(`username or password already used`);
         }
         return {
             id: user.id,
@@ -44,10 +45,10 @@ export class AuthService {
         .where("user.username = :username", {username} )
         .getOne();
         if (!user) {
-            throw new NotFoundException(`username not found`)
+            throw new NotFoundException(`username not found`);
         }
 
-        const hashedPwd = await bcrypt.hash(password, user.salt)
+        const hashedPwd = await bcrypt.hash(password, user.salt);
         console.log(hashedPwd);
         
         if (hashedPwd === user.password) {
@@ -56,19 +57,12 @@ export class AuthService {
                 username,
                 role: user.role
             }
-            const jwt = await this.jwtService.sign(payload)
-            user.user_status = UserStateEnum.ON
-            return { 'access-token': jwt }
+            const jwt = this.jwtService.sign(payload);
+            user.user_status = UserStateEnum.ON;
+            return { 'access-token': jwt };
         } else {
             throw new NotFoundException(`wrong password`)
         }
     }
-
-    // async delog(user: UserEntity) {
-    //     user.user_status = UserStateEnum.OFF
-        
-    //     // recuperer date dernier message
-
-    // }
 
 }

@@ -4,16 +4,22 @@ import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserEntity } from 'src/database/entities/user.entity';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
-import { MessageEntity } from 'src/database/entities/message.entity';
+import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
+import { ChannelModule } from 'src/channel/channel.module';
+import { DatabaseModule } from 'src/database/database.module';
+import { MessagesModule } from 'src/messages/messages.module';
+import { MessagesService } from 'src/messages/messages.service';
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, ChannelEntity, MessageEntity]),
-    AuthModule
+    DatabaseModule,
+    AuthModule,
+    ChannelModule,
+    MessagesModule
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, MessagesService]//, ChannelService]
 })
 export class UserModule {}

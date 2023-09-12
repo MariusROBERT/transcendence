@@ -67,18 +67,25 @@ export class UserController {
         @Param('id_chan', ParseIntPipe) id: number,
         channels: ChannelEntity[]
     ): Promise<MessageEntity[]> {
-        return await this.UserService.getMsgsByChannel(user, channels, id)
+        return await this.UserService.getMsgsByChannel(user, channels, id);
     }
 
-// get_channels_from_user
-    @Get('get_channels_user/:id_user')
+// get last message 
+    @Get('get_last_msg')
+    @UseGuards(JwtAuthGuard) 
+    async GetLastMsg(
+        @User() user: UserEntity,
+    ) {
+        return await this.UserService.getLastMsg(user);
+    }
+
+// get_channels_of_user
+    @Get('get_channels')
     @UseGuards(JwtAuthGuard) 
     async GetChannels(
         @User() user: UserEntity,
-        @Param('id', ParseIntPipe) id: number,
-        channel: ChannelEntity[]
     ) {
-        return await this.UserService.getChannels(user, channel)
+        return await this.UserService.getChannels(user)
     }
         
 // ask_friend
@@ -106,5 +113,15 @@ export class UserController {
         else
             throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
     }
+
+    // logout
+    @Post('/logout')
+    @UseGuards(JwtAuthGuard)
+    async Delog(
+        @User() user: UserEntity,
+    ) {
+        return await this.UserService.logout(user);
+    }
+
 
 }

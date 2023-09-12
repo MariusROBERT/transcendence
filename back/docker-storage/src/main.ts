@@ -9,6 +9,7 @@ dotenv.config()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api')
   const configService = app.get(ConfigService)
 
   console.log("Start");
@@ -17,12 +18,12 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  app.setGlobalPrefix('api')
   app.useGlobalPipes(new ValidationPipe({
     transform: true, // chaque fois qu'on trouve un element, nest (validationPipe) le transforme en le type quon a precisé (ex : mesQueryParams: GetPaginatedTodosDto)
     whitelist: true, // accepte seulement ce qu'on a demandé au client (evite les injections sql par exemple)
     forbidNonWhitelisted: true // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
   }));
-  await app.listen(parseInt(process.env.BACK_PORT) || 3000); // recup les var d'env. ConfigService est importere dans app.module
-
+  await app.listen(parseInt(process.env.BACK_PORT));
 }
 bootstrap();

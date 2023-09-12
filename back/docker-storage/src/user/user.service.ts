@@ -7,7 +7,6 @@ import { Repository } from "typeorm";
 import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
 import { UserStateEnum } from "src/utils/enums/user.enum";
 import { MessageEntity } from "src/database/entities/message.entity";
-import { error } from "console";
 import { validate } from "class-validator";
 
 
@@ -19,6 +18,8 @@ export class UserService {
         private ChannelRepository: Repository<ChannelEntity>,
         @InjectRepository(UserEntity)
         private UserRepository: Repository<UserEntity>,
+        @InjectRepository(MessageEntity)
+        private MessageRepository: Repository<MessageEntity>,
         private authService: AuthService
     ) {
     }
@@ -110,15 +111,9 @@ export class UserService {
             user.friends.push(userInvites.id);
     }
 
-// CHANNEL :
+// CHANNEL & MESSAGE :
 
-    async getChannels(user: UserEntity, channel: ChannelEntity[]): Promise<ChannelEntity[]> {
-        // return await this.ChannelRepository
-        // .createQueryBuilder('channel')
-        // .innerJoin('channel.users', 'user') // Supposons que "users" est le nom de la colonne de jointure entre ChannelEntity et UserEntity
-        // .where('user.id = :userId', { userId: user.id })
-        // .getMany();
-
+    async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
         return await this.ChannelRepository
             .createQueryBuilder('channels')
             .leftJoinAndSelect('channels.users', 'user')
@@ -132,6 +127,40 @@ export class UserService {
         if (!user)
             return false
         return true
+    }
+
+// des qu'il se log ==> return ChannelEntity[] ou null si aucun message
+    async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
+        // est ce quil a des new msg et si oui de quel cahnnel
+        const lastMsg = await this.getLastMsg(user);
+        if (lastMsg.createdAt > user.last_msg_date)
+        {
+            // pour chaque channel aller voir s'il y a des new msg;
+            // stocker les channel et les retourner
+        }
+        else return null;
+    }
+
+    async getLastMsg(user: UserEntity): Promise<MessageEntity> {
+        const userChannels = await this.getChannels(user);
+        if (!userChannels || userChannels.length === 0)
+            return null;
+        let latestMessage: MessageEntity | null = null;
+        // Itérer sur les chaînes pour trouver le dernier message
+        for (const channel of userChannels) {
+          const messagesInChannel = await this.MessageRepository.find({
+            where: { channel: { id: channel.id } },
+            order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
+            take: 1, // Récupérez seulement le premier (le plus récent) message
+          });
+          if (messagesInChannel && messagesInChannel.length > 0) {
+            const lastMessageInChannel = messagesInChannel[0];
+            if (!latestMessage || lastMessageInChannel.createdAt > latestMessage.createdAt) {
+              latestMessage = lastMessageInChannel;
+            }
+          }
+        }
+        return latestMessage;
     }
 
     async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
@@ -156,11 +185,21 @@ export class UserService {
     }
 
     isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
-        if (!channel.admin)
+        if (!channel.admins)
             return false;
         // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-        const isAdmin = channel.admin.some(adminUser => adminUser.id === user.id);
+        const isAdmin = channel.admins.some(adminUser => adminUser.id === user.id);
         return isAdmin;
+    }
+
+    // lougout
+    async logout(user: UserEntity) {
+        user.user_status = UserStateEnum.OFF
+        const lastMsg = await this.getLastMsg(user);
+        user.last_msg_date = lastMsg.createdAt;
+
+        this.UserRepository.save(user);
+        return { message: "Deconnexion reussie" };
     }
 
 }
