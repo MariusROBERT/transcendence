@@ -68,11 +68,11 @@ function Register() {
 						} catch (error) {
 							console.error('Erreur lors de l\'envoi de la requête :', error);	}
 					} else {
-						// Gérez les erreurs de la requête ici
+						setErrorMessage("Ce username est deja pris !");
 						console.error('Échec de l\'inscription');
 					}
 				} catch (error) {
-					console.error('Erreur lors de l\'envoi de la requête :', error);
+					console.error('Erreur lors de l\'envoi de la requête :', error); // err 500
 				}
 			} else {
 				setErrorMessage("Les mots de passe ne correspondent pas !");

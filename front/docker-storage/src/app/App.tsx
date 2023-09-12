@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+// import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Background from "../components/Background/Background";
 import {color} from "../Global";
 import {backgroundImage} from "../Global";
-import styleSheet from './App.css';
+// import styleSheet from './App.css';
 
 import {Login} from "../components/Login/Login";
 import {Viewport, useEffectViewport} from "./Viewport";

@@ -45,9 +45,9 @@ const Login: React.FC = () => {
 				navigate("/");
 			}
 			else
-				setErrorMessage("Ce user n'est pas connue de la base de donnée !");
+				setErrorMessage("Le username ou le password n'est pas bon !");
 		} catch (error) {
-			setErrorMessage("Ce user n'est pas connue de la base de donnée !");
+			setErrorMessage("Le username ou le password n'est pas bon !");
 			console.error(`Error : ${error}`);	}
 	}
 

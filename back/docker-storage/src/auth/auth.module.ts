@@ -21,7 +21,7 @@ import { UserService } from 'src/user/user.service';
       defaultStrategy: 'jwt'
     }),
     JwtModule.register({
-      secret: 'secret',
+      secret: 'Super42Awesome69Secret42Token69_',
       signOptions: {
         expiresIn: 3600
       }

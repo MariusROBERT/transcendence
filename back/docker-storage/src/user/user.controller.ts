@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { MessageEntity } from 'src/database/entities/message.entity';
@@ -6,24 +6,25 @@ import { UserEntity } from 'src/database/entities/user.entity';
 import { User } from 'src/utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import { PublicProfileDto, UpdateUserDto } from 'src/user/dto/user.dto';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
     constructor (
-        private UserService: UserService
+        private readonly UserService: UserService
     ) {}
 
 // --------- PROFILE --------- :
 // -- PRIVATE -- :
 
 // get_his_own_profile
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async GetOwnProfile(
-        @User() user: UserEntity,
-    ) {
-        return user
-    }
+    // @Get()
+    // @UseGuards(JwtAuthGuard)
+    // async GetOwnProfile(
+    //     @User() user: UserEntity,
+    // ) {
+    //     return user
+    // }
 
 // update_profile
     @Patch()
@@ -41,8 +42,11 @@ export class UserController {
     @Get('get_all_public_profile')
     @UseGuards(JwtAuthGuard)
     async GetAllPublicProfile(
-        @User() user: UserEntity
+        @User() user: UserEntity,
+        @Req() request: Request
     ): Promise<PublicProfileDto[]> {
+        console.log("coucoucou");
+        
         return await this.UserService.getAllProfile(user)
     }
 

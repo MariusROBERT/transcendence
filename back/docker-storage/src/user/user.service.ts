@@ -71,7 +71,7 @@ export class UserService {
     }
 
     async getAllProfile(user: UserEntity): Promise<PublicProfileDto[]> {
-        console.log("user: ", user);
+        // console.log("user: ", user);
         const users = await this.UserRepository.find();
         // Créez un tableau pour stocker les profils
         const PublicProfiles: PublicProfileDto[] = [];

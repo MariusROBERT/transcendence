@@ -8,7 +8,7 @@ interface AuthGuardProps {
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-    const jwtToken = Cookies.get('jwtToken');
+  const jwtToken = Cookies.get('jwtToken');
 	let auth = (jwtToken ? true : false);
     const navigate = useNavigate();
     useEffect(() => {

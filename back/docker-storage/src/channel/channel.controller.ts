@@ -47,8 +47,7 @@ export class ChannelController {
     async AddUserInChannel(
         @User() user: UserEntity,
         @Param('id_chan', ParseIntPipe) id: number,
-    )
-    {
+    ) {
         const chan = await this.ChannelService.addUserInChannel(user, id);
         console.log(chan.users);
         return chan;
