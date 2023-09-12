@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'http';
 import { Socket } from 'socket.io-client';
-import { ChannelService } from 'src/channel/channel.service';
+import { ChannelService } from '../channel/channel.service';
 
 @WebSocketGateway({
   cors: {
@@ -30,7 +30,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    var id = this.clients.indexOf(client);
+    const id = this.clients.indexOf(client);
     this.clients.splice(id);
     console.log(
       `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
