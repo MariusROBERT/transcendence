@@ -7,7 +7,9 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'http';
 import { Socket } from 'socket.io-client';
-import { ChannelService } from '../channel/channel.service';
+import { ChannelService } from 'src/channel/channel.service';
+
+('');
 
 @WebSocketGateway({
   cors: {
@@ -41,15 +43,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('JoinChat')
   async joinChatRoom(client: Socket, room_id: number) {
     console.log(`Client:${client} join chat room id ${room_id}`);
-    this.server.emit('joinChat');
     try {
       const chatEnt = this.chanService.getChannelById(room_id);
+      //  Find a way to get UserEntity
+      this.chanService.addUserInChannel(null, room_id);
+      this.server.emit('joinChat');
     } catch {
       console.log('Channel does not exist');
+      this.server.emit('joinNewChat');
     }
-    //  Verifier si le chan existe, si non crée le chan
-    //  Find a way to get UserEntity
-    this.chanService.addUserInChannel(null, room_id);
   }
 
   @SubscribeMessage('leaveChat')
