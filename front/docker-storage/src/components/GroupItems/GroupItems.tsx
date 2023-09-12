@@ -1,13 +1,12 @@
 import { ReactNode, useState } from "react";
 import { Border, Background, RoundButton } from "..";
-import { color } from "../../utils/Global";
+import { color } from "../../utils";
 
 interface Props{
     children?:ReactNode,
     heading:string,
     duration_ms:number
 }
-
 
 export function GroupItems({children, heading, duration_ms}: Props)
 {

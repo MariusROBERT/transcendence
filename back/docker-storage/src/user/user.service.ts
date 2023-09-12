@@ -7,7 +7,6 @@ import { Repository } from "typeorm";
 import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
 import { UserStateEnum } from "src/utils/enums/user.enum";
 import { MessageEntity } from "src/database/entities/message.entity";
-import { error } from "console";
 import { validate } from "class-validator";
 
 
