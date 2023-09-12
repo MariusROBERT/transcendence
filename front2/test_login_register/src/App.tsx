@@ -1,19 +1,19 @@
-import React from 'react';
 import './App.css';
 import Register from './components/Register/register';
-import { Routes, Route, Router, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import MainPage from './components/MainPage/MainPage';
 import Login from "./components/Login/login"
+import AuthGuard from './authguard';
 
 function App() {
+
 	return (
 		<div className="App">
-			<Routes>
-				<Route index element={<App />} />
-				<Route path='/' element={<MainPage/>} />
-				<Route path='/register' element={<Register/>} />
-				<Route path='/login' element={<Login/>} />
-			</Routes>
+				<Routes>
+					<Route path="/" element={<AuthGuard isAuthenticated><MainPage /></AuthGuard>} />
+					<Route path='/login' element={<Login/>} />
+					<Route path='/register' element={<Register/>} />
+				</Routes>
 		</div>
 	);
 }

@@ -11,11 +11,11 @@ import { JwtService } from "@nestjs/jwt";
     imports: [
         TypeOrmModule.forRoot({ // config DB mysql
             type: 'postgres',
-            host: process.env.DB_HOST,
-            port: parseInt(process.env.DB_PORT),
-            username: process.env.DB_USERNAME,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
+            host: process.env.POSTGRES_HOST,
+            port: parseInt(process.env.POSTGRES_PORT),
+            username: process.env.POSTGRES_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.POSTGRES_DB,
             entities: ["dist/**/*.entity{.ts,.js}"], // a chaque modif des fichiers entity, mettre a jour la DB
             synchronize: true,
         }),

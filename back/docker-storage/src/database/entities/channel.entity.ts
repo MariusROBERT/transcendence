@@ -21,6 +21,9 @@ export class ChannelEntity {
     @Column({ type: 'enum', enum: ChanStateEnum, default: ChanStateEnum.PUBLIC })
     chan_status!: ChanStateEnum;
 
+    @Column({ default: false })
+    priv: boolean;
+
 // -------- LINKS TO OTHER TABLES --------
 
 // USERS :

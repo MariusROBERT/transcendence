@@ -19,7 +19,6 @@ export class ChannelService {
         const chan = this.ChannelRepository.create({
             ...channel
         })
-        
         chan.owner = user
         chan.admins = []
         chan.admins.push(user)

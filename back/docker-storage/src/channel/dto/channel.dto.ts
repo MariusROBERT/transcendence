@@ -11,6 +11,9 @@ export class CreateChannelDto {
     @IsString()
     channel_name: string;
 
+    @IsNotEmpty()
+    priv: boolean;
+
     @IsOptional()
     @IsString()
     password: string;
@@ -24,6 +27,8 @@ export class CreateChannelDto {
 
     @IsOptional()
     admins: UserEntity[]
+
+
 }
 
 // GET CHANNEL AND DISPLAY INFO

@@ -41,27 +41,25 @@ export class AuthService {
     async login(creditentials: LoginCreditDto) {
         
         const {username, password} = creditentials
-        const user = await this.userRepository.createQueryBuilder("user")
-        .where("user.username = :username", {username} )
-        .getOne();
-        if (!user) {
-            throw new NotFoundException(`username not found`);
-        }
+        try {
+            const user = await this.userRepository.createQueryBuilder("user")
+            .where("user.username = :username", {username} )
+            .getOne();
 
-        const hashedPwd = await bcrypt.hash(password, user.salt);
-        console.log(hashedPwd);
-        
-        if (hashedPwd === user.password) {
-// JWT
-            const payload = {
-                username,
-                role: user.role
+            const hashedPwd = await bcrypt.hash(password, user.salt);
+            if (hashedPwd === user.password) {
+                const payload = {
+                    username,
+                    role: user.role
+                }
+                const jwt = this.jwtService.sign(payload);
+                user.user_status = UserStateEnum.ON;
+                return { 'access-token': jwt };
+            } else {
+                throw new NotFoundException(`wrong password`)
             }
-            const jwt = this.jwtService.sign(payload);
-            user.user_status = UserStateEnum.ON;
-            return { 'access-token': jwt };
-        } else {
-            throw new NotFoundException(`wrong password`)
+        } catch (e) {
+            throw new NotFoundException(`username not found`);
         }
     }
 

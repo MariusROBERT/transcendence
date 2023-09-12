@@ -129,14 +129,25 @@ export class UserService {
         return true
     }
 
-// des qu'il se log ==> return ChannelEntity[] ou null si aucun message
+// des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
     async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
         // est ce quil a des new msg et si oui de quel cahnnel
+        const userChannels = await this.getChannels(user);
         const lastMsg = await this.getLastMsg(user);
-        if (lastMsg.createdAt > user.last_msg_date)
+        let channelsWithNewMsg: ChannelEntity[];
+        if (lastMsg.createdAt > user.last_msg_date) // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
         {
             // pour chaque channel aller voir s'il y a des new msg;
-            // stocker les channel et les retourner
+            for (const channel of userChannels) {
+                const messagesInChannel = await this.MessageRepository.find({
+                  where: { channel: { id: channel.id } },
+                  order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
+                  take: 1, // Récupérez seulement le premier (le plus récent) message
+                });
+                if (messagesInChannel[0].createdAt > user.last_msg_date) // stocker les channel et les retourner
+                    channelsWithNewMsg.push(channel);
+            }
+            return channelsWithNewMsg;
         }
         else return null;
     }

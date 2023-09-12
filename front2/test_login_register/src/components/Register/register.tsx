@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Cookies from 'js-cookie';
-
-
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
 	username: string;
@@ -16,6 +15,9 @@ function Register() {
 		confirmPassword: '',
 	});
 
+	const [errorMessage, setErrorMessage] = useState<string>('');
+	const navigate = useNavigate();
+
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData({
@@ -27,7 +29,6 @@ function Register() {
 // FONCTION REGISTER & REDIRECTION TO MAIN PAGE
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
 
 		if (formData.username !== "" && formData.password !== "")
 		{
@@ -62,8 +63,7 @@ function Register() {
 							{
 								const jwt = await response.json();
 								Cookies.set('jwtToken', jwt['access-token'], { expires: 7 }); // 7 jours
-
-								console.log("aloooors");
+								navigate("/");
 							}
 						} catch (error) {
 							console.error('Erreur lors de l\'envoi de la requête :', error);	}
@@ -75,7 +75,7 @@ function Register() {
 					console.error('Erreur lors de l\'envoi de la requête :', error);
 				}
 			} else {
-				alert("Les mots de passe ne correspondent pas !");
+				setErrorMessage("Les mots de passe ne correspondent pas !");
 			}
 		}
 		};
@@ -114,6 +114,7 @@ function Register() {
 						required
 					/>
 				</div>
+				{errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
 				<button type="submit">S'Inscrire</button>
 			</form>
 		</div>
