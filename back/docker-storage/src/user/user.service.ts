@@ -12,6 +12,8 @@ import { PublicProfileDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from 'src/utils/enums/user.enum';
 import { MessageEntity } from 'src/database/entities/message.entity';
 import { validate } from 'class-validator';
+import { Socket } from 'socket.io';
+import { parse } from 'cookie';
 
 @Injectable()
 export class UserService {
@@ -222,5 +224,12 @@ export class UserService {
 
     this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
+  }
+
+  //  Test only
+  async getUserFromSocket(socket: Socket) {
+    const cookie = socket.handshake.headers.cookie;
+    const { Authentication: authenticationToken } = parse(cookie);
+    //const user = await this.authenticationService.getUserFromAuthenticationToken(authenticationToken);
   }
 }
