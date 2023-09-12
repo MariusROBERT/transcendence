@@ -1,6 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect} from '@nestjs/websockets';
 import { Server } from 'http';
 import { Socket } from 'socket.io-client';
+import { ChannelService } from 'src/channel/channel.service';
 
 @WebSocketGateway({
   cors: {
@@ -11,6 +12,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
   clients: Socket[] = [];
+  chanService: ChannelService;
 
   async handleConnection(client: Socket) {
     this.clients.push(client);

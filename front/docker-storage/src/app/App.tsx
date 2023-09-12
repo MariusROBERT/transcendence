@@ -21,6 +21,7 @@ function App(){
     const [isConnected, setIsConnected] = useState<boolean>(false);
     useEffectViewport(viewport, SIZE, setViewport);
 
+    console.log("kk");
     socket.connect();
 
     return (
