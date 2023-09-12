@@ -32,14 +32,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinChatRoom(client: Socket, room_id: number)
   {
     console.log(`Client:${client} join chat room id ${room_id}`);
-    this.server.emit('joinChat');
     try {
       const chatEnt = this.chanService.getChannelById(room_id);
+      //  Find a way to get UserEntity
+      this.chanService.addUserInChannel(null, room_id);
+      this.server.emit('joinChat');
     }
     catch {
       console.log("Channel does not exist");
-      //  Find a way to get UserEntity
-      this.chanService.addUserInChannel(null, room_id);
+      this.server.emit('joinNewChat');
     }
   }
 
