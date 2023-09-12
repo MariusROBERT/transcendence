@@ -61,5 +61,4 @@ export class ChannelService {
         await this.ChannelRepository.save(channel)
         return channel;
     }
-
 }

@@ -1,7 +1,9 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect} from '@nestjs/websockets';
 import { Server } from 'http';
 import { Socket } from 'socket.io-client';
-import { ChannelService } from 'src/channel/channel.service';''
+import { ChannelService } from 'src/channel/channel.service';
+import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
+import { MessagesService } from 'src/messages/messages.service';
 
 @WebSocketGateway({
   cors: {
@@ -13,6 +15,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
   clients: Socket[] = [];
   chanService: ChannelService;
+  messService: MessagesService;
 
   async handleConnection(client: Socket) {
     this.clients.push(client);
@@ -52,7 +55,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: Socket, room_id: number, message: string) {
+  async handleMessage(client: Socket, room_id: number, message: string) {
+    var msgDto: AddMsgDto;
+    msgDto.channel = await this.chanService.getChannelById(room_id);
+    msgDto.content = message;
+    msgDto.sender = null;
+  
+    this.messService.addMsg(msgDto, null, msgDto.channel);
     console.log(`Client:${client} message chat room id ${room_id} with ${message}`);
     this.server.emit('message');
   }
