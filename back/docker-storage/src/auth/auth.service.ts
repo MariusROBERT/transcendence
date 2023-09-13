@@ -57,6 +57,7 @@ export class AuthService {
                 };
                 const jwt = this.jwtService.sign(payload);
                 user.user_status = UserStateEnum.ON;
+                console.log("connecté");
                 return { 'access-token': jwt };
             } else {
                 throw new NotFoundException(`wrong password`);

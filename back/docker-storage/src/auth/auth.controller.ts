@@ -19,7 +19,6 @@ export class AuthController {
         @Body() credentials: LoginCreditDto,
         // @Res() res: Response
     ) {
-        console.log('Uuuuuuuuuuuuu');
         return await this.authService.login(credentials); // return acces_token
     }
 }

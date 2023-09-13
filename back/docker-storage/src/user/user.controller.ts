@@ -56,8 +56,6 @@ export class UserController {
         @User() user: UserEntity,
         @Req() request: Request,
     ): Promise<PublicProfileDto[]> {
-        console.log('coucoucou');
-
         return await this.UserService.getAllProfile(user);
     }
 
