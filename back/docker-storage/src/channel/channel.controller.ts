@@ -78,4 +78,28 @@ export class ChannelController {
     console.log(chan.users);
     return chan;
   }
+
+  @Patch('kick/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async KickUserFromChannel(
+    @User() user: UserEntity,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+  }
+
+  @Patch('mute/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async MuteUserFromChannel(
+    @User() user: UserEntity,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+  }
+
+  @Patch('ban/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async BanUserFromChannel(
+    @User() user: UserEntity,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+  }
 }
