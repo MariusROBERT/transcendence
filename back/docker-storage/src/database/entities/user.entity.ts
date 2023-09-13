@@ -102,8 +102,6 @@ export class UserEntity {
     @Column({ default: 0 })
     winrate: number;
 
-    // last_message_recv: Date ??
-
     @OneToMany(() => GameEntity, (game) => game.player1)
     gamesAsPlayer1: GameEntity[];
 

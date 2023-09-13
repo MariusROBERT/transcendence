@@ -6,7 +6,6 @@ import {
     ManyToMany,
     ManyToOne,
     OneToMany,
-    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -70,9 +69,7 @@ export class ChannelEntity {
 
     // MESSAGES :
 
-    @OneToMany((type) => MessageEntity, (message) => message.channel, {
-        onDelete: 'CASCADE',
-    })
+    @OneToMany((type) => MessageEntity, (message) => message.channel)
     messages: MessageEntity[];
 }
 export { MessageEntity, UserEntity };

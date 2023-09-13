@@ -1,5 +1,7 @@
 import {
     BadRequestException,
+    ConflictException,
+    Delete,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
@@ -22,11 +24,10 @@ export class UserService {
         private UserRepository: Repository<UserEntity>,
         @InjectRepository(MessageEntity)
         private MessageRepository: Repository<MessageEntity>,
-        private authService: AuthService,
     ) {}
 
     // --------- PROFILE --------- :
-    // -- PRIVATE -- :
+    // -- Private -- :
 
     async updateProfile(
         profil: UpdateUserDto,
@@ -54,7 +55,7 @@ export class UserService {
         return await this.UserRepository.save(newProfil);
     }
 
-    // -- PUBLIC -- :
+    // -- Public -- :
 
     async getPublicProfile(
         id: number,
@@ -97,26 +98,33 @@ export class UserService {
     async askFriend(
         user: UserEntity,
         id: number,
-        users: UserEntity[],
     ): Promise<UserEntity> {
         // check si le user demandé est connecté
         const userAsked = await this.UserRepository.findOne({ where: { id } });
         if (!userAsked)
             throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-        if (userAsked.user_status == UserStateEnum.ON)
-            // passer par les socket
-            console.log('coucou');
-        else {
-            user.invited.push(userAsked.id);
-            userAsked.invites.push(user.id);
-        }
+        // if (userAsked.user_status == UserStateEnum.ON)
+        //     // passer par les socket
+        // else {
+            if (!user.invited)
+                user.invited = [];
+            if (!userAsked.invited)
+                userAsked.invites = [];
+            if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
+                user.invited.push(userAsked.id);
+                userAsked.invites.push(user.id);
+            }
+        console.log(userAsked);
+        
+        // }
+        await this.UserRepository.save(user);
+        await this.UserRepository.save(userAsked);
         return userAsked;
     }
 
     async handleAsk(
-        user: UserEntity,
-        id: number,
-        users: UserEntity[],
+        user: UserEntity, // usr1
+        id: number, // usr2
         bool: number,
     ) {
         const userInvites = await this.UserRepository.findOne({
@@ -124,15 +132,44 @@ export class UserService {
         }); // search le user d'id :id
         if (!userInvites)
             throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
-        const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
-        if (indexToRemove !== -1)
+        if (!user.invites) {
             throw new NotFoundException(
                 `le user d'id ${id} ne fait partit de la liste d'invites`,
-            );
-        user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
-        if (bool == 1)
-            // si il a été accepter, on l'ajoute dans la liste friends
-            user.friends.push(userInvites.id);
+                );
+        }
+        // check si userInvitesest deja dans friends;
+        const friendsExist = user.friends.indexOf(userInvites.id);
+        if (friendsExist != -1) {
+            throw new ConflictException(`le user d'id ${id} est fait déjà de vos friends`);
+        }
+        // console.log("USERINVITES.ID", user.id);
+        // console.log("USER: ", userInvites);
+        
+        // const indexToRemove = user.invites.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
+        // if (indexToRemove !== -1) {
+        //     throw new NotFoundException(
+        //         `le user d'id ${id} ne fait partit de la liste d'invites`,
+        //         );
+        // }
+        const indexToRemoveusr = userInvites.invited.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
+        if (indexToRemoveusr !== -1) {
+            throw new NotFoundException(
+                `le user d'id ${user.id} ne fait partit de la liste d'invited`,
+                );
+        }
+        // user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
+        userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
+        if (bool == 1) {
+            // si il a été accepter, on ajoute dans la liste friends des deux cotés
+            if (!user.friends)
+                user.friends = [];
+            user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
+            if (!userInvites.friends)
+                userInvites.friends = [];
+            userInvites.friends = [...userInvites.friends, user.id]; // ajout usr1 dans list friends de usr2
+        }
+        this.UserRepository.save(user);
+        this.UserRepository.save(userInvites);
     }
 
     // CHANNEL & MESSAGE :
@@ -194,7 +231,7 @@ export class UserService {
                 }
             }
         }
-        return latestMessage;
+        return latestMessage; 
     }
 
     async getMsgsByChannel(

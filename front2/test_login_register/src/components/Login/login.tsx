@@ -48,13 +48,33 @@ const Login: React.FC = () => {
                     Cookies.set('jwtToken', jwt['access-token'], {
                         expires: 7,
                     }); // 7 jours
+                    const jwtToken = Cookies.get('jwtToken');
                     navigate('/');
-                } 
-                else
+                    const rep = await fetch(
+                        'http://localhost:3001/api/user',
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${jwtToken}`,
+                            },
+                        },
+                    );
+                    if (rep.ok) {
+                        const user = await rep.json(); 
+                        if (user.invites)
+                            console.log("yeah");
+                            
+                        // console.log(user);
+                        
+                    }
+                } else {
                     setErrorMessage(
                         "Le username ou le password n'est pas bon !",
-                    );
-                } catch (error) {
+                        );
+                    console.error("Échec de connection : mauvaises informations. Error", response.status);
+                }
+            } catch (error) {
                 console.error(`Error : ${error}`);
             }
         }

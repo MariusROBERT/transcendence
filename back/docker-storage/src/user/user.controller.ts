@@ -29,13 +29,13 @@ export class UserController {
     // -- PRIVATE -- :
 
     // get_his_own_profile
-    // @Get()
-    // @UseGuards(JwtAuthGuard)
-    // async GetOwnProfile(
-    //     @User() user: UserEntity,
-    // ) {
-    //     return user
-    // }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    async GetOwnProfile(
+        @User() user: UserEntity,
+    ) {
+        return user
+    }
 
     // update_profile
     @Patch()
@@ -97,27 +97,25 @@ export class UserController {
     }
 
     // ask_friend
-    @Post('demand/:id')
+    @Patch('demand/:id') // id of friend
     @UseGuards(JwtAuthGuard)
     async FriendsDemand(
         @User() user: UserEntity,
-        users: UserEntity[],
         @Param('id', ParseIntPipe) id: number,
     ): Promise<UserEntity> {
-        return await this.UserService.askFriend(user, id, users);
+        return await this.UserService.askFriend(user, id);
     }
 
     // accept_or_denied_aks
-    @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
+    @Patch('handle_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
     @UseGuards(JwtAuthGuard)
     async responseAsks(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
-        users: UserEntity[],
         @Param('bool', ParseIntPipe) bool: number,
     ) {
         if (bool >= 0 && bool <= 1)
-            return await this.UserService.handleAsk(user, id, users, bool);
+            return await this.UserService.handleAsk(user, id, bool);
         else
             throw new HttpException(
                 'Le nombre doit être 0 ou 1',

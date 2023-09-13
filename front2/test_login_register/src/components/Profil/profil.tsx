@@ -1,4 +1,6 @@
 import React from 'react';
+import FriendButtons from './friend_buttons';
+import UserButtons from './user_buttons';
 
 interface User {
     id: number;
@@ -6,6 +8,7 @@ interface User {
     urlImg: string;
     user_status: string;
     winrate: number;
+	is_friend: boolean;
 }
 
 interface ProfilProps {
@@ -14,6 +17,9 @@ interface ProfilProps {
 }
 
 const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
+	if (user?.is_friend === true)
+		console.log();
+		
     const profilContainer: React.CSSProperties = {
         position: 'absolute',
         top: '0',
@@ -48,6 +54,11 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
                 ) : (
                     <p>Utilisateur introuvable.</p>
                 )}
+				{user?.is_friend ? (
+					<FriendButtons/>
+				) : (
+					<UserButtons id={user?.id}/>
+				)}
             </div>
         </div>
     );

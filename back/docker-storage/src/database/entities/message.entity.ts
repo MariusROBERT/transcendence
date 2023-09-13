@@ -2,7 +2,6 @@ import {
     Column,
     Entity,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';

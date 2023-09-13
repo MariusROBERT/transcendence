@@ -27,6 +27,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
         urlImg: string;
         user_status: string;
         winrate: number;
+        is_friend: boolean;
     }
 
     const jwtToken = Cookies.get('jwtToken');
@@ -36,7 +37,6 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     const [allUsers, setAllUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        // Recuperer les users dans le back
         const fetchData = async () => {
             try {
                 const response = await fetch(
@@ -50,12 +50,11 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
                     },
                 );
                 if (response.ok) {
-                    // si ca a fonctionner
                     const users = await response.json(); // recuperer les users
                     setAllUsers(users);
                 } else {
                     console.error(
-                        'Erreur lors de la récupération des données des utilisateurs',
+                        'Erreur lors de la récupération des données des utilisateurs. Error', response.status
                     );
                 }
             } catch (error) {
@@ -66,8 +65,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
             }
         };
         if (jwtToken) {
-            // si le jwt est good
-            fetchData();
+            fetchData(); // appel de la fonction si le jwt est good
         }
     }, [jwtToken]);
 
@@ -77,7 +75,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
             .filter((user: User) =>
                 user.username.toLowerCase().includes(searchTerm.toLowerCase()),
             )
-            .sort((a: User, b: User) => a.username.localeCompare(b.username));
+            .sort((a: User, b: User) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
 
         const elements = filteredUsers.map((user: User) => (
             <div key={user.id} style={userElementStyle}>
@@ -100,8 +98,8 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
 
     const closeProfil = () => {
         // close profil card
-        setProfilVisible(false);
         setSelectedUser(null);
+        setProfilVisible(false);
     };
 
     return (

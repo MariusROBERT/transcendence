@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../database/entities/user.entity';
 import {
-    ChannelDto,
     CreateChannelDto,
     UpdateChannelDto,
 } from './dto/channel.dto';
@@ -79,6 +78,7 @@ export class ChannelService {
         user: UserEntity,
         id: number,
     ): Promise<ChannelEntity> {
+        // ali a rajouter si la channel est private ou non
         const channel = await this.getChannelById(id);
         channel.users = [...channel.users, user];
         await this.ChannelRepository.save(channel);
