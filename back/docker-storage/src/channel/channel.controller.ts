@@ -67,4 +67,15 @@ export class ChannelController {
     console.log(chan.users);
     return chan;
   }
+
+  @Patch('add_admin/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async AddAdminInChannel(
+    @User() user: UserEntity,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+    const chan = await this.ChannelService.addAdminInChannel(user, id);
+    console.log(chan.users);
+    return chan;
+  }
 }

@@ -83,4 +83,11 @@ export class ChannelService {
     await this.ChannelRepository.save(channel);
     return channel;
   }
+
+  async addAdminInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    channel.admins = [...channel.admins, user];
+    await this.ChannelRepository.save(channel);
+    return channel;
+  }
 }
