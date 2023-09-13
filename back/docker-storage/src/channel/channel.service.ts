@@ -14,6 +14,7 @@ import {
   UpdateChannelDto,
 } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class ChannelService {
@@ -79,6 +80,8 @@ export class ChannelService {
 
   async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    if (channel.priv_msg == true)
+      throw new Error("This channel is a private message channel");
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
     return channel;
@@ -86,6 +89,8 @@ export class ChannelService {
 
   async addAdminInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    if (channel.priv_msg == true)
+      throw new Error("This channel is a private message channel");
     channel.admins = [...channel.admins, user];
     await this.ChannelRepository.save(channel);
     return channel;
