@@ -8,6 +8,8 @@ interface FormData {
 }
 
 const Login: React.FC = () => {
+
+
     const [formData, setFormData] = useState<FormData>({
         username: '',
         password: '',
@@ -50,24 +52,7 @@ const Login: React.FC = () => {
                     }); // 7 jours
                     const jwtToken = Cookies.get('jwtToken');
                     navigate('/');
-                    const rep = await fetch(
-                        'http://localhost:3001/api/user',
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${jwtToken}`,
-                            },
-                        },
-                    );
-                    if (rep.ok) {
-                        const user = await rep.json(); 
-                        if (user.invites)
-                            console.log("yeah");
-                            
-                        // console.log(user);
-                        
-                    }
+                    
                 } else {
                     setErrorMessage(
                         "Le username ou le password n'est pas bon !",

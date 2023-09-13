@@ -111,11 +111,14 @@ export class UserService {
             if (!userAsked.invited)
                 userAsked.invites = [];
             if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
+                // secu en + :
+                const invitedExist = user.invited.indexOf(userAsked.id);
+                const invitesExist = userAsked.invites.indexOf(user.id);
+                if (invitesExist != -1 || invitedExist != -1)
+                    throw new ConflictException(`Vous avez déjà demandé le user ${id}.`)
                 user.invited.push(userAsked.id);
                 userAsked.invites.push(user.id);
             }
-        console.log(userAsked);
-        
         // }
         await this.UserRepository.save(user);
         await this.UserRepository.save(userAsked);
@@ -137,14 +140,10 @@ export class UserService {
                 `le user d'id ${id} ne fait partit de la liste d'invites`,
                 );
         }
-        // check si userInvites est deja dans friends;
         const friendsExist = user.friends.indexOf(userInvites.id);
         if (friendsExist != -1) {
             throw new ConflictException(`le user d'id ${id} est fait déjà de vos friends`);
         }
-        console.log("USERINVITES: ", userInvites);
-        console.log("USER: ", user);
-
         const indexToRemove = user.invites.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
         if (indexToRemove !== -1) {
             throw new NotFoundException(

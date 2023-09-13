@@ -24,16 +24,18 @@ const UserButtons: React.FC<UserButtonsProps> = ({ id }) => {
             if (response.ok) {
                 setSendButton(true);
             } else {
-
+                    console.log("reponse not ok");
+                    
             }
         } catch (e) {
-            // throw 
+                    console.log("rerrort 500k");
+                    // throw 
         }
     }
 
     return (
         <div>
-            <button onClick={askFriend}>
+            <button onClick={askFriend} disabled={sendButton}>
                 {sendButton ? "Sent !" : "Ask friend"}</button>
             <button>Play with</button>
             <button>Message</button>
