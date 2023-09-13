@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthService } from "src/auth/auth.service";
-import { ChannelEntity } from "src/database/entities/channel.entity";
-import { UserEntity } from "src/database/entities/user.entity";
+import { AuthService } from "../auth/auth.service";
+import { ChannelEntity } from "../database/entities/channel.entity";
+import { UserEntity } from "../database/entities/user.entity";
 import { Repository } from "typeorm";
 import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
-import { UserStateEnum } from "src/utils/enums/user.enum";
-import { MessageEntity } from "src/database/entities/message.entity";
+import { UserStateEnum } from "../utils/enums/user.enum";
+import { MessageEntity } from "../database/entities/message.entity";
 import { validate } from "class-validator";
 
 

@@ -1,10 +1,10 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException, } from '@nestjs/common';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
+import { ChannelEntity } from '../database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 import { ChannelDto, CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ChannelService {

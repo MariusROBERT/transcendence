@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
-import { MessageEntity } from 'src/database/entities/message.entity';
-import { UserEntity } from 'src/database/entities/user.entity';
-import { User } from 'src/utils/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
+import { ChannelEntity } from '../database/entities/channel.entity';
+import { MessageEntity } from '../database/entities/message.entity';
+import { UserEntity } from '../database/entities/user.entity';
+import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import { PublicProfileDto, UpdateUserDto } from 'src/user/dto/user.dto';
+import { PublicProfileDto, UpdateUserDto } from '../user/dto/user.dto';
 import { Request } from 'express';
 
 @Controller('user')

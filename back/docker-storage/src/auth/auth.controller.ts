@@ -1,7 +1,7 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 
 @Controller('auth')

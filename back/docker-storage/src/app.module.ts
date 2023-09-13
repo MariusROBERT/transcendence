@@ -23,4 +23,4 @@ import { MessagesModule } from './messages/messages.module';
   providers: [AppService], // on mettra les gateway ici
   exports: [AppService]
 })
-export class AppModule {}
+export class AppModule { }

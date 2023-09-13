@@ -6,6 +6,8 @@ interface LeaderboardProps {
     searchTerm: string; // Définissez le type de searchTerm
 }
 
+// creer interfaces
+
 export default function Leaderboard({ searchTerm }: LeaderboardProps) {
 
     const container = {
@@ -34,7 +36,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     const [userElements, setUserElements] = useState<JSX.Element[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [profilVisible, setProfilVisible] = useState<boolean>(false);
-    const [allUsers, setAllUsers] = useState<User[]>([]); 
+    const [allUsers, setAllUsers] = useState<User[]>([]);
 
     useEffect(() => {
         // Recuperer les users dans le back

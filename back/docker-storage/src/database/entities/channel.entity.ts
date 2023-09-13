@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
-import { ChanStateEnum } from "src/utils/enums/channel.enum";
+import { ChanStateEnum } from "../../utils/enums/channel.enum";
 import { MessageEntity } from "./message.entity";
 import { MutedEntity } from "./muted.entity";
 

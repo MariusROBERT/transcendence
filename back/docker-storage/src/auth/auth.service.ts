@@ -1,13 +1,12 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
-import { UserStateEnum } from 'src/utils/enums/user.enum';
-import { UserService } from 'src/user/user.service';
+import { UserStateEnum } from '../utils/enums/user.enum';
 
 @Injectable()
 export class AuthService {
