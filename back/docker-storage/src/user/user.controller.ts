@@ -34,6 +34,8 @@ export class UserController {
     async GetOwnProfile(
         @User() user: UserEntity,
     ) {
+        console.log(user);
+        
         return user
     }
 

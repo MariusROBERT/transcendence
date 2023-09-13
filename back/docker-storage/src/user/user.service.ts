@@ -137,27 +137,27 @@ export class UserService {
                 `le user d'id ${id} ne fait partit de la liste d'invites`,
                 );
         }
-        // check si userInvitesest deja dans friends;
+        // check si userInvites est deja dans friends;
         const friendsExist = user.friends.indexOf(userInvites.id);
         if (friendsExist != -1) {
             throw new ConflictException(`le user d'id ${id} est fait déjà de vos friends`);
         }
-        // console.log("USERINVITES.ID", user.id);
-        // console.log("USER: ", userInvites);
-        
-        // const indexToRemove = user.invites.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
-        // if (indexToRemove !== -1) {
-        //     throw new NotFoundException(
-        //         `le user d'id ${id} ne fait partit de la liste d'invites`,
-        //         );
-        // }
-        const indexToRemoveusr = userInvites.invited.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
+        console.log("USERINVITES: ", userInvites);
+        console.log("USER: ", user);
+
+        const indexToRemove = user.invites.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
+        if (indexToRemove !== -1) {
+            throw new NotFoundException(
+                `le user d'id ${id} ne fait partit de la liste d'invites`,
+                );
+        }
+        const indexToRemoveusr = userInvites.invited.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
         if (indexToRemoveusr !== -1) {
             throw new NotFoundException(
                 `le user d'id ${user.id} ne fait partit de la liste d'invited`,
                 );
         }
-        // user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
+        user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
         userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
         if (bool == 1) {
             // si il a été accepter, on ajoute dans la liste friends des deux cotés
