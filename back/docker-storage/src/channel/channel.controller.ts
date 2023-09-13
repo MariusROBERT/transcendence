@@ -87,6 +87,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
+    return this.ChannelService.KickUserFromChannel(user, id);
   }
 
   @Patch('mute/:id') // id_chan
@@ -94,7 +95,9 @@ export class ChannelController {
   async MuteUserFromChannel(
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
+    @Param('time_sec', ParseIntPipe) time_sec: number,
   ) {
+    return this.ChannelService.MuteUserFromChannel(user, id, time_sec);
   }
 
   @Patch('ban/:id') // id_chan
@@ -103,5 +106,6 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
+    return this.ChannelService.BanUserFromChannel(user, id);
   }
 }
