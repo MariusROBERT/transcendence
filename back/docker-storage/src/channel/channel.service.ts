@@ -83,6 +83,10 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
+    if (channel.users.includes(user))
+      throw new Error("The user is already in channel");
+    if (channel.baned.includes(user))
+      throw new Error("The user is banned");
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
     return channel;
@@ -92,6 +96,10 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
+    if (!channel.users.includes(user))
+      throw new Error("The user is not in channel");
+    if (channel.admins.includes(user))
+      throw new Error("The user is already admin");
     channel.admins = [...channel.admins, user];
     await this.ChannelRepository.save(channel);
     return channel;
@@ -106,7 +114,7 @@ export class ChannelService {
       throw new Error("The user is admin or owner");
     if (channel.baned.includes(user))
       throw new Error("The user is banned");
-    if (channel.users.includes(user))
+    if (!channel.users.includes(user))
       throw new Error("The user is not in channel");
     channel.users.indexOf(user) !== -1 && channel.users.splice(channel.users.indexOf(user), 1)
     await this.ChannelRepository.save(channel);
