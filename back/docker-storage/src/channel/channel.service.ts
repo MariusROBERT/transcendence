@@ -4,12 +4,18 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity } from '../database/entities/channel.entity';
+import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../database/entities/user.entity';
-import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
-import { UserService } from '../user/user.service';
+import { UserEntity } from 'src/database/entities/user.entity';
+import {
+  ChannelDto,
+  CreateChannelDto,
+  UpdateChannelDto,
+} from './dto/channel.dto';
+import { UserService } from 'src/user/user.service';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { MutedEntity } from 'src/database/entities/muted.entity';
 
 @Injectable()
 export class ChannelService {
@@ -74,6 +80,11 @@ export class ChannelService {
 
   async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    if (channel.priv_msg == true)
+      throw new Error('This channel is a private message channel');
+    if (channel.users.includes(user))
+      throw new Error('The user is already in channel');
+    if (channel.baned.includes(user)) throw new Error('The user is banned');
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
     return channel;
@@ -84,6 +95,12 @@ export class ChannelService {
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    if (channel.priv_msg == true)
+      throw new Error('This channel is a private message channel');
+    if (!channel.users.includes(user))
+      throw new Error('The user is not in channel');
+    if (channel.admins.includes(user))
+      throw new Error('The user is already admin');
     channel.admins = [...channel.admins, user];
     await this.ChannelRepository.save(channel);
     return channel;
