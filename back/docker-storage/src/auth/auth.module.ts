@@ -8,23 +8,22 @@ import { JwtStrategy } from './strategy/passport-jwt.strategy';
 import { UserEntity } from '../database/entities/user.entity';
 import { DatabaseModule } from '../database/database.module';
 
-
 @Module({
-  imports: [
-    DatabaseModule,
-    TypeOrmModule.forFeature([UserEntity]),
-    PassportModule.register({
-      defaultStrategy: 'jwt'
-    }),
-    JwtModule.register({
-      secret: 'Super42Awesome69Secret42Token69_',
-      signOptions: {
-        expiresIn: 3600
-      }
-    })
-  ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService]
+    imports: [
+        DatabaseModule,
+        TypeOrmModule.forFeature([UserEntity]),
+        PassportModule.register({
+            defaultStrategy: 'jwt',
+        }),
+        JwtModule.register({
+            secret: 'Super42Awesome69Secret42Token69_',
+            signOptions: {
+                expiresIn: 3600,
+            },
+        }),
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, JwtStrategy],
+    exports: [AuthService],
 })
 export class AuthModule {}

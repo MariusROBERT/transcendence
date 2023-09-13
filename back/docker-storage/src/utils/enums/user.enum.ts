@@ -1,9 +1,9 @@
 export enum UserRoleEnum {
     ADMIN = 'admin',
-    USER = 'user'
+    USER = 'user',
 }
 
 export enum UserStateEnum {
     ON = 'on',
-    OFF = 'off'
+    OFF = 'off',
 }

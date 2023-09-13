@@ -1,59 +1,67 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { AuthService } from "../auth/auth.service";
-import { ChannelEntity } from "../database/entities/channel.entity";
-import { UserEntity } from "../database/entities/user.entity";
-import { Repository } from "typeorm";
-import { PublicProfileDto, UpdateUserDto } from "./dto/user.dto";
-import { UserStateEnum } from "../utils/enums/user.enum";
-import { MessageEntity } from "../database/entities/message.entity";
-import { validate } from "class-validator";
-
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AuthService } from '../auth/auth.service';
+import { ChannelEntity } from '../database/entities/channel.entity';
+import { UserEntity } from '../database/entities/user.entity';
+import { Repository } from 'typeorm';
+import { PublicProfileDto, UpdateUserDto } from './dto/user.dto';
+import { UserStateEnum } from '../utils/enums/user.enum';
+import { MessageEntity } from '../database/entities/message.entity';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class UserService {
-
-    constructor (
+    constructor(
         @InjectRepository(ChannelEntity)
         private ChannelRepository: Repository<ChannelEntity>,
         @InjectRepository(UserEntity)
         private UserRepository: Repository<UserEntity>,
         @InjectRepository(MessageEntity)
         private MessageRepository: Repository<MessageEntity>,
-        private authService: AuthService
-    ) {
-    }
+        private authService: AuthService,
+    ) {}
 
-// --------- PROFILE --------- :
-// -- PRIVATE -- :
+    // --------- PROFILE --------- :
+    // -- PRIVATE -- :
 
-    async updateProfile(profil: UpdateUserDto, user: UserEntity): Promise<UserEntity> {
-        const id:number = user.id;
+    async updateProfile(
+        profil: UpdateUserDto,
+        user: UserEntity,
+    ): Promise<UserEntity> {
+        const id: number = user.id;
         const errors = await validate(profil);
         console.log(profil);
-        
+
         console.log(errors);
-        
+
         if (errors.length > 0) {
             throw new BadRequestException(errors);
         }
 
         const newProfil = await this.UserRepository.preload({
             id, // search user == id
-            ...profil // modif seulement les differences
-        })
+            ...profil, // modif seulement les differences
+        });
         if (!newProfil) {
-            throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
+            throw new NotFoundException(
+                `Utilisateur avec l'ID ${id} non trouvé.`,
+            );
         }
-        return await this.UserRepository.save(newProfil)
+        return await this.UserRepository.save(newProfil);
     }
 
-// -- PUBLIC -- :
+    // -- PUBLIC -- :
 
-    async getPublicProfile(id: number, user: UserEntity): Promise<PublicProfileDto> {        
-        const profile = await this.UserRepository.findOne({ where: {id} });
-        if (!profile)
-            throw new NotFoundException(`le user ${id} n'existe pas`)
+    async getPublicProfile(
+        id: number,
+        user: UserEntity,
+    ): Promise<PublicProfileDto> {
+        const profile = await this.UserRepository.findOne({ where: { id } });
+        if (!profile) throw new NotFoundException(`le user ${id} n'existe pas`);
 
         const PublicProfile = new PublicProfileDto();
         PublicProfile.id = profile.id;
@@ -63,7 +71,9 @@ export class UserService {
         PublicProfile.winrate = profile.winrate;
 
         if (user && user.friends && Array.isArray(user.friends)) {
-            PublicProfile.is_friend = user.friends.some(friend => friend === profile.id);
+            PublicProfile.is_friend = user.friends.some(
+                (friend) => friend === profile.id,
+            );
         } else {
             PublicProfile.is_friend = false;
         }
@@ -76,141 +86,158 @@ export class UserService {
         // Créez un tableau pour stocker les profils
         const PublicProfiles: PublicProfileDto[] = [];
         for (const profile of users) {
-            const PublicProfile = await this.getPublicProfile(profile.id, user)
+            const PublicProfile = await this.getPublicProfile(profile.id, user);
             PublicProfiles.push(PublicProfile);
         }
         return PublicProfiles;
     }
 
-// FRIEND'S DEMAND :
+    // FRIEND'S DEMAND :
 
-    async askFriend( user: UserEntity, id: number, users: UserEntity[]): Promise<UserEntity>  {
+    async askFriend(
+        user: UserEntity,
+        id: number,
+        users: UserEntity[],
+    ): Promise<UserEntity> {
         // check si le user demandé est connecté
-        const userAsked = await this.UserRepository.findOne({where: {id}})
+        const userAsked = await this.UserRepository.findOne({ where: { id } });
         if (!userAsked)
             throw new NotFoundException(`le user d'id ${id} n'existe pas`);
         if (userAsked.user_status == UserStateEnum.ON)
             // passer par les socket
-            console.log("coucou");
+            console.log('coucou');
         else {
             user.invited.push(userAsked.id);
             userAsked.invites.push(user.id);
         }
-        return userAsked
+        return userAsked;
     }
 
-    async handleAsk(user: UserEntity, id: number, users: UserEntity[], bool: number) {
-        const userInvites = await this.UserRepository.findOne({where: {id}}) // search le user d'id :id
+    async handleAsk(
+        user: UserEntity,
+        id: number,
+        users: UserEntity[],
+        bool: number,
+    ) {
+        const userInvites = await this.UserRepository.findOne({
+            where: { id },
+        }); // search le user d'id :id
         if (!userInvites)
-            throw new NotFoundException(`le user d'id: ${id} n'existe pas`)
+            throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
         const indexToRemove = user.invites.indexOf(userInvites.id); // recuperer l index du user dans la liste d'invites
         if (indexToRemove !== -1)
-            throw new NotFoundException(`le user d'id ${id} ne fait partit de la liste d'invites`)
+            throw new NotFoundException(
+                `le user d'id ${id} ne fait partit de la liste d'invites`,
+            );
         user.invites.splice(indexToRemove, 1); // supprimer le user dans la liste d'invites
-        if (bool == 1) // si il a été accepter, on l'ajoute dans la liste friends
+        if (bool == 1)
+            // si il a été accepter, on l'ajoute dans la liste friends
             user.friends.push(userInvites.id);
     }
 
-// CHANNEL & MESSAGE :
+    // CHANNEL & MESSAGE :
 
     async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-        return await this.ChannelRepository
-            .createQueryBuilder('channels')
+        return await this.ChannelRepository.createQueryBuilder('channels')
             .leftJoinAndSelect('channels.users', 'user')
             .where('user.id = :userId', { userId: user.id })
             .getMany();
-
     }
 
     async isInChannel(id: number, channel: ChannelEntity) {
-        const user = await this.ChannelRepository.findOne( {where: {id}} )
-        if (!user)
-            return false
-        return true
+        const user = await this.ChannelRepository.findOne({ where: { id } });
+        if (!user) return false;
+        return true;
     }
 
-// des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
+    // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
     async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
         // est ce quil a des new msg et si oui de quel cahnnel
         const userChannels = await this.getChannels(user);
         const lastMsg = await this.getLastMsg(user);
         let channelsWithNewMsg: ChannelEntity[];
-        if (lastMsg.createdAt > user.last_msg_date) // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
-        {
+        if (lastMsg.createdAt > user.last_msg_date) {
+            // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
             // pour chaque channel aller voir s'il y a des new msg;
             for (const channel of userChannels) {
                 const messagesInChannel = await this.MessageRepository.find({
-                  where: { channel: { id: channel.id } },
-                  order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-                  take: 1, // Récupérez seulement le premier (le plus récent) message
+                    where: { channel: { id: channel.id } },
+                    order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
+                    take: 1, // Récupérez seulement le premier (le plus récent) message
                 });
-                if (messagesInChannel[0].createdAt > user.last_msg_date) // stocker les channel et les retourner
+                if (messagesInChannel[0].createdAt > user.last_msg_date)
+                    // stocker les channel et les retourner
                     channelsWithNewMsg.push(channel);
             }
             return channelsWithNewMsg;
-        }
-        else return null;
+        } else return null;
     }
 
     async getLastMsg(user: UserEntity): Promise<MessageEntity> {
         const userChannels = await this.getChannels(user);
-        if (!userChannels || userChannels.length === 0)
-            return null;
+        if (!userChannels || userChannels.length === 0) return null;
         let latestMessage: MessageEntity | null = null;
         // Itérer sur les chaînes pour trouver le dernier message
         for (const channel of userChannels) {
-          const messagesInChannel = await this.MessageRepository.find({
-            where: { channel: { id: channel.id } },
-            order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-            take: 1, // Récupérez seulement le premier (le plus récent) message
-          });
-          if (messagesInChannel && messagesInChannel.length > 0) {
-            const lastMessageInChannel = messagesInChannel[0];
-            if (!latestMessage || lastMessageInChannel.createdAt > latestMessage.createdAt) {
-              latestMessage = lastMessageInChannel;
+            const messagesInChannel = await this.MessageRepository.find({
+                where: { channel: { id: channel.id } },
+                order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
+                take: 1, // Récupérez seulement le premier (le plus récent) message
+            });
+            if (messagesInChannel && messagesInChannel.length > 0) {
+                const lastMessageInChannel = messagesInChannel[0];
+                if (
+                    !latestMessage ||
+                    lastMessageInChannel.createdAt > latestMessage.createdAt
+                ) {
+                    latestMessage = lastMessageInChannel;
+                }
             }
-          }
         }
         return latestMessage;
     }
 
-    async getMsgsByChannel(user: UserEntity, channels: ChannelEntity[], id: number): Promise<MessageEntity[]> {
-        const channel = await this.ChannelRepository.findOne( {where: {id}} )
+    async getMsgsByChannel(
+        user: UserEntity,
+        channels: ChannelEntity[],
+        id: number,
+    ): Promise<MessageEntity[]> {
+        const channel = await this.ChannelRepository.findOne({ where: { id } });
         if (!channel)
-            throw new NotFoundException(`le channel d'id ${id} n'existe pas`)
-        if (this.isInChannel(user.id, channel))
-            return channel.messages
+            throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
+        if (this.isInChannel(user.id, channel)) return channel.messages;
         else
-            throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`)
-
+            throw new NotFoundException(
+                `le user ${id} n'appartient pas a ce channel`,
+            );
     }
 
-// UTILS : 
+    // UTILS :
 
     isOwner(objet: any, user: UserEntity): boolean {
-        return (objet.user && user.id === objet.user.id)
+        return objet.user && user.id === objet.user.id;
     }
 
     isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
-        return (channel.owner.id == user.id)
+        return channel.owner.id == user.id;
     }
 
     isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
-        if (!channel.admins)
-            return false;
+        if (!channel.admins) return false;
         // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-        const isAdmin = channel.admins.some(adminUser => adminUser.id === user.id);
+        const isAdmin = channel.admins.some(
+            (adminUser) => adminUser.id === user.id,
+        );
         return isAdmin;
     }
 
     // lougout
     async logout(user: UserEntity) {
-        user.user_status = UserStateEnum.OFF
+        user.user_status = UserStateEnum.OFF;
         const lastMsg = await this.getLastMsg(user);
         user.last_msg_date = lastMsg.createdAt;
 
         this.UserRepository.save(user);
-        return { message: "Deconnexion reussie" };
+        return { message: 'Deconnexion reussie' };
     }
-
 }

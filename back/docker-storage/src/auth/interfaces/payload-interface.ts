@@ -1,4 +1,4 @@
 export interface PayloadInterface {
-    username: string,
-    role: string
+    username: string;
+    role: string;
 }

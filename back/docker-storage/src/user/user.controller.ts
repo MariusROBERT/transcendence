@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { MessageEntity } from '../database/entities/message.entity';
@@ -10,14 +23,12 @@ import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
-    constructor (
-        private readonly UserService: UserService
-    ) {}
+    constructor(private readonly UserService: UserService) {}
 
-// --------- PROFILE --------- :
-// -- PRIVATE -- :
+    // --------- PROFILE --------- :
+    // -- PRIVATE -- :
 
-// get_his_own_profile
+    // get_his_own_profile
     // @Get()
     // @UseGuards(JwtAuthGuard)
     // async GetOwnProfile(
@@ -26,75 +37,70 @@ export class UserController {
     //     return user
     // }
 
-// update_profile
+    // update_profile
     @Patch()
     @UseGuards(JwtAuthGuard)
     async UpdateProfile(
         @Body() updateUserDto: UpdateUserDto,
-        @User() user: UserEntity
+        @User() user: UserEntity,
     ): Promise<UserEntity> {
         return await this.UserService.updateProfile(updateUserDto, user);
     }
 
-// -- PUBLIC -- :
+    // -- PUBLIC -- :
 
-// get_all_public_profile => pour le leaderboard donc seulement les infos public
+    // get_all_public_profile => pour le leaderboard donc seulement les infos public
     @Get('get_all_public_profile')
     @UseGuards(JwtAuthGuard)
     async GetAllPublicProfile(
         @User() user: UserEntity,
-        @Req() request: Request
+        @Req() request: Request,
     ): Promise<PublicProfileDto[]> {
-        console.log("coucoucou");
-        
-        return await this.UserService.getAllProfile(user)
+        console.log('coucoucou');
+
+        return await this.UserService.getAllProfile(user);
     }
 
-// get_a_public_profile_by_id
+    // get_a_public_profile_by_id
     @Get('get_public_profile_by_id/:id')
     @UseGuards(JwtAuthGuard)
     async GetProfile(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<PublicProfileDto> {
-        return await this.UserService.getPublicProfile(id, user)
+        return await this.UserService.getPublicProfile(id, user);
     }
 
+    // --------- MSG & CHANNEL --------- :
 
-// --------- MSG & CHANNEL --------- :
-
-// get_message_from_channel 
+    // get_message_from_channel
     @Get('/get_msg/:id_chan')
-    @UseGuards(JwtAuthGuard) 
+    @UseGuards(JwtAuthGuard)
     async getMessages(
         @User() user: UserEntity,
         @Param('id_chan', ParseIntPipe) id: number,
-        channels: ChannelEntity[]
+        channels: ChannelEntity[],
     ): Promise<MessageEntity[]> {
         return await this.UserService.getMsgsByChannel(user, channels, id);
     }
 
-// get last message 
+    // get last message
     @Get('get_last_msg')
-    @UseGuards(JwtAuthGuard) 
-    async GetLastMsg(
-        @User() user: UserEntity,
-    ) {
+    @UseGuards(JwtAuthGuard)
+    async GetLastMsg(@User() user: UserEntity) {
         return await this.UserService.getLastMsg(user);
     }
 
-// get_channels_of_user
+    // get_channels_of_user
     @Get('get_channels')
-    @UseGuards(JwtAuthGuard) 
-    async GetChannels(
-        @User() user: UserEntity,
-    ) {
-        return await this.UserService.getChannels(user)
+    @UseGuards(JwtAuthGuard)
+    async GetChannels(@User() user: UserEntity) {
+        return await this.UserService.getChannels(user);
     }
-        
-// ask_friend
+
+    // ask_friend
     @Post('demand/:id')
-    @UseGuards(JwtAuthGuard) 
+    @UseGuards(JwtAuthGuard)
     async FriendsDemand(
         @User() user: UserEntity,
         users: UserEntity[],
@@ -103,9 +109,9 @@ export class UserController {
         return await this.UserService.askFriend(user, id, users);
     }
 
-// accept_or_denied_aks
+    // accept_or_denied_aks
     @Delete('delete_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
-    @UseGuards(JwtAuthGuard) 
+    @UseGuards(JwtAuthGuard)
     async responseAsks(
         @User() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
@@ -113,19 +119,18 @@ export class UserController {
         @Param('bool', ParseIntPipe) bool: number,
     ) {
         if (bool >= 0 && bool <= 1)
-            return await this.UserService.handleAsk(user, id, users, bool)
+            return await this.UserService.handleAsk(user, id, users, bool);
         else
-            throw new HttpException('Le nombre doit être 0 ou 1', HttpStatus.BAD_REQUEST); 
+            throw new HttpException(
+                'Le nombre doit être 0 ou 1',
+                HttpStatus.BAD_REQUEST,
+            );
     }
 
     // logout
     @Post('/logout')
     @UseGuards(JwtAuthGuard)
-    async Delog(
-        @User() user: UserEntity,
-    ) {
+    async Delog(@User() user: UserEntity) {
         return await this.UserService.logout(user);
     }
-
-
 }

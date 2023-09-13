@@ -9,19 +9,16 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 
 @Injectable()
 export class MessagesService {
-    constructor (
+    constructor(
         @InjectRepository(MessageEntity)
         private messageRepository: Repository<MessageEntity>,
-        private authService: AuthService
-    ) {
-    }
+        private authService: AuthService,
+    ) {}
 
     async addMsg(msg: AddMsgDto, user: UserEntity, channel: ChannelEntity) {
-        const newMsg = this.messageRepository.create(msg)
+        const newMsg = this.messageRepository.create(msg);
         newMsg.channel = channel;
         newMsg.sender = user;
-        return await this.messageRepository.save(newMsg)
+        return await this.messageRepository.save(newMsg);
     }
-
-    
 }

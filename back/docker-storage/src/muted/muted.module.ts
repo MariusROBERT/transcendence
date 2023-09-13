@@ -3,10 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([MutedModule]),
-        AuthModule,
-        
-    ]
+    imports: [TypeOrmModule.forFeature([MutedModule]), AuthModule],
 })
 export class MutedModule {}

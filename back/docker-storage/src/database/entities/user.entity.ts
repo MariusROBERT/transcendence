@@ -1,16 +1,24 @@
-import { UserStateEnum, UserRoleEnum } from "src/utils/enums/user.enum";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ChannelEntity } from "./channel.entity";
-import { GameEntity } from "./game.entity";
-import { MessageEntity } from "./message.entity";
-import { MutedEntity } from "./muted.entity";
+import { UserStateEnum, UserRoleEnum } from 'src/utils/enums/user.enum';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ChannelEntity } from './channel.entity';
+import { GameEntity } from './game.entity';
+import { MessageEntity } from './message.entity';
+import { MutedEntity } from './muted.entity';
 
 // BON A SAVOIR : Pour éviter de charger toutes les relations à chaque requête de récupération d'utilisateur, TypeORM utilise le chargement paresseux (lazy loading) par défaut.
 
 @Entity('user')
 export class UserEntity {
-
-// PERSO :
+    // PERSO :
 
     @PrimaryGeneratedColumn()
     id!: number;
@@ -42,38 +50,40 @@ export class UserEntity {
     @Column({ type: 'enum', enum: UserStateEnum, default: UserStateEnum.ON })
     user_status!: UserStateEnum;
 
-// CHANNEL :
+    // CHANNEL :
 
-    @ManyToMany(() => ChannelEntity, (channel) => channel.users, { nullable: false })
+    @ManyToMany(() => ChannelEntity, (channel) => channel.users, {
+        nullable: false,
+    })
     @JoinTable()
     public channels?: ChannelEntity[];
 
-    @ManyToMany(type => ChannelEntity, channel => channel.admins)
+    @ManyToMany((type) => ChannelEntity, (channel) => channel.admins)
     @JoinTable()
     public admin: ChannelEntity[];
 
-    @OneToMany(type => ChannelEntity, channel => channel.owner)
+    @OneToMany((type) => ChannelEntity, (channel) => channel.owner)
     @JoinTable()
     public own: ChannelEntity[];
 
-    @ManyToMany(type => ChannelEntity, channel => channel.baned)
+    @ManyToMany((type) => ChannelEntity, (channel) => channel.baned)
     @JoinTable()
     public baned: ChannelEntity[];
 
-    @OneToMany(type => MutedEntity, muted => muted.user)
+    @OneToMany((type) => MutedEntity, (muted) => muted.user)
     @JoinTable()
     public muted: MutedEntity[];
 
-// MESSAGE :
+    // MESSAGE :
 
-    @OneToMany(type => MessageEntity, message => message.sender)
+    @OneToMany((type) => MessageEntity, (message) => message.sender)
     @JoinTable()
     public messages: MessageEntity[];
 
     @Column({ nullable: true })
     last_msg_date: Date;
 
-// FRIENDS & INVITE & BLOCKED :
+    // FRIENDS & INVITE & BLOCKED :
 
     @Column('integer', { array: true, nullable: true })
     friends: number[];
@@ -87,7 +97,7 @@ export class UserEntity {
     @Column('integer', { array: true, nullable: true })
     blocked: number[];
 
-// GAME :
+    // GAME :
 
     @Column({ default: 0 })
     winrate: number;
@@ -95,8 +105,8 @@ export class UserEntity {
     // last_message_recv: Date ??
 
     @OneToMany(() => GameEntity, (game) => game.player1)
-	gamesAsPlayer1: GameEntity[];
+    gamesAsPlayer1: GameEntity[];
 
-	@OneToMany(() => GameEntity, (game) => game.player2)
-	gamesAsPlayer2: GameEntity[];
+    @OneToMany(() => GameEntity, (game) => game.player2)
+    gamesAsPlayer2: GameEntity[];
 }

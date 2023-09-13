@@ -1,17 +1,23 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "./user.entity";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserEntity } from './user.entity';
 
 @Entity('game')
 export class GameEntity {
-
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @ManyToOne(type => UserEntity, user => user.gamesAsPlayer1)
+    @ManyToOne((type) => UserEntity, (user) => user.gamesAsPlayer1)
     @JoinColumn({ name: 'player1_id' })
     player1: UserEntity;
 
-    @ManyToOne(type => UserEntity, user => user.gamesAsPlayer2)
+    @ManyToOne((type) => UserEntity, (user) => user.gamesAsPlayer2)
     @JoinColumn({ name: 'player2_id' })
     player2: UserEntity;
 
@@ -23,5 +29,4 @@ export class GameEntity {
 
     @Column()
     date: Date;
-
 }

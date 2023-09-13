@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -10,21 +14,21 @@ import { UserStateEnum } from '../utils/enums/user.enum';
 
 @Injectable()
 export class AuthService {
-    constructor (
+    constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
         private jwtService: JwtService,
     ) {}
-    
-      
-    async register(userData: UserSubDto): Promise<Partial<UserEntity>> { // on veut crypter le pwd avec la bibliotheque bcrypt
+
+    async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
+        // on veut crypter le pwd avec la bibliotheque bcrypt
         // Create User
         const user = this.userRepository.create({
-            ...userData
+            ...userData,
         });
-        user.salt = await bcrypt.genSalt() // genere le salt
-        user.password = await bcrypt.hash(user.password, user.salt) // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
-        user.user_status = UserStateEnum.ON
+        user.salt = await bcrypt.genSalt(); // genere le salt
+        user.password = await bcrypt.hash(user.password, user.salt); // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
+        user.user_status = UserStateEnum.ON;
         try {
             await this.userRepository.save(user); // save user in DB
         } catch (e) {
@@ -38,28 +42,27 @@ export class AuthService {
     }
 
     async login(creditentials: LoginCreditDto) {
-        
-        const {username, password} = creditentials
+        const { username, password } = creditentials;
         try {
-            const user = await this.userRepository.createQueryBuilder("user")
-            .where("user.username = :username", {username} )
-            .getOne();
+            const user = await this.userRepository
+                .createQueryBuilder('user')
+                .where('user.username = :username', { username })
+                .getOne();
 
             const hashedPwd = await bcrypt.hash(password, user.salt);
             if (hashedPwd === user.password) {
                 const payload = {
                     username,
-                    role: user.role
-                }
+                    role: user.role,
+                };
                 const jwt = this.jwtService.sign(payload);
                 user.user_status = UserStateEnum.ON;
                 return { 'access-token': jwt };
             } else {
-                throw new NotFoundException(`wrong password`)
+                throw new NotFoundException(`wrong password`);
             }
         } catch (e) {
             throw new NotFoundException(`username not found`);
         }
     }
-
 }

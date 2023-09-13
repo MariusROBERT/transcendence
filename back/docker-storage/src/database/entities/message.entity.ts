@@ -1,11 +1,16 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "./user.entity";
-import { ChannelEntity } from "./channel.entity";
-import { TimeStampEntities } from "../../utils/generics/timestamp.entity";
+import {
+    Column,
+    Entity,
+    ManyToOne,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserEntity } from './user.entity';
+import { ChannelEntity } from './channel.entity';
+import { TimeStampEntities } from '../../utils/generics/timestamp.entity';
 
 @Entity('message')
 export class MessageEntity extends TimeStampEntities {
-
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -15,6 +20,6 @@ export class MessageEntity extends TimeStampEntities {
     @ManyToOne(() => UserEntity, (user) => user.messages)
     sender!: UserEntity;
 
-    @ManyToOne(type => ChannelEntity, channel => channel.messages)
+    @ManyToOne((type) => ChannelEntity, (channel) => channel.messages)
     channel!: ChannelEntity;
 }
