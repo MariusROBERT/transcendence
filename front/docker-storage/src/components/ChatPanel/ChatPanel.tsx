@@ -17,9 +17,12 @@ export function ChatPanel({viewport, width}:Props)
     // this should be in the back
     let [msg, setMessage] = useState<{ msg:string, owner:boolean }[]>([]);
 
-    const getMsg = (message:string) => {
-        console.log(message);
-        setMessage([...msg, {msg:message, owner:true}]);
+    const getMsg = (message:any) => {
+        var owner = false;
+
+        if (message[message.length - 1].sock_id == socket.id)
+            owner = true;
+        setMessage([...msg, {msg:message[message.length - 1].msg, owner:owner}]);
         setInputValue('');
     }
 

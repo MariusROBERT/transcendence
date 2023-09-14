@@ -21,7 +21,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Socket[] = [];
   chanService: ChannelService;
   messService: MessagesService;
-  messages: string[] = [];
+  messages: {msg:string, sock_id:string}[] = [];
 
   async handleConnection(client: Socket) {
     this.clients.push(client);
@@ -70,11 +70,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //msgDto.sender = null;
 //
     //this.messService.addMsg(msgDto, null, msgDto.channel);
-    this.messages.push(message);
+    this.messages.push({msg:message, sock_id:client.id});
     console.log(
       `Client:${client} message chat ${message}`,
     );
-    this.server.emit('message', message);
+    this.server.emit('message', this.messages);
+    console.log(this.messages);
     //client.broadcast.emit('message', message);
   }
 }
