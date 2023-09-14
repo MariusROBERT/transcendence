@@ -1,8 +1,6 @@
-import { color } from "../../utils/Global";
-import {delay} from "../../utils/UtilityFunctions";
-import {Viewport} from "../../utils/Viewport";
+import { Viewport, color, delay } from '../../utils';
 import { Border, Button, Input, Flex, Background } from "..";
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 
 const SIZE: number = 350
 

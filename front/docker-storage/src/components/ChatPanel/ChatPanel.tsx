@@ -1,8 +1,6 @@
-import { ReactNode, useState } from "react";
-import { Viewport } from "../../utils/Viewport";
-import { color } from "../../utils/Global";
-import {Background, RoundButton} from "..";
-import {ChatMessage} from "../ChatMessage/ChatMessage";
+import { useState } from "react";
+import { Viewport, color } from '../../utils';
+import { Background, RoundButton, ChatMessage } from "..";
 
 interface Props{
     viewport:Viewport,
@@ -18,7 +16,7 @@ export function ChatPanel({viewport, width}:Props)
 
     function onEnterPressed(){
         console.log(inputValue);
-        if (inputValue == '')
+        if (inputValue === '')
             return;
         //TODO create Message in the Back and send event to the reciever
         msg.push({msg:inputValue, owner:true});
@@ -59,7 +57,7 @@ export function ChatPanel({viewport, width}:Props)
             }}>
                 <input value={inputValue}
                        onChange={(evt) => {setInputValue(evt.target.value);}}
-                       onKeyDown={(e) => { if (e.keyCode != 13) return; onEnterPressed()}}
+                       onKeyDown={(e) => { if (e.keyCode !== 13) return; onEnterPressed()}}
                        style={{
                            height:50 + 'px',
                            flex:'auto',

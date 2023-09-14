@@ -1,4 +1,4 @@
-import {color} from "../../utils/Global";
+import {color} from '../../utils';
 import {Background, RoundButton} from "..";
 
 interface Props{

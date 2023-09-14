@@ -1,6 +1,5 @@
-import { delay } from "../../utils/UtilityFunctions";
 import React, { ReactNode, useState } from "react";
-import { Viewport } from "../../utils/Viewport";
+import { Viewport, delay } from '../../utils';
 import { RoundButton } from "..";
 
 interface Props{

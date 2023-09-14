@@ -1,6 +1,5 @@
 import { Border, Background, GroupItems, SearchBar, User } from "..";
-import { color } from "../../utils/Global";
-import { Viewport } from "../../utils/Viewport";
+import { color, Viewport } from "../../utils";
 
 interface Props {
     viewport:Viewport,

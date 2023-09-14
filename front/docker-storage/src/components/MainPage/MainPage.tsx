@@ -1,5 +1,4 @@
-import { color } from "../../utils/Global";
-import { Viewport } from "../../utils/Viewport";
+import { color, Viewport } from '../../utils';
 import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton } from "..";
 
 interface Props{

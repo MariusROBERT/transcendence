@@ -20,7 +20,7 @@ export function useEffectViewport(viewport: Viewport, SIZE: number, setViewport:
         return(() => {
             window.removeEventListener('resize', updateDimension);
         })
-    }, [viewport])
+    }, [viewport, SIZE, setViewport])
 }
 
 
