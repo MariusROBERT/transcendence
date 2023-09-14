@@ -5,8 +5,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Server } from 'http';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import { ChannelService } from 'src/channel/channel.service';
 import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { MessagesService } from 'src/messages/messages.service';
@@ -22,6 +21,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   clients: Socket[] = [];
   chanService: ChannelService;
   messService: MessagesService;
+  messages: string[] = [];
 
   async handleConnection(client: Socket) {
     this.clients.push(client);
@@ -63,16 +63,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('message')
-  async handleMessage(client: Socket, room_id: number, message: string) {
-    var msgDto: AddMsgDto;
-    msgDto.channel = await this.chanService.getChannelById(room_id);
-    msgDto.content = message;
-    msgDto.sender = null;
-
-    this.messService.addMsg(msgDto, null, msgDto.channel);
+  async handleMessage(client: Socket, message: string) {
+    //var msgDto: AddMsgDto;
+    //msgDto.channel = await this.chanService.getChannelById(room_id);
+    //msgDto.content = message;
+    //msgDto.sender = null;
+//
+    //this.messService.addMsg(msgDto, null, msgDto.channel);
+    this.messages.push(message);
     console.log(
-      `Client:${client} message chat room id ${room_id} with ${message}`,
+      `Client:${client} message chat ${message}`,
     );
-    this.server.emit('message');
+    this.server.emit('message', message);
+    //client.broadcast.emit('message', message);
   }
 }

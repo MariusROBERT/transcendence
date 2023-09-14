@@ -1,8 +1,9 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Viewport } from "../../utils/Viewport";
 import { color } from "../../utils/Global";
 import {Background, RoundButton} from "..";
 import {ChatMessage} from "../ChatMessage/ChatMessage";
+import { socket } from "../../socket";
 
 interface Props{
     viewport:Viewport,
@@ -14,15 +15,25 @@ export function ChatPanel({viewport, width}:Props)
     const [inputValue, setInputValue] = useState<string>('');
 
     // this should be in the back
-    let [msg] = useState<{ msg:string, owner:boolean }[]>([]);
+    let [msg, setMessage] = useState<{ msg:string, owner:boolean }[]>([]);
+
+    const getMsg = (message:string) => {
+        console.log(message);
+        setMessage([...msg, {msg:message, owner:true}]);
+        setInputValue('');
+    }
+
+    useEffect(() => {
+        socket?.on('message', getMsg);
+        return () => {
+            socket?.off('message', getMsg)
+        }
+    }, [getMsg])
 
     function onEnterPressed(){
-        console.log(inputValue);
         if (inputValue == '')
             return;
-        //TODO create Message in the Back and send event to the reciever
-        msg.push({msg:inputValue, owner:true});
-        setInputValue('');
+        socket?.emit('message', inputValue);
     }
 
     function chat() {
@@ -30,7 +41,6 @@ export function ChatPanel({viewport, width}:Props)
         return (
             <>
                 {msg.map((txt, idx) => <ChatMessage key={idx} user_icon={require('../../assets/imgs/icon_chat.png')} isOwnMessage={txt.owner}>{txt.msg}</ChatMessage>)}
-                {msg.map((txt, idx) => <ChatMessage key={idx} user_icon={require('../../assets/imgs/icon_chat.png')} isOwnMessage={!txt.owner}>{txt.msg}</ChatMessage>)}
             </>
         );
     }
@@ -59,7 +69,7 @@ export function ChatPanel({viewport, width}:Props)
             }}>
                 <input value={inputValue}
                        onChange={(evt) => {setInputValue(evt.target.value);}}
-                       onKeyDown={(e) => { if (e.keyCode != 13) return; onEnterPressed()}}
+                       onKeyDown={(e) => { if (e.keyCode != 13) return; onEnterPressed();}}
                        style={{
                            height:50 + 'px',
                            flex:'auto',
