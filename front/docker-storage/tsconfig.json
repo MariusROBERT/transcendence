@@ -18,10 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "preserve"
   },
   "include": [
     "src",
-    "src/react-app-env.d.ts"
+    "src/react-app-env.d.ts",
+    "node_modules/@types/p5/global.d.ts"
   ]
 }

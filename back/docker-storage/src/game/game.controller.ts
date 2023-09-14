@@ -1,46 +1,16 @@
 import {Controller, Get, Param, Post} from '@nestjs/common';
 import {GameService} from "./game.service";
+import { GameGateway } from './game.gateway';
 export const delay = (ms: number | undefined) => new Promise(res => ms ? setTimeout(res, ms) : setTimeout(res, 0));
 export const clamp = (val, valmin, valmax) => Math.min(Math.max(val, valmin), valmax);
-export class Vector2D {
-    x: number;
-    y: number;
-
-    constructor(x:number, y:number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    static scale(vect: Vector2D, factor: number){
-        return new Vector2D(vect.x * factor, vect.y * factor);
-    }
-    scale(a: number): Vector2D {
-        this.x *= a;
-        this.y *= a;
-        return this;
-    }
-
-    add(vect:Vector2D): Vector2D{
-        this.x += vect.x;
-        this.y += vect.y;
-        return this;
-    }
-
-    normalized(): Vector2D {
-        const len = Math.sqrt(this.x * this.x + this.y * this.y);
-        this.x /= len;
-        this.y /= len;
-        return this;
-    }
-}
 
 export interface State{
     running: boolean,
-    ball: Vector2D,
+    ball: {x: number, y: number},
     speed: number,
-    dir: Vector2D,
-    p1: Vector2D,
-    p2: Vector2D,
+    dir: {x: number, y: number},
+    p1: {x: number, y: number},
+    p2: {x: number, y: number},
     score: {p1: number, p2: number}
 }
 
@@ -48,22 +18,24 @@ const size:{
     height:number,
     width:number,
     ball:number,
-    bar:Vector2D,
+    bar:{x: number, y: number},
     halfBar:number,
     halfBall:number
 } = {
     height:720,
     width:1280,
     ball:50,
-    bar:new Vector2D(25, 144),
+    bar:{x: 25, y: 144},
     halfBar:72,
     halfBall:25
 };
+
 @Controller('game')
 export class GameController {
     games: {playerIds:number[], state:State}[] = [];
-    constructor(private gameService: GameService) {}
-
+    constructor(private gameService: GameService, private gameGateway: GameGateway) {
+        this.gameGateway.setController(this);
+    }
     //returns a Game with 1 given or the 2 given player
     getGame(p1:number, p2:number | undefined = null){
         if (p2 == null)
@@ -89,10 +61,10 @@ export class GameController {
                 playerIds: [p1, p2],
                 state: {
                     running: true,
-                    ball: new Vector2D(size.width / 2, size.height / 2),
-                    dir: new Vector2D(Math.random() * 2 - 1, Math.random() * 2 - 1).normalized(),
-                    p1: new Vector2D(size.ball / 2, size.height / 2),
-                    p2: new Vector2D(size.width - size.ball / 2, size.height / 2),
+                    ball: {x:size.width / 2, y:size.height / 2},
+                    dir: this.gameService.normalize({x:Math.random() * 2 - 1, y:Math.random() * 2 - 1}),
+                    p1: {x:size.ball / 2, y:size.height / 2},
+                    p2: {x:size.width - size.ball / 2, y:size.height / 2},
                     score: {p1: 0, p2: 0},
                     speed: 5,
                 }
@@ -115,6 +87,9 @@ export class GameController {
         //await for a 30hz frame
         await delay(33);
 
+        //send the new state to the gateway
+        this.gameGateway.sendState(game);
+
         //and call itself again
         return this.update(game);
     }
@@ -122,7 +97,7 @@ export class GameController {
     // called every frame to update the state of the game
     async updateLogic(game: State) {
         //move the ball to the current direction
-        game.ball.add(Vector2D.scale(game.dir, game.speed));
+        game.ball = this.gameService.add(game.ball, (this.gameService.scale(game.dir, game.speed)));
 
         //check if the ball enter a 'GOAL'
         if (game.ball.x < 0 || game.ball.x > size.width)
@@ -134,7 +109,7 @@ export class GameController {
                 game.score.p1 += 1;
 
             // Start the new Round
-            game.ball = new Vector2D(size.width/2, size.height/2);
+            game.ball = {x:size.width/2, y:size.height/2};
             game.dir.x *= -1;
             game.speed = Math.max(game.speed - 5, 2.5);
         }
@@ -158,13 +133,13 @@ export class GameController {
         if ((game.ball.x - size.ball / 2) < (game.p1.x)
             && (game.ball.y - size.halfBall) < (game.p1.y + size.halfBar)
             && (game.ball.y + size.halfBall) > (game.p1.y - size.halfBar))
-            game.dir = new Vector2D(game.ball.x - (game.p1.x - size.ball), game.ball.y - game.p1.y)
+            game.dir = {x:game.ball.x - (game.p1.x - size.ball), y: game.ball.y - game.p1.y}
 
         //collision with the right player
         if (game.ball.x + size.halfBall > game.p2.x
             && game.ball.y - size.halfBall < game.p2.y + size.halfBar
             && game.ball.y + size.halfBall > game.p2.y - size.halfBar)
-            game.dir = new Vector2D(game.ball.x - (game.p2.x + size.ball), game.ball.y - game.p2.y)
+            game.dir = {x: game.ball.x - (game.p2.x + size.ball), y: game.ball.y - game.p2.y}
     }
 
     @Get('ends/:id')
@@ -192,16 +167,16 @@ export class GameController {
     }
 
     //TODO: socketCall
-    movePlayer(@Param('id') id:number, @Param('keyUp') key:boolean)
+    movePlayer({playerId, moveUp} : {playerId:number, moveUp:boolean})
     {
-        let game = this.getGame(id);
+        let game = this.getGame(playerId);
         if (game === undefined || !game.state.running) return 'game not found';
-        if (game.playerIds[0] == id) {
-            game.state.p1.y += key ? -game.state.speed : game.state.speed;
+        if (game.playerIds[0] == playerId) {
+            game.state.p1.y += moveUp ? -game.state.speed : game.state.speed;
             game.state.p1.y = clamp(game.state.p1.y, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
         }
-        else if (game.playerIds[1] == id) {
-            game.state.p2.y += key ? -game.state.speed : game.state.speed;
+        else if (game.playerIds[1] == playerId) {
+            game.state.p2.y += moveUp ? -game.state.speed : game.state.speed;
             game.state.p2.y = clamp(game.state.p2.y, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
         }
     }
