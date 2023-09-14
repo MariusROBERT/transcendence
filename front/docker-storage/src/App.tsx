@@ -1,13 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import Background from "../components/Background/Background";
-import {color} from "../Global";
-import {backgroundImage} from "../Global";
-import styleSheet from './App.css';
-
-import {Login} from "../components/Login/Login";
-import {Viewport, useEffectViewport} from "./Viewport";
-import {MainPage} from "../components/MainPage/MainPage"
-import { socket } from '../socket';
+import React, {useState} from 'react';
+import Background from "./components/Background/Background";
+import {color, backgroundImage, Viewport, useEffectViewport} from "./utils/index";
+import {Login, MainPage} from "./components";
+import { socket } from './socket';
 
 const SIZE = 350;
 

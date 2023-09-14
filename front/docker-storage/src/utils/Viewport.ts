@@ -13,7 +13,6 @@ export function useEffectViewport(viewport: Viewport, SIZE: number, setViewport:
                 isLandscape:window.innerWidth >= SIZE * 2 && window.innerWidth / window.innerHeight > 0.9,
                 width:window.innerWidth,
                 height:window.innerHeight});
-            console.log('triggered')
         }
         window.addEventListener('resize', updateDimension);
 

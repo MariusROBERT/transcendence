@@ -1,5 +1,5 @@
-import "../../app/App.css"
-import { color } from '../../Global'
+import "../../App.css"
+import { color } from '../../utils/Global'
 import {ReactNode} from "react";
 
 interface Props {
