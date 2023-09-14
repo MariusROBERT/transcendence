@@ -1,4 +1,4 @@
 export enum ChanStateEnum {
-    PUBLIC = 'public',
-    PRIVATE = 'private',
+  PUBLIC = 'public',
+  PRIVATE = 'private',
 }

@@ -7,6 +7,7 @@ import styleSheet from './App.css';
 import {Login} from "../components/Login/Login";
 import {Viewport, useEffectViewport} from "./Viewport";
 import {MainPage} from "../components/MainPage/MainPage"
+import { socket } from '../socket';
 
 const SIZE = 350;
 
@@ -19,6 +20,8 @@ function App(){
     const [viewport, setViewport] = useState<Viewport>(view);
     const [isConnected, setIsConnected] = useState<boolean>(false);
     useEffectViewport(viewport, SIZE, setViewport);
+
+    socket.connect();
 
     return (
         <div className={'cursor_perso'} style={{height:viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE*2) + 'px', width:'100%', color:color.white, overflow:'hidden'}}>

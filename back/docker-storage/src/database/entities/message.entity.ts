@@ -1,20 +1,25 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "./user.entity";
-import { ChannelEntity } from "./channel.entity";
-import { TimeStampEntities } from "src/utils/generics/timestamp.entity";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserEntity } from './user.entity';
+import { ChannelEntity } from './channel.entity';
+import { TimeStampEntities } from 'src/utils/generics/timestamp.entity';
 
 @Entity('message')
 export class MessageEntity extends TimeStampEntities {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @Column()
+  content!: string;
 
-    @Column()
-    content!: string;
+  @ManyToOne(() => UserEntity, (user) => user.messages)
+  sender!: UserEntity;
 
-    @ManyToOne(() => UserEntity, (user) => user.messages)
-    sender!: UserEntity;
-
-    @ManyToOne(type => ChannelEntity, channel => channel.messages)
-    channel!: ChannelEntity;
+  @ManyToOne((type) => ChannelEntity, (channel) => channel.messages)
+  channel!: ChannelEntity;
 }

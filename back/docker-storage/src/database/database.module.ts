@@ -1,29 +1,30 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ChannelEntity, MessageEntity, UserEntity } from "./entities/channel.entity";
-import { ChannelService } from "src/channel/channel.service";
-import { UserService } from "src/user/user.service";
-import { MessagesService } from "src/messages/messages.service";
-import { AuthService } from "src/auth/auth.service";
-import { JwtService } from "@nestjs/jwt";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  ChannelEntity,
+  MessageEntity,
+  UserEntity,
+} from './entities/channel.entity';
+import { ChannelService } from 'src/channel/channel.service';
+import { UserService } from 'src/user/user.service';
+import { MessagesService } from 'src/messages/messages.service';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({ // config DB mysql
+    TypeOrmModule.forRoot({
+      // config DB mysql
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: ["dist/**/*.entity{.ts,.js}"], // a chaque modif des fichiers entity, mettre a jour la DB
+      entities: ['dist/**/*.entity{.ts,.js}'], // a chaque modif des fichiers entity, mettre a jour la DB
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([
-      ChannelEntity,
-      MessageEntity,
-      UserEntity,
-    ]),
+    TypeOrmModule.forFeature([ChannelEntity, MessageEntity, UserEntity]),
   ],
   controllers: [],
   providers: [
@@ -33,6 +34,6 @@ import { JwtService } from "@nestjs/jwt";
     AuthService,
     JwtService,
   ],
-  exports: []
+  exports: [],
 })
-export class DatabaseModule {};
+export class DatabaseModule {}
