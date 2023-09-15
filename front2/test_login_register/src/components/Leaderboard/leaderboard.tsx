@@ -8,7 +8,6 @@ interface LeaderboardProps {
 }
 
 export default function Leaderboard({ searchTerm }: LeaderboardProps) {
-    
     const navigate = useNavigate();
     const jwtToken = Cookies.get('jwtToken');
     const [userElements, setUserElements] = useState<JSX.Element[]>([]);
@@ -34,10 +33,11 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
                     setAllUsers(users);
                 } else {
                     console.error(
-                        'Erreur lors de la récupération des données des utilisateurs. Error', response.status
+                        'Erreur lors de la récupération des données des utilisateurs. Error',
+                        response.status,
                     );
                     navigate('/login');
-                    alert("Vous avez ete deconnecte");
+                    alert('Vous avez ete deconnecte');
                 }
             } catch (error) {
                 console.error(
@@ -64,7 +64,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
                 <p onClick={() => handleOpenProfil(user)}>
                     Nom d'utilisateur : {user.username}{' '}
                 </p>
-                <img style={imgStyle} src={user?.urlImg}/>
+                <img style={imgStyle} src={user?.urlImg} />
                 <p>Status : {user.user_status}</p>
                 <p>winrate : {user.winrate}</p>
             </div>
@@ -87,7 +87,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     return (
         <div style={container}>
             leaderboard
-            <div className="container">{userElements}</div>
+            <div className='container'>{userElements}</div>
             {profilVisible && (
                 <Profil user={selectedUser} onClose={closeProfil} />
             )}
@@ -102,7 +102,7 @@ const container = {
 
 const imgStyle = {
     width: '100px',
-}
+};
 
 const userElementStyle = {
     background: 'grey',

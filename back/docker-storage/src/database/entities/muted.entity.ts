@@ -1,10 +1,10 @@
 import {
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    Unique,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { ChannelEntity } from './channel.entity';
@@ -12,15 +12,15 @@ import { ChannelEntity } from './channel.entity';
 @Entity('muted')
 @Unique(['user', 'channel'])
 export class MutedEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => UserEntity)
-    user: UserEntity;
+  @ManyToOne(() => UserEntity)
+  user: UserEntity;
 
-    @ManyToOne((type) => ChannelEntity)
-    channel: ChannelEntity;
+  @ManyToOne((type) => ChannelEntity)
+  channel: ChannelEntity;
 
-    @CreateDateColumn()
-    endDate: Date;
+  @CreateDateColumn()
+  endDate: Date;
 }

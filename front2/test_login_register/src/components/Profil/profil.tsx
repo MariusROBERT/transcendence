@@ -8,7 +8,7 @@ interface User {
     urlImg: string;
     user_status: string;
     winrate: number;
-	is_friend: boolean;
+    is_friend: boolean;
 }
 
 interface ProfilProps {
@@ -17,10 +17,9 @@ interface ProfilProps {
 }
 
 const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
-	if (user?.is_friend === true)
-		console.log();
+    if (user?.is_friend === true) console.log();
     console.log(user);
-    
+
     return (
         <div style={profilContainer}>
             <div style={profilContent}>
@@ -36,11 +35,11 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
                 ) : (
                     <p>Utilisateur introuvable.</p>
                 )}
-				{user?.is_friend ? (
-					<FriendButtons/>
-				) : (
-					<UserButtons id={user?.id}/>
-				)}
+                {user?.is_friend ? (
+                    <FriendButtons />
+                ) : (
+                    <UserButtons id={user?.id} />
+                )}
             </div>
         </div>
     );
@@ -66,9 +65,9 @@ const profilContent = {
 };
 
 const imgStyle = {
-    width: "100px",
-    height: "100px",
-    border: "1px solid red",
-}
+    width: '100px',
+    height: '100px',
+    border: '1px solid red',
+};
 
 export default Profil;

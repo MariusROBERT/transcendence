@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RedirectToHome } from '../Auth/auth_redirect'
+import { RedirectToHome } from '../Auth/auth_redirect';
 
 interface FormData {
     username: string;
@@ -8,7 +8,6 @@ interface FormData {
 }
 
 const Login: React.FC = () => {
-
     const [formData, setFormData] = useState<FormData>({
         username: '',
         password: '',
@@ -27,7 +26,7 @@ const Login: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        
+
         try {
             const response = await fetch(
                 'http://localhost:3001/api/auth/login',
@@ -45,13 +44,11 @@ const Login: React.FC = () => {
             if (response.ok) {
                 RedirectToHome(navigate, response);
             } else {
-                setErrorMessage(
-                    "Le username ou le password n'est pas bon !",
-                    );
-                console.error("Échec de connection : mauvaises informations. Error", response.status);
+                const data = await response.json();
+                setErrorMessage(data.message);
             }
         } catch (error) {
-            console.error(`Error : ${error}`);
+            console.error(`Error Interne : ${error}`);
         }
     };
 
@@ -62,8 +59,8 @@ const Login: React.FC = () => {
                 <div>
                     <label>Username:</label>
                     <input
-                        type="text"
-                        name="username"
+                        type='text'
+                        name='username'
                         value={formData.username}
                         onChange={handleChange}
                         required
@@ -72,8 +69,8 @@ const Login: React.FC = () => {
                 <div>
                     <label>Password:</label>
                     <input
-                        type="password"
-                        name="password"
+                        type='password'
+                        name='password'
                         value={formData.password}
                         onChange={handleChange}
                         required
@@ -84,7 +81,7 @@ const Login: React.FC = () => {
                         {errorMessage}
                     </div>
                 )}
-                <button type="submit">Se connecter</button>
+                <button type='submit'>Se connecter</button>
             </form>
         </div>
     );

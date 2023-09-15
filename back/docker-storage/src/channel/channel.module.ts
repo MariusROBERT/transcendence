@@ -9,11 +9,11 @@ import { UserService } from '../user/user.service';
 import { MessageEntity } from '../database/entities/message.entity';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([ChannelEntity, UserEntity, MessageEntity]),
-        AuthModule,
-    ],
-    controllers: [ChannelController],
-    providers: [ChannelService, UserService],
+  imports: [
+    TypeOrmModule.forFeature([ChannelEntity, UserEntity, MessageEntity]),
+    AuthModule,
+  ],
+  controllers: [ChannelController],
+  providers: [ChannelService, UserService],
 })
 export class ChannelModule {}

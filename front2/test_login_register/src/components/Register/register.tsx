@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RedirectToHome } from '../Auth/auth_redirect'
+import { RedirectToHome } from '../Auth/auth_redirect';
 
 interface FormData {
     username: string;
@@ -25,14 +25,15 @@ const Register: React.FC = () => {
             [name]: value,
         });
     };
-    
+
     // FONCTION REGISTER & REDIRECTION TO MAIN PAGE
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (formData.username !== '' && formData.password !== '') {
             if (formData.password === formData.confirmPassword) {
-                try { // REGISTER
+                try {
+                    // REGISTER
                     const registerResponse = await fetch(
                         'http://localhost:3001/api/auth/register',
                         {
@@ -49,7 +50,8 @@ const Register: React.FC = () => {
                     );
                     if (registerResponse.ok) {
                         console.log('Inscription réussie !');
-                        try {  // LOGIN
+                        try {
+                            // LOGIN
                             const loginResponse = await fetch(
                                 'http://localhost:3001/api/auth/login',
                                 {
@@ -63,22 +65,26 @@ const Register: React.FC = () => {
                                     }),
                                 },
                             );
-                            if (loginResponse.ok) { // REDIRECTION
+                            if (loginResponse.ok) {
+                                // REDIRECTION
                                 RedirectToHome(navigate, loginResponse);
                             }
                         } catch (error) {
                             console.error(
-                                "Erreur lors de l'envoi de la requête :",
+                                `Erreur lors de l'envoi de la requête :`,
                                 error,
                             );
                         }
                     } else {
                         setErrorMessage('Ce username est deja pris !');
-                        console.error("Échec de l'inscription. Error", registerResponse.status);
+                        console.error(
+                            `Échec de l'inscription. Error`,
+                            registerResponse.status,
+                        );
                     }
                 } catch (error) {
                     console.error(
-                        "Erreur lors de l'envoi de la requête :",
+                        `Erreur lors de l'envoi de la requête :`,
                         error,
                     );
                 }
@@ -95,8 +101,8 @@ const Register: React.FC = () => {
                 <div>
                     <label>Username:</label>
                     <input
-                        type="text"
-                        name="username"
+                        type='text'
+                        name='username'
                         value={formData.username}
                         onChange={handleChange}
                         required
@@ -105,8 +111,8 @@ const Register: React.FC = () => {
                 <div>
                     <label>Password:</label>
                     <input
-                        type="password"
-                        name="password"
+                        type='password'
+                        name='password'
                         value={formData.password}
                         onChange={handleChange}
                         required
@@ -115,8 +121,8 @@ const Register: React.FC = () => {
                 <div>
                     <label>Confirm Password:</label>
                     <input
-                        type="password"
-                        name="confirmPassword"
+                        type='password'
+                        name='confirmPassword'
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         required
@@ -127,11 +133,10 @@ const Register: React.FC = () => {
                         {errorMessage}
                     </div>
                 )}
-                <button type="submit">S'Inscrire</button>
+                <button type='submit'>S'Inscrire</button>
             </form>
         </div>
     );
-}
+};
 
 export default Register;
- 

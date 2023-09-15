@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 interface UserButtonsProps {
     id: number | undefined;
@@ -8,7 +8,7 @@ interface UserButtonsProps {
 const UserButtons: React.FC<UserButtonsProps> = ({ id }) => {
     const jwtToken = Cookies.get('jwtToken');
     const [sendButton, setSendButton] = useState(false);
-    
+
     const askFriend = async () => {
         try {
             const response = await fetch(
@@ -18,29 +18,29 @@ const UserButtons: React.FC<UserButtonsProps> = ({ id }) => {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${jwtToken}`,
-                    }
-                }
-            )
+                    },
+                },
+            );
             if (response.ok) {
                 setSendButton(true);
             } else {
-                    console.log("reponse not ok");
-                    
+                console.log('reponse not ok');
             }
         } catch (e) {
-                    console.log("rerrort 500k");
-                    // throw 
+            console.log('rerrort 500k');
+            // throw
         }
-    }
+    };
 
     return (
         <div>
             <button onClick={askFriend} disabled={sendButton}>
-                {sendButton ? "Sent !" : "Ask friend"}</button>
+                {sendButton ? 'Sent !' : 'Ask friend'}
+            </button>
             <button>Play with</button>
             <button>Message</button>
         </div>
-    )
-}
+    );
+};
 
 export default UserButtons;

@@ -9,16 +9,16 @@ import { MessageEntity } from '../database/entities/message.entity';
 
 @Controller('messages')
 export class MessagesController {
-    ChannelService: any;
-    constructor(private MessageService: MessagesService) {}
+  ChannelService: any;
+  constructor(private MessageService: MessagesService) {}
 
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    async AddMessage(
-        @Body() AddMsgDto: AddMsgDto,
-        @User() user: UserEntity,
-        channel: ChannelEntity,
-    ): Promise<MessageEntity> {
-        return await this.MessageService.addMsg(AddMsgDto, user, channel);
-    }
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async AddMessage(
+    @Body() AddMsgDto: AddMsgDto,
+    @User() user: UserEntity,
+    channel: ChannelEntity,
+  ): Promise<MessageEntity> {
+    return await this.MessageService.addMsg(AddMsgDto, user, channel);
+  }
 }

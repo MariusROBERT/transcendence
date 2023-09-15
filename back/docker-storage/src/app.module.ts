@@ -9,18 +9,18 @@ import { ChannelModule } from './channel/channel.module';
 import { MessagesModule } from './messages/messages.module';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true, // module vue par tous les modules
-        }),
-        DatabaseModule,
-        AuthModule,
-        UserModule,
-        ChannelModule,
-        MessagesModule,
-    ],
-    controllers: [AppController],
-    providers: [AppService], // on mettra les gateway ici
-    exports: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // module vue par tous les modules
+    }),
+    DatabaseModule,
+    AuthModule,
+    UserModule,
+    ChannelModule,
+    MessagesModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService], // on mettra les gateway ici
+  exports: [AppService],
 })
 export class AppModule {}

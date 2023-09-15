@@ -1,11 +1,11 @@
 import { UserStateEnum, UserRoleEnum } from 'src/utils/enums/user.enum';
 import {
-    Column,
-    Entity,
-    JoinTable,
-    ManyToMany,
-    OneToMany,
-    PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ChannelEntity } from './channel.entity';
 import { GameEntity } from './game.entity';
@@ -16,93 +16,93 @@ import { MutedEntity } from './muted.entity';
 
 @Entity('user')
 export class UserEntity {
-    // PERSO :
+  // PERSO :
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ unique: true, nullable: false })
-    username!: string;
+  @Column({ unique: true, nullable: false })
+  username!: string;
 
-    // @Column({ unique: true })
-    // email: string; // pour le 2fa ??
+  // @Column({ unique: true })
+  // email: string; // pour le 2fa ??
 
-    @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
-    role!: UserRoleEnum;
+  @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
+  role!: UserRoleEnum;
 
-    @Column({ default: '/default_profil.png' })
-    urlImg!: string;
+  @Column({ default: '/default_profil.png' })
+  urlImg!: string;
 
-    @Column()
-    salt!: string;
+  @Column()
+  salt!: string;
 
-    @Column()
-    password!: string; // hashPwd
+  @Column()
+  password!: string; // hashPwd
 
-    @Column({ default: false })
-    is2fa_active!: boolean;
+  @Column({ default: false })
+  is2fa_active!: boolean;
 
-    @Column({ default: 'ta gueule' })
-    secret2fa?: string;
+  @Column({ default: 'ta gueule' })
+  secret2fa?: string;
 
-    @Column({ type: 'enum', enum: UserStateEnum, default: UserStateEnum.ON })
-    user_status!: UserStateEnum;
+  @Column({ type: 'enum', enum: UserStateEnum, default: UserStateEnum.ON })
+  user_status!: UserStateEnum;
 
-    // CHANNEL :
+  // CHANNEL :
 
-    @ManyToMany(() => ChannelEntity, (channel) => channel.users, {
-        nullable: false,
-    })
-    @JoinTable()
-    public channels?: ChannelEntity[];
+  @ManyToMany(() => ChannelEntity, (channel) => channel.users, {
+    nullable: false,
+  })
+  @JoinTable()
+  public channels?: ChannelEntity[];
 
-    @ManyToMany((type) => ChannelEntity, (channel) => channel.admins)
-    @JoinTable()
-    public admin: ChannelEntity[];
+  @ManyToMany((type) => ChannelEntity, (channel) => channel.admins)
+  @JoinTable()
+  public admin: ChannelEntity[];
 
-    @OneToMany((type) => ChannelEntity, (channel) => channel.owner)
-    @JoinTable()
-    public own: ChannelEntity[];
+  @OneToMany((type) => ChannelEntity, (channel) => channel.owner)
+  @JoinTable()
+  public own: ChannelEntity[];
 
-    @ManyToMany((type) => ChannelEntity, (channel) => channel.baned)
-    @JoinTable()
-    public baned: ChannelEntity[];
+  @ManyToMany((type) => ChannelEntity, (channel) => channel.baned)
+  @JoinTable()
+  public baned: ChannelEntity[];
 
-    @OneToMany((type) => MutedEntity, (muted) => muted.user)
-    @JoinTable()
-    public muted: MutedEntity[];
+  @OneToMany((type) => MutedEntity, (muted) => muted.user)
+  @JoinTable()
+  public muted: MutedEntity[];
 
-    // MESSAGE :
+  // MESSAGE :
 
-    @OneToMany((type) => MessageEntity, (message) => message.sender)
-    @JoinTable()
-    public messages: MessageEntity[];
+  @OneToMany((type) => MessageEntity, (message) => message.sender)
+  @JoinTable()
+  public messages: MessageEntity[];
 
-    @Column({ nullable: true })
-    last_msg_date: Date;
+  @Column({ nullable: true })
+  last_msg_date: Date;
 
-    // FRIENDS & INVITE & BLOCKED :
+  // FRIENDS & INVITE & BLOCKED :
 
-    @Column('integer', { array: true, nullable: true })
-    friends: number[];
+  @Column('integer', { array: true, nullable: true })
+  friends: number[];
 
-    @Column('integer', { array: true, nullable: true })
-    invites: number[];
+  @Column('integer', { array: true, nullable: true })
+  invites: number[];
 
-    @Column('integer', { array: true, nullable: true })
-    invited: number[];
+  @Column('integer', { array: true, nullable: true })
+  invited: number[];
 
-    @Column('integer', { array: true, nullable: true })
-    blocked: number[];
+  @Column('integer', { array: true, nullable: true })
+  blocked: number[];
 
-    // GAME :
+  // GAME :
 
-    @Column({ default: 0 })
-    winrate: number;
+  @Column({ default: 0 })
+  winrate: number;
 
-    @OneToMany(() => GameEntity, (game) => game.player1)
-    gamesAsPlayer1: GameEntity[];
+  @OneToMany(() => GameEntity, (game) => game.player1)
+  gamesAsPlayer1: GameEntity[];
 
-    @OneToMany(() => GameEntity, (game) => game.player2)
-    gamesAsPlayer2: GameEntity[];
+  @OneToMany(() => GameEntity, (game) => game.player2)
+  gamesAsPlayer2: GameEntity[];
 }
