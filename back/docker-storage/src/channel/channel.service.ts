@@ -129,6 +129,15 @@ export class ChannelService {
     return channel;
   }
 
+  async isMuted(user: UserEntity, chan: ChannelEntity): Promise<number> {
+    for (var i = 0; i < chan.mutedUsers.length; i++)
+    {
+      if (chan.mutedUsers[i].user == user)
+        return i;
+    }
+    return -1;
+  }
+
   async MuteUserFromChannel(user: UserEntity, id: number, sec: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     if (channel.priv_msg == true)
@@ -149,7 +158,19 @@ export class ChannelService {
     muteEntity.endDate = date;
     channel.mutedUsers = [...channel.mutedUsers, muteEntity];
     await this.ChannelRepository.save(channel);
-    return null;
+    return channel;
+  }
+
+  async DeMuteUserFromChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    if (channel.priv_msg == true)
+      throw new Error("This channel is a private message channel");
+    var idx = await this.isMuted(user, channel);
+    if (idx == -1)
+      throw new Error("The user is not muted");
+    channel.mutedUsers.splice(idx, 1);
+    await this.ChannelRepository.save(channel);
+    return channel;
   }
 
   async BanUserFromChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
@@ -170,6 +191,8 @@ export class ChannelService {
   async AddMessageToChannel(msg:AddMsgDto) {
     if (!msg.channel.users.includes(msg.sender))
       throw new Error("The user is not in channel");
+    if (await this.isMuted(msg.sender, msg.channel) >= 0)
+      throw new Error("The user is muted");
     this.msgService.addMsg(msg);
   }
 }
