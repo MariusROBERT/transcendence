@@ -9,6 +9,7 @@ import {
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 import { Type } from 'class-transformer';
 import { UserEntity } from 'src/database/entities/user.entity';
+import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -44,6 +45,19 @@ export class UserChanDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
+}
+
+export class UserAddChanDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @IsString()
+  password: string;
+
+  @IsEnum(ChanStateEnum)
+  @IsNotEmpty()
+  chan_status: ChanStateEnum;
 }
 
 export class PublicProfileDto {

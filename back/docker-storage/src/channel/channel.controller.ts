@@ -22,7 +22,7 @@ import {
   CreateChannelDto,
   UpdateChannelDto,
 } from './dto/channel.dto';
-import { UserChanDto } from 'src/user/dto/user.dto';
+import { UserAddChanDto, UserChanDto } from 'src/user/dto/user.dto';
 import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 
 @Controller('channel')
@@ -76,10 +76,10 @@ export class ChannelController {
   @Patch('add_user/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async AddUserInChannel(
-    @User() user: UserChanDto,
+    @Body() user: UserAddChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.ChannelService.addUserInChannel(user.id, id);
+    const chan = await this.ChannelService.addUserInChannel(user, id);
     console.log(chan.users);
     return chan;
   }
