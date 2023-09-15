@@ -10,8 +10,11 @@ interface SettingsProps {
 
 interface UserInfos {
     urlImg: string;
-    password: string;
     is2fa_active: boolean;
+}
+
+interface PwdModif {
+    password: string;
 }
 
 interface Modifications {
@@ -46,8 +49,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         setPasswordType(passwordType === 'password' ? 'text' : 'password');
     }
 
-    let pwd:any = '';
-
 // recuperation des donnees du user et surtout de l'etat is2fa_active pour afficher
     useEffect(() => {
         const getUserInfos = async () => {
@@ -63,8 +64,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             if (rep.ok) {
                 const user = await rep.json();
                 setUserInfos(user);
-                pwd = userInfos?.password;
-                console.log("ici: ", userInfos?.is2fa_active);
             } else { // si je delete le cookie du jwt
                 navigate('/login');
                 alert("Vous avez été déconnecté");
@@ -75,42 +74,64 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }, [jwtToken]);
 
 
+    useEffect(() => {
+        if (userInfos?.is2fa_active)
+            modifData.is2fa_active = userInfos?.is2fa_active;
+    }, [userInfos])
+
+
 // MODIFICATIONS
-    // A REVOIR (verifications des inputs):
-
-
-// je pense qu il faut faire un dto pour modification image et is2fa_active et un autre dto pour le mot de passe, comme 
-// ca quand le mot de passe est toucher mais pas remplie on envois rien, auqnd le mot de passe est toucher, rempli et identique 
-// au confirm alors on appel /user/update_pwd avec le dto en question, on le hash etc..
-// quant au reste ca ne change rien
-
-// a faire : dans front : spliter les interfaces userinfos (pwd / le reste)
-//          dans le back : faire un dto juste pwd (UpdatePwdDto: FAIT), et une autre route PATCH 'change_password'
 
     const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (modifData.confirmpwd === '' && modifData.password === '' && modifData.urlImg === '' && modifData.is2fa_active === userInfos?.is2fa_active)
+        if (modifData.confirmpwd === '' && modifData.password === '' && modifData.urlImg === '' && modifData.is2fa_active === userInfos?.is2fa_active) // nothing changed
             return ;
-        if (!isDisabled){
-            if (modifData.password?.length !== undefined && (modifData.password !== modifData.confirmpwd))
+    
+    
+    // PASSWORD :
+        if (!isDisabled){ // le bouton "modifier" du pwd a été cliqué
+            if (modifData.password?.length !== 0 && modifData.confirmpwd?.length !== 0) // si des letrtes ont ete rentrees
             {
-                setErrorMessage('les passwords ne correspondent pas !');
-                return ;
-            }
+                if (modifData.password?.length !== undefined && (modifData.password !== modifData.confirmpwd)) // si pwd et comfirm ne correspondent pas 
+                {
+                    setErrorMessage('les passwords ne correspondent pas !');
+                    return ;
+                }
+                else {
+                    const response = await fetch(
+                        'http://localhost:3001/api/user/update_password', // PATCH update_password
+                        {
+                            method: 'PATCH',
+                            body: JSON.stringify({
+                                password: modifData.password,
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${jwtToken}`,
+                            },
+                        },);
+                        if (response.ok) {
+                            const user = await response.json();
+                            setUserInfos(user);
+                        } else {
+                            navigate('/login');
+                            alert("Vous avez été déconnecté");
+                            // ou recreer un jwt  
+                        }
+                        setIsDisabled(true);
+                        setShowConfirmPassword(false);
+                        setErrorMessage('');
+                    }
+                }
         }
-        // if (modifData.password?.length === 0 && modifData.confirmpwd?.length === 0)
-        // {
-        //     console.log(modifData.password); // == ''
-        //     console.log(userInfos?.password); // undifined
-            
-        //     modifData.password = userInfos?.password;
-        // }
+        
         if (modifData.is2fa_active === userInfos?.is2fa_active && modifData.urlImg === userInfos.urlImg)
         {
-            console.log("verif OK");
+            console.log("\n\n=====verif OK");
             setIsDisabled(true);
             setShowConfirmPassword(false);
+            return ;
         }
         
         const rep = await fetch(
@@ -118,7 +139,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             {
                 method: 'PATCH',
                 body: JSON.stringify({
-                    password: modifData.password,
                     is2fa_active: modifData.is2fa_active,
                     urlImg: modifData.urlImg
                 }),
@@ -129,6 +149,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             },);
             if (rep.ok) {
                 const user = await rep.json();
+                console.log("2fa & urlImg changed : ", user.is2fa_active, user.urlImg);
                 setUserInfos(user);
             } else {
                 navigate('/login');

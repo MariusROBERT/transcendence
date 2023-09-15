@@ -9,9 +9,6 @@ import {
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
 export class UpdateUserDto {
-    @IsOptional()
-    @IsString()
-    password: string;
 
     @IsOptional()
     @IsString()

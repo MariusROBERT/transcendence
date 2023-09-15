@@ -20,7 +20,7 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import { PublicProfileDto, UpdateUserDto } from '../user/dto/user.dto';
+import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from '../user/dto/user.dto';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -48,9 +48,18 @@ export class UserController {
     async UpdateProfile(
         @Body() updateUserDto: UpdateUserDto,
         @User() user: UserEntity,
-        @UploadedFile() file
+        // @UploadedFile() file
     ): Promise<UserEntity> {
-        return await this.UserService.updateProfile(updateUserDto, user, file);
+        return await this.UserService.updateProfile(updateUserDto, user)//, file);
+    }
+
+    @Patch('update_password')
+    @UseGuards(JwtAuthGuard)
+    async UpdatePassword(
+        @Body() updatePwdDto: UpdatePwdDto,
+        @User() user: UserEntity,
+    ) {
+        return this.UserService.updatePassword(updatePwdDto, user);
     }
 
     // -- PUBLIC -- :

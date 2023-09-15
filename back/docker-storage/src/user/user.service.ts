@@ -10,7 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { PublicProfileDto, UpdateUserDto } from './dto/user.dto';
+import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -33,7 +33,7 @@ export class UserService {
     async updateProfile(
         profil: UpdateUserDto,
         user: UserEntity,
-        file // TODO: pour stocker img
+        // file // TODO: pour stocker img
     ): Promise<UserEntity> {
         const id: number = user.id;
         const errors = await validate(profil);
@@ -42,21 +42,21 @@ export class UserService {
         }
         console.log("modifications apportées: ", profil);
         
-        // NEW_PASSWORD
+        // // NEW_PASSWORD
         
-        if (profil.password || profil.password !== '')
-        {
-            console.log("PTN DE PROFIL PWD ==== ", profil.password);
-            const name = user.username
-            const userForSalt = await this.UserRepository // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
-            .createQueryBuilder('user')
-            .where('user.username = :name', { name })
-            .getOne();
-            console.log(userForSalt.salt);
-            const hashedPwd = await bcrypt.hash(profil.password, userForSalt.salt);
-            console.log("wsh c quoi le bail");
-            profil.password = hashedPwd;
-        }
+        // if (profil.password || profil.password !== '')
+        // {
+        //     console.log("PTN DE PROFIL PWD ==== ", profil.password);
+        //     const name = user.username
+        //     const userForSalt = await this.UserRepository // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
+        //     .createQueryBuilder('user')
+        //     .where('user.username = :name', { name })
+        //     .getOne();
+        //     console.log(userForSalt.salt);
+        //     const hashedPwd = await bcrypt.hash(profil.password, userForSalt.salt);
+        //     console.log("wsh c quoi le bail");
+        //     profil.password = hashedPwd;
+        // }
 
         // NEW_IMAGE
         // if (profil.urlImg != '')
@@ -73,15 +73,37 @@ export class UserService {
             id, // search user == id
             ...profil, // modif seulement les differences
         });
-        console.log("NEWPROFIL ========= ", newProfil);
-        
-        console.log("- newProfil: ", profil.password);
         if (!newProfil) {
             throw new NotFoundException(
                 `Utilisateur avec l'ID ${id} non trouvé.`,
             );
         }
         return await this.UserRepository.save(newProfil);
+    }
+
+    async updatePassword(updatePwdDto: UpdatePwdDto, user: UserEntity) {
+        // NEW_PASSWORD
+        // le hasher etc..
+        //  if (updatePwdDto.password || updatePwdDto.password !== '')
+        //  {
+            const id = user.id;
+             console.log("PTN DE updatePwdDto PWD ==== ", updatePwdDto.password);
+             const name = user.username
+             const userForSalt = await this.UserRepository // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
+             .createQueryBuilder('user')
+             .where('user.username = :name', { name })
+             .getOne();
+             console.log(userForSalt.salt);
+             const hashedPwd = await bcrypt.hash(updatePwdDto.password, userForSalt.salt);
+             console.log("wsh c quoi le bail");
+             updatePwdDto.password = hashedPwd;
+             const newProfil = await this.UserRepository.preload({
+                id, // search user == id
+                ...updatePwdDto, // modif seulement les differences
+            });
+        //  }
+        return await this.UserRepository.save(newProfil);
+
     }
 
     // -- Public -- :
