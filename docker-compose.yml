@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-
   front:
     container_name: front
     build:
@@ -46,22 +45,21 @@ volumes:
   front:
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'front/docker-storage'
+      type: "none"
+      o: "bind"
+      device: "front/docker-storage"
   back:
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'back/docker-storage'
+      type: "none"
+      o: "bind"
+      device: "back/docker-storage"
   database:
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: 'database/docker-storage'
-
+      type: "none"
+      o: "bind"
+      device: "database/docker-storage"
 
 networks:
   database:

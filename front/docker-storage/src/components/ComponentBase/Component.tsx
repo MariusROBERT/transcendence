@@ -1,14 +1,8 @@
-import "../../App.css"
-import { color } from '../../utils/Global'
+import "../../App.css";
+import { color } from "../../utils/Global";
 
-interface Props {
-}
+interface Props {}
 
-export function Component({}: Props)
-{
-    return (
-        <>
-
-        </>
-    );
+export function Component({}: Props) {
+  return <></>;
 }

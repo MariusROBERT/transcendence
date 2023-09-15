@@ -91,11 +91,16 @@ export class ChannelService {
       );
   }
 
-  async addUserInChannel(userdto: UserAddChanDto, id: number): Promise<ChannelEntity> {
+  async addUserInChannel(
+    userdto: UserAddChanDto,
+    id: number,
+  ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userdto.id);
-    if (channel.priv_msg == true) throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user)) throw new Error('The user is already in channel');
+    if (channel.priv_msg == true)
+      throw new Error('This channel is a private message channel');
+    if (channel.users.includes(user))
+      throw new Error('The user is already in channel');
     if (channel.baned.includes(user)) throw new Error('The user is banned');
     if (userdto.password != channel.password) throw new Error('Wrong password');
     channel.users = [...channel.users, user];
@@ -202,10 +207,8 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user))
-      throw new Error('The user is in channel');
-    if (channel.baned.includes(user))
-      throw new Error('The user is not ban');
+    if (channel.users.includes(user)) throw new Error('The user is in channel');
+    if (channel.baned.includes(user)) throw new Error('The user is not ban');
     channel.baned.indexOf(user) !== -1 &&
       channel.baned.splice(channel.baned.indexOf(user), 1);
     channel.users = [...channel.users, user];
