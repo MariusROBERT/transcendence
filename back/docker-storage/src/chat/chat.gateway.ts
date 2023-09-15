@@ -100,8 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(
       `Client:${client} message chat ${message}`,
     );
-    this.server.emit('message', this.messages);
+    this.server.emit('message', this.messages[this.messages.length - 1]);
     console.log(this.messages);
-    client.broadcast.emit('message', message);
   }
 }

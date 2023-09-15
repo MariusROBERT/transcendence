@@ -20,9 +20,9 @@ export function ChatPanel({viewport, width}:Props)
     const getMsg = (message:any) => {
         var owner = false;
 
-        if (message[message.length - 1].sock_id == socket.id)
+        if (message.sock_id == socket.id)
             owner = true;
-        setMessage([...msg, {msg:message[message.length - 1].msg, owner:owner}]);
+        setMessage([...msg, {msg:message.msg, owner:owner}]);
         setInputValue('');
     }
 
