@@ -10,7 +10,9 @@ import {
     Patch,
     Post,
     Req,
+    UploadedFile,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
@@ -20,6 +22,7 @@ import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import { PublicProfileDto, UpdateUserDto } from '../user/dto/user.dto';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -41,11 +44,13 @@ export class UserController {
     // update_profile
     @Patch()
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('urlImg'))
     async UpdateProfile(
         @Body() updateUserDto: UpdateUserDto,
         @User() user: UserEntity,
+        @UploadedFile() file
     ): Promise<UserEntity> {
-        return await this.UserService.updateProfile(updateUserDto, user);
+        return await this.UserService.updateProfile(updateUserDto, user, file);
     }
 
     // -- PUBLIC -- :

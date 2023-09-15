@@ -793,10 +793,10 @@
   resolved "https://registry.npmjs.org/@nestjs/passport/-/passport-10.0.1.tgz"
   integrity sha512-hS22LeNj0LByS9toBPkpKyZhyKAXoHACLS1EQrjbAJJEQjhocOskVGwcMwvMlz+ohN+VU804/nMF1Zlya4+TiQ==
 
-"@nestjs/platform-express@^10.0.0":
-  version "10.2.4"
-  resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-10.2.4.tgz"
-  integrity sha512-E9F6WYo6bNwvTT0saJpkr8t4BJLbZRwrX5EKbtBRQqyRcw6NAvlKdacKzoo+Sompdre0IbF8AvNRFk4uLZTWqA==
+"@nestjs/platform-express@^10.0.0", "@nestjs/platform-express@^10.2.5":
+  version "10.2.5"
+  resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-10.2.5.tgz"
+  integrity sha512-BChjJfsVtsvds31rp5V7LwM2XEQaxkFKUE0TGSH91m95FRO65Fii5RH6atasmhZTIW+T8LR5LuI/MO7cgZOiVg==
   dependencies:
     body-parser "1.20.2"
     cors "2.8.5"
@@ -4232,6 +4232,19 @@ ms@2.1.3:
   version "2.1.3"
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
+
+multer@^1.4.5-lts.1:
+  version "1.4.5-lts.1"
+  resolved "https://registry.npmjs.org/multer/-/multer-1.4.5-lts.1.tgz"
+  integrity sha512-ywPWvcDMeH+z9gQq5qYHCCy+ethsk4goepZ45GLD63fOu0YcNecQxi64nDs3qluZB+murG3/D4dJ7+dGctcCQQ==
+  dependencies:
+    append-field "^1.0.0"
+    busboy "^1.0.0"
+    concat-stream "^1.5.2"
+    mkdirp "^0.5.4"
+    object-assign "^4.1.1"
+    type-is "^1.6.4"
+    xtend "^4.0.0"
 
 multer@1.4.4-lts.1:
   version "1.4.4-lts.1"

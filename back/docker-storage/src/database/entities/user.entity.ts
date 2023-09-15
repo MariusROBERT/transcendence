@@ -34,9 +34,9 @@ export class UserEntity {
     urlImg!: string;
 
     @Column()
-    salt: string;
+    salt!: string;
 
-    @Column({ unique: true })
+    @Column()
     password!: string; // hashPwd
 
     @Column({ default: false })

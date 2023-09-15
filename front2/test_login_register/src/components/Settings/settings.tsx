@@ -10,7 +10,7 @@ interface SettingsProps {
 
 interface UserInfos {
     urlImg: string;
-    password: string | undefined;
+    password: string;
     is2fa_active: boolean;
 }
 
@@ -24,7 +24,6 @@ interface Modifications {
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
     const jwtToken = Cookies.get('jwtToken');
-    const [salt, setSalt] = useState<string | number>('');
     const navigate = useNavigate();
     const [isDisabled, setIsDisabled] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -47,11 +46,52 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         setPasswordType(passwordType === 'password' ? 'text' : 'password');
     }
 
+    let pwd:any = '';
+
+// recuperation des donnees du user et surtout de l'etat is2fa_active pour afficher
+    useEffect(() => {
+        const getUserInfos = async () => {
+            const rep = await fetch(
+                'http://localhost:3001/api/user',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${jwtToken}`,
+                    },
+                },);
+            if (rep.ok) {
+                const user = await rep.json();
+                setUserInfos(user);
+                pwd = userInfos?.password;
+                console.log("ici: ", userInfos?.is2fa_active);
+            } else { // si je delete le cookie du jwt
+                navigate('/login');
+                alert("Vous avez été déconnecté");
+            }
+        }
+        if (jwtToken) 
+            getUserInfos(); // appel de la fonction si le jwt est good
+    }, [jwtToken]);
+
+
+// MODIFICATIONS
+    // A REVOIR (verifications des inputs):
+
+
+// je pense qu il faut faire un dto pour modification image et is2fa_active et un autre dto pour le mot de passe, comme 
+// ca quand le mot de passe est toucher mais pas remplie on envois rien, auqnd le mot de passe est toucher, rempli et identique 
+// au confirm alors on appel /user/update_pwd avec le dto en question, on le hash etc..
+// quant au reste ca ne change rien
+
+// a faire : dans front : spliter les interfaces userinfos (pwd / le reste)
+//          dans le back : faire un dto juste pwd (UpdatePwdDto: FAIT), et une autre route PATCH 'change_password'
+
     const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("pwd: ", modifData.password);
-        console.log("LENGTH pwd: ", modifData.password?.length);
-        console.log("cfrmPwd: ", modifData.confirmpwd);
+
+        if (modifData.confirmpwd === '' && modifData.password === '' && modifData.urlImg === '' && modifData.is2fa_active === userInfos?.is2fa_active)
+            return ;
         if (!isDisabled){
             if (modifData.password?.length !== undefined && (modifData.password !== modifData.confirmpwd))
             {
@@ -59,26 +99,22 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 return ;
             }
         }
-        if (modifData.password?.length === 0 && modifData.confirmpwd?.length === 0)
-            modifData.password = userInfos?.password;
+        // if (modifData.password?.length === 0 && modifData.confirmpwd?.length === 0)
+        // {
+        //     console.log(modifData.password); // == ''
+        //     console.log(userInfos?.password); // undifined
+            
+        //     modifData.password = userInfos?.password;
+        // }
         if (modifData.is2fa_active === userInfos?.is2fa_active && modifData.urlImg === userInfos.urlImg)
         {
             console.log("verif OK");
             setIsDisabled(true);
             setShowConfirmPassword(false);
-            // if (modifData.password) {
-            //     const hashedPwd = await bcrypt.hash(modifData.password, salt);
-            //     modifData.password = hashedPwd;
-            // }
-            // if (modifData.password === userInfos.password)
-            // {
-            //     setErrorMessage('le passwords est le meme !');
-            //     return ;
-            // }
         }
         
         const rep = await fetch(
-            'http://localhost:3001/api/user',
+            'http://localhost:3001/api/user', // PATCH
             {
                 method: 'PATCH',
                 body: JSON.stringify({
@@ -90,16 +126,13 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwtToken}`,
                 },
-            },
-            );
+            },);
             if (rep.ok) {
                 const user = await rep.json();
                 setUserInfos(user);
-                setSalt(user.salt);
-                console.log("coucou: ", user);
-            } else { // si je delete le cookie du jwt
+            } else {
                 navigate('/login');
-                alert("Vous avez ete deconnecte");
+                alert("Vous avez été déconnecté");
                 // ou recreer un jwt  
             }
             setIsDisabled(true);
@@ -107,39 +140,15 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             setErrorMessage('');
     };
 
-    useEffect(() => {
-        const getUserInfos = async () => {
-            const rep = await fetch(
-                'http://localhost:3001/api/user',
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${jwtToken}`,
-                    },
-                },
-                );
-                if (rep.ok) {
-                    const user = await rep.json();
-                    setUserInfos(user);
-                    console.log("coucou: ", user); // jai pas pwd
-                } else { // si je delete le cookie du jwt
-                    navigate('/login');
-                    alert("Vous avez ete deconnecte");
-                }
-            }
-            if (jwtToken) {
-                getUserInfos(); // appel de la fonction si le jwt est good
-        }
-    }, [jwtToken]);
-    
     return (
         <div>
             <form onSubmit={saveModifications} style={settingsStyle}>
                 <button onClick={onClose}>Fermer</button>
                 <div style={modifContainer}> {/* IMG */}
                     <img style={imgStyle} src={userInfos?.urlImg} alt="" />
-                    <input type="file" />
+                    <input type="file"
+                        onChange={(e) => setModifData({ ...modifData, urlImg: e.target.value })}
+                    />
                 </div>
                 <div style={modifContainer}> {/* PWD */}
                     <input
@@ -166,7 +175,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 </div>
                 <div style={modifContainer}> {/* 2FA */}
                     <p>2FA</p>
-                    <SwitchToggle onChange={(change) => setModifData({ ...modifData, is2fa_active: change})} /> {/*recup l'etat de base du 2fa*/}
+                    <SwitchToggle onChange={(change) => setModifData({ ...modifData, is2fa_active: change })}
+                    checked={userInfos?.is2fa_active || false} /> 
+                        {/*recup l'etat de base du 2fa*/}
                 </div>
                 {errorMessage && (
                     <div style={{ color: 'red', marginTop: '5px' }}>

@@ -19,6 +19,8 @@ export class AuthController {
         @Body() credentials: LoginCreditDto,
         // @Res() res: Response
     ) {
+        console.log("b4 pwd: ", credentials.password);
+
         return await this.authService.login(credentials); // return acces_token
     }
 }

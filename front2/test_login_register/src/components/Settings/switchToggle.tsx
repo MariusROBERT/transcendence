@@ -1,43 +1,34 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Switch from "react-switch";
 
 interface SwitchToggleProps {
-  onChange: (checked: boolean) => void; // Fonction de rappel
+	onChange: (checked: boolean) => void; // Fonction de rappel
+	checked: boolean,
 }
 
-interface SwitchToggleState {
-  checked: boolean;
-}
-
-class SwitchToggle extends Component<SwitchToggleProps, SwitchToggleState> {
-  constructor(props: SwitchToggleProps) {
-    super(props);
-    this.state = { checked: false };
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(checked: boolean) {
-    this.setState({ checked });
-    // Appeler la fonction de rappel avec la nouvelle valeur
-    this.props.onChange(checked);
-  }
-
-  render() {
-    return (
-      <label htmlFor="normal-switch">
-        <Switch
-          onChange={this.handleChange}
-          checked={this.state.checked}
-          id="normal-switch"
-        />
-      </label>
-    );
-  }
-}
-
-export default SwitchToggle;
-
-
-
-
-
+const SwitchToggle: React.FC<SwitchToggleProps> = ({ onChange, checked }) => {
+	const [isChecked, setIsChecked] = useState(checked);
+  
+	useEffect(() => {
+		setIsChecked(checked); // Mettre à jour isChecked lorsque checked change
+	}, [checked]);
+  
+	const handleChange = (newChecked: boolean) => {
+		setIsChecked(newChecked);
+		onChange(newChecked);
+	};
+	
+	return (
+		<label htmlFor="normal-switch">
+			<Switch onChange={handleChange} checked={isChecked} id="normal-switch" />
+		</label>
+	);
+  };
+  
+  export default SwitchToggle;
+  
+  
+  
+  
+  
+  

@@ -63,3 +63,12 @@ export class PublicProfileDto {
     @IsBoolean()
     is_friend: boolean;
 }
+
+
+
+export class UpdatePwdDto {
+
+    @IsString()
+    password: string;
+
+}

@@ -14,6 +14,7 @@ import { PublicProfileDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -32,21 +33,49 @@ export class UserService {
     async updateProfile(
         profil: UpdateUserDto,
         user: UserEntity,
+        file // TODO: pour stocker img
     ): Promise<UserEntity> {
         const id: number = user.id;
         const errors = await validate(profil);
-        console.log(profil);
-
-        console.log(errors);
-
         if (errors.length > 0) {
             throw new BadRequestException(errors);
         }
+        console.log("modifications apportées: ", profil);
+        
+        // NEW_PASSWORD
+        
+        if (profil.password || profil.password !== '')
+        {
+            console.log("PTN DE PROFIL PWD ==== ", profil.password);
+            const name = user.username
+            const userForSalt = await this.UserRepository // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
+            .createQueryBuilder('user')
+            .where('user.username = :name', { name })
+            .getOne();
+            console.log(userForSalt.salt);
+            const hashedPwd = await bcrypt.hash(profil.password, userForSalt.salt);
+            console.log("wsh c quoi le bail");
+            profil.password = hashedPwd;
+        }
+
+        // NEW_IMAGE
+        // if (profil.urlImg != '')
+        // {
+        //     console.log("IMAGE ALLLRIGHT");
+            
+        //     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        //         console.log("IMAGE ALLLRIGHT2222");
+        //         throw new Error('Ce type de fichier n\'est pas autorisé.');
+        //     }
+        // }
 
         const newProfil = await this.UserRepository.preload({
             id, // search user == id
             ...profil, // modif seulement les differences
         });
+        console.log("NEWPROFIL ========= ", newProfil);
+        
+        console.log("- newProfil: ", profil.password);
         if (!newProfil) {
             throw new NotFoundException(
                 `Utilisateur avec l'ID ${id} non trouvé.`,
@@ -68,6 +97,8 @@ export class UserService {
         PublicProfile.id = profile.id;
         PublicProfile.username = profile.username;
         PublicProfile.urlImg = profile.urlImg;
+        console.log(profile.urlImg);
+        
         PublicProfile.user_status = profile.user_status;
         PublicProfile.winrate = profile.winrate;
 

@@ -33,6 +33,7 @@ export class AuthService {
         user.invited = [];
         user.invites = [];
         try {
+            console.log(user.salt);
             await this.userRepository.save(user); // save user in DB
         } catch (e) {
             throw new ConflictException(`username or password already used`);
@@ -48,11 +49,13 @@ export class AuthService {
         const { username, password } = creditentials;
         try {
             const user = await this.userRepository
-                .createQueryBuilder('user')
-                .where('user.username = :username', { username })
-                .getOne();
-
+            .createQueryBuilder('user')
+            .where('user.username = :username', { username })
+            .getOne();
+            console.log(user.salt);
             const hashedPwd = await bcrypt.hash(password, user.salt);
+            console.log("hashed: ", hashedPwd);
+            console.log("user.password: ", user.password);
             if (hashedPwd === user.password) {
                 const payload = {
                     username,
@@ -61,6 +64,7 @@ export class AuthService {
                 const jwt = this.jwtService.sign(payload);
                 user.user_status = UserStateEnum.ON;
                 console.log("connecté");
+            console.log("imgUrl: ", user.urlImg);
                 return { 'access-token': jwt };
             } else {
                 throw new NotFoundException(`wrong password`);
