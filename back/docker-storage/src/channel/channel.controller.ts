@@ -114,6 +114,15 @@ export class ChannelController {
     return this.ChannelService.MuteUserFromChannel(user.id, id, time_sec);
   }
 
+  @Patch('mute/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async UnMuteUserFromChannel(
+    @User() user: UserChanDto,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+    return this.ChannelService.UnMuteUserFromChannel(user.id, id);
+  }
+
   @Patch('ban/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
@@ -121,6 +130,15 @@ export class ChannelController {
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
     return this.ChannelService.BanUserFromChannel(user.id, id);
+  }
+
+  @Patch('ban/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async UnBanUserFromChannel(
+    @User() user: UserChanDto,
+    @Param('id_chan', ParseIntPipe) id: number,
+  ) {
+    return this.ChannelService.UnBanUserFromChannel(user.id, id);
   }
 
   @Post('add_msg')

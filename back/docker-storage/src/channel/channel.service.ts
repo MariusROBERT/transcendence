@@ -168,7 +168,7 @@ export class ChannelService {
     return channel;
   }
 
-  async DeMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
+  async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
@@ -193,6 +193,22 @@ export class ChannelService {
     channel.users.indexOf(user) !== -1 &&
       channel.users.splice(channel.users.indexOf(user), 1);
     channel.baned = [...channel.baned, user];
+    await this.ChannelRepository.save(channel);
+    return channel;
+  }
+
+  async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
+    if (channel.priv_msg == true)
+      throw new Error('This channel is a private message channel');
+    if (channel.users.includes(user))
+      throw new Error('The user is in channel');
+    if (channel.baned.includes(user))
+      throw new Error('The user is not ban');
+    channel.baned.indexOf(user) !== -1 &&
+      channel.baned.splice(channel.baned.indexOf(user), 1);
+    channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
     return channel;
   }
