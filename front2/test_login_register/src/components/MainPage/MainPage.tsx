@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react';
-import LeaderBoard from '../Leaderboard/leaderboard';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar/navbar';
 
 function MainPage() {
-    const [leaderBoardVisible, setLeaderBoardVisible] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const handleInputClick = async () => {
-        setLeaderBoardVisible(true);
-    };
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
-    };
 
     const notificationBadgeStyle: React.CSSProperties = {
         position: 'absolute',
@@ -36,6 +27,7 @@ function MainPage() {
     
     const [showNotificationBadge, setShowNotificationBadge] = useState(false);
     const jwtToken = Cookies.get('jwtToken');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,42 +40,30 @@ function MainPage() {
                         Authorization: `Bearer ${jwtToken}`,
                     },
                 },
-            );
-            if (rep.ok) {
-                const user = await rep.json();
-                if (user.invites)
+                );
+                if (rep.ok) {
+                    const user = await rep.json();
+                    if (user.invites && Array.isArray(user.invites)  && user.invites.length > 0)
                     setShowNotificationBadge(true);
-            } else {
-                // throw
+                } else { // si je delete le cookie du jwt
+                    navigate('/login');
+                    alert("Vous avez ete deconnecte");
+                    // ou recreer un jwt  
+                }
             }
-        }
     fetchData(); // Appel de la fonction fetchData dans useEffect
     }, [jwtToken]); // Déclenché lorsque jwtToken change
-
 
     return (
         <>
             <div className="home">
-                Main Page
-                <input
-                    type="text"
-                    onClick={handleInputClick}
-                    placeholder="Rechercher par nom d'utilisateur"
-                    onChange={handleInputChange}
-                    value={searchTerm}
-                />
-                {leaderBoardVisible && (
-                    <button onClick={() => setLeaderBoardVisible(false)}>
-                        Fermer le leaderboard
-                    </button>
-                )}
+                <Navbar/>
                 {showNotificationBadge && (
                     <div style={notificationBadgeStyle}>
                         <span style={notificationCountStyle}>1</span>
                     </div>
                 )}
             </div>
-            {leaderBoardVisible && <LeaderBoard searchTerm={searchTerm} />}
         </>
     );
 }

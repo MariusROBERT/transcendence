@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { RedirectToHome } from '../Auth/auth_redirect'
 
 interface FormData {
     username: string;
@@ -8,7 +8,6 @@ interface FormData {
 }
 
 const Login: React.FC = () => {
-
 
     const [formData, setFormData] = useState<FormData>({
         username: '',
@@ -28,40 +27,31 @@ const Login: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
-        if (formData.username !== '' && formData.password !== '') {
-            try {
-                const response = await fetch(
-                    'http://localhost:3001/api/auth/login',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            username: formData.username,
-                            password: formData.password,
-                        }),
+        
+        try {
+            const response = await fetch(
+                'http://localhost:3001/api/auth/login',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
-                );
-                if (response.ok) {
-                    // stocker jwt dans cookie
-                    const jwt = await response.json();
-                    Cookies.set('jwtToken', jwt['access-token'], {
-                        expires: 7,
-                    }); // 7 jours
-                    const jwtToken = Cookies.get('jwtToken');
-                    navigate('/');
-                    
-                } else {
-                    setErrorMessage(
-                        "Le username ou le password n'est pas bon !",
-                        );
-                    console.error("Échec de connection : mauvaises informations. Error", response.status);
-                }
-            } catch (error) {
-                console.error(`Error : ${error}`);
+                    body: JSON.stringify({
+                        username: formData.username,
+                        password: formData.password,
+                    }),
+                },
+            );
+            if (response.ok) {
+                RedirectToHome(navigate, response);
+            } else {
+                setErrorMessage(
+                    "Le username ou le password n'est pas bon !",
+                    );
+                console.error("Échec de connection : mauvaises informations. Error", response.status);
             }
+        } catch (error) {
+            console.error(`Error : ${error}`);
         }
     };
 

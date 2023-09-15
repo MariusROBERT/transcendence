@@ -31,7 +31,6 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     }
 
     const jwtToken = Cookies.get('jwtToken');
-    console.log(jwtToken);
     
     const [userElements, setUserElements] = useState<JSX.Element[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);

@@ -2,10 +2,8 @@ import { UserStateEnum, UserRoleEnum } from 'src/utils/enums/user.enum';
 import {
     Column,
     Entity,
-    JoinColumn,
     JoinTable,
     ManyToMany,
-    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';

@@ -6,8 +6,6 @@ interface NotificationBadgeProps {
 
 const NotificationBadge: React.FC<NotificationBadgeProps> = ({ showBadge }) => {
 
-
-
   return showBadge ? (
     <div className="notification-badge">
       <span className="notification-count">1</span>

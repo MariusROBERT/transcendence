@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { RedirectToHome } from '../Auth/auth_redirect'
 
 interface FormData {
     username: string;
@@ -8,7 +8,7 @@ interface FormData {
     confirmPassword: string;
 }
 
-function Register() {
+const Register: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
         username: '',
         password: '',
@@ -25,7 +25,7 @@ function Register() {
             [name]: value,
         });
     };
-
+    
     // FONCTION REGISTER & REDIRECTION TO MAIN PAGE
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -33,7 +33,7 @@ function Register() {
         if (formData.username !== '' && formData.password !== '') {
             if (formData.password === formData.confirmPassword) {
                 try { // REGISTER
-                    const response = await fetch(
+                    const registerResponse = await fetch(
                         'http://localhost:3001/api/auth/register',
                         {
                             method: 'POST',
@@ -47,10 +47,10 @@ function Register() {
                             },
                         },
                     );
-                    if (response.ok) {
+                    if (registerResponse.ok) {
                         console.log('Inscription réussie !');
-                        try {  // LOGIN ET REDIRECTION
-                            const response = await fetch(
+                        try {  // LOGIN
+                            const loginResponse = await fetch(
                                 'http://localhost:3001/api/auth/login',
                                 {
                                     method: 'POST',
@@ -63,12 +63,8 @@ function Register() {
                                     }),
                                 },
                             );
-                            if (response.ok) {
-                                const jwt = await response.json();
-                                Cookies.set('jwtToken', jwt['access-token'], { // stocker jwt dans cookie
-                                    expires: 7,
-                                }); // 7 jours
-                                navigate('/');
+                            if (loginResponse.ok) { // REDIRECTION
+                                RedirectToHome(navigate, loginResponse);
                             }
                         } catch (error) {
                             console.error(
@@ -78,7 +74,7 @@ function Register() {
                         }
                     } else {
                         setErrorMessage('Ce username est deja pris !');
-                        console.error("Échec de l'inscription. Error", response.status);
+                        console.error("Échec de l'inscription. Error", registerResponse.status);
                     }
                 } catch (error) {
                     console.error(
@@ -138,3 +134,4 @@ function Register() {
 }
 
 export default Register;
+ 
