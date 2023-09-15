@@ -11,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
-import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
+import {
+  ChannelEntity,
+  MessageEntity,
+} from 'src/database/entities/channel.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { User } from 'src/utils/decorators/user.decorator';
 import {
@@ -63,7 +66,11 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserChanDto,
   ): Promise<ChannelEntity> {
-    return await this.ChannelService.updateChannel(id, updateChannelDto, user.id);
+    return await this.ChannelService.updateChannel(
+      id,
+      updateChannelDto,
+      user.id,
+    );
   }
 
   @Patch('add_user/:id') // id_chan
@@ -118,9 +125,7 @@ export class ChannelController {
 
   @Post('add_msg')
   //@UseGuards(JwtAuthGuard)
-  async AddMessageToChannel(
-    @Body() addmsgDto: AddMsgDto,
-  ) {
+  async AddMessageToChannel(@Body() addmsgDto: AddMsgDto) {
     return this.ChannelService.AddMessageToChannel(addmsgDto);
   }
 }

@@ -11,9 +11,7 @@ export class MessagesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async AddMessage(
-    @Body() AddMsgDto: AddMsgDto,
-  ): Promise<MessageEntity> {
+  async AddMessage(@Body() AddMsgDto: AddMsgDto): Promise<MessageEntity> {
     return await this.MessageService.addMsg(AddMsgDto);
   }
 }
