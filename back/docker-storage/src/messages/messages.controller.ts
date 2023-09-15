@@ -16,10 +16,10 @@ export class MessagesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async AddMessage(
-    @Body() AddMsgDto: AddMsgDto,
+    @Body() addMsgDto: AddMsgDto,
     @User() user: UserEntity,
     channel: ChannelEntity,
   ): Promise<MessageEntity> {
-    return await this.MessageService.addMsg(AddMsgDto, user, channel);
+    return await this.MessageService.addMsg(addMsgDto, user, channel);
   }
 }

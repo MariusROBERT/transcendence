@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -45,8 +44,17 @@ export class ChannelController {
 
   @Post('new')
   //@UseGuards(JwtAuthGuard)
-  async newChannel(@Body() chanDto: CreateChannelDto) {
-    return this.channelService.newChannel(chanDto);
+  async newChannel(
+    @Body() createChannelDto: CreateChannelDto,
+    @User() user: UserEntity,
+  ): Promise<ChannelEntity> {
+    const chan = await this.channelService.createChannel(
+      createChannelDto,
+      user,
+    );
+    console.log('chan: ', chan);
+    console.log('chan.admins: ', chan.admins);
+    return chan;
   }
 
   @Patch('/:id') // id_chan
@@ -76,7 +84,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.ChannelService.addAdminInChannel(user, id);
+    const chan = await this.channelService.addAdminInChannel(user, id);
     console.log(chan.users);
     return chan;
   }
@@ -87,7 +95,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    return this.ChannelService.KickUserFromChannel(user, id);
+    return this.channelService.KickUserFromChannel(user, id);
   }
 
   @Patch('mute/:id') // id_chan
@@ -97,7 +105,7 @@ export class ChannelController {
     @Param('id_chan', ParseIntPipe) id: number,
     @Param('time_sec', ParseIntPipe) time_sec: number,
   ) {
-    return this.ChannelService.MuteUserFromChannel(user, id, time_sec);
+    return this.channelService.MuteUserFromChannel(user, id, time_sec);
   }
 
   @Patch('ban/:id') // id_chan
@@ -106,6 +114,6 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    return this.ChannelService.BanUserFromChannel(user, id);
+    return this.channelService.BanUserFromChannel(user, id);
   }
 }

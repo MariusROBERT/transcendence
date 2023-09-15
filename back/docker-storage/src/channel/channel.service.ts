@@ -8,13 +8,8 @@ import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
-import {
-  ChannelDto,
-  CreateChannelDto,
-  UpdateChannelDto,
-} from './dto/channel.dto';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 
 @Injectable()
@@ -80,7 +75,7 @@ export class ChannelService {
 
   async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     if (channel.users.includes(user))
       throw new Error('The user is already in channel');
@@ -95,7 +90,7 @@ export class ChannelService {
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     if (!channel.users.includes(user))
       throw new Error('The user is not in channel');
@@ -111,7 +106,7 @@ export class ChannelService {
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     //  Todo: Check if admin can be kicked
     if (channel.admins.includes(user) || channel.owner == user)
@@ -131,7 +126,7 @@ export class ChannelService {
     sec: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     //  Todo: Check if admin can be muted
     if (channel.admins.includes(user) || channel.owner == user)
@@ -140,9 +135,9 @@ export class ChannelService {
     if (sec <= 0)
       throw new Error('Time in second cannot be equal or inferior to zero');
     //  Todo: Check if user is already muted, if it is juste update the Date
-    var date = new Date(); // Get the current date
+    const date = new Date(); // Get the current date
     date.setSeconds(date.getSeconds() + sec); // Add time in second to the date
-    var muteEntity: MutedEntity;
+    let muteEntity: MutedEntity;
     muteEntity.channel = channel;
     muteEntity.user = user;
     muteEntity.endDate = date;
@@ -156,7 +151,7 @@ export class ChannelService {
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     //  Todo: Check if admin can be banned
     if (channel.admins.includes(user) || channel.owner == user)

@@ -1,11 +1,11 @@
-import { color } from "../../Global";
-import { SidePanel } from "../SidePanel/SidePanel";
-import Background from "../Background/Background";
-import { Button } from "../Button/Button";
-import React from "react";
-import { Viewport } from "../../app/Viewport";
-import { ContactPanel } from "../ContactPanel/ContactPanel";
-import { ChatPanel } from "../ChatPanel/ChatPanel";
+import { color } from '../../Global';
+import { SidePanel } from '../SidePanel/SidePanel';
+import Background from '../Background/Background';
+import { Button } from '../Button/Button';
+import React from 'react';
+import { Viewport } from '../../app/Viewport';
+import { ContactPanel } from '../ContactPanel/ContactPanel';
+import { ChatPanel } from '../ChatPanel/ChatPanel';
 
 interface Props {
   panelWidth: number;
@@ -17,9 +17,9 @@ export function MainPage({ panelWidth, viewport }: Props) {
     <>
       <Background
         bg_color={color.clear}
-        flex_direction={"row"}
-        flex_justifyContent={"space-between"}
-        flex_alignItems={"stretch"}
+        flex_direction={'row'}
+        flex_justifyContent={'space-between'}
+        flex_alignItems={'stretch'}
       >
         <SidePanel
           viewport={viewport}
@@ -31,9 +31,9 @@ export function MainPage({ panelWidth, viewport }: Props) {
             <ContactPanel></ContactPanel>
           </Background>
         </SidePanel>
-        <Background bg_color={color.clear} flex_justifyContent={"space-around"}>
+        <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
           <input />
-          <Button onClick={() => console.log("play clicked")}>Play</Button>
+          <Button onClick={() => console.log('play clicked')}>Play</Button>
           <br />
         </Background>
         <SidePanel

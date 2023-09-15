@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Background from '../components/Background/Background';
 import { backgroundImage, color } from '../Global';
-
 import { Login } from '../components/Login/Login';
 import { useEffectViewport, Viewport } from './Viewport';
 import { MainPage } from '../components/MainPage/MainPage';
