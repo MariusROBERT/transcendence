@@ -14,8 +14,9 @@ import {
   UpdateChannelDto,
 } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { MutedEntity } from 'src/database/entities/muted.entity';
+import { MessagesService } from 'src/messages/messages.service';
+import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 
 @Injectable()
 export class ChannelService {
@@ -23,6 +24,7 @@ export class ChannelService {
     @InjectRepository(ChannelEntity)
     private ChannelRepository: Repository<ChannelEntity>,
     private userService: UserService,
+    private msgService: MessagesService,
   ) {}
 
   async createChannel(
@@ -157,5 +159,11 @@ export class ChannelService {
     channel.baned = [...channel.baned, user];
     await this.ChannelRepository.save(channel);
     return channel;
+  }
+
+  async AddMessageToChannel(msg:AddMsgDto) {
+    if (!msg.channel.users.includes(msg.sender))
+      throw new Error("The user is not in channel");
+    this.msgService.addMsg(msg);
   }
 }

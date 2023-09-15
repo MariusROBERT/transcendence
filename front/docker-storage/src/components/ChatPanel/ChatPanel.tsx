@@ -36,7 +36,7 @@ export function ChatPanel({viewport, width}:Props)
     function onEnterPressed(){
         if (inputValue == '')
             return;
-        socket?.emit('message', inputValue);
+        socket?.emit('message', {message:inputValue, user:0, channel:0});
     }
 
     function chat() {

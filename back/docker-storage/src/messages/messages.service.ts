@@ -15,10 +15,9 @@ export class MessagesService {
     private authService: AuthService,
   ) {}
 
-  async addMsg(msg: AddMsgDto, user: UserEntity, channel: ChannelEntity) {
+  async addMsg(msg: AddMsgDto) {
     const newMsg = this.messageRepository.create(msg);
-    newMsg.channel = channel;
-    newMsg.sender = user;
+    console.log(newMsg);
     return await this.messageRepository.save(newMsg);
   }
 }

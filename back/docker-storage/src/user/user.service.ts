@@ -232,4 +232,13 @@ export class UserService {
     const { Authentication: authenticationToken } = parse(cookie);
     //const user = await this.authenticationService.getUserFromAuthenticationToken(authenticationToken);
   }
+
+  async getUserById(id: number): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: {id}
+    });
+    if (!user)
+      throw new NotFoundException(`No User found for id ${id}`);
+    return (user);
+  }
 }
