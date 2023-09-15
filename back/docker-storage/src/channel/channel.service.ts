@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
+import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -54,6 +54,12 @@ export class ChannelService {
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
+  }
+
+  async getChannelMessages(id: number): Promise<MessageEntity[]> {
+    const channel = await this.getChannelById(id);
+
+    return channel.messages;
   }
 
   async updateChannel(

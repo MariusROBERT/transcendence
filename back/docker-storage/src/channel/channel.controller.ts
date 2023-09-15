@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
-import { ChannelEntity } from 'src/database/entities/channel.entity';
+import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { User } from 'src/utils/decorators/user.decorator';
 import {
@@ -31,6 +31,13 @@ export class ChannelController {
   ): Promise<ChannelEntity> {
     // ==> renvoi toutes les infos channels
     return await this.ChannelService.getChannelById(id);
+  }
+
+  @Get('/:id/msg')
+  async GetChannelMessages(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<MessageEntity[]> {
+    return await this.ChannelService.getChannelMessages(id);
   }
 
   @Post()
@@ -114,12 +121,5 @@ export class ChannelController {
     @Body() addmsgDto: AddMsgDto,
   ) {
     return this.ChannelService.AddMessageToChannel(addmsgDto);
-  }
-
-  @Get('test')
-  //@UseGuards(JwtAuthGuard)
-  async test(
-  ) {
-    return "test";
   }
 }
