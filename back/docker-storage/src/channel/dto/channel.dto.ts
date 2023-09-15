@@ -1,11 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsEnum,
-  isNotEmpty,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { UserEntity } from '../../database/entities/user.entity';
 

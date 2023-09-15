@@ -72,4 +72,5 @@ export class ChannelEntity {
   @OneToMany((type) => MessageEntity, (message) => message.channel)
   messages: MessageEntity[];
 }
+
 export { MessageEntity, UserEntity };

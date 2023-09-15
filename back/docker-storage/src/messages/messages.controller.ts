@@ -10,6 +10,7 @@ import { MessageEntity } from '../database/entities/message.entity';
 @Controller('messages')
 export class MessagesController {
   ChannelService: any;
+
   constructor(private MessageService: MessagesService) {}
 
   @Post()

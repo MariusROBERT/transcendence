@@ -1,13 +1,11 @@
-// import React, {useEffect, useState} from 'react';
-import React, { useState } from "react";
-import Background from "../components/Background/Background";
-import { color } from "../Global";
-import { backgroundImage } from "../Global";
-// import styleSheet from './App.css';
+import React, { useState } from 'react';
+import Background from '../components/Background/Background';
+import { color } from '../Global';
+import { backgroundImage } from '../Global';
 
-import { Login } from "../components/Login/Login";
-import { Viewport, useEffectViewport } from "./Viewport";
-import { MainPage } from "../components/MainPage/MainPage";
+import { Login } from '../components/Login/Login';
+import { Viewport, useEffectViewport } from './Viewport';
+import { MainPage } from '../components/MainPage/MainPage';
 
 const SIZE = 350;
 
@@ -25,14 +23,14 @@ function App() {
 
   return (
     <div
-      className={"cursor_perso"}
+      className={'cursor_perso'}
       style={{
         height: viewport.isLandscape
           ? Math.max(viewport.height, SIZE)
-          : Math.max(viewport.height, SIZE * 2) + "px",
-        width: "100%",
+          : Math.max(viewport.height, SIZE * 2) + 'px',
+        width: '100%',
         color: color.white,
-        overflow: "hidden",
+        overflow: 'hidden',
       }}
     >
       <Background image={backgroundImage} fixed={true}>

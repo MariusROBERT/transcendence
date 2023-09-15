@@ -4,8 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
 import { ConfigService } from '@nestjs/config'; // ==> npm i --save @nestjs/config
 import { ValidationPipe } from '@nestjs/common';
-import * as multer from 'multer';
-import * as express from 'express';
 
 dotenv.config();
 
@@ -53,4 +51,5 @@ async function bootstrap() {
   );
   await app.listen(3001);
 }
+
 bootstrap();
