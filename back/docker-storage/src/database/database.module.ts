@@ -5,10 +5,10 @@ import {
   MessageEntity,
   UserEntity,
 } from './entities/channel.entity';
-import { ChannelService } from 'src/channel/channel.service';
-import { UserService } from 'src/user/user.service';
-import { MessagesService } from 'src/messages/messages.service';
-import { AuthService } from 'src/auth/auth.service';
+import { ChannelService } from '../channel/channel.service';
+import { UserService } from '../user/user.service';
+import { MessagesService } from '../messages/messages.service';
+import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({

@@ -6,11 +6,10 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { ChanStateEnum } from 'src/utils/enums/channel.enum';
+import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { MessageEntity } from './message.entity';
 import { MutedEntity } from './muted.entity';
 
@@ -27,11 +26,15 @@ export class ChannelEntity {
   @Column({ nullable: true })
   password?: string;
 
-  @Column({ type: 'enum', enum: ChanStateEnum, default: ChanStateEnum.PUBLIC })
+  @Column({
+    type: 'enum',
+    enum: ChanStateEnum,
+    default: ChanStateEnum.PUBLIC,
+  })
   chan_status!: ChanStateEnum;
 
   @Column({ default: false })
-  priv_msg: boolean;
+  priv: boolean;
 
   // -------- LINKS TO OTHER TABLES --------
 
@@ -61,14 +64,13 @@ export class ChannelEntity {
 
   // MUTED :
 
-  @OneToMany((type) => MutedEntity, (mutedUser) => mutedUser.channel)
+  @OneToMany(() => MutedEntity, (mutedUser) => mutedUser.channel)
   mutedUsers: MutedEntity[];
 
   // MESSAGES :
 
-  @OneToMany((type) => MessageEntity, (message) => message.channel, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => MessageEntity, (message) => message.channel)
   messages: MessageEntity[];
 }
+
 export { MessageEntity, UserEntity };

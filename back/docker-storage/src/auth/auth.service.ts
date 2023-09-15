@@ -1,17 +1,16 @@
 import {
-  Injectable,
   ConflictException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
-import { UserStateEnum } from 'src/utils/enums/user.enum';
-import { UserService } from 'src/user/user.service';
+import { UserStateEnum } from '../utils/enums/user.enum';
 
 @Injectable()
 export class AuthService {
@@ -28,9 +27,13 @@ export class AuthService {
       ...userData,
     });
     user.salt = await bcrypt.genSalt(); // genere le salt
-    user.password = await bcrypt.hash(user.password, user.salt); // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
+    user.password = await bcrypt.hash(user.password, user.salt);
     user.user_status = UserStateEnum.ON;
+    user.friends = [];
+    user.invited = [];
+    user.invites = [];
     try {
+      console.log(user.salt);
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
       throw new ConflictException(`username or password already used`);
