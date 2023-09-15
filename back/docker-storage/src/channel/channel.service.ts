@@ -29,12 +29,12 @@ export class ChannelService {
 
   async createChannel(
     channel: CreateChannelDto,
-    user: UserEntity,
+    uid: number,
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
-
+    const user = await this.userService.getUserById(uid);
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
@@ -65,9 +65,10 @@ export class ChannelService {
   async updateChannel(
     id: number,
     channelDto: UpdateChannelDto,
-    user: UserEntity,
+    uid: number,
   ): Promise<ChannelEntity> {
     const chan = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     const channelToUpdate = await this.ChannelRepository.preload({
       id, // search user == id
       ...channelDto, // modif seulement les differences
@@ -87,8 +88,9 @@ export class ChannelService {
       );
   }
 
-  async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async addUserInChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     if (channel.users.includes(user))
@@ -100,8 +102,9 @@ export class ChannelService {
     return channel;
   }
 
-  async addAdminInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async addAdminInChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     if (!channel.users.includes(user))
@@ -113,8 +116,9 @@ export class ChannelService {
     return channel;
   }
 
-  async KickUserFromChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async KickUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     //  Todo: Check if admin can be kicked
@@ -138,8 +142,9 @@ export class ChannelService {
     return -1;
   }
 
-  async MuteUserFromChannel(user: UserEntity, id: number, sec: number): Promise<ChannelEntity> {
+  async MuteUserFromChannel(uid: number, id: number, sec: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     //  Todo: Check if admin can be muted
@@ -161,8 +166,9 @@ export class ChannelService {
     return channel;
   }
 
-  async DeMuteUserFromChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async DeMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     var idx = await this.isMuted(user, channel);
@@ -173,8 +179,9 @@ export class ChannelService {
     return channel;
   }
 
-  async BanUserFromChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error("This channel is a private message channel");
     //  Todo: Check if admin can be banned

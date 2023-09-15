@@ -40,6 +40,12 @@ export class UpdateUserDto {
   winrate: number;
 }
 
+export class UserChanDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+}
+
 export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()

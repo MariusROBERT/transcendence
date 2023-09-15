@@ -19,6 +19,7 @@ import {
   CreateChannelDto,
   UpdateChannelDto,
 } from './dto/channel.dto';
+import { UserChanDto } from 'src/user/dto/user.dto';
 import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 
 @Controller('channel')
@@ -44,11 +45,11 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
   ): Promise<ChannelEntity> {
     const chan = await this.ChannelService.createChannel(
       createChannelDto,
-      user,
+      user.id,
     );
     console.log('chan: ', chan);
     console.log('chan.admins: ', chan.admins);
@@ -60,18 +61,18 @@ export class ChannelController {
   async UpdateChannel(
     @Body() updateChannelDto: UpdateChannelDto,
     @Param('id', ParseIntPipe) id: number,
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
   ): Promise<ChannelEntity> {
-    return await this.ChannelService.updateChannel(id, updateChannelDto, user);
+    return await this.ChannelService.updateChannel(id, updateChannelDto, user.id);
   }
 
   @Patch('add_user/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async AddUserInChannel(
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.ChannelService.addUserInChannel(user, id);
+    const chan = await this.ChannelService.addUserInChannel(user.id, id);
     console.log(chan.users);
     return chan;
   }
@@ -79,10 +80,10 @@ export class ChannelController {
   @Patch('add_admin/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.ChannelService.addAdminInChannel(user, id);
+    const chan = await this.ChannelService.addAdminInChannel(user.id, id);
     console.log(chan.users);
     return chan;
   }
@@ -90,29 +91,29 @@ export class ChannelController {
   @Patch('kick/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    return this.ChannelService.KickUserFromChannel(user, id);
+    return this.ChannelService.KickUserFromChannel(user.id, id);
   }
 
   @Patch('mute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async MuteUserFromChannel(
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
     @Param('time_sec', ParseIntPipe) time_sec: number,
   ) {
-    return this.ChannelService.MuteUserFromChannel(user, id, time_sec);
+    return this.ChannelService.MuteUserFromChannel(user.id, id, time_sec);
   }
 
   @Patch('ban/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
-    @User() user: UserEntity,
+    @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    return this.ChannelService.BanUserFromChannel(user, id);
+    return this.ChannelService.BanUserFromChannel(user.id, id);
   }
 
   @Post('add_msg')
