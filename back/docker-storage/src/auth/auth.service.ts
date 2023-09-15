@@ -27,7 +27,7 @@ export class AuthService {
             ...userData,
         });
         user.salt = await bcrypt.genSalt(); // genere le salt
-        user.password = await bcrypt.hash(user.password, user.salt); // la on change le pwd, voila pourquoi le username: unique fonctionne mais pas celui du pwd
+        user.password = await bcrypt.hash(user.password, user.salt);
         user.user_status = UserStateEnum.ON;
         user.friends = [];
         user.invited = [];

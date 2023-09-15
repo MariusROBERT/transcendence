@@ -30,7 +30,7 @@ export class UserEntity {
     @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
     role!: UserRoleEnum;
 
-    @Column({ default: 'url_img_profil_default' })
+    @Column({ default: '/default_profil.png' })
     urlImg!: string;
 
     @Column()

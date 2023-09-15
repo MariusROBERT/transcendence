@@ -44,7 +44,7 @@ function MainPage() {
                 if (rep.ok) {
                     const user = await rep.json();
                     if (user.invites && Array.isArray(user.invites)  && user.invites.length > 0)
-                    setShowNotificationBadge(true);
+                        setShowNotificationBadge(true);
                 } else { // si je delete le cookie du jwt
                     navigate('/login');
                     alert("Vous avez ete deconnecte");

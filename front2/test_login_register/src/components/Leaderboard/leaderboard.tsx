@@ -1,37 +1,16 @@
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
+import { useNavigate } from 'react-router-dom';
 
 interface LeaderboardProps {
     searchTerm: string; // Définissez le type de searchTerm
 }
 
 export default function Leaderboard({ searchTerm }: LeaderboardProps) {
-    const container = {
-        border: '1px solid red',
-        height: '1000px',
-    };
-
-    const userElementStyle = {
-        background: 'grey',
-        border: '1px solid black',
-        color: 'white',
-        margin: '10px',
-        padding: '10px',
-        cursor: 'pointer',
-    };
-
-    interface User {
-        id: number;
-        username: string;
-        urlImg: string;
-        user_status: string;
-        winrate: number;
-        is_friend: boolean;
-    }
-
-    const jwtToken = Cookies.get('jwtToken');
     
+    const navigate = useNavigate();
+    const jwtToken = Cookies.get('jwtToken');
     const [userElements, setUserElements] = useState<JSX.Element[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [profilVisible, setProfilVisible] = useState<boolean>(false);
@@ -57,6 +36,8 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
                     console.error(
                         'Erreur lors de la récupération des données des utilisateurs. Error', response.status
                     );
+                    navigate('/login');
+                    alert("Vous avez ete deconnecte");
                 }
             } catch (error) {
                 console.error(
@@ -83,7 +64,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
                 <p onClick={() => handleOpenProfil(user)}>
                     Nom d'utilisateur : {user.username}{' '}
                 </p>
-                <p>img : {user.urlImg}</p>
+                <img style={imgStyle} src={user?.urlImg}/>
                 <p>Status : {user.user_status}</p>
                 <p>winrate : {user.winrate}</p>
             </div>
@@ -112,4 +93,31 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
             )}
         </div>
     );
+}
+
+const container = {
+    border: '1px solid red',
+    height: '1000px',
+};
+
+const imgStyle = {
+    width: '100px',
+}
+
+const userElementStyle = {
+    background: 'grey',
+    border: '1px solid black',
+    color: 'white',
+    margin: '10px',
+    padding: '10px',
+    cursor: 'pointer',
+};
+
+interface User {
+    id: number;
+    username: string;
+    urlImg: string;
+    user_status: string;
+    winrate: number;
+    is_friend: boolean;
 }

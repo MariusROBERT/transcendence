@@ -46,7 +46,7 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
                     <>
                         <h2>Profil de {user.username}</h2>
                         <p>ID : {user.id}</p>
-                        <p>Image : {user.urlImg}</p>
+                        <img src={user.urlImg}></img>
                         <p>Statut : {user.user_status}</p>
                         <p>Winrate : {user.winrate}</p>
                         <button onClick={onClose}>Fermer</button>
