@@ -6,22 +6,22 @@ import Login from './components/Login/login';
 import AuthGuard from './authguard';
 
 function App() {
-    return (
-        <div className="App">
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <AuthGuard isAuthenticated>
-                            <MainPage />
-                        </AuthGuard>
-                    }
-                />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-            </Routes>
-        </div>
-    );
+  return (
+    <div className="App">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <AuthGuard isAuthenticated>
+              <MainPage />
+            </AuthGuard>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </div>
+  );
 }
 
 export default App;
