@@ -1,6 +1,6 @@
 import {
-  Injectable,
   ConflictException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,28 +47,28 @@ export class AuthService {
 
   async login(creditentials: LoginCreditDto) {
     const { username, password } = creditentials;
-    try {
-      const user = await this.userRepository
-        .createQueryBuilder('user')
-        .where('user.username = :username', { username })
-        .getOne();
-      console.log(user.salt);
-      const hashedPwd = await bcrypt.hash(password, user.salt);
-      console.log('hashed: ', hashedPwd);
-      console.log('user.password: ', user.password);
-      if (hashedPwd === user.password) {
-        const payload = {
-          username,
-          role: user.role,
-        };
-        const jwt = this.jwtService.sign(payload);
-        user.user_status = UserStateEnum.ON;
-        console.log('connecté');
-        return { 'access-token': jwt };
-      }
-    } catch (e) {
-      throw new NotFoundException(`Username not found`);
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .getOne();
+    if (!user) {
+      throw new NotFoundException(`username not found`);
     }
-    throw new NotFoundException(`Wrong password`);
+
+    const hashedPwd = await bcrypt.hash(password, user.salt);
+    console.log(hashedPwd);
+
+    if (hashedPwd === user.password) {
+      // JWT
+      const payload = {
+        username,
+        role: user.role,
+      };
+      const jwt = this.jwtService.sign(payload);
+      user.user_status = UserStateEnum.ON;
+      return { 'access-token': jwt };
+    } else {
+      throw new NotFoundException(`wrong password`);
+    }
   }
 }

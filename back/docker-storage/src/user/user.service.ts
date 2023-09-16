@@ -1,12 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
-  Delete,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from '../auth/auth.service';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';

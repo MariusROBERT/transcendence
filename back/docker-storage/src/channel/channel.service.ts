@@ -4,12 +4,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity } from '../database/entities/channel.entity';
+import { ChannelEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../database/entities/user.entity';
+import { UserEntity } from 'src/database/entities/user.entity';
 import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
-import { UserService } from '../user/user.service';
+import { UserService } from 'src/user/user.service';
+import { MutedEntity } from 'src/database/entities/muted.entity';
 
 @Injectable()
 export class ChannelService {
@@ -26,6 +27,7 @@ export class ChannelService {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
+
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
@@ -72,9 +74,93 @@ export class ChannelService {
   }
 
   async addUserInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
-    // ali a rajouter si la channel est private ou non
     const channel = await this.getChannelById(id);
+    if (channel.priv == true)
+      throw new Error('This channel is a private message channel');
+    if (channel.users.includes(user))
+      throw new Error('The user is already in channel');
+    if (channel.baned.includes(user)) throw new Error('The user is banned');
     channel.users = [...channel.users, user];
+    await this.ChannelRepository.save(channel);
+    return channel;
+  }
+
+  async addAdminInChannel(
+    user: UserEntity,
+    id: number,
+  ): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    if (channel.priv == true)
+      throw new Error('This channel is a private message channel');
+    if (!channel.users.includes(user))
+      throw new Error('The user is not in channel');
+    if (channel.admins.includes(user))
+      throw new Error('The user is already admin');
+    channel.admins = [...channel.admins, user];
+    await this.ChannelRepository.save(channel);
+    return channel;
+  }
+
+  async KickUserFromChannel(
+    user: UserEntity,
+    id: number,
+  ): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    if (channel.priv == true)
+      throw new Error('This channel is a private message channel');
+    //  Todo: Check if admin can be kicked
+    if (channel.admins.includes(user) || channel.owner == user)
+      throw new Error('The user is admin or owner');
+    if (channel.baned.includes(user)) throw new Error('The user is banned');
+    if (channel.users.includes(user))
+      throw new Error('The user is not in channel');
+    channel.users.indexOf(user) !== -1 &&
+      channel.users.splice(channel.users.indexOf(user), 1);
+    await this.ChannelRepository.save(channel);
+    return channel;
+  }
+
+  async MuteUserFromChannel(
+    user: UserEntity,
+    id: number,
+    sec: number,
+  ): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    if (channel.priv == true)
+      throw new Error('This channel is a private message channel');
+    //  Todo: Check if admin can be muted
+    if (channel.admins.includes(user) || channel.owner == user)
+      throw new Error('The user is admin or owner');
+    if (channel.baned.includes(user)) throw new Error('The user is banned');
+    if (sec <= 0)
+      throw new Error('Time in second cannot be equal or inferior to zero');
+    //  Todo: Check if user is already muted, if it is juste update the Date
+    const date = new Date(); // Get the current date
+    date.setSeconds(date.getSeconds() + sec); // Add time in second to the date
+    let muteEntity: MutedEntity;
+    muteEntity.channel = channel;
+    muteEntity.user = user;
+    muteEntity.endDate = date;
+    channel.mutedUsers = [...channel.mutedUsers, muteEntity];
+    await this.ChannelRepository.save(channel);
+    return null;
+  }
+
+  async BanUserFromChannel(
+    user: UserEntity,
+    id: number,
+  ): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    if (channel.priv == true)
+      throw new Error('This channel is a private message channel');
+    //  Todo: Check if admin can be banned
+    if (channel.admins.includes(user) || channel.owner == user)
+      throw new Error('The user is admin or owner');
+    if (channel.baned.includes(user))
+      throw new Error('The user is already banned');
+    channel.users.indexOf(user) !== -1 &&
+      channel.users.splice(channel.users.indexOf(user), 1);
+    channel.baned = [...channel.baned, user];
     await this.ChannelRepository.save(channel);
     return channel;
   }

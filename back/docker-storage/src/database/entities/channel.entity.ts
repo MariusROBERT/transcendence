@@ -64,12 +64,13 @@ export class ChannelEntity {
 
   // MUTED :
 
-  @OneToMany((type) => MutedEntity, (mutedUser) => mutedUser.channel)
+  @OneToMany(() => MutedEntity, (mutedUser) => mutedUser.channel)
   mutedUsers: MutedEntity[];
 
   // MESSAGES :
 
-  @OneToMany((type) => MessageEntity, (message) => message.channel)
+  @OneToMany(() => MessageEntity, (message) => message.channel)
   messages: MessageEntity[];
 }
+
 export { MessageEntity, UserEntity };

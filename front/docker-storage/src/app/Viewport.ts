@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
+
 export interface Viewport {
   isLandscape: boolean;
   height: number;
@@ -19,12 +20,12 @@ export function useEffectViewport(
         width: window.innerWidth,
         height: window.innerHeight,
       });
-      console.log("triggered");
+      console.log('triggered');
     };
-    window.addEventListener("resize", updateDimension);
+    window.addEventListener('resize', updateDimension);
 
     return () => {
-      window.removeEventListener("resize", updateDimension);
+      window.removeEventListener('resize', updateDimension);
     };
   }, [viewport]);
 }

@@ -1,10 +1,10 @@
 import {
+  IsBoolean,
+  IsEnum,
   IsNotEmpty,
-  IsString,
   IsNumber,
   IsOptional,
-  IsEnum,
-  IsBoolean,
+  IsString,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 

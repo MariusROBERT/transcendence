@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from '../database/entities/user.entity';
@@ -19,8 +19,7 @@ export class AuthController {
     @Body() credentials: LoginCreditDto,
     // @Res() res: Response
   ) {
-    console.log('b4 pwd: ', credentials.password);
-
+    console.log('Uuuuuuuuuuuuu');
     return await this.authService.login(credentials); // return acces_token
   }
 }
