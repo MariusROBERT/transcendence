@@ -32,55 +32,51 @@ const Register: React.FC = () => {
 
     if (formData.username !== '' && formData.password !== '') {
       if (formData.password === formData.confirmPassword) {
-        try {
-          // REGISTER
-          const registerResponse = await fetch(
-            'http://localhost:3001/api/auth/register',
-            {
-              method: 'POST',
+        // REGISTER
+        const registerResponse = await fetch(
+          'http://localhost:3001/api/auth/register',
+          {
+            method: 'POST',
 
-              body: JSON.stringify({
-                username: formData.username,
-                password: formData.password,
-              }),
-              headers: {
-                'Content-Type': 'application/json',
-              },
+            body: JSON.stringify({
+              username: formData.username,
+              password: formData.password,
+            }),
+            headers: {
+              'Content-Type': 'application/json',
             },
-          );
-          if (registerResponse.ok) {
-            console.log('Inscription réussie !');
-            try {
-              // LOGIN
-              const loginResponse = await fetch(
-                'http://localhost:3001/api/auth/login',
-                {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    username: formData.username,
-                    password: formData.password,
-                  }),
+          },
+        );
+        if (registerResponse.ok) {
+          console.log('Inscription réussie !');
+          try {
+            // LOGIN
+            const loginResponse = await fetch(
+              'http://localhost:3001/api/auth/login',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
                 },
-              );
-              if (loginResponse.ok) {
-                // REDIRECTION
-                RedirectToHome(navigate, loginResponse);
-              }
-            } catch (error) {
-              console.error(`Erreur lors de l'envoi de la requête :`, error);
-            }
-          } else {
-            setErrorMessage('Ce username est deja pris !');
-            console.error(
-              `Échec de l'inscription. Error`,
-              registerResponse.status,
+                body: JSON.stringify({
+                  username: formData.username,
+                  password: formData.password,
+                }),
+              },
             );
+            if (loginResponse.ok) {
+              // REDIRECTION
+              RedirectToHome(navigate, loginResponse);
+            }
+          } catch (error) {
+            console.error(`Error Interne : ${error}`);
           }
-        } catch (error) {
-          console.error(`Erreur lors de l'envoi de la requête :`, error);
+        } else {
+          setErrorMessage('Ce username est deja pris !');
+          console.error(
+            `Échec de l'inscription. Error`,
+            registerResponse.status,
+          );
         }
       } else {
         setErrorMessage('Les mots de passe ne correspondent pas !');

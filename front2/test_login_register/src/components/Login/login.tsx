@@ -43,6 +43,10 @@ const Login: React.FC = () => {
       } else {
         const data = await response.json();
         setErrorMessage(data.message);
+        console.error(
+          `Échec de connection. Error `,
+          response.status,
+        );
       }
     } catch (error) {
       console.error(`Error Interne : ${error}`);

@@ -17,8 +17,6 @@ interface ProfilProps {
 }
 
 const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
-  if (user?.is_friend === true) console.log();
-  console.log(user);
 
   return (
     <div style={profilContainer}>

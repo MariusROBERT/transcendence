@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: process.env.JWT_SECRET, // get la secret key pr jwt
     });
   }
-
+  
   async validate(payload: PayloadInterface) {
     // a chaque fois que la requette arrive, voila comment tu va valider mon token !
     const user = await this.userRepository.findOne({

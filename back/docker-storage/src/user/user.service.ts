@@ -94,7 +94,6 @@ export class UserService {
     PublicProfile.id = profile.id;
     PublicProfile.username = profile.username;
     PublicProfile.urlImg = profile.urlImg;
-    console.log(profile.urlImg);
 
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;

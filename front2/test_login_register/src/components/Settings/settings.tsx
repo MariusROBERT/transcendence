@@ -123,8 +123,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             setUserInfos(user);
           } else {
             navigate('/login');
-            alert('Vous avez été déconnecté');
-            // ou recreer un jwt
+            alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+            // ou recreer un jwt ?
           }
           setIsDisabled(true);
           setShowConfirmPassword(false);
@@ -175,9 +175,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <button onClick={onClose}>Fermer</button>
-        <div style={modifContainer}>
-          {' '}
-          {/* IMG */}
+        <div style={modifContainer}> {/* IMG ==> TODO */}
           <img style={imgStyle} src={userInfos?.urlImg} alt="" />
           <input
             type="file"
@@ -189,9 +187,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             }
           />
         </div>
-        <div style={modifContainer}>
-          {' '}
-          {/* PWD */}
+        <div style={modifContainer}> {/* PWD ==> ok */}
           <input
             type={passwordType}
             onChange={(e) =>
@@ -226,9 +222,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             Modifier
           </button>
         </div>
-        <div style={modifContainer}>
-          {' '}
-          {/* 2FA */}
+        <div style={modifContainer}> {/* 2FA ==> ok */} 
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>

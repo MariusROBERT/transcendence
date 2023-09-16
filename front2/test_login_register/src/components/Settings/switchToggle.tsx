@@ -20,7 +20,6 @@ const SwitchToggle: React.FC<SwitchToggleProps> = ({ onChange, checked }) => {
 
   return (
     <label htmlFor="normal-switch">
-      {' '}
       {/* htmlFor c'est comme un for normal enfaite */}
       <Switch onChange={handleChange} checked={isChecked} id="normal-switch" />
     </label>

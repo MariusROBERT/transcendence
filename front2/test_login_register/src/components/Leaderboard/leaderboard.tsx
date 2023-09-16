@@ -15,6 +15,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
 		let cancelled = false;
@@ -27,17 +28,25 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
 			})
 			.then((res) => {
 				if (!res.ok) {
-					console.log('pas auth');
 					navigate('/login');
-					alert('Vous avez ete deconnecte');
+					alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+          // mettre ce message sur la page login ?
+          return ;
 				}
-				return res.json()})
+				return res.json()
+      })
 			.then((user) => {
-				console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
-				if (cancelled) // au cas ou le client cancell le fetch avant la fin
-					return
+				// console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
+				if (cancelled) { // au cas ou le client cancell le fetch avant la fin
+          return;
+        }
 				else
-					setAllUsers(user)
+        {
+          if (user && Array.isArray(user) && user.length === 0) // A TESTER
+            setErrorMessage("Aucun utilisateur trouvé.");
+          else
+            setAllUsers(user)
+        }
 			})
 			return () => {
 				cancelled = true;
@@ -55,7 +64,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     const elements = filteredUsers.map((user: User) => (
       <div key={user.id} style={userElementStyle}>
         <p onClick={() => handleOpenProfil(user)}>
-          Nom d'utilisateur : {user.username}{' '}
+          Nom d'utilisateur : {user.username}
         </p>
         <img style={imgStyle} src={user?.urlImg} />
         <p>Status : {user.user_status}</p>
@@ -80,6 +89,9 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
   return (
     <div style={container}>
       leaderboard
+      {errorMessage && (
+          <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+        )}
       <div className="container">{userElements}</div>
       {profilVisible && (<AuthGuard isAuthenticated><Profil user={selectedUser} onClose={closeProfil} /></AuthGuard>)}
     </div>

@@ -7,9 +7,7 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  console.log("OLEEE");
-  
+const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {  
   const jwtToken = Cookies.get('jwtToken');
   let auth = jwtToken ? true : false;
   const navigate = useNavigate();

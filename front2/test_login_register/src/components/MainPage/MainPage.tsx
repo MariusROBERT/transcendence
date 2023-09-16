@@ -29,32 +29,42 @@ function MainPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const rep = await fetch('http://localhost:3001/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      if (rep.ok) {
-        const user = await rep.json();
-        if (
-          user.invites &&
-          Array.isArray(user.invites) &&
-          user.invites.length > 0
-        )
-          setShowNotificationBadge(true);
-      } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez ete deconnecte');
-        // ou recreer un jwt
-      }
-    };
-    fetchData(); // Appel de la fonction fetchData dans useEffect
-  }, [jwtToken]); // Déclenché lorsque jwtToken change
-
+		let cancelled = false;
+			fetch('http://localhost:3001/api/user', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${jwtToken}`,
+				},
+			})
+			.then((res) => {
+				if (!res.ok) {
+					navigate('/login');
+					alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+          // mettre ce message sur la page login ?
+          return ;
+				}
+        return res.json();
+      })
+      .then((user) => {
+        if (cancelled) {
+          return
+        }
+				else {
+          if (
+            user.invites &&
+            Array.isArray(user.invites) &&
+            user.invites.length > 0
+            ) {
+              setShowNotificationBadge(true);
+            }
+        }
+      })
+    return () => {
+      cancelled = true;
+    }
+  }, [jwtToken]);
+  
   return (
     <>
       <div className="home">
