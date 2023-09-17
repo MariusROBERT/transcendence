@@ -96,7 +96,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     const elements = filteredUsers.map((user: User) => (
       <div key={user.id} style={userElementStyle}>
         <p>RANK : {count++}</p> {/* TO CHANGE */}
-        {user.id == userInfos?.id ? (
+        {user.id === userInfos?.id ? (
           <>
             {/* <p onClick={() => handleOpenProfil(user)}> ===> go to own profil ?? */}
             <p>coucou cest moi : {user.username}</p>

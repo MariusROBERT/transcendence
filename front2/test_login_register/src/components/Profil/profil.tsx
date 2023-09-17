@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import FriendButtons from './friend_buttons';
 import UserButtons from './user_buttons';
 import { ProfilProps } from '../../utils/interfaces';

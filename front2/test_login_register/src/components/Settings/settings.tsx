@@ -84,7 +84,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
     // PASSWORD :
     if (!isDisabled) {
-      if (modifData.password == '' || modifData.confirmpwd == '')
+      if (modifData.password === '' || modifData.confirmpwd === '')
         return setErrorMessage('les passwords ne correspondent pas !');
       if (
         modifData.password !== undefined &&

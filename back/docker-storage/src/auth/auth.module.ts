@@ -16,7 +16,7 @@ import { DatabaseModule } from '../database/database.module';
       defaultStrategy: 'jwt',
     }),
     JwtModule.register({
-      secret: 'Super42Awesome69Secret42Token69_',
+      secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: 3600,
       },
