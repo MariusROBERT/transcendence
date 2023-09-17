@@ -94,7 +94,6 @@ export class UserService {
     PublicProfile.id = profile.id;
     PublicProfile.username = profile.username;
     PublicProfile.urlImg = profile.urlImg;
-
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
@@ -109,7 +108,6 @@ export class UserService {
   }
 
   async getAllProfile(user: UserEntity): Promise<PublicProfileDto[]> {
-    // console.log("user: ", user);
     const users = await this.UserRepository.find();
     // Créez un tableau pour stocker les profils
     const PublicProfiles: PublicProfileDto[] = [];

@@ -2,27 +2,11 @@ import Cookies from 'js-cookie';
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import bcrypt from 'bcrypt';
-
-interface SettingsProps {
-  onClose: () => void;
-}
-
-interface UserInfos {
-  urlImg: string;
-  is2fa_active: boolean;
-}
-
-interface PwdModif {
-  password: string;
-}
-
-interface Modifications {
-  urlImg: string;
-  password: string | undefined;
-  confirmpwd: string | undefined;
-  is2fa_active: boolean;
-}
+import {
+  Modifications,
+  UserInfosForSetting,
+  SettingsProps,
+} from '../../utils/interfaces';
 
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const jwtToken = Cookies.get('jwtToken');
@@ -31,24 +15,36 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordType, setPasswordType] = useState('password'); // Type initial : password
-  const [userInfos, setUserInfos] = useState<UserInfos>();
+  const [userInfosSettings, setUserInfosSettings] =
+    useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
     urlImg: '',
     password: '',
     confirmpwd: '',
-    is2fa_active: false,
+    is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
   });
 
-  const unlockValue = () => {
+  const unlockPwd = () => {
     setIsDisabled(false);
     setShowConfirmPassword(true);
+  };
+
+  const lockPwd = () => {
+    setIsDisabled(true);
+    setShowConfirmPassword(false);
+  }
+
+  const toggleLock = () => {
+    if (!isDisabled)
+      lockPwd();
+    else
+      unlockPwd();
   };
 
   const togglePasswordVisibility = () => {
     setPasswordType(passwordType === 'password' ? 'text' : 'password');
   };
 
-  // recuperation des donnees du user et surtout de l'etat is2fa_active pour afficher
   useEffect(() => {
     const getUserInfos = async () => {
       const rep = await fetch('http://localhost:3001/api/user', {
@@ -60,7 +56,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       });
       if (rep.ok) {
         const user = await rep.json();
-        setUserInfos(user);
+        setUserInfosSettings(user);
       } else {
         // si je delete le cookie du jwt
         navigate('/login');
@@ -70,72 +66,63 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
   }, [jwtToken]);
 
-  useEffect(() => {
-    if (userInfos?.is2fa_active)
-      modifData.is2fa_active = userInfos?.is2fa_active;
-  }, [userInfos]);
-
   // MODIFICATIONS
 
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const jwtToken = Cookies.get('jwtToken');
+    if (!jwtToken) {
+      navigate('/login');
+      alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+    }
     if (
       modifData.confirmpwd === '' &&
       modifData.password === '' &&
       modifData.urlImg === '' &&
-      modifData.is2fa_active === userInfos?.is2fa_active
+      modifData.is2fa_active === userInfosSettings?.is2fa_active
     )
       // nothing changed
       return;
 
     // PASSWORD :
     if (!isDisabled) {
-      // le bouton 'modifier' du pwd a été cliqué
+      if (modifData.password == '' || modifData.confirmpwd == '')
+        return setErrorMessage('les passwords ne correspondent pas !');
       if (
-        modifData.password?.length !== 0 &&
-        modifData.confirmpwd?.length !== 0
+        modifData.password !== undefined &&
+        modifData.password !== modifData.confirmpwd
       ) {
-        // si des letrtes ont ete rentrees
-        if (
-          modifData.password?.length !== undefined &&
-          modifData.password !== modifData.confirmpwd
-        ) {
-          // si pwd et comfirm ne correspondent pas
-          setErrorMessage('les passwords ne correspondent pas !');
-          return;
-        } else {
-          const response = await fetch(
-            'http://localhost:3001/api/user/update_password', // PATCH update_password
-            {
-              method: 'PATCH',
-              body: JSON.stringify({
-                password: modifData.password,
-              }),
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${jwtToken}`,
-              },
+        return setErrorMessage('les passwords ne correspondent pas !');
+      } else {
+        const response = await fetch(
+          'http://localhost:3001/api/user/update_password', // PATCH update_password
+          {
+            method: 'PATCH',
+            body: JSON.stringify({
+              password: modifData.password,
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${jwtToken}`,
             },
-          );
-          if (response.ok) {
-            const user = await response.json();
-            setUserInfos(user);
-          } else {
-            navigate('/login');
-            alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-            // ou recreer un jwt ?
-          }
-          setIsDisabled(true);
-          setShowConfirmPassword(false);
-          setErrorMessage('');
+          },
+        );
+        if (response.ok) {
+          const user = await response.json();
+          console.log('MDP changed : ', user.password);
+          setUserInfosSettings(user);
+        } else {
+          navigate('/login');
+          alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+          // ou recreer un jwt ?
         }
+        lockPwd();
+        setErrorMessage('');
       }
     }
-
     if (
-      modifData.is2fa_active === userInfos?.is2fa_active &&
-      modifData.urlImg === userInfos.urlImg
+      modifData.is2fa_active === userInfosSettings?.is2fa_active &&
+      modifData.urlImg === userInfosSettings.urlImg
     ) {
       console.log('\n\n=====verif OK');
       setIsDisabled(true);
@@ -160,23 +147,24 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     if (rep.ok) {
       const user = await rep.json();
       console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
-      setUserInfos(user);
+      setUserInfosSettings(user);
     } else {
       navigate('/login');
       alert('Vous avez été déconnecté');
       // ou recreer un jwt
     }
-    setIsDisabled(true);
-    setShowConfirmPassword(false);
+    lockPwd();
     setErrorMessage('');
   };
 
   return (
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
-        <button onClick={onClose}>Fermer</button>
-        <div style={modifContainer}> {/* IMG ==> TODO */}
-          <img style={imgStyle} src={userInfos?.urlImg} alt="" />
+        <p>{userInfosSettings?.username}</p>
+        <div style={modifContainer}>
+          {' '}
+          {/* IMG ==> TODO */}
+          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
           <input
             type="file"
             onChange={(e) =>
@@ -187,7 +175,9 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             }
           />
         </div>
-        <div style={modifContainer}> {/* PWD ==> ok */}
+        <div style={modifContainer}>
+          {' '}
+          {/* PWD ==> ok */}
           <input
             type={passwordType}
             onChange={(e) =>
@@ -218,17 +208,19 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type="button" onClick={unlockValue}>
-            Modifier
+          <button type="button"  onClick={toggleLock}>
+           {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
-        <div style={modifContainer}> {/* 2FA ==> ok */} 
+        <div style={modifContainer}>
+          {' '}
+          {/* 2FA ==> ok */}
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>
               setModifData({ ...modifData, is2fa_active: change })
             }
-            checked={userInfos?.is2fa_active || false}
+            checked={userInfosSettings?.is2fa_active || false}
           />
           {/*recup l'etat de base du 2fa*/}
         </div>
@@ -236,6 +228,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
         <button type="submit">Enregistrer</button>
+        <button onClick={onClose}>Fermer</button>
       </form>
     </div>
   );
@@ -244,7 +237,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 const imgStyle: React.CSSProperties = {
   width: '100px',
   border: '1px solid red',
-  zIndex: '99999',
 };
 
 const settingsStyle: React.CSSProperties = {

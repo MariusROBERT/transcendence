@@ -31,7 +31,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
     }),
   );
-  await app.listen(parseInt(process.env.BACK_PORT));
+  await app.listen(3001);
 }
 
 bootstrap();

@@ -1,10 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import Switch from 'react-switch';
-
-interface SwitchToggleProps {
-  onChange: (checked: boolean) => void; // Fonction de rappel
-  checked: boolean;
-}
+import { SwitchToggleProps } from '../../utils/interfaces';
 
 const SwitchToggle: React.FC<SwitchToggleProps> = ({ onChange, checked }) => {
   const [isChecked, setIsChecked] = useState(checked);

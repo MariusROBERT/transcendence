@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface NotificationBadgeProps {
-  showBadge: boolean;
-}
+import { NotificationBadgeProps } from '../../utils/interfaces';
 
 const NotificationBadge: React.FC<NotificationBadgeProps> = ({ showBadge }) => {
   return showBadge ? (

@@ -1,13 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { AuthGuardProps } from './utils/interfaces';
 
-interface AuthGuardProps {
-  isAuthenticated: boolean;
-  children: React.ReactNode;
-}
-
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {  
+const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const jwtToken = Cookies.get('jwtToken');
   let auth = jwtToken ? true : false;
   const navigate = useNavigate();

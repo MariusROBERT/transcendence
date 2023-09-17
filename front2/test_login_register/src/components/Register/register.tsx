@@ -1,15 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RedirectToHome } from '../Utils/set_cookie_redirect';
-
-interface FormData {
-  username: string;
-  password: string;
-  confirmPassword: string;
-}
+import { FormDataRegister } from '../../utils/interfaces';
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormDataRegister>({
     username: '',
     password: '',
     confirmPassword: '',

@@ -1,11 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RedirectToHome } from '../Utils/set_cookie_redirect';
-
-interface FormData {
-  username: string;
-  password: string;
-}
+import { FormData } from '../../utils/interfaces';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -43,10 +39,7 @@ const Login: React.FC = () => {
       } else {
         const data = await response.json();
         setErrorMessage(data.message);
-        console.error(
-          `Échec de connection. Error `,
-          response.status,
-        );
+        console.error(`Échec de connection. Error `, response.status);
       }
     } catch (error) {
       console.error(`Error Interne : ${error}`);
