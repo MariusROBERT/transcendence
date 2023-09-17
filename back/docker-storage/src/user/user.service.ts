@@ -230,6 +230,7 @@ export class UserService {
   }
 
   async getLastMsg(user: UserEntity): Promise<MessageEntity> {
+    // pas testé
     const userChannels = await this.getChannels(user);
     if (!userChannels || userChannels.length === 0) return null;
     let latestMessage: MessageEntity | null = null;
@@ -254,6 +255,7 @@ export class UserService {
   }
 
   async getMsgsByChannel(
+    // pas testé
     user: UserEntity,
     channels: ChannelEntity[],
     id: number,
@@ -287,8 +289,9 @@ export class UserService {
     return isAdmin;
   }
 
-  // lougout
+  // logout
   async logout(user: UserEntity) {
+    // pas testé
     user.user_status = UserStateEnum.OFF;
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;

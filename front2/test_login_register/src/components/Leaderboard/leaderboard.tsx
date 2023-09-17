@@ -27,16 +27,15 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     setProfilVisible(false);
   };
 
-    // mettre ca dans une fonction : c'est cette fonction quil faut rappeler lorsque jai changer user_button.
-    const getAllProfil = () => {
-      let cancelled = false;
-      fetch('http://localhost:3001/api/user/get_all_public_profile', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      })
+  const getAllProfil = () => {
+    let cancelled = false;
+    fetch('http://localhost:3001/api/user/get_all_public_profile', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    })
       .then((res) => {
         if (!res.ok) {
           navigate('/login');
@@ -53,19 +52,19 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
           return;
         } else {
           if (user && Array.isArray(user) && user.length === 0)
-          // A TESTER
-          setErrorMessage('Aucun utilisateur trouvé.');
+            // A TESTER
+            setErrorMessage('Aucun utilisateur trouvé.');
           else setAllUsers(user);
         }
       });
-      return () => {
-        cancelled = true;
-      };
-    }
+    return () => {
+      cancelled = true;
+    };
+  };
 
   useEffect(() => {
     const getUserInfos = async () => {
-      getAllProfil()
+      getAllProfil();
 
       const rep = await fetch('http://localhost:3001/api/user', {
         method: 'GET',
@@ -86,7 +85,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
   }, [jwtToken]);
 
-    // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
+  // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     const filteredUsers = allUsers
       .filter((user: User) =>
@@ -110,22 +109,19 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
             <p onClick={() => handleOpenProfil(user)}>
               Nom d'utilisateur : {user.username}
             </p>
-            {user.is_friend ? (
-              <p>Is a friend</p>
-            ):(<></>)}
+            {user.is_friend ? <p>Is a friend</p> : <></>}
             <img style={imgStyle} src={user?.urlImg} />
             <p>Status : {user.user_status}</p>
             <p>winrate : {user.winrate}</p>
           </>
         )}
       </div>
-    )
-  );
+    ));
     setUserElements(elements);
-  }
+  };
 
   useEffect(() => {
-    displayAllProfil()
+    displayAllProfil();
   }, [searchTerm, allUsers]);
 
   return (

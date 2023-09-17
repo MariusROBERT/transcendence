@@ -5,26 +5,6 @@ import Navbar from '../Navbar/navbar';
 import { UserAndInvites } from '../../utils/interfaces';
 
 function MainPage() {
-  const notificationBadgeStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: '20px',
-    right: '20px',
-    backgroundColor: 'red',
-    borderRadius: '50%',
-    width: '24px',
-    height: '24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999,
-  };
-
-  const notificationCountStyle: React.CSSProperties = {
-    color: 'white',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  };
-
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
   const jwtToken = Cookies.get('jwtToken');
   const navigate = useNavigate();
@@ -52,26 +32,26 @@ function MainPage() {
           return;
         } else {
           if (
+            // si le user a des id dans invites
             user.invites &&
             Array.isArray(user.invites) &&
             user.invites.length > 0
           ) {
             fetch('http://localhost:3001/api/user/get_all_public_profile', {
+              // get tous les users
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${jwtToken}`, // Assurez-vous d'inclure l'authentification si nécessaire
+                Authorization: `Bearer ${jwtToken}`,
               },
             })
               .then((response) => response.json())
               .then((allProfiles) => {
-                // 2. Filtrer les profils pour ceux correspondant aux IDs dans 'user.invites'
                 const invitedProfiles = allProfiles.filter(
+                  // recuperer seulement les users dont les id sont contenus dans notre user.invites
                   (profile: UserAndInvites) =>
                     user.invites.includes(profile.id),
                 );
-
-                // 3. Afficher les noms d'utilisateur des profils invités
                 invitedProfiles.forEach((profile: UserAndInvites) => {
                   console.log(`Nom d'utilisateur invité : ${profile.username}`);
                 });
@@ -81,7 +61,6 @@ function MainPage() {
                   "Une erreur s'est produite lors de la récupération des profils:",
                   error,
                 );
-                // Gérez l'erreur ici
               });
             setShowNotificationBadge(true);
           }
@@ -105,5 +84,25 @@ function MainPage() {
     </>
   );
 }
+
+const notificationBadgeStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: '20px',
+  right: '20px',
+  backgroundColor: 'red',
+  borderRadius: '50%',
+  width: '24px',
+  height: '24px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 9999,
+};
+
+const notificationCountStyle: React.CSSProperties = {
+  color: 'white',
+  fontSize: '14px',
+  fontWeight: 'bold',
+};
 
 export default MainPage;

@@ -32,13 +32,11 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const lockPwd = () => {
     setIsDisabled(true);
     setShowConfirmPassword(false);
-  }
+  };
 
   const toggleLock = () => {
-    if (!isDisabled)
-      lockPwd();
-    else
-      unlockPwd();
+    if (!isDisabled) lockPwd();
+    else unlockPwd();
   };
 
   const togglePasswordVisibility = () => {
@@ -208,8 +206,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type="button"  onClick={toggleLock}>
-           {isDisabled ? 'Modifier' : 'Verouiller'}
+          <button type="button" onClick={toggleLock}>
+            {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
         <div style={modifContainer}>
@@ -220,7 +218,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             onChange={(change) =>
               setModifData({ ...modifData, is2fa_active: change })
             }
-            checked={userInfosSettings?.is2fa_active || false}
+            checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
           />
           {/*recup l'etat de base du 2fa*/}
         </div>
