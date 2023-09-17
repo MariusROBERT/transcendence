@@ -1,5 +1,12 @@
 import { UserRoleEnum, UserStateEnum } from 'src/utils/enums/user.enum';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ChannelEntity } from './channel.entity';
 import { GameEntity } from './game.entity';
 import { MessageEntity } from './message.entity';
