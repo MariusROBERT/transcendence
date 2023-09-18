@@ -1,9 +1,5 @@
-import { hover } from "@testing-library/user-event/dist/hover";
-import { color } from "../../utils/Global";
-import Background from "../Background/Background";
-import { Border } from "../Border/Border";
-import { RoundButton } from "../RoundButton/RoundButton";
-import { Flex } from "../Flex/FlexBox";
+import { color } from "../../utils";
+import { RoundButton, Flex } from "..";
 
 // TODO : Add Object User insteed of user_name and user icon
 interface Props{

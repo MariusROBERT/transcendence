@@ -1,7 +1,3 @@
-import "../../App.css"
-import {color} from "../../utils/Global";
-import {hover} from "@testing-library/user-event/dist/hover";
-
 interface Props {
     children?: string;
     onClick: () => void;

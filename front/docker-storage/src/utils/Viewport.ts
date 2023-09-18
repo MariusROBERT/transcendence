@@ -14,28 +14,15 @@ export function useEffectViewport(
   useEffect(() => {
     const updateDimension = () => {
       setViewport({
-        isLandscape:
-          window.innerWidth >= SIZE * 2 &&
-          window.innerWidth / window.innerHeight > 0.9,
+        isLandscape: window.innerWidth >= SIZE * 2 && window.innerWidth / window.innerHeight > 0.9,
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: window.innerHeight
       });
-      console.log('triggered');
-    };
+    }
     window.addEventListener('resize', updateDimension);
 
-    useEffect(() => {
-        const updateDimension = () => {
-            setViewport({
-                isLandscape:window.innerWidth >= SIZE * 2 && window.innerWidth / window.innerHeight > 0.9,
-                width:window.innerWidth,
-                height:window.innerHeight});
-        }
-        window.addEventListener('resize', updateDimension);
-
-
-        return(() => {
-            window.removeEventListener('resize', updateDimension);
-        })
-    }, [viewport])
+    return (() => {
+      window.removeEventListener('resize', updateDimension);
+    })
+  }, [viewport])
 }
