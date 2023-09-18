@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
 import { ValidationPipe } from '@nestjs/common';
+import * as session from 'express-session';
 
 dotenv.config();
 
@@ -31,6 +32,14 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
     }),
   );
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
   await app.listen(parseInt(process.env.BACK_PORT));
 }
 
