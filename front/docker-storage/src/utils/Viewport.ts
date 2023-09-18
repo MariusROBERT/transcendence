@@ -1,11 +1,28 @@
-import {useEffect} from "react";
-export interface Viewport{
-    isLandscape:boolean,
-    height: number,
-    width: number
+import { useEffect } from 'react';
+
+export interface Viewport {
+  isLandscape: boolean;
+  height: number;
+  width: number;
 }
 
-export function useEffectViewport(viewport: Viewport, SIZE: number, setViewport: (it:Viewport) => void) {
+export function useEffectViewport(
+  viewport: Viewport,
+  SIZE: number,
+  setViewport: (it: Viewport) => void,
+) {
+  useEffect(() => {
+    const updateDimension = () => {
+      setViewport({
+        isLandscape:
+          window.innerWidth >= SIZE * 2 &&
+          window.innerWidth / window.innerHeight > 0.9,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+      console.log('triggered');
+    };
+    window.addEventListener('resize', updateDimension);
 
     useEffect(() => {
         const updateDimension = () => {
@@ -22,5 +39,3 @@ export function useEffectViewport(viewport: Viewport, SIZE: number, setViewport:
         })
     }, [viewport])
 }
-
-

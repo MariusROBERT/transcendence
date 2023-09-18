@@ -4,7 +4,7 @@ import {Viewport} from "../../utils/Viewport";
 import { Border, Button, Input, Flex, Background } from "..";
 import React, {useEffect, useState} from "react";
 
-const SIZE: number = 350
+const SIZE: number = 350;
 
 interface Props{
     duration_ms?: number,
@@ -30,12 +30,14 @@ export function Login({duration_ms = 900, viewport, isConnected, setIsConnected}
     const [isConnecting, setIsConnecting] = useState(false)
     const [isAnim, setIsAnim] = useState(false)
 
-    const connectionStyle: React.CSSProperties = {
-        height:viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
-        width:'100%',
-        position: "absolute",
-        top:'0px',
-    }
+  const connectionStyle: React.CSSProperties = {
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) + 'px'
+      : Math.max(2 * SIZE, viewport.height) + 'px',
+    width: '100%',
+    position: 'absolute',
+    top: '0px',
+  };
 
     const animStyle: React.CSSProperties = {
         height:viewport.isLandscape ? (Math.max(SIZE, viewport.height) - 50) + 'px' : (Math.max(2 * SIZE, viewport.height) - 50) + 'px',
@@ -53,13 +55,17 @@ export function Login({duration_ms = 900, viewport, isConnected, setIsConnected}
         transition: duration_ms + 'ms ease'
     }
 
-    const connectedStyle: React.CSSProperties = {
-        height:viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
-        width:'100%',
-        position: "absolute",
-        left:'0px',
-        top:viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px'
-    }
+  const connectedStyle: React.CSSProperties = {
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) + 'px'
+      : Math.max(2 * SIZE, viewport.height) + 'px',
+    width: '100%',
+    position: 'absolute',
+    left: '0px',
+    top: viewport.isLandscape
+      ? -Math.max(SIZE, viewport.height) + 'px'
+      : -Math.max(2 * SIZE, viewport.height) + 'px',
+  };
 
     return (
         <div style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>

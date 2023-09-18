@@ -1,7 +1,4 @@
 import { Controller } from '@nestjs/common';
 
 @Controller('muted')
-export class MutedController {
-
-    
-}
+export class MutedController {}
