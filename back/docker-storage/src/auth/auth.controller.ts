@@ -11,10 +11,12 @@ import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from '../database/entities/user.entity';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { FtOAuthGuard } from './guards/ft-auth.guards';
+import { ftLoginDto } from './dtos/ft-login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {
+  }
 
   @Post('/register')
   async Register(@Body() userData: UserSubDto): Promise<Partial<UserEntity>> {
@@ -40,7 +42,7 @@ export class AuthController {
   @Get('callback/42')
   @UseGuards(FtOAuthGuard)
   auth42callback(@Request() req) {
-    return { username: req.user.username, image: req.user?._json.image.link };
-    // return req.user;
+    // const user : ftLoginDto = { username: req.user.username, urlImg: req.user._json.image_url };
+    return this.authService.ftLogin({ username: req.user.username, urlImg: req.user._json.image_url } as ftLoginDto);
   }
 }
