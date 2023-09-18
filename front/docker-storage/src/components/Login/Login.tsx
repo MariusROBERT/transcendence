@@ -1,71 +1,159 @@
-import { color } from "../../utils/Global";
-import {delay} from "../../utils/UtilityFunctions";
-import {Viewport} from "../../utils/Viewport";
+import { color, delay, Viewport, RedirectToHome } from "../../utils";
+import React, { ChangeEvent, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Border, Button, Input, Flex, Background } from "..";
-import React, {useEffect, useState} from "react";
 
 const SIZE: number = 350;
 
-interface Props{
+interface Props {
     duration_ms?: number,
     viewport: Viewport,
-    isConnected: boolean,
-    setIsConnected: (state: boolean) => void,
 }
 
-export function Login({duration_ms = 900, viewport, isConnected, setIsConnected} : Props)
-{
-    async function OnConnect()
-    {
+interface FormData {
+    username: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export function Login({ duration_ms = 900, viewport }: Props) {
+    const [formData, setFormData] = useState<FormData>({
+        username: '',
+        password: '',
+        confirmPassword: '',
+    });
+
+    const [isConnected, setIsConneted] = useState<boolean>(false);
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const navigate = useNavigate();
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (signIn)
+            OnConnect();
+        else
+            OnRegister();
+    };
+
+
+    async function OnRegister() {
+        if (formData.username !== '' && formData.password !== '') {
+            if (formData.password === formData.confirmPassword) {
+                // REGISTER
+                const registerResponse = await fetch(
+                    'http://localhost:3001/api/auth/register',
+                    {
+                        method: 'POST',
+
+                        body: JSON.stringify({
+                            username: formData.username,
+                            password: formData.password,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    },
+                );
+                if (registerResponse.ok) {
+                    console.log('Inscription réussie !');
+                    OnConnect();
+                } else {
+                    setErrorMessage('Ce username est deja pris !');
+                    console.error(
+                        `Échec de l'inscription. Error`,
+                        registerResponse.status,
+                    );
+                }
+            } else {
+                setErrorMessage('Les mots de passe ne correspondent pas !');
+            }
+        }
+    }
+
+    async function OnConnect() {
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    password: formData.password,
+                }),
+            });
+            if (response.ok) {
+                animateReturnToHome(response);
+            } else {
+                const data = await response.json();
+                setErrorMessage(data.message);
+                console.error(`Échec de connection. Error `, response.status);
+            }
+        } catch (error) {
+            console.error(`Error Interne : ${error}`);
+        }
+    }
+
+    async function animateReturnToHome(response: Response) {
         setIsAnim(true);
         await delay(duration_ms / 3);
         setIsConnecting(true);
         setIsAnim(false);
         await delay(duration_ms);
-        setIsConnected(true);
+        setIsConneted(true);
         setIsConnecting(false);
+        RedirectToHome(navigate, response);
     }
 
     const [signIn, setSign] = useState(true)
     const [isConnecting, setIsConnecting] = useState(false)
     const [isAnim, setIsAnim] = useState(false)
 
-  const connectionStyle: React.CSSProperties = {
-    height: viewport.isLandscape
-      ? Math.max(SIZE, viewport.height) + 'px'
-      : Math.max(2 * SIZE, viewport.height) + 'px',
-    width: '100%',
-    position: 'absolute',
-    top: '0px',
-  };
+    const connectionStyle: React.CSSProperties = {
+        height: viewport.isLandscape
+            ? Math.max(SIZE, viewport.height) + 'px'
+            : Math.max(2 * SIZE, viewport.height) + 'px',
+        width: '100%',
+        position: 'absolute',
+        top: '0px',
+    };
 
     const animStyle: React.CSSProperties = {
-        height:viewport.isLandscape ? (Math.max(SIZE, viewport.height) - 50) + 'px' : (Math.max(2 * SIZE, viewport.height) - 50) + 'px',
-        width:'100%',
+        height: viewport.isLandscape ? (Math.max(SIZE, viewport.height) - 50) + 'px' : (Math.max(2 * SIZE, viewport.height) - 50) + 'px',
+        width: '100%',
         position: "absolute",
         top: '50px',
         transition: duration_ms / 3 + 'ms ease'
     }
 
     const connectingStyle: React.CSSProperties = {
-        height:viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
-        width:'100%',
+        height: viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
+        width: '100%',
         position: "absolute",
-        top:viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
+        top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
         transition: duration_ms + 'ms ease'
     }
 
-  const connectedStyle: React.CSSProperties = {
-    height: viewport.isLandscape
-      ? Math.max(SIZE, viewport.height) + 'px'
-      : Math.max(2 * SIZE, viewport.height) + 'px',
-    width: '100%',
-    position: 'absolute',
-    left: '0px',
-    top: viewport.isLandscape
-      ? -Math.max(SIZE, viewport.height) + 'px'
-      : -Math.max(2 * SIZE, viewport.height) + 'px',
-  };
+    const connectedStyle: React.CSSProperties = {
+        height: viewport.isLandscape
+            ? Math.max(SIZE, viewport.height) + 'px'
+            : Math.max(2 * SIZE, viewport.height) + 'px',
+        width: '100%',
+        position: 'absolute',
+        left: '0px',
+        top: viewport.isLandscape
+            ? -Math.max(SIZE, viewport.height) + 'px'
+            : -Math.max(2 * SIZE, viewport.height) + 'px',
+    };
 
     return (
         <div style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
@@ -81,31 +169,50 @@ export function Login({duration_ms = 900, viewport, isConnected, setIsConnected}
                     </Background>
                 </Border>
                 <Border height={SIZE} width={SIZE} borderColor={color.clear}>
-                    <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-                        <Input>login..</Input>
-                        <Input>password..</Input>
-                        {!signIn && <Input>password confirmation..</Input>}
-                        <Flex flex_direction={'row'} flex_justifyContent={"flex-end"}>
-                            <Button onClick={() => {
-                                if (signIn) {
-                                    console.log('Connect');
-                                    // TODO connection validation process
-                                    OnConnect();
-                                } else {
-                                    console.log('SignUp');
-                                    // TODO add user in the data base if possible (unique username etc..)
-                                }
-                                }}
-                            >
-                                {signIn ? 'Connect' : 'Sign Up'}
-                            </Button>
-                        </Flex>
-                        <br/>
-                        <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-                            <p>or sign in with Intra42</p>
-                            <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
-                        </Flex>
-                    </Background>
+                    <form onSubmit={handleSubmit}>
+                        <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
+                            {errorMessage && (
+                                <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+                            )}
+                            <input
+                                style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                placeholder="login.."
+                                required
+                            />
+                            <input
+                                style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="password.."
+                                required
+                            />
+                            {!signIn &&
+                                <input
+                                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                    type="password"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder="password confirmation.."
+                                    required
+                                />}
+                            <Flex flex_direction={'row'} flex_justifyContent={"flex-end"}>
+                                <button type={'submit'} className={'button-30 color-3 cursor_pointer'} ><p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p></button>
+                            </Flex>
+                            <br />
+                            <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
+                                <p>or sign in with Intra42</p>
+                                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
+                            </Flex>
+
+                        </Background>
+                    </form>
                 </Border>
             </Background>
         </div>

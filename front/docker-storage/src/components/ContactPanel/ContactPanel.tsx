@@ -38,7 +38,7 @@ export function ContactPanel({viewport}:Props)
                     </Border>
                 </Background>
             </div>
-            <SearchBar>Search for friend or group here..</SearchBar>
+            {/* <SearchBar>Search for friend or group here..</SearchBar> */}
         </>
     );
 }
