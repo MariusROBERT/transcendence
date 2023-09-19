@@ -1,9 +1,12 @@
 import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
 import { useNavigate } from 'react-router-dom';
-import { AuthGuard } from '..';
+import { AuthGuard, Flex, RoundButton } from '..';
 import { LeaderboardProps, User, UserInfos } from '../../utils/interfaces';
+import { UserButton } from '../User/UserButton';
+
+// TODO : rafraichir quand il click sur ask as friend
 
 export default function Leaderboard({ searchTerm }: LeaderboardProps) {
   const navigate = useNavigate();
@@ -96,25 +99,32 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     const elements = filteredUsers.map((user: User) => (
       <div key={user.id} style={userElementStyle}>
         <p>RANK : {count++}</p> {/* TO CHANGE */}
+         {/* USE USER */}
         {user.id === userInfos?.id ? (
           <>
-            {/* <p onClick={() => handleOpenProfil(user)}> ===> go to own profil ?? */}
-            <p>coucou cest moi : {user.username}</p>
+            <Flex zIndex={'10'} flex_direction="row">
+                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(user)}></RoundButton> {/* go to own profil */}
+                <p onClick={() => handleOpenProfil(user)}>coucou cest moi: {user.username}</p>
+            </Flex>
             {/* </p> */}
-            <img style={imgStyle} src={user?.urlImg} />
-            <p>winrate : {user.winrate}</p>
           </>
-        ) : (
+        ) :  (
           <>
-            <p onClick={() => handleOpenProfil(user)}>
-              Nom d'utilisateur : {user.username}
-            </p>
-            {user.is_friend ? <p>Is a friend</p> : <></>}
-            <img style={imgStyle} src={user?.urlImg} />
-            <p>Status : {user.user_status}</p>
-            <p>winrate : {user.winrate}</p>
+           <Flex zIndex={'10'} flex_direction="row">
+                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(user)}></RoundButton>
+                <p onClick={() => handleOpenProfil(user)}>{user.username}</p>
+            </Flex>
+            {user.user_status ? 
+              <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
+            :
+              <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
+            }
+            <UserButton user_name={user.username} id={user.id} icon_url={user.urlImg} is_friend={user.is_friend} ></UserButton>
           </>
         )}
+        <>
+            <p>SCORE %</p>
+        </>
       </div>
     ));
     setUserElements(elements);
@@ -126,7 +136,6 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
 
   return (
     <div style={container}>
-      leaderboard
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
@@ -140,12 +149,16 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
   );
 }
 
-const container = {
+const container: CSSProperties = {
+  background: 'black',
+  position: 'absolute',
   border: '1px solid red',
-  height: '1000px',
+  height: '90vh',
   display: 'flex',
   justifyContent: 'center',
+  zIndex: '999'
 };
+
 
 const imgStyle = {
   width: '100px',
@@ -153,8 +166,13 @@ const imgStyle = {
   border: '1px solid red',
 };
 
+const statusStyle = {
+  width: '10px',
+  height: '10px',
+}
+
 const userElementStyle = {
-  width: '900px',
+  width: '1000px',
   display: 'flex',
   justifyContent: 'space-around',
   background: 'grey',

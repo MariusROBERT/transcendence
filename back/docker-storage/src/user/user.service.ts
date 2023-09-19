@@ -295,7 +295,7 @@ export class UserService {
     user.user_status = UserStateEnum.OFF;
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
-
+    // TODO : remove jwt
     this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
   }

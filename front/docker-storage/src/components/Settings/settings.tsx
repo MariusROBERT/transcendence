@@ -55,6 +55,14 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       if (rep.ok) {
         const user = await rep.json();
         setUserInfosSettings(user);
+        setModifData({
+          urlImg: '',
+          password: '',
+          confirmpwd: '',
+          is2fa_active: userInfosSettings?.is2fa_active,
+        })
+        console.log(userInfosSettings?.urlImg);
+        
       } else {
         // si je delete le cookie du jwt
         navigate('/login');
@@ -120,7 +128,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     }
     if (
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.urlImg === userInfosSettings.urlImg
+      modifData.urlImg === userInfosSettings?.urlImg
     ) {
       console.log('\n\n=====verif OK');
       setIsDisabled(true);
@@ -159,10 +167,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
-        <div style={modifContainer}>
-          {' '}
-          {/* IMG ==> TODO */}
-          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
+        <div style={modifContainer}> {/* IMG ==> TODO */}
+          <img style={imgStyle} src={userInfosSettings?.urlImg ? userInfosSettings?.urlImg : require('../../assets/imgs/icon_default_profil.png')} alt="" />
           <input
             type="file"
             onChange={(e) =>
@@ -173,9 +179,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             }
           />
         </div>
-        <div style={modifContainer}>
-          {' '}
-          {/* PWD ==> ok */}
+        <div style={modifContainer}> {/* PWD ==> ok */}
           <input
             type={passwordType}
             onChange={(e) =>
@@ -210,9 +214,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
-        <div style={modifContainer}>
-          {' '}
-          {/* 2FA ==> ok */}
+        <div style={modifContainer}> {/* 2FA ==> ok */}
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>

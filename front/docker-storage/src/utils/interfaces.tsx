@@ -76,7 +76,7 @@ export interface Modifications {
   urlImg: string;
   password: string | undefined;
   confirmpwd: string | undefined;
-  is2fa_active: boolean;
+  is2fa_active: boolean | undefined;
 }
 
 export interface settingInfos {

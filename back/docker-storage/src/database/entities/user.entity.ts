@@ -105,4 +105,7 @@ export class UserEntity {
 
   @OneToMany(() => GameEntity, (game) => game.player2)
   gamesAsPlayer2: GameEntity[];
+
+  @Column({ default: 0 })
+  elo: number;
 }
