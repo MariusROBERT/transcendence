@@ -7,9 +7,6 @@ interface Props {
     state:State
 }
 
-let x = 50;
-const y = 50;
-
 export function DrawGame({state}: Props) {
 
     let size:{

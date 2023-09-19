@@ -13,7 +13,7 @@ export interface State{
     score: {p1: number, p2: number}
 }
 
-export function game(id:number){
+export function Game(id:number){
 
     const [socket, setSocket] = useState<Socket>();
     const [state, setState] = useState<State>({
