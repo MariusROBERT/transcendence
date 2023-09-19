@@ -30,7 +30,7 @@ export class UserEntity {
   @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
   role!: UserRoleEnum;
 
-  @Column({ default: '/default_profil.png' })
+  @Column({ default: '../../../../../front/docker-storage/src/assets/imgs/icon_default_profil.png' })
   urlImg!: string;
 
   @Column()
