@@ -24,6 +24,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
     });
 
     const [isConnected, setIsConneted] = useState<boolean>(false);
+    const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
 
     const [errorMessage, setErrorMessage] = useState<string>('');
     const navigate = useNavigate();
@@ -44,7 +45,6 @@ export function Login({duration_ms = 900, viewport}: Props) {
             OnRegister();
     };
 
-
     async function OnRegister() {
         if (formData.username !== '' && formData.password !== '') {
             if (formData.password === formData.confirmPassword) {
@@ -53,7 +53,6 @@ export function Login({duration_ms = 900, viewport}: Props) {
                     'http://localhost:3001/api/auth/register',
                     {
                         method: 'POST',
-
                         body: JSON.stringify({
                             username: formData.username,
                             password: formData.password,
@@ -83,25 +82,25 @@ export function Login({duration_ms = 900, viewport}: Props) {
         try {
             const response = await fetch('http://localhost:3001/api/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    password: formData.password,
-                }),
-            });
-            if (response.ok) {
-                animateReturnToHome(response);
-            } else {
-                const data = await response.json();
-                setErrorMessage(data.message);
-                console.error(`Échec de connection. Error `, response.status);
-            }
-        } catch (error) {
-            console.error(`Error Interne : ${error}`);
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: formData.username,
+                password: formData.password,
+            }),
+        });
+        if (response.ok) {
+            animateReturnToHome(response);
+        } else {
+            const data = await response.json();
+            setErrorMessage(data.message);
+            console.error(`Échec de connection. Error `, response.status);
         }
+    } catch (error) {
+        console.error(`Error Interne : ${error}`);
     }
+}
 
     async function animateReturnToHome(response: Response) {
         setIsAnim(true);
@@ -209,16 +208,19 @@ export function Login({duration_ms = 900, viewport}: Props) {
                                     className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p></button>
                             </Flex>
                             <br/>
-                            <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-                                <p>or sign in with Intra42</p>
-                                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-                                    console.log('intra 42 clicked');
-                                    window.location.replace('http://localhost:3001/api/auth/login/42');
-                                }}></Button>
-                            </Flex>
+                            
 
                         </Background>
                     </form>
+                    <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
+                                <p>or sign in with Intra42</p>
+                                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
+                                    console.log('intra 42 clicked');
+                                    setIsFTConnection(true);
+                                    window.location.replace('http://localhost:3001/api/auth/login/42');
+                                    console.log("end co 42");
+                                }}></Button>
+                            </Flex>
                 </Border>
             </Background>
         </div>

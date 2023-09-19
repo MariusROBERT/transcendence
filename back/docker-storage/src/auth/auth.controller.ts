@@ -20,7 +20,6 @@ export class AuthController {
 
   @Post('/register')
   async Register(@Body() userData: UserSubDto): Promise<Partial<UserEntity>> {
-    console.log('allé ca va');
     return await this.authService.register(userData);
   }
 
@@ -29,7 +28,6 @@ export class AuthController {
     @Body() credentials: LoginCreditDto,
     // @Res() res: Response
   ) {
-    console.log('Uuuuuuuuuuuuu');
     return await this.authService.login(credentials); // return acces_token
   }
 
