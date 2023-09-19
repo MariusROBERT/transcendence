@@ -1,67 +1,66 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsEnum, IsBoolean } from "class-validator";
-import { UserRoleEnum, UserStateEnum } from "../../utils/enums/user.enum";
-import { Type } from "class-transformer";
-
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
 export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  urlImg!: string;
 
-    @IsOptional()
-    @IsString()
-    username: string;
+  @IsOptional()
+  @IsBoolean()
+  is2fa_active!: boolean;
 
-    @IsOptional()
-    @IsString()
-    password: string;
+  @IsOptional()
+  @IsString()
+  secret2fa: string;
 
-    @IsOptional()
-    @IsString()
-    urlImg!: string;
+  @IsOptional()
+  @IsEnum(UserStateEnum)
+  user_status: UserStateEnum;
 
-    @IsOptional()
-    @IsBoolean()
-    is2fa_active!: boolean;
+  @IsOptional()
+  @IsEnum(UserRoleEnum)
+  user_role: UserRoleEnum;
 
-    @IsOptional()
-    @IsString()
-    secret2fa: string;
-
-    @IsOptional()
-    @IsEnum(UserStateEnum)
-    user_status: UserStateEnum;
-
-    @IsOptional()
-    @IsEnum(UserRoleEnum)
-    user_role: UserRoleEnum;
-
-    @IsOptional()
-    @IsNumber()
-    winrate: number;
-
+  @IsOptional()
+  @IsNumber()
+  winrate: number;
 }
 
 export class PublicProfileDto {
-    
-    @IsNotEmpty()
-    @IsNumber()
-    id: number;
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
 
-    @IsNotEmpty()
-    @IsString()
-    username: string;
+  @IsNotEmpty()
+  @IsString()
+  username: string;
 
-    @IsNotEmpty()
-    @IsString()
-    urlImg!: string;
+  @IsNotEmpty()
+  @IsString()
+  urlImg: string;
 
-    @IsNotEmpty()
-    @IsEnum(UserStateEnum)
-    user_status: UserStateEnum;
+  @IsNotEmpty()
+  @IsEnum(UserStateEnum)
+  user_status: UserStateEnum;
 
-    @IsNotEmpty()
-    @IsNumber()
-    winrate: number;
+  @IsNotEmpty()
+  @IsNumber()
+  winrate: number;
 
-    @IsNotEmpty()
-    @IsBoolean()
-    is_friend: boolean;
+  @IsNotEmpty()
+  @IsBoolean()
+  is_friend: boolean;
+}
+
+export class UpdatePwdDto {
+  @IsString()
+  password: string;
 }
