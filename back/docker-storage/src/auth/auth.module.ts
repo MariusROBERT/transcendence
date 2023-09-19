@@ -9,6 +9,7 @@ import { UserEntity } from '../database/entities/user.entity';
 import { DatabaseModule } from '../database/database.module';
 import { FtStrategy } from './strategy/passport-ft.strategy';
 import { SessionSerializer } from './utils/session.serializer';
+import { FtAuthFilter } from './filters/ftAuth.filter';
 
 @Module({
   imports: [
@@ -25,7 +26,13 @@ import { SessionSerializer } from './utils/session.serializer';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, FtStrategy, SessionSerializer],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    FtStrategy,
+    SessionSerializer,
+    FtAuthFilter,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
