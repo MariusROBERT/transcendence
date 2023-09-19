@@ -1,7 +1,7 @@
-import { color, delay, Viewport, RedirectToHome } from "../../utils";
-import React, { ChangeEvent, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { Border, Button, Input, Flex, Background } from "..";
+import {color, delay, Viewport, RedirectToHome} from "../../utils";
+import React, {ChangeEvent, useState} from "react";
+import {useNavigate} from 'react-router-dom';
+import {Border, Button, Input, Flex, Background} from "..";
 
 const SIZE: number = 350;
 
@@ -16,7 +16,7 @@ interface FormData {
     confirmPassword: string;
 }
 
-export function Login({ duration_ms = 900, viewport }: Props) {
+export function Login({duration_ms = 900, viewport}: Props) {
     const [formData, setFormData] = useState<FormData>({
         username: '',
         password: '',
@@ -29,7 +29,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     const navigate = useNavigate();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData({
             ...formData,
             [name]: value,
@@ -156,8 +156,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     };
 
     return (
-        <div style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
-            <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'} flex_justifyContent={'space-around'}>
+        <div
+            style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
+            <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
+                        flex_justifyContent={'space-around'}>
                 <Border height={SIZE} width={SIZE} borderColor={color.clear}>
                     <Background bg_color={color.clear}>
                         <h2>Welcome to Pong</h2>
@@ -172,10 +174,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     <form onSubmit={handleSubmit}>
                         <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
                             {errorMessage && (
-                                <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+                                <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>
                             )}
                             <input
-                                style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
                                 type="text"
                                 name="username"
                                 value={formData.username}
@@ -184,7 +186,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                                 required
                             />
                             <input
-                                style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
                                 type="password"
                                 name="password"
                                 value={formData.password}
@@ -194,7 +196,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                             />
                             {!signIn &&
                                 <input
-                                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                                    style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
                                     type="password"
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
@@ -203,12 +205,16 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                                     required
                                 />}
                             <Flex flex_direction={'row'} flex_justifyContent={"flex-end"}>
-                                <button type={'submit'} className={'button-30 color-3 cursor_pointer'} ><p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p></button>
+                                <button type={'submit'} className={'button-30 color-3 cursor_pointer'}><p
+                                    className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p></button>
                             </Flex>
-                            <br />
+                            <br/>
                             <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                                 <p>or sign in with Intra42</p>
-                                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => console.log('intra 42 clicked')}></Button>
+                                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
+                                    console.log('intra 42 clicked');
+                                    window.location.replace('http://localhost:3001/api/auth/login/42');
+                                }}></Button>
                             </Flex>
 
                         </Background>

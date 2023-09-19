@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/passport-jwt.strategy';
 import { UserEntity } from '../database/entities/user.entity';
 import { DatabaseModule } from '../database/database.module';
+import { FtStrategy } from './strategy/passport-ft.strategy';
+import { SessionSerializer } from './utils/session.serializer';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { DatabaseModule } from '../database/database.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, FtStrategy, SessionSerializer],
   exports: [AuthService],
 })
 export class AuthModule {}
