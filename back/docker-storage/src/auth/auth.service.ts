@@ -11,6 +11,7 @@ import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
+import { ftLoginDto } from './dtos/ft-login.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,8 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -70,5 +72,42 @@ export class AuthService {
     } else {
       throw new NotFoundException(`wrong password`);
     }
+  }
+
+  async ftLogin(userData: ftLoginDto) {
+    userData.username = userData.username + '_42';
+    const { username, urlImg } = userData;
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .getOne();
+    if (!user) {
+      const user2 = this.userRepository.create({
+        ...userData,
+      });
+      user2.salt = '42';
+      user2.password = '42';
+      user2.user_status = UserStateEnum.ON;
+      user2.friends = [];
+      user2.invited = [];
+      user2.invites = [];
+      user2.urlImg = urlImg;
+      try {
+        await this.userRepository.save(user2); // save user in DB
+      } catch (e) {
+        throw new ConflictException(`username already used`); // should not happen, will probably be removed
+      }
+    }
+    const user2 = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .getOne();
+    // JWT
+    const payload = {
+      username,
+      role: user2.role,
+    };
+    const jwt = this.jwtService.sign(payload);
+    return { 'access-token': jwt };
   }
 }

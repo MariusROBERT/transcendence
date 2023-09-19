@@ -7,6 +7,7 @@ import { Flex } from '../Flex/FlexBox';
 import React, { useState } from 'react';
 import { Viewport } from '../../app/Viewport';
 import { delay } from '../../UtilityFunctions';
+// import { useNavigate } from 'react-router-dom'; //TODO: uncomment when front works
 
 const SIZE: number = 350;
 
@@ -74,6 +75,8 @@ export function Login({ viewport, isConnected, setIsConnected }: Props) {
       : -Math.max(2 * SIZE, viewport.height) + 'px',
   };
 
+  // const navigate = useNavigate(); //TODO: uncomment when front works
+
   return (
     <div
       style={
@@ -135,7 +138,10 @@ export function Login({ viewport, isConnected, setIsConnected }: Props) {
               <p>or sign in with Intra42</p>
               <Button
                 icon={require('../../imgs/logo_42.png')}
-                onClick={() => console.log('intra 42 clicked')}
+                onClick={() => {
+                  console.log('intra 42 clicked');
+                  // navigate('http://localhost:3001/api/auth/login/42'); // TODO: can't test for now as front don't compile
+                }}
               ></Button>
             </Flex>
           </Background>
