@@ -5,6 +5,7 @@ import {
   Post,
   Request,
   Res,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -13,6 +14,7 @@ import { UserEntity } from '../database/entities/user.entity';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { FtOAuthGuard } from './guards/ft-auth.guards';
 import { ftLoginDto } from './dtos/ft-login.dto';
+import { FtAuthFilter } from './filters/ftAuth.filter';
 
 @Controller('auth')
 export class AuthController {
@@ -39,6 +41,7 @@ export class AuthController {
 
   @Get('callback/42')
   @UseGuards(FtOAuthGuard)
+  @UseFilters(FtAuthFilter)
   async auth42callback(@Request() req, @Res() res) {
     const token = await this.authService.ftLogin({
       username: req.user.username,
