@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Post} from '@nestjs/common';
+import { Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import {GameService} from "./game.service";
 import { GameGateway } from './game.gateway';
 export const delay = (ms: number | undefined) => new Promise(res => ms ? setTimeout(res, ms) : setTimeout(res, 0));
@@ -6,6 +6,7 @@ export const clamp = (val, valmin, valmax) => Math.min(Math.max(val, valmin), va
 
 export interface State{
     running: boolean,
+    isSpecial: boolean,
     ball: {x: number, y: number},
     speed: number,
     dir: {x: number, y: number},
@@ -32,7 +33,10 @@ const size:{
 
 @Controller('game')
 export class GameController {
-    games: {playerIds:number[], state:State}[] = [];
+    games: {playerIds:number[], state:State, ready:boolean}[] = [];
+    queue: number[] = [];
+    queueSpecial: number[] = [];
+
     constructor(private gameService: GameService, private gameGateway: GameGateway) {
         this.gameGateway.setController(this);
     }
@@ -45,34 +49,86 @@ export class GameController {
             || (g.playerIds[0] == p2 && g.playerIds[1] == p1))
     }
 
-    //Called when the two players are ready
-    @Get('start/:p1/:p2')
-    async starts(@Param('p1') p1: number, @Param('p2') p2: number){
+    @Patch('join/special/:id')
+    joinSpecial(@Param('id') id: number){
+        this.queueSpecial.push(id);
+        this.tryLaunchGames(this.queueSpecial, true);
+    }
+
+    @Patch('join/:id')
+    join(@Param('id') id: number){
+        this.queue.push(id);
+        this.tryLaunchGames(this.queue, false);
+    }
+
+    @Patch('quit/queue:id')
+    quitQueue(@Param('id') id: number){
+        this.queue = this.queue.filter(i => i != id);
+    }
+
+    @Patch('quit/queue/special:id')
+    quitSpecialQueue(@Param('id') id: number){
+        this.queueSpecial = this.queueSpecial.filter(i => i != id);
+    }
+
+    @Patch('quit/game:id')
+    async quitGame(@Param('id') id: number){
+        const game = this.getGame(id);
+        if (!game) return;
+        const playerNumber = game.playerIds.indexOf(id);
+        if (playerNumber === 0)
+            game.state.score.p1 = 0;
+        else
+            game.state.score.p2 = 0;
+        return this.ends(id);
+    }
+
+    // add a new game in the games lists
+    createGame(p1: number, p2:number, isSpecial){
         //check if the two players are free and stops there games
         let game = this.getGame(p1, p2);
-        if (game != undefined) {
+        if (game !== undefined) {
             await this.ends(p1);
             await this.ends(p2);
         }
+        game = {
+            playerIds: [p1, p2],
+            state: {
+                running: true,
+                isSpecial: isSpecial,
+                ball: {x:size.width / 2, y:size.height / 2},
+                dir: this.gameService.normalize({x:Math.random() * 2 - 1, y:Math.random() * 2 - 1}),
+                p1: {x:size.ball / 2, y:size.height / 2},
+                p2: {x:size.width - size.ball / 2, y:size.height / 2},
+                score: {p1: 0, p2: 0},
+                speed: 5,
+            },
+            ready:false
+        };
+        this.games.push(game);
+    }
 
-        // create a new game
-        else {
-            game = {
-                playerIds: [p1, p2],
-                state: {
-                    running: true,
-                    ball: {x:size.width / 2, y:size.height / 2},
-                    dir: this.gameService.normalize({x:Math.random() * 2 - 1, y:Math.random() * 2 - 1}),
-                    p1: {x:size.ball / 2, y:size.height / 2},
-                    p2: {x:size.width - size.ball / 2, y:size.height / 2},
-                    score: {p1: 0, p2: 0},
-                    speed: 5,
-                }
-            };
-            this.games.push(game);
-            this.update(game);
+    // try launch games as long as there is more than 2 players in the queue
+    tryLaunchGames(queue: number[], isSpecial: boolean){
+        while (queue.length >= 2){
+            queue = queue.filter(id => this.getGame(id) === undefined);
+            this.createGame(queue[0], queue[1], isSpecial);
+            queue.slice(2);
         }
-        return game;
+    }
+
+    //Called from each player before starting
+    @Patch('start/:id')
+    async starts(@Param('id') id: number){
+        //check if the two players are free and stops there games
+        let game = this.getGame(id);
+        if (game === undefined) return;
+
+        //first call set ready to true and second start the update function
+        if (!game.ready)
+            game.ready = true;
+        else
+            this.update(game);
     }
 
     //called at the start of the game and then every frame till the game ends
@@ -170,7 +226,7 @@ export class GameController {
     movePlayer({playerId, moveUp} : {playerId:number, moveUp:boolean})
     {
         let game = this.getGame(playerId);
-        if (game === undefined || !game.state.running) return 'game not found';
+        if (game === undefined || !game.state.running) return;
         if (game.playerIds[0] == playerId) {
             game.state.p1.y += moveUp ? -game.state.speed : game.state.speed;
             game.state.p1.y = clamp(game.state.p1.y, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);

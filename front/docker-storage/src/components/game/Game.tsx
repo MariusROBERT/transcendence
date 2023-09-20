@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client'
-import p5Types from "p5";
 import { DrawGame } from './DrawGame';
 
 export interface State{
@@ -40,10 +39,13 @@ export function Game(id:number){
         if (game.playerIds[0] !== id && game.playerIds[1] !== id) return;
         setState(game.state);
     }
+
     useEffect(() => {
         socket?.on('sendState', stateListener);
         return () => {socket?.off('sendState', stateListener)}
     }, [stateListener]);
+
+    
 
     return (
         <>
