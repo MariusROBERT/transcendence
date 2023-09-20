@@ -10,7 +10,7 @@ import UserBanner from '../User/UserBanner';
 
 // TODO : rafraichir quand il click sur ask as friend
 
-export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
+export default function Leaderboard({ meUser, searchTerm, setUserComplete }: LeaderboardProps) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
@@ -53,7 +53,7 @@ export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
           return;
         } else {
           if (user && Array.isArray(user) && user.length === 0)
-            // A TESTER
+            // Jamais le cas vu qu'il y en a au moins un : lui
             setErrorMessage('Aucun utilisateur trouvé.');
           else setAllUsers(user);
         }
@@ -62,7 +62,6 @@ export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
       cancelled = true;
     };
   };
-
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
@@ -83,7 +82,7 @@ export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
             </Flex>
           </>
         ) :  (
-          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} />
+          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} setUserComplete={setUserComplete} />
         )}
         <>
             <p>SCORE %</p>
@@ -96,10 +95,12 @@ export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
 
   useEffect(() => {
     getAllProfil();
+    setUserComplete(meUser)
   }, [jwtToken]);
 
   useEffect(() => {
     displayAllProfil();
+    setUserComplete(meUser)
   }, [searchTerm, allUsers ,jwtToken]);
 
   return (

@@ -9,10 +9,11 @@ interface Props{
     children?:ReactNode,
     heading:string,
     duration_ms:number
-    meUser: IUserComplete|undefined
+    meUser: IUserComplete|undefined;
+    setUserComplete: any;
 }
 
-export function GroupItems({children, heading, duration_ms, meUser}: Props)
+export function GroupItems({children, heading, duration_ms, meUser, setUserComplete}: Props)
 {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -39,6 +40,7 @@ export function GroupItems({children, heading, duration_ms, meUser}: Props)
 		})
 	}
 	useEffect(() => {
+        setUserComplete(meUser)
 		getAllUsers();
 	}, [meUser])
     console.log("header: ", heading);
@@ -50,7 +52,7 @@ export function GroupItems({children, heading, duration_ms, meUser}: Props)
             meUser?.friends.includes(user.id))
             .map((friend: IUser) => (
             <div key={friend.id} >
-                <UserBanner otherUser={friend} meUser={meUser} /> {/* rentre pas dedans*/}
+                <UserBanner otherUser={friend} meUser={meUser} setUserComplete={setUserComplete}/> {/* rentre pas dedans*/}
             </div>
         ));
         console.log("freids : ", friends); // ok
@@ -59,7 +61,7 @@ export function GroupItems({children, heading, duration_ms, meUser}: Props)
     const displayUsers = () => {
         const users = allUsers?.map((user: IUser) => (
             <div key={user.id} >
-                <UserBanner otherUser={user} meUser={meUser} /> {/* rentre pas dedans*/}
+                <UserBanner setUserComplete={setUserComplete} otherUser={user} meUser={meUser} /> {/* rentre pas dedans*/}
             </div>
         ));
         console.log("users: ", users); // ok

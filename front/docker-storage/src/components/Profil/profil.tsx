@@ -27,7 +27,6 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
     return (
       <div style={profilContainer}>
         <div style={profilContent}>
-          {/* {meUser ? ( */}
             <>
               <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
               <p>ID : {meUser?.id}</p>
@@ -44,9 +43,6 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
               <p>Winrate : {meUser?.winrate}</p>
               <button onClick={onClose}>Fermer</button>
             </>
-          {/* ) : ( */}
-            {/* <p>Utilisateur introuvable.</p> */}
-          {/* )} */}
         </div>
       </div>
     );

@@ -64,7 +64,8 @@ export interface IUserComplete {
 
 export interface LeaderboardProps {
   searchTerm: string;
-  meUser: IUser | undefined
+  meUser: IUser | undefined;
+  setUserComplete:any;
 }
 
 export interface ProfilProps {

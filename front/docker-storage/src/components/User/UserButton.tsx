@@ -8,10 +8,11 @@ import { lookGame, openChat, openOptionDropdown, sendFriendInvite, sendGameInvit
 // TODO : Add Object User insteed of user_name and user icon
 interface Props {
 	otherUser: IUser
-	meUser: IUser| undefined
+	meUser: IUser| undefined;
+	setUserComplete: any;
 }
 
-export function UserButton({ otherUser, meUser }: Props) {
+export function UserButton({ otherUser, meUser, setUserComplete }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
 
@@ -19,6 +20,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 		if (meUser && meUser.invited.includes(otherUser.id as number)) {
 			setSendButton(true);
 		}
+		setUserComplete(meUser)
 	}, [otherUser, meUser]);
 
 	return (

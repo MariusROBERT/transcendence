@@ -65,11 +65,11 @@ export function MainPage({ panelWidth, viewport }: Props) {
 					<span style={notificationCountStyle}>1</span>
 				</div>
 			)}
-			{isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm}></Leaderboard>}
+			{isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} setUserComplete={setUserComplete}></Leaderboard>}
 			<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={"space-between"} flex_alignItems={'stretch'}>
 				<SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
 					<Background flex_justifyContent={'flex-start'}>
-						<ContactPanel meUser={userComplete} viewport={viewport}></ContactPanel>
+						<ContactPanel setUserComplete={setUserComplete} meUser={userComplete} viewport={viewport}></ContactPanel>
 					</Background>
 				</SidePanel>
 				<Background bg_color={color.clear} flex_justifyContent={'space-around'}>

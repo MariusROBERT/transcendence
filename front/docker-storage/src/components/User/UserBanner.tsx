@@ -3,6 +3,7 @@ import { RoundButton, Flex } from "..";
 import { UserButton } from "./UserButton";
 import { handleOpenProfil, openProfile } from "../../utils/user_functions";
 import { IUser } from "../../utils/interfaces";
+import { useEffect } from "react";
 
 // TODO : Add Object User insteed of user_name and user icon
 interface Props{
@@ -10,12 +11,16 @@ interface Props{
     meUser: IUser|undefined
     setSelectedUser?: any
     setProfilVisible?: any
+    setUserComplete:any
 }
 
-const UserBanner: React.FC<Props> = ({ otherUser, meUser, setSelectedUser, setProfilVisible }) => 
+const UserBanner: React.FC<Props> = ({ otherUser, meUser, setSelectedUser, setProfilVisible, setUserComplete }) => 
 {
     console.log("otheruser : ", otherUser);
-    
+    useEffect(() => {
+        setUserComplete(meUser);
+    }, [meUser])
+
     return (
         <>
             <Flex zIndex={'10'} flex_direction="row">
@@ -27,7 +32,7 @@ const UserBanner: React.FC<Props> = ({ otherUser, meUser, setSelectedUser, setPr
                 :
                 <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
             }
-            <UserButton otherUser={otherUser} meUser={meUser} ></UserButton>
+            <UserButton otherUser={otherUser} meUser={meUser} setUserComplete={setUserComplete}></UserButton>
         </>
         );
 }
