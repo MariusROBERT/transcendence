@@ -2,11 +2,8 @@ import Cookies from 'js-cookie';
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import {
-  Modifications,
-  UserInfosForSetting,
-  SettingsProps,
-} from '../../utils/interfaces';
+import { Modifications, UserInfosForSetting, SettingsProps } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
 
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const jwtToken = Cookies.get('jwtToken');
@@ -35,7 +32,8 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   const toggleLock = () => {
-    if (!isDisabled) lockPwd();
+    if (!isDisabled)
+      lockPwd();
     else unlockPwd();
   };
 
@@ -45,23 +43,12 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
   useEffect(() => {
     const getUserInfos = async () => {
-      const rep = await fetch('http://localhost:3001/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      if (rep.ok) {
-        const user = await rep.json();
+      const user = (await Fetch('user', 'GET'))?.json;
+      if (user)
         setUserInfosSettings(user);
-      } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez été déconnecté');
-      }
     };
-    if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
+    if (jwtToken)
+      getUserInfos();
   }, [jwtToken]);
 
   // MODIFICATIONS
@@ -71,7 +58,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     const jwtToken = Cookies.get('jwtToken');
     if (!jwtToken) {
       navigate('/login');
-      alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
     }
     if (
       modifData.confirmpwd === '' &&
@@ -85,34 +72,15 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     // PASSWORD :
     if (!isDisabled) {
       if (modifData.password === '' || modifData.confirmpwd === '')
-        return setErrorMessage('les passwords ne correspondent pas !');
-      if (
-        modifData.password !== undefined &&
-        modifData.password !== modifData.confirmpwd
-      ) {
-        return setErrorMessage('les passwords ne correspondent pas !');
-      } else {
-        const response = await fetch(
-          'http://localhost:3001/api/user/update_password', // PATCH update_password
-          {
-            method: 'PATCH',
-            body: JSON.stringify({
-              password: modifData.password,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${jwtToken}`,
-            },
-          },
-        );
-        if (response.ok) {
-          const user = await response.json();
+        return setErrorMessage('passwords doesn\'t match !');
+      if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
+        return setErrorMessage('passwords doesn\'t match !');
+      else {
+        const user = (await Fetch('user/update_password', 'PATCH',
+          JSON.stringify({ password: modifData.password })))?.json;
+        if (user) {
           console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
-        } else {
-          navigate('/login');
-          alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-          // ou recreer un jwt ?
         }
         lockPwd();
         setErrorMessage('');
@@ -128,28 +96,14 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       return;
     }
 
-    const rep = await fetch(
-      'http://localhost:3001/api/user', // PATCH
-      {
-        method: 'PATCH',
-        body: JSON.stringify({
+    const user = (await Fetch('user', 'PATCH',
+      JSON.stringify({
           is2fa_active: modifData.is2fa_active,
           urlImg: modifData.urlImg,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      },
-    );
-    if (rep.ok) {
-      const user = await rep.json();
+        })))?.json;
+    if (user) {
       console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
       setUserInfosSettings(user);
-    } else {
-      navigate('/login');
-      alert('Vous avez été déconnecté');
-      // ou recreer un jwt
     }
     lockPwd();
     setErrorMessage('');
