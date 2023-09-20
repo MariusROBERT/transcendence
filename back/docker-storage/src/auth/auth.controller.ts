@@ -45,7 +45,7 @@ export class AuthController {
   async auth42callback(@Request() req, @Res() res) {
     const token = await this.authService.ftLogin({
       username: req.user.username,
-      urlImg: req.user._json.image_url,
+      urlImg: req.user._json.image.link,
     } as ftLoginDto);
     return res.redirect(
       'http://localhost:3000?' + new URLSearchParams({ 'access-token': token }),
