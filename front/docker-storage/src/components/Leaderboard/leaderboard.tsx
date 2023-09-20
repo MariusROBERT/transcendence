@@ -1,13 +1,11 @@
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
-import { useNavigate } from 'react-router-dom';
 import { AuthGuard } from '..';
 import { LeaderboardProps, User, UserInfos } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
 
-export default function Leaderboard({ searchTerm }: LeaderboardProps) {
-  const navigate = useNavigate();
-  const jwtToken = Cookies.get('jwtToken');
+export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
@@ -27,36 +25,19 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     setProfilVisible(false);
   };
 
-  const getAllProfil = () => {
+  const getAllProfil = async () => {
     let cancelled = false;
-    fetch('http://localhost:3001/api/user/get_all_public_profile', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          navigate('/login');
-          alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-          // mettre ce message sur la page login ?
-          return;
-        }
-        return res.json();
-      })
-      .then((user) => {
-        // console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
-        if (cancelled) {
-          // au cas ou le client cancell le fetch avant la fin
-          return;
-        } else {
-          if (user && Array.isArray(user) && user.length === 0)
-            // A TESTER
-            setErrorMessage('Aucun utilisateur trouvé.');
-          else setAllUsers(user);
-        }
-      });
+    const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
+    // console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
+    if (cancelled) {
+      // au cas ou le client cancell le fetch avant la fin
+      return;
+    } else {
+      if (users && Array.isArray(users) && users.length === 0) // A TESTER
+        setErrorMessage('Aucun utilisateur trouvé.');
+      else
+        setAllUsers(users);
+    }
     return () => {
       cancelled = true;
     };
@@ -65,25 +46,12 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
   useEffect(() => {
     const getUserInfos = async () => {
       getAllProfil();
-
-      const rep = await fetch('http://localhost:3001/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      if (rep.ok) {
-        const user = await rep.json();
-        setUserInfos(user);
-      } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez été déconnecté');
-      }
+      const user = (await Fetch('user', 'GET'))?.json;
+      if (!user) return;
+      setUserInfos(user);
     };
-    if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
+    getUserInfos(); // appel de la fonction si le jwt est good
+  }, [isVisible]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {

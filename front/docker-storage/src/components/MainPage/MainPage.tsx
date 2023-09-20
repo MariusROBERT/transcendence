@@ -1,10 +1,7 @@
-import { color } from "../../utils/Global";
-import { Viewport } from "../../utils/Viewport";
-import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar } from "..";
+import { color, Viewport, Fetch } from "../../utils";
+import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import Leaderboard from "../Leaderboard/leaderboard";
 
 interface Props {
     panelWidth: number
@@ -17,38 +14,15 @@ export function MainPage({ panelWidth, viewport }: Props) {
     const [userID, setUserID] = useState<number>();
     const [showNotificationBadge, setShowNotificationBadge] = useState(false);
     const jwtToken = Cookies.get('jwtToken');
-    const navigate = useNavigate();
 
     useEffect(() => {
-        let cancelled = false;
-        fetch('http://localhost:3001/api/user', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${jwtToken}`,
-            },
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    navigate('/login');
-                    alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-                    // mettre ce message sur la page login ?
-                    return;
-                }
-                return res.json();
-            })
-            .then((user) => {
-                if (cancelled) {
-                    return;
-                } else {
-                    setUserID(user.id);
-                    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-                        setShowNotificationBadge(true);
-                }
-            });
-        return () => {
-            cancelled = true;
-        };
+        const getInvites = async () => {
+            const user = (await Fetch('user', 'GET'))?.json;
+            setUserID(user.id);
+            if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
+                setShowNotificationBadge(true);
+        }
+        getInvites();
     }, [jwtToken]);
 
 
@@ -59,7 +33,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
                     <span style={notificationCountStyle}>1</span>
                 </div>
             )}
-            {isLeaderboardVisible && <Leaderboard searchTerm={searchTerm}></Leaderboard>}
+            {isLeaderboardVisible && <Leaderboard searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard>}
             <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={"space-between"} flex_alignItems={'stretch'}>
                 <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
                     <Background flex_justifyContent={'flex-start'}>

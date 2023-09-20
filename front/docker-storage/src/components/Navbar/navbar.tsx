@@ -16,7 +16,7 @@ const Navbar = () => {
     <>
       <div style={navbarStyle}>
         <button onClick={openSettings}>Settings</button>
-        {settingsVisible && <Settings onClose={closeSettings} />}
+        {settingsVisible && <Settings onClose={closeSettings} isVisible={settingsVisible} />}
       </div>
     </>
   );
