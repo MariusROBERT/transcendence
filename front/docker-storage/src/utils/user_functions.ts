@@ -1,3 +1,5 @@
+import { IUser } from "./interfaces";
+
 export function openChat() {
     // console.log('open chat with ' + user_name);
 }
@@ -41,3 +43,9 @@ export function openOptionDropdown() {
 export function openProfile(){
     // console.log('open profile from ' + user_name);
 }
+
+export const handleOpenProfil = (setSelectedUser:any, setProfilVisible:any, user: IUser) => {
+    // open profil card
+    setSelectedUser(user);
+    setProfilVisible(true);
+  };

@@ -1,4 +1,3 @@
-import { ReactNode, useState } from "react";
 import { color } from "../../utils/Global";
 
 interface Props{
@@ -9,8 +8,6 @@ interface Props{
 
 export function SearchBar({setSearchTerm, onClick, children}:Props)
 {
-    const [leaderBoardVisible, setLeaderBoardVisible] = useState(false);
-  
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(event.target.value);
     };

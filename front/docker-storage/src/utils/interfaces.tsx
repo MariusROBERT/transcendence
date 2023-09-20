@@ -38,22 +38,39 @@ export interface UserInfos {
   invited: number[];
 }
 
-export interface User {
+export interface IUser {
   id: number;
   username: string;
   urlImg: string;
   user_status: string;
   winrate: number;
   is_friend: boolean;
+  invited: number[];
+  invites: number[];
+}
+
+export interface IUserComplete {
+  id: number;
+  username: string;
+  urlImg: string;
+  user_status: string;
+  role: string
+  winrate: number;
+  is_friend: boolean;
+  invited: number[];
+  invites: number[];
+  friends: number[];
 }
 
 export interface LeaderboardProps {
   searchTerm: string;
+  meUser: IUser | undefined
 }
 
 export interface ProfilProps {
-  user: User | null;
-  onClose: () => void;
+  otherUser: IUser | undefined | null;
+  meUser: IUser | undefined;
+  onClose?: () => void;
 }
 
 export interface UserButtonsProps {
@@ -83,10 +100,6 @@ export interface settingInfos {
   urlImg: string;
   is2fa_active: boolean;
   username: string;
-}
-
-export interface SettingsProps {
-  onClose: () => void;
 }
 
 export interface UserInfosForSetting {

@@ -1,13 +1,12 @@
 import Cookies from 'js-cookie';
 import { sendFriendInvite } from '../../utils/user_functions';
 import { ProfilProps, UserInfos } from '../../utils/interfaces';
-import { UserButton } from '../User/UserButton';
 import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 
 // TODO : rafraichir quand il click sur ask as friend
 
-const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
+const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken)
@@ -15,56 +14,25 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
     navigate('/login');
     alert('Vous avez été déconnecté');
   }
-  const [userInfos, setUserInfos] = useState<UserInfos | null>(null);
   const [sendButton, setSendButton] = useState(false); 
-  useEffect(() => {
-        const fetchUserInfos = async () => {
-          try {
-            const response = await fetch('http://localhost:3001/api/user', {
-              method: 'GET',
-              body: undefined,
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${jwtToken}`,
-              },
-            });
-    
-            if (response.ok) {
-              const userData = await response.json();
-              setUserInfos(userData);
-            } else {
-              console.log('Réponse non OK');
-            }
-          } catch (error) {
-            console.error(
-              'Erreur lors de la récupération des données utilisateur:',
-              error,
-            );
-          }
-        };
-    
-        if (jwtToken) {
-          fetchUserInfos();
-        }
-      }, [jwtToken]);
 
   useEffect(() => {
-      if (userInfos && userInfos.invited.includes(user?.id as number)) {
+      if (meUser && meUser.invited.includes(otherUser?.id as number)) {
         setSendButton(true);
     }
-  }, [user?.id, userInfos]);
+  }, [otherUser?.id, meUser]);
 
-  if (user?.id === userInfos?.id)
+  if (otherUser?.id === meUser?.id)
   {
     return (
       <div style={profilContainer}>
         <div style={profilContent}>
-          {user ? (
+          {/* {meUser ? ( */}
             <>
-              <h2>COUCOU C"EST OUAM {user.username}</h2>
-              <p>ID : {user.id}</p>
+              <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
+              <p>ID : {meUser?.id}</p>
               <img style={imgStyle} src={require('../../assets/imgs/icon_default_profil.png')}></img>
-              {user.user_status ? 
+              {meUser?.user_status ? 
                 <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
               :
                 <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
@@ -73,12 +41,12 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
               <p>--------------</p>
               <p>--------------</p>
               <p>LAST MATCHS</p>
-              <p>Winrate : {user.winrate}</p>
+              <p>Winrate : {meUser?.winrate}</p>
               <button onClick={onClose}>Fermer</button>
             </>
-          ) : (
-            <p>Utilisateur introuvable.</p>
-          )}
+          {/* ) : ( */}
+            {/* <p>Utilisateur introuvable.</p> */}
+          {/* )} */}
         </div>
       </div>
     );
@@ -87,12 +55,12 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
   return (
     <div style={profilContainer}>
       <div style={profilContent}>
-        {user ? (
+        {otherUser ? (
           <>
-            <h2>Profil de {user.username}</h2>
-            <p>ID : {user.id}</p>
+            <h2>Profil de {otherUser.username}</h2>
+            <p>ID : {otherUser.id}</p>
             <img style={imgStyle} src={require('../../assets/imgs/icon_default_profil.png')}></img>
-            {user.user_status ? 
+            {otherUser.user_status ? 
               <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
             :
               <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
@@ -101,14 +69,14 @@ const Profil: React.FC<ProfilProps> = ({ user, onClose }) => {
             <p>--------------</p>
             <p>--------------</p>
             <p>LAST MATCHS</p>
-            <p>Winrate : {user.winrate}</p>
+            <p>Winrate : {otherUser.winrate}</p>
             <button onClick={onClose}>Fermer</button>
-            {!user.is_friend ? (
+            {!otherUser.is_friend ? (
               <>
                 {sendButton ? ( 
                  <button disabled>Sent !</button>
                 ) : (
-                  <button onClick={() => sendFriendInvite(user.id, jwtToken)}>Add as friend</button>
+                  <button onClick={() => sendFriendInvite(otherUser.id, jwtToken)}>Add as friend</button>
                 )}
                 <button>Send a message</button>
                 <button>Options</button>

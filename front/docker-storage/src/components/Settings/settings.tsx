@@ -5,10 +5,9 @@ import SwitchToggle from './switchToggle';
 import {
   Modifications,
   UserInfosForSetting,
-  SettingsProps,
 } from '../../utils/interfaces';
 
-const Settings: React.FC<SettingsProps> = ({ onClose }) => {
+const Settings = () => {
   const jwtToken = Cookies.get('jwtToken');
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
@@ -228,7 +227,6 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
         <button type="submit">Enregistrer</button>
-        <button onClick={onClose}>Fermer</button>
       </form>
     </div>
   );

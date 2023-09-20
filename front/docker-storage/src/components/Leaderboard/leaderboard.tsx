@@ -3,26 +3,24 @@ import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
 import { useNavigate } from 'react-router-dom';
 import { AuthGuard, Flex, RoundButton } from '..';
-import { LeaderboardProps, User, UserInfos } from '../../utils/interfaces';
+import { LeaderboardProps, IUser, UserInfos } from '../../utils/interfaces';
 import { UserButton } from '../User/UserButton';
+import { handleOpenProfil } from '../../utils/user_functions';
+import UserBanner from '../User/UserBanner';
 
 // TODO : rafraichir quand il click sur ask as friend
 
-export default function Leaderboard({ searchTerm }: LeaderboardProps) {
+export default function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [userInfos, setUserInfos] = useState<UserInfos>();
+  console.log("meUser: ", meUser?.username);
 
-  const handleOpenProfil = (user: User) => {
-    // open profil card
-    setSelectedUser(user);
-    setProfilVisible(true);
-  };
+
 
   const closeProfil = () => {
     // close profil card
@@ -65,74 +63,44 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
     };
   };
 
-  useEffect(() => {
-    const getUserInfos = async () => {
-      getAllProfil();
-
-      const rep = await fetch('http://localhost:3001/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      if (rep.ok) {
-        const user = await rep.json();
-        setUserInfos(user);
-      } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez été déconnecté');
-      }
-    };
-    if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     const filteredUsers = allUsers
-      .filter((user: User) =>
+      .filter((user: IUser) =>
         user.username.toLowerCase().includes(searchTerm.toLowerCase()),
       )
-      .sort((a: User, b: User) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
+      .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
     let count = 1;
-    const elements = filteredUsers.map((user: User) => (
+    const elements = filteredUsers.map((user: IUser) => (
       <div key={user.id} style={userElementStyle}>
         <p>RANK : {count++}</p> {/* TO CHANGE */}
-         {/* USE USER */}
-        {user.id === userInfos?.id ? (
+        {user.id === meUser?.id ? (
           <>
             <Flex zIndex={'10'} flex_direction="row">
-                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(user)}></RoundButton> {/* go to own profil */}
-                <p onClick={() => handleOpenProfil(user)}>coucou cest moi: {user.username}</p>
+                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
+                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest moi: {user.username}</p>
             </Flex>
-            {/* </p> */}
           </>
         ) :  (
-          <>
-           <Flex zIndex={'10'} flex_direction="row">
-                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(user)}></RoundButton>
-                <p onClick={() => handleOpenProfil(user)}>{user.username}</p>
-            </Flex>
-            {user.user_status ? 
-              <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
-            :
-              <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
-            }
-            <UserButton user_name={user.username} id={user.id} icon_url={user.urlImg} is_friend={user.is_friend} ></UserButton>
-          </>
+          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} />
         )}
         <>
             <p>SCORE %</p>
         </>
       </div>
     ));
+
     setUserElements(elements);
   };
 
   useEffect(() => {
+    getAllProfil();
+  }, [jwtToken]);
+
+  useEffect(() => {
     displayAllProfil();
-  }, [searchTerm, allUsers]);
+  }, [searchTerm, allUsers ,jwtToken]);
 
   return (
     <div style={container}>
@@ -142,7 +110,7 @@ export default function Leaderboard({ searchTerm }: LeaderboardProps) {
       <div className="container">{userElements}</div>
       {profilVisible && (
         <AuthGuard isAuthenticated>
-          <Profil user={selectedUser} onClose={closeProfil} />
+          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
         </AuthGuard>
       )}
     </div>
@@ -158,7 +126,6 @@ const container: CSSProperties = {
   justifyContent: 'center',
   zIndex: '999'
 };
-
 
 const imgStyle = {
   width: '100px',
