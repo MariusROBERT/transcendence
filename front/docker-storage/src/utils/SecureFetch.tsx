@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined): Promise<{response: Response, json: any}> {
+export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined): Promise<undefined | {response: Response, json: any}> {
   const jwtToken = Cookies.get('jwtToken');
 
   const response = await fetch('http://localhost:3001/api/' + url_end, {
@@ -19,8 +19,7 @@ export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body:
   }
 
   window.location.href = '/login';
-  alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-  return {response: response, json: null};
+  console.log('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
 }
 
 export async function unsecureFetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined) {

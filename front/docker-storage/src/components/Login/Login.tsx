@@ -151,6 +151,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
           </Background>
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
+          <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
           <form onSubmit={handleSubmit}>
             <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
               {errorMessage && <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>}
@@ -197,9 +198,9 @@ export function Login({duration_ms = 900, viewport}: Props) {
               setIsFTConnection(true);
               window.location.replace('http://localhost:3001/api/auth/login/42');
               console.log("end co 42");
-            }}>''
-            </Button>
+            }}></Button>
           </Flex>
+          </Background>
         </Border>
       </Background>
     </div>

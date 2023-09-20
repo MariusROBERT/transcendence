@@ -5,8 +5,7 @@ import { AuthGuard } from '..';
 import { LeaderboardProps, User, UserInfos } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 
-export function Leaderboard({ searchTerm }: LeaderboardProps) {
-  const jwtToken = Cookies.get('jwtToken');
+export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
@@ -47,13 +46,12 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   useEffect(() => {
     const getUserInfos = async () => {
       getAllProfil();
-
       const user = (await Fetch('user', 'GET'))?.json;
       if (!user) return;
       setUserInfos(user);
     };
-    if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
+    getUserInfos(); // appel de la fonction si le jwt est good
+  }, [isVisible]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {

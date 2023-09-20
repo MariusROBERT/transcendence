@@ -5,8 +5,12 @@ import SwitchToggle from './switchToggle';
 import { Modifications, UserInfosForSetting, SettingsProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 
-const Settings: React.FC<SettingsProps> = ({ onClose }) => {
-  const jwtToken = Cookies.get('jwtToken');
+interface Props{
+  onClose:() => void;
+  isVisible:boolean;
+}
+
+export function Settings({ onClose, isVisible }:Props){
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -42,14 +46,16 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   useEffect(() => {
+    console.log('useEffect 1 Settings');
     const getUserInfos = async () => {
+      console.log('useEffect 2 Settings');
       const user = (await Fetch('user', 'GET'))?.json;
+      console.log('useEffect 3 Settings');
       if (user)
         setUserInfosSettings(user);
     };
-    if (jwtToken)
-      getUserInfos();
-  }, [jwtToken]);
+    getUserInfos();
+  }, [isVisible]);
 
   // MODIFICATIONS
 

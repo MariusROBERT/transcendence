@@ -33,7 +33,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
                     <span style={notificationCountStyle}>1</span>
                 </div>
             )}
-            {isLeaderboardVisible && <Leaderboard searchTerm={searchTerm}></Leaderboard>}
+            {isLeaderboardVisible && <Leaderboard searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard>}
             <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={"space-between"} flex_alignItems={'stretch'}>
                 <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
                     <Background flex_justifyContent={'flex-start'}>
