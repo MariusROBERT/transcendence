@@ -154,7 +154,7 @@ export class ChannelService {
     if (channel.priv == true)
       throw new Error('This channel is a private message channel');
     //  Todo: Check if admin can be banned
-    if (channel.admins.includes(user) || channel.owner == user)
+    if (channel && channel.admins.includes(user) || channel.owner == user)
       throw new Error('The user is admin or owner');
     if (channel.baned.includes(user))
       throw new Error('The user is already banned');
