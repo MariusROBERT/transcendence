@@ -48,6 +48,7 @@ export interface User {
 }
 
 export interface LeaderboardProps {
+  isVisible: boolean
   searchTerm: string;
 }
 
