@@ -15,7 +15,7 @@ export function ChatPanel({viewport, width}:Props)
     let [msg] = useState<{ msg:string, owner:boolean }[]>([]);
 
     function onEnterPressed(){
-        console.log(inputValue);
+        //console.log(inputValue);
         if (inputValue === '')
             return;
         //TODO create Message in the Back and send event to the reciever

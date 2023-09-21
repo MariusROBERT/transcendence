@@ -27,7 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.clients.push(client);
 
     console.log(
-      `Server co id:${client.id} | clients: ${this.clients.length}\n`,
+      `ChatGateway: Server co id:${client.id} | clients: ${this.clients.length}\n`,
     );
     this.server.emit('connect_ok');
   }
@@ -36,29 +36,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const id = this.clients.indexOf(client);
     this.clients.splice(id);
     console.log(
-      `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
+      `ChatGateway: Server deco id:${client.id} | clients: ${this.clients.length}\n`,
     );
-    console.log(client.handshake);
+    //console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
 
   @SubscribeMessage('JoinChat')
   async joinChatRoom(client: Socket, room_id: number) {
-    console.log(`Client:${client} join chat room id ${room_id}`);
+    //console.log(`Client:${client} join chat room id ${room_id}`);
     try {
       const chatEnt = this.chanService.getChannelById(room_id);
       //  Find a way to get UserEntity
       this.chanService.addUserInChannel(null, room_id);
       this.server.emit('joinChat');
     } catch {
-      console.log('Channel does not exist');
+      //console.log('Channel does not exist');
       this.server.emit('joinNewChat');
     }
   }
 
   @SubscribeMessage('leaveChat')
   async leaveChatRoom(client: Socket, room_id: number) {
-    console.log(`Client:${client} leave chat room id ${room_id}`);
+    //console.log(`Client:${client} leave chat room id ${room_id}`);
     this.server.emit('leaveChat');
   }
 
@@ -70,9 +70,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     msgDto.sender = null;
 
     this.messService.addMsg(msgDto, null, msgDto.channel);
-    console.log(
-      `Client:${client} message chat room id ${room_id} with ${message}`,
-    );
+    //console.log(
+    //  `Client:${client} message chat room id ${room_id} with ${message}`,
+    //);
     this.server.emit('message');
   }
 }

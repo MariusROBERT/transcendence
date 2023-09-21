@@ -46,11 +46,8 @@ export function Settings({ onClose, isVisible }:Props){
   };
 
   useEffect(() => {
-    console.log('useEffect 1 Settings');
     const getUserInfos = async () => {
-      console.log('useEffect 2 Settings');
       const user = (await Fetch('user', 'GET'))?.json;
-      console.log('useEffect 3 Settings');
       if (user)
         setUserInfosSettings(user);
     };
@@ -85,7 +82,7 @@ export function Settings({ onClose, isVisible }:Props){
         const user = (await Fetch('user/update_password', 'PATCH',
           JSON.stringify({ password: modifData.password })))?.json;
         if (user) {
-          console.log('MDP changed : ', user.password);
+          //console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
         }
         lockPwd();
@@ -96,7 +93,7 @@ export function Settings({ onClose, isVisible }:Props){
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
       modifData.urlImg === userInfosSettings.urlImg
     ) {
-      console.log('\n\n=====verif OK');
+      //console.log('\n\n=====verif OK');
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -108,7 +105,7 @@ export function Settings({ onClose, isVisible }:Props){
           urlImg: modifData.urlImg,
         })))?.json;
     if (user) {
-      console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
+      //console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
       setUserInfosSettings(user);
     }
     lockPwd();
