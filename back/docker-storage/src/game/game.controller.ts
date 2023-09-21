@@ -84,7 +84,7 @@ export class GameController {
     }
 
     // add a new game in the games lists
-    createGame(p1: number, p2:number, isSpecial){
+    async createGame(p1: number, p2:number, isSpecial){
         //check if the two players are free and stops there games
         let game = this.getGame(p1, p2);
         if (game !== undefined) {
@@ -132,7 +132,7 @@ export class GameController {
     }
 
     //called at the start of the game and then every frame till the game ends
-    async update(game: {playerIds:number[], state:State}){
+    async update(game: {playerIds:number[], state:State, ready:boolean}){
         //check for the end game conditions
         if (game.state.score.p1 >= 10 || game.state.score.p2 >= 10 || !game.state.running) {
             return this.ends(game.playerIds[0]);
