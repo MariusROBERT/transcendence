@@ -2,6 +2,7 @@ import {color, delay, Viewport, RedirectToHome, unsecureFetch} from "../../utils
 import React, {ChangeEvent, useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import {Border, Button, Flex, Background} from "..";
+import { useUserContext } from '../../contexts';
 
 const SIZE: number = 350;
 
@@ -17,33 +18,38 @@ interface FormData {
 }
 
 export function Login({duration_ms = 900, viewport}: Props) {
+
+  // ReactHook -------------------------------------------------------------------------------------------------------//
+  const [signIn, setSign] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isAnim, setIsAnim] = useState(false);
+  const [isConnected, setIsConneted] = useState<boolean>(false);
+  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     username: '',
     password: '',
     confirmPassword: '',
   });
 
-  const [isConnected, setIsConneted] = useState<boolean>(false);
-  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const navigate = useNavigate();
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // functions -------------------------------------------------------------------------------------------------------//
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const {name, value} = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-  };
+  }
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (signIn)
       return OnConnect();
     else
       return OnRegister();
-  };
+  }
 
   async function OnRegister() {
     if (formData.username !== '' && formData.password !== '') {
@@ -53,7 +59,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
           password: formData.password,
         }));
         if (registerResponse.ok) {
-          OnConnect();
+          return OnConnect();
         } else {
           setErrorMessage('this username is already used');
           console.error('register failure. Error:', registerResponse.status,);
@@ -76,7 +82,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
       } else {
         const data = await response.json();
         setErrorMessage(data.message);
-          console.error('connection failure. Error:', response.status,);
+        console.error('connection failure. Error:', response.status,);
       }
     } catch (error) {
       console.error(`Error : ${error}`);
@@ -94,10 +100,8 @@ export function Login({duration_ms = 900, viewport}: Props) {
     return RedirectToHome(navigate, response);
   }
 
-  const [signIn, setSign] = useState(true)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [isAnim, setIsAnim] = useState(false)
 
+  // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
     height: viewport.isLandscape
       ? Math.max(SIZE, viewport.height) + 'px'
@@ -113,7 +117,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
     position: "absolute",
     top: '50px',
     transition: duration_ms / 3 + 'ms ease'
-  }
+  };
 
   const connectingStyle: React.CSSProperties = {
     height: viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
@@ -121,7 +125,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
     position: "absolute",
     top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
     transition: duration_ms + 'ms ease'
-  }
+  };
 
   const connectedStyle: React.CSSProperties = {
     height: viewport.isLandscape
@@ -194,10 +198,10 @@ export function Login({duration_ms = 900, viewport}: Props) {
           <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
             <p>or sign in with Intra42</p>
             <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-              console.log('intra 42 clicked');
+              //console.log('intra 42 clicked');
               setIsFTConnection(true);
               window.location.replace('http://localhost:3001/api/auth/login/42');
-              console.log("end co 42");
+              // console.log("end co 42");
             }}></Button>
           </Flex>
           </Background>
