@@ -37,7 +37,7 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
-    console.log('usr: ', user);
+    //console.log('usr: ', user);
     return user;
   }
 
@@ -143,5 +143,24 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async Delog(@User() user: UserEntity) {
     return await this.userService.logout(user);
+  }
+
+  // Sockets ----------------------------------------------------------------------------------------------------//
+  @Patch('/update_socket_id')
+  @UseGuards(JwtAuthGuard)
+  async UpdateSocket(@User() user: UserEntity, @Body() socketId: string) {
+    return this.userService.setUserSocketId(user, socketId);
+  }
+
+  @Get('/from_socket_id')
+  @UseGuards(JwtAuthGuard)
+  async GetUserFromSocketId(@Body() socketId: string) {
+    return this.userService.getUserFromSocketId(socketId);
+  }
+
+  @Patch('/update_status')
+  @UseGuards(JwtAuthGuard)
+  async UpdateStatus(@User() user: UserEntity, @Body() user_status: string) {
+    return this.userService.setUserStatus(user, user_status);
   }
 }

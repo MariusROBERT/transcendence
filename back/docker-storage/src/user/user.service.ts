@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
@@ -38,7 +33,7 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    console.log('modifications apportées: ', profil);
+    //console.log('modifications apportées: ', profil);
 
     // NEW_IMAGE
     // if (profil.urlImg != '')
@@ -295,8 +290,28 @@ export class UserService {
     user.user_status = UserStateEnum.OFF;
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
+    await this.resetUserSocketId(user);
 
-    this.UserRepository.save(user);
+    await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
+  }
+
+  async getUserFromSocketId(socketId: string) {
+    return await this.UserRepository.findOne({ where: { socketId: socketId } });
+  }
+
+  async setUserSocketId(user: UserEntity, socketId: string) {
+    user.socketId = socketId;
+    return await this.UserRepository.save(user);
+  }
+
+  async resetUserSocketId(user: UserEntity) {
+    user.socketId = '';
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserStatus(user: UserEntity, user_status: string) {
+    user.user_status = user_status === 'on' ? UserStateEnum.ON : UserStateEnum.OFF;
+    return await this.UserRepository.save(user);
   }
 }

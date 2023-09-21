@@ -97,6 +97,9 @@ export class UserEntity {
 
   // GAME :
 
+  @Column({default: ''})
+  socketId: string;
+
   @Column({ default: 0 })
   winrate: number;
 
