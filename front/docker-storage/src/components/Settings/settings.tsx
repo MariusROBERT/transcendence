@@ -102,8 +102,7 @@ export function Settings({ onClose, isVisible }: Props) {
       return;
     }
 
-    if (modifData.img !== '')
-    {
+    if (modifData.img !== '') {
       const formData = new FormData();
       formData.append('file', modifData.img);
       formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
@@ -115,15 +114,21 @@ export function Settings({ onClose, isVisible }: Props) {
           Authorization: `Bearer ${jwtToken}`,
         },
         body: formData,
-      }).then(r => r.json());
-      console.log('user : ', user);
+      }).then(r => {
+        if (r.ok)
+          return r.json();
+        console.warn('error : ', r);
+        return null;
+      });
       if (user) {
         console.log('urlImg changed : ', user.urlImg);
+        modifData.img = '';
         setUserInfosSettings(user);
       }
     }
-    if (modifData.is2fa_active !== userInfosSettings?.is2fa_active)
-    {
+
+    // 2FA :
+    if (modifData.is2fa_active !== userInfosSettings?.is2fa_active) {
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
           is2fa_active: modifData.is2fa_active,
@@ -147,7 +152,7 @@ export function Settings({ onClose, isVisible }: Props) {
           <img style={imgStyle} src={userInfosSettings?.urlImg} alt='' />
           <input
             type='file'
-            accept={'image/*'}
+            accept={'image/png, image/jpeg, image/jpg'}
             onChange={(file: ChangeEvent) => {
               const { files } = file.target as HTMLInputElement;
               if (files && files.length !== 0) {

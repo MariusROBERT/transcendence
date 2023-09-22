@@ -44,23 +44,11 @@ export class UserController {
   // update_profile
   @Patch()
   @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(FileInterceptor('file'))
   async UpdateProfile(
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
-    /*@UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({
-            maxSize: 999999999999999, //parseInt(process.env.MAX_FILE_UPLOAD_SIZE) * 1000,
-          }),
-        ],
-        fileIsRequired: false,
-      }),
-    )
-    file?: Express.Multer.File,*/
   ): Promise<UserEntity> {
-    return await this.userService.updateProfile(updateUserDto, user); //, file);
+    return await this.userService.updateProfile(updateUserDto, user);
   }
 
   @Patch('update_picture')
@@ -71,10 +59,10 @@ export class UserController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }), // 10MB
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5MB
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
         ],
-        fileIsRequired: false,
+        fileIsRequired: true,
       }),
     )
     file?: Express.Multer.File,

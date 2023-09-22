@@ -7,13 +7,12 @@ export class userPictureFileInterception extends FileInterceptor('file', {
   storage: diskStorage({
     destination: './public/',
     filename: (req, file, cb) => {
-      const filename: string = file.originalname;
-      const extension: string = filename.split('.')[1];
+      const extension: string = file.originalname.split('.')[1];
       cb(null, `${randomUUID()}.${extension}`);
     },
   }),
   fileFilter: (req, file, cb) => {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
       return cb(
         new HttpException(
           'Only image files are allowed!',
@@ -24,4 +23,5 @@ export class userPictureFileInterception extends FileInterceptor('file', {
     }
     cb(null, true);
   },
+  limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
 }) {}
