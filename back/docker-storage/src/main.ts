@@ -24,6 +24,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
     }),
   );
+  app.enableCors();
   await app.listen(parseInt(process.env.BACK_PORT));
 }
 bootstrap();

@@ -45,18 +45,18 @@ export class ChannelController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
-    @User() user: UserChanDto,
+    //@User() user: UserChanDto,
   ): Promise<ChannelEntity> {
+    console.log("caca");
     const chan = await this.ChannelService.createChannel(
       createChannelDto,
-      user.id,
     );
     console.log('chan: ', chan);
-    console.log('chan.admins: ', chan.admins);
-    return chan;
+    //console.log('chan.admins: ', chan.admins);
+    return null;
   }
 
   @Patch('/:id') // id_chan
@@ -73,12 +73,14 @@ export class ChannelController {
     );
   }
 
+  //@Patch('add_user/:id') // id_chan
   @Patch('add_user/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async AddUserInChannel(
     @Body() user: UserAddChanDto,
-    @Param('id_chan', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
   ) {
+    console.log("here");
     const chan = await this.ChannelService.addUserInChannel(user, id);
     console.log(chan.users);
     return chan;

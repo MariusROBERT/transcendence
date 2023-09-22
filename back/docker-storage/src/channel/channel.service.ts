@@ -32,16 +32,16 @@ export class ChannelService {
   ) {}
 
   async createChannel(
-    channel: CreateChannelDto,
-    uid: number,
+    channel: CreateChannelDto
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
-    const user = await this.userService.getUserById(uid);
+    const user = await this.userService.getUserById(channel.owner_id);
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
+    chan.users = [];
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -51,7 +51,7 @@ export class ChannelService {
   }
 
   async getChannelById(id: number): Promise<ChannelEntity> {
-    const channel = await this.ChannelRepository.findOne({
+    var channel = await this.ChannelRepository.findOne({
       where: { id },
       relations: ['admins'],
     });
@@ -97,14 +97,27 @@ export class ChannelService {
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userdto.id);
+    console.log(user.username + " " + channel.channel_name);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user))
-      throw new Error('The user is already in channel');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
-    if (userdto.password != channel.password) throw new Error('Wrong password');
+    /*
+      words.filter((word) => {
+        if (word == 'spray')
+          console.log("hey")
+      })
+    */
+   //console.log(channel.users.length);
+   //channel.users.filter((u) => {
+   //   if (u.id == user.id)
+   //     throw new Error('The user is already in channel');
+   //})
+    //if (channel.users.indexOf(user) >= 0)
+    //  throw new Error('The user is already in channel');
+    //if (channel.baned.includes(user)) throw new Error('The user is banned');
+    //if (userdto.password !== channel.password) throw new Error('Wrong password');
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
+    console.log(channel.users);
     return channel;
   }
 

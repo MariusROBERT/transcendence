@@ -50,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(
       `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
     );
-    console.log(client.handshake);
+    //console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
 
@@ -93,12 +93,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     //  Todo: Exit if error
 
-    console.log('===');
-    console.log(userE + ' ' + chanE);
+    //console.log('===');
+    //console.log(userE + ' ' + chanE);
     //this.chanService.AddMessageToChannel({"content": message, "sender": user, "channel": channel});
     this.messages.push({ msg: message, sock_id: client.id });
-    console.log(`Client:${client} message chat ${message}`);
+    //console.log(`Client:${client} message chat ${message}`);
     this.server.emit('message', this.messages[this.messages.length - 1]);
-    console.log(this.messages);
+    //console.log(this.messages);
   }
 }

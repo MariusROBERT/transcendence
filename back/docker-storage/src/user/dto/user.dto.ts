@@ -53,11 +53,8 @@ export class UserAddChanDto {
   id: number;
 
   @IsString()
+  @IsOptional()
   password: string;
-
-  @IsEnum(ChanStateEnum)
-  @IsNotEmpty()
-  chan_status: ChanStateEnum;
 }
 
 export class PublicProfileDto {
