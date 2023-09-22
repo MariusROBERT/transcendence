@@ -1,9 +1,9 @@
 import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
@@ -45,7 +45,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    var id = this.clients.indexOf(client);
+    const id = this.clients.indexOf(client);
     this.clients.splice(id);
     console.log(
       `Server deco id:${client.id} | clients: ${this.clients.length}\n`,

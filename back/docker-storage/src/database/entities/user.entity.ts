@@ -1,11 +1,9 @@
-import { UserStateEnum, UserRoleEnum } from 'src/utils/enums/user.enum';
+import { UserRoleEnum, UserStateEnum } from 'src/utils/enums/user.enum';
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -32,13 +30,13 @@ export class UserEntity {
   @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
   role!: UserRoleEnum;
 
-  @Column({ default: 'url_img_profil_default' })
+  @Column({ default: '../../../../../front/docker-storage/src/assets/imgs/icon_default_profil.png' })
   urlImg!: string;
 
   @Column()
-  salt: string;
+  salt!: string;
 
-  @Column({ unique: true })
+  @Column()
   password!: string; // hashPwd
 
   @Column({ default: false })
@@ -101,8 +99,6 @@ export class UserEntity {
 
   @Column({ default: 0 })
   winrate: number;
-
-  // last_message_recv: Date ??
 
   @OneToMany(() => GameEntity, (game) => game.player1)
   gamesAsPlayer1: GameEntity[];

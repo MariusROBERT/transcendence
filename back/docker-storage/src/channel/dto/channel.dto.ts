@@ -1,13 +1,12 @@
 import {
+  IsEnum,
   IsNotEmpty,
-  IsString,
   IsNumber,
   IsOptional,
-  IsEnum,
-  isNotEmpty,
+  IsString,
 } from 'class-validator';
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 
 // CHANNEL :
 
@@ -28,9 +27,10 @@ export class CreateChannelDto {
   @IsOptional()
   @IsNumber()
   owner_id: number;
+  owner: UserEntity;
 
-  @IsOptional()
-  admins: UserEntity[];
+  @IsNotEmpty()
+  admin: UserEntity[];
 
   @IsNotEmpty()
   priv_msg: boolean;
@@ -44,7 +44,7 @@ export class ChannelDto {
 
   @IsNotEmpty()
   @IsString()
-  channel_name: string;
+  name: string;
 
   @IsNotEmpty()
   @IsEnum(ChanStateEnum)
@@ -55,9 +55,11 @@ export class ChannelDto {
 }
 
 export class UpdateChannelDto {
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   channel_name: string;
+  @IsNotEmpty()
+  priv: boolean;
 
   @IsOptional()
   @IsString()
@@ -69,4 +71,7 @@ export class UpdateChannelDto {
 
   @IsOptional()
   owner_id: UserEntity;
+
+  @IsOptional()
+  admins: UserEntity[];
 }

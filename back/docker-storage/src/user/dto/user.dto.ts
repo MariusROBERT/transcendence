@@ -1,21 +1,14 @@
 import {
+  IsBoolean,
+  IsEnum,
   IsNotEmpty,
-  IsString,
   IsNumber,
   IsOptional,
-  IsEnum,
-  IsBoolean,
+  IsString,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
-import { Type } from 'class-transformer';
-import { UserEntity } from 'src/database/entities/user.entity';
-import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 
 export class UpdateUserDto {
-  @IsOptional()
-  @IsString()
-  password: string;
-
   @IsOptional()
   @IsString()
   urlImg!: string;
@@ -81,4 +74,9 @@ export class PublicProfileDto {
   @IsNotEmpty()
   @IsBoolean()
   is_friend: boolean;
+}
+
+export class UpdatePwdDto {
+  @IsString()
+  password: string;
 }

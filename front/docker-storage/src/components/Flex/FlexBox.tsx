@@ -23,23 +23,20 @@ interface Props {
   flex_gap?: string;
 }
 
-export function Flex({
-  children,
-  zIndex = "0",
-  flex_direction = "column",
-  flex_wrap = "nowrap",
-  flex_justifyContent = "center",
-  flex_alignItems = "center",
-  flex_gap = "5px 5px",
-}: Props) {
-  const style = {
-    display: "flex",
-    flexDirection: flex_direction,
-    flexWrap: flex_wrap,
-    justifyContent: flex_justifyContent,
-    alignItems: flex_alignItems,
-    gap: flex_gap,
-    zIndex: zIndex,
-  };
-  return <div style={style}>{children}</div>;
+export function Flex({children, zIndex='0', flex_direction='column', flex_wrap='nowrap', flex_justifyContent='center', flex_alignItems='center', flex_gap='5px 5px'}: Props)
+{
+    const style = {
+        display: 'flex',
+        flexDirection: flex_direction,
+        flexWrap: flex_wrap,
+        justifyContent: flex_justifyContent,
+        alignItems: flex_alignItems,
+        gap: flex_gap,
+        zIndex: zIndex
+    }
+    return (
+        <div style={style}>
+            {children}
+        </div>
+    );
 }

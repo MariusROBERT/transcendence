@@ -2,17 +2,25 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
-import { ConfigService } from '@nestjs/config'; // ==> npm i --save @nestjs/config
 import { ValidationPipe } from '@nestjs/common';
+import * as session from 'express-session';
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
-  const configService = app.get(ConfigService);
 
-  console.log('Start');
+  // =================================================================================
+  // Configuration des en-têtes CORS
+  // CORS, ou Cross-Origin Resource Sharing, est un mécanisme de sécurité mis en place par les navigateurs web
+  // pour contrôler les requêtes HTTP entre différentes origines
+  app.enableCors({
+    origin: 'http://localhost:3000', // Remplacez par l'URL de votre application React
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Permettre les cookies, si nécessaire
+  });
+  // =================================================================================
+
   const config = new DocumentBuilder().setTitle('Transcendence').build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -24,7 +32,15 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // si il essaye d'envoyer des trucs que j'ai pas demandé, une erreur sera envoyée
     }),
   );
-  app.enableCors();
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
   await app.listen(parseInt(process.env.BACK_PORT));
 }
+
 bootstrap();

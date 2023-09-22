@@ -11,11 +11,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
-import {
-  ChannelDto,
-  CreateChannelDto,
-  UpdateChannelDto,
-} from './dto/channel.dto';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
@@ -175,9 +171,9 @@ export class ChannelService {
     if (sec <= 0)
       throw new Error('Time in second cannot be equal or inferior to zero');
     //  Todo: Check if user is already muted, if it is juste update the Date
-    var date = new Date(); // Get the current date
+    const date = new Date(); // Get the current date
     date.setSeconds(date.getSeconds() + sec); // Add time in second to the date
-    var muteEntity: MutedEntity;
+    let muteEntity: MutedEntity;
     muteEntity.channel = channel;
     muteEntity.user = user;
     muteEntity.endDate = date;
