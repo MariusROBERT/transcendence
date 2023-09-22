@@ -26,18 +26,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     this.clients.push(client);
 
-    console.log(
-      `ChatGateway: Server co id:${client.id} | clients: ${this.clients.length}\n`,
-    );
+    // console.log(
+    //   `ChatGateway: Server co id:${client.id} | clients: ${this.clients.length}\n`,
+    // );
     this.server.emit('connect_ok');
   }
 
   async handleDisconnect(client: Socket) {
     const id = this.clients.indexOf(client);
     this.clients.splice(id);
-    console.log(
-      `ChatGateway: Server deco id:${client.id} | clients: ${this.clients.length}\n`,
-    );
+    // console.log(
+    //   `ChatGateway: Server deco id:${client.id} | clients: ${this.clients.length}\n`,
+    // );
     //console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
@@ -65,11 +65,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   async handleMessage(client: Socket, room_id: number, message: string) {
     let msgDto: AddMsgDto;
-    msgDto.channel = await this.chanService.getChannelById(room_id);
-    msgDto.content = message;
-    msgDto.sender = null;
+    //msgDto.channel = await this.chanService.getChannelById(room_id);
+    // msgDto.content = message;
+    // msgDto.sender = null;
 
-    this.messService.addMsg(msgDto, null, msgDto.channel);
+    //this.messService.addMsg(msgDto, null, msgDto.channel);
     //console.log(
     //  `Client:${client} message chat room id ${room_id} with ${message}`,
     //);

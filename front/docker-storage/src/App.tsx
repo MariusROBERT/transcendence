@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Background from "./components/Background/Background";
 import { color, backgroundImage, Viewport, useEffectViewport } from "./utils";
 import { AuthGuard, Login, MainPage } from "./components";
-import { socket } from './socket';
+// import { socket } from './socket';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 
@@ -18,10 +18,10 @@ function App() {
   useEffectViewport(viewport, SIZE, setViewport);
 
   //console.log('Client\n');
-  socket.emit('joinChat', 0);
-  socket.emit('message', [0, 'chokbar']);
-  socket.emit('leaveChat', 0);
-  socket.connect();
+  // socket.emit('joinChat', 0);
+  // socket.emit('message', [0, 'chokbar']);
+  // socket.emit('leaveChat', 0);
+  // socket.connect();
 
   return (
     <Contexts>
