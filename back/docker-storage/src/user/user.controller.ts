@@ -19,10 +19,11 @@ import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import {
-  PublicProfileDto,
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto, SetSocketIdDto,
   UpdatePwdDto,
   UpdateUserDto,
-} from '../user/dto/user.dto';
+} from './dto/user.dto';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -146,21 +147,10 @@ export class UserController {
   }
 
   // Sockets ----------------------------------------------------------------------------------------------------//
-  @Patch('/update_socket_id')
-  @UseGuards(JwtAuthGuard)
-  async UpdateSocket(@User() user: UserEntity, @Body() socketId: string) {
-    return this.userService.setUserSocketId(user, socketId);
-  }
 
   @Get('/from_socket_id')
   @UseGuards(JwtAuthGuard)
-  async GetUserFromSocketId(@Body() socketId: string) {
+  async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
     return this.userService.getUserFromSocketId(socketId);
-  }
-
-  @Patch('/update_status')
-  @UseGuards(JwtAuthGuard)
-  async UpdateStatus(@User() user: UserEntity, @Body() user_status: string) {
-    return this.userService.setUserStatus(user, user_status);
   }
 }

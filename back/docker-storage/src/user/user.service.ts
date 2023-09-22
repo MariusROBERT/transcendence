@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  SetSocketIdDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -48,7 +54,7 @@ export class UserService {
 
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
-      ...profil, // modif seulement les differences
+      ...profil // modif seulement les differences
     });
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
@@ -64,11 +70,10 @@ export class UserService {
     const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    const hashedPwd = await bcrypt.hash(
+    updatePwdDto.password = await bcrypt.hash(
       updatePwdDto.password,
       userForSalt.salt,
     );
-    updatePwdDto.password = hashedPwd;
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...updatePwdDto, // modif seulement les differences
@@ -287,31 +292,41 @@ export class UserService {
   // logout
   async logout(user: UserEntity) {
     // pas testé
-    user.user_status = UserStateEnum.OFF;
+    console.log('logout')
+
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
-    await this.resetUserSocketId(user);
+
+    user.user_status = UserStateEnum.OFF;
+    user.socketId = '';
 
     await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
   }
 
-  async getUserFromSocketId(socketId: string) {
-    return await this.UserRepository.findOne({ where: { socketId: socketId } });
+  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
+    const user = await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+    return user;
   }
 
-  async setUserSocketId(user: UserEntity, socketId: string) {
+  async setUserSocketId(id: number, socketId: string) {
+    const user = await this.UserRepository.findOne({ where: { id: id }});
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
     user.socketId = socketId;
+    user.user_status = UserStateEnum.ON;
+
     return await this.UserRepository.save(user);
   }
 
-  async resetUserSocketId(user: UserEntity) {
-    user.socketId = '';
-    return await this.UserRepository.save(user);
-  }
-
-  async setUserStatus(user: UserEntity, user_status: string) {
-    user.user_status = user_status === 'on' ? UserStateEnum.ON : UserStateEnum.OFF;
-    return await this.UserRepository.save(user);
+  async getSocketIdFromUser(id: number) {
+    const user = await this.UserRepository.findOne({ where: { id: id }});
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
+    return user.socketId;
   }
 }

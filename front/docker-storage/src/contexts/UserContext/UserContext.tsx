@@ -25,23 +25,23 @@ interface Props{
 }
 
 export function UserContextProvider({ children }: Props){
+  const [username, setUsername] = useState<number>(0);
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   async function fetchContext() : Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
+
     if (!user) {
       setIsOnline(false);
     }
     else {
+      setUsername(user.username)
       setId(user.id);
       setIsOnline(true);
-      if (user.socket)
-        setSocket(user.socket);
-      else {
+      if (!socket)
         await initSocket();
-      }
     }
   }
 
@@ -50,11 +50,14 @@ export function UserContextProvider({ children }: Props){
       console.log('Connection to socket.io server failed', err);
     });
     socket?.on('disconnect', (reason) => {
+      socket?.emit('reset_user_socket_id', { id:id });
       console.log('Disconnected from socket.io server', reason);
     });
     socket?.on('connect', () => {
-      console.log('Connected to socket.io server');
+      socket?.emit('update_user_socket_id', { id:id, socketId: socket?.id });
+      console.log('Connected, Socket ID: ', socket?.id, ' UserName: `', username, '` ID: ', id);
     });
+    socket?.connect();
 
     return () => {
       socket?.off('connect_error');
@@ -64,20 +67,15 @@ export function UserContextProvider({ children }: Props){
   }, [socket]);
 
   async function initSocket(){
-    setSocket(
-      io('http://localhost:3001', {
-        withCredentials: true,
-        reconnectionAttempts: 1,
-        transports: ['websocket']
-      }));
-    socket?.on('connect', () => {
-      Fetch('user/update_status', 'PATCH', JSON.stringify({user_status: 'on'}));
-      Fetch('user/update_socket_id', 'PATCH', JSON.stringify({socket: socket?.id}));
-    });
-    socket?.on('disconnect', () => {
-      Fetch('user/update_status', 'PATCH', JSON.stringify({ user_status: 'off' }));
-      Fetch('user/update_socket_id', 'PATCH', JSON.stringify({ socket: undefined }));
-    });
+    if (!socket) {
+      setSocket(
+        io('http://localhost:3001', {
+          withCredentials: true,
+          reconnectionAttempts: 1,
+          transports: ['websocket'],
+          autoConnect: false
+        }));
+    }
     return () => { socket?.close(); }
   }
 

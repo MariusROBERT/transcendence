@@ -22,6 +22,7 @@ import { MessagesService } from '../messages/messages.service';
     MessagesModule,
   ],
   controllers: [UserController],
-  providers: [UserService, MessagesService], //, ChannelService]
+  providers: [UserService, MessagesService],
+  exports: [UserService],
 })
 export class UserModule {}
