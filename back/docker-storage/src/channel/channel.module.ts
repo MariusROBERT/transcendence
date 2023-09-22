@@ -9,6 +9,7 @@ import { UserService } from '../user/user.service';
 import { MessageEntity } from '../database/entities/message.entity';
 import { MessagesService } from 'src/messages/messages.service';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { ChatGateway } from 'src/chat/chat.gateway';
     AuthModule,
   ],
   controllers: [ChannelController],
-  providers: [ChannelService, UserService, MessagesService, ChatGateway],
+  providers: [ChannelService, UserService, MessagesService, JwtService, ChatGateway],
 })
 export class ChannelModule {}

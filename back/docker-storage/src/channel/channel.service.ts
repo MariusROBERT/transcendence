@@ -96,21 +96,10 @@ export class ChannelService {
     console.log(user.username + " " + channel.channel_name);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    /*
-      words.filter((word) => {
-        if (word == 'spray')
-          console.log("hey")
-      })
-    */
-   //console.log(channel.users.length);
-   //channel.users.filter((u) => {
-   //   if (u.id == user.id)
-   //     throw new Error('The user is already in channel');
-   //})
-    //if (channel.users.indexOf(user) >= 0)
-    //  throw new Error('The user is already in channel');
-    //if (channel.baned.includes(user)) throw new Error('The user is banned');
-    //if (userdto.password !== channel.password) throw new Error('Wrong password');
+    if (channel.users.includes(user))
+      throw new Error('The user is already in channel');
+    if (channel.baned.includes(user)) throw new Error('The user is banned');
+    if (userdto.password !== channel.password) throw new Error('Wrong password');
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
     console.log(channel.users);
