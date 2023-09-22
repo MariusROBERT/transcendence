@@ -150,6 +150,6 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity> {
     // ==> renvoi toutes les infos channels
-    return await this.UserService.getUserById(id);
+    return await this.userService.getUserById(id);
   }
 }

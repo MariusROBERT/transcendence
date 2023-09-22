@@ -300,13 +300,6 @@ export class UserService {
     return { message: 'Deconnexion reussie' };
   }
 
-  //  //  Test only REMOVE LATER
-  //  async getUserFromSocket(socket: Socket) {
-  //    const cookie = socket.handshake.headers.cookie;
-  //    const { Authentication: authenticationToken } = parse(cookie);
-  //    //const user = await this.authenticationService.getUserFromAuthenticationToken(authenticationToken);
-  //  }
-
   async getUserById(id: number): Promise<UserEntity> {
     const user = await this.UserRepository.findOne({
       where: { id },

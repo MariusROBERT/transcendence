@@ -34,7 +34,7 @@ export class ChannelEntity {
   chan_status!: ChanStateEnum;
 
   @Column({ default: false })
-  priv: boolean;
+  priv_msg: boolean;
 
   // -------- LINKS TO OTHER TABLES --------
 

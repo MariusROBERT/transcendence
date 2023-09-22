@@ -46,7 +46,7 @@ export class ChannelController {
     @Body() createChannelDto: CreateChannelDto,
     //@User() user: UserChanDto,
   ): Promise<ChannelEntity> {
-    console.log("caca");
+    console.log("test");
     const chan = await this.channelService.createChannel(
       createChannelDto,
     );
@@ -88,7 +88,7 @@ export class ChannelController {
     @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.channelService.addAdminInChannel(user, id);
+    const chan = await this.channelService.addAdminInChannel(null, id);
     console.log(chan.users);
     return chan;
   }
@@ -99,7 +99,7 @@ export class ChannelController {
     @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    return this.channelService.KickUserFromChannel(user, id);
+    return this.channelService.KickUserFromChannel(null, id);
   }
 
   @Patch('mute/:id') // id_chan
