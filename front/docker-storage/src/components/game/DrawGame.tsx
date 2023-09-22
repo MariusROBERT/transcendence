@@ -1,29 +1,20 @@
-import React from "react";
+import React, { useState } from 'react';
 import Sketch from "react-p5";
 import p5Types from "p5";
-import { State } from './Game';
+import { useUserContext } from '../../contexts';
+import { basesize, State } from './game.utils';
 
 interface Props {
     state:State
 }
 
 export function DrawGame({state}: Props) {
+    let size = basesize;
+    const [started, setStarted] = useState<boolean>(false);
+    const [upPressed, setUpPressed] = useState<boolean>(false);
+    const [downPressed, setDownPressed] = useState<boolean>(false);
+    const { id, socket } = useUserContext();
 
-    let size:{
-        height:number,
-        width:number,
-        ball:number,
-        bar:{x:number, y:number},
-        halfBar:number,
-        halfBall:number
-    } = {
-        height: 720,
-        width: 1280,
-        ball: 50,
-        bar: {x:25, y:144},
-        halfBar: 72,
-        halfBall: 25
-    };
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         size = {
         height: 720,
@@ -51,5 +42,60 @@ export function DrawGame({state}: Props) {
         p5.rect(state.p2.x, state.p2.y - size.halfBar, size.bar.x, size.bar.y);
     };
 
-    return <Sketch setup={setup} draw={draw} />;
+    function onKeyPressed(moveUp: boolean){
+        if (!started){
+            console.log('start !')
+            setStarted(true);
+            socket?.emit('start_game', {id : id});
+        }
+        if (moveUp)
+            setUpPressed(true);
+        else
+            setDownPressed(true);
+        if (downPressed && upPressed)
+            stop();
+        else
+            move(moveUp);
+    }
+
+    function onKeyReleased(moveUp: boolean){
+        if (moveUp)
+            setUpPressed(false);
+        else
+            setDownPressed(false);
+        if (!downPressed && !upPressed)
+            stop();
+        else if (downPressed)
+            move(false);
+        else if (upPressed)
+            move(true);
+    }
+
+    function move(moveUp: boolean) {
+        socket?.emit('move_player', { id: id, isMoving: true, moveUp: moveUp });
+    }
+
+    function stop() {
+        socket?.emit('move_player', { id: id, isMoving: false, moveUp: false });
+    }
+
+    function keyDown(p5: p5Types){
+        if (p5.keyCode === p5.UP_ARROW)
+            onKeyPressed(true);
+        if (p5.keyCode === p5.DOWN_ARROW)
+            onKeyPressed(false);
+    }
+
+    function keyUp(p5: p5Types){
+        if (p5.keyCode === p5.UP_ARROW)
+            onKeyReleased(true);
+        if (p5.keyCode === p5.DOWN_ARROW)
+            onKeyReleased(false);
+    }
+
+    return(
+      <div style={{position:'absolute', left: '0', top: '0', width:'100%', height:'100%'}}>
+        <Sketch setup={setup} draw={draw} keyPressed={keyDown} keyReleased={keyUp} style={{width:'100%', height:'100%'}} />
+      </div>
+    );
 }

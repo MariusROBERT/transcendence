@@ -1,55 +1,45 @@
 import { useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client'
 import { DrawGame } from './DrawGame';
+import { basesize, gameRoom, start, State } from './game.utils';
+import { useUserContext } from '../../contexts';
 
-export interface State{
-    running: boolean,
-    ball: {x:number, y:number},
-    speed: number,
-    dir: {x:number, y:number},
-    p1: {x:number, y:number},
-    p2: {x:number, y:number},
-    score: {p1: number, p2: number}
+interface Props{
+  inGame: boolean,
+  setInGame: (value:boolean) => void
 }
 
-export function Game(id:number){
+export function Game({ inGame, setInGame }: Props){
+  const [state, setState] = useState<State>(start);
+  const { id, socket } = useUserContext();
 
-    const [socket, setSocket] = useState<Socket>();
-    const [state, setState] = useState<State>({
-        running: false,
-        ball: {x:0, y:0},
-        speed: 0,
-        dir: {x:0, y:0},
-        p1: {x:0, y:0},
-        p2: {x:0, y:0},
-        score: {p1: 0, p2: 0}
-    });
+  function stateListener(game: gameRoom){
+    if (game.playerIds[0] !== id && game.playerIds[1] !== id) return;
+    setState(game.state);
+  }
 
-    useEffect(() => {
-        const newSocket = io('http://localhost:8001');
-        setSocket(newSocket);
-    }, [setSocket]);
+  function openGame(){
+    setInGame(true);
+  }
 
-    const movePlayer = (moveUp: boolean) => {
-        const value: any = {playerId: id, moveUp: moveUp}
-        socket?.emit('movePlayer', value);
-    }
+  useEffect(() => {
+    socket?.on('sendState', stateListener);
+    return () => {socket?.off('sendState', stateListener)}
+  }, [stateListener]);
 
-    const stateListener = (game: {playerIds:number[], state:State}) => {
-        if (game.playerIds[0] !== id && game.playerIds[1] !== id) return;
-        setState(game.state);
-    }
+  useEffect(() => {
+    socket?.on('open_game', openGame);
+    return () => {socket?.off('open_game', openGame)}
+  }, [openGame]);
 
-    useEffect(() => {
-        socket?.on('sendState', stateListener);
-        return () => {socket?.off('sendState', stateListener)}
-    }, [stateListener]);
-
-    
-
-    return (
-        <>
-            <DrawGame state={state} ></DrawGame>
-        </>
-    );
+  return (
+    <div style={{
+      position: 'absolute',
+      left: '0px',
+      top: '0px',
+      width: inGame ? '100%': '0px',
+      height: inGame ? '100%': '0px',
+    }}>
+      {inGame && <DrawGame state={state}></DrawGame>}
+    </div>
+  );
 }
