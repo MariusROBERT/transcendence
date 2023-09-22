@@ -314,4 +314,12 @@ export class UserService {
     if (!user) throw new NotFoundException(`No User found for id ${id}`);
     return user;
   }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    return user;
+  }
 }
