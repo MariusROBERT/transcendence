@@ -225,10 +225,10 @@ export class ChannelService {
   }
 
   async AddMessageToChannel(msg: AddMsgDto) {
-    if (!msg.channel.users.includes(msg.sender))
-      throw new Error('The user is not in channel');
-    if ((await this.isMuted(msg.sender, msg.channel)) >= 0)
-      throw new Error('The user is muted');
+    //if (!msg.channel.users.includes(msg.sender))
+    //  throw new Error('The user is not in channel');
+    //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)
+    //  throw new Error('The user is muted');
     this.msgService.addMsg(msg);
   }
 }

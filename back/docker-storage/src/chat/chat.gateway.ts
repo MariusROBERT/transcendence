@@ -80,10 +80,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     //  Todo: Move to middleware
     try {
-      chanE = await this.chanService.getChannelById(channel);
+      chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {
       console.log(error);
     }
+    console.log(chanE);
     console.log("=======here=====");
     const token = client.handshake.query.token.toString();
     const payload = this.jwtService.verify(
@@ -93,7 +94,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     userE = await this.userService.getUserByUsername(payload.username);
     console.log(payload);
     console.log(userE);
-    //this.chanService.AddMessageToChannel({"content": message, "sender": user, "channel": channel});
+    this.chanService.AddMessageToChannel({"content": message, "sender": user, "channel": channel});
     this.messages.push({ msg: message, sock_id: client.id });
     this.server.emit('message', this.messages[this.messages.length - 1]);
   }
