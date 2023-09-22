@@ -93,7 +93,6 @@ export function Settings({ onClose, isVisible }:Props){
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
       modifData.urlImg === userInfosSettings.urlImg
     ) {
-      //console.log('\n\n=====verif OK');
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -117,8 +116,6 @@ export function Settings({ onClose, isVisible }:Props){
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
         <div style={modifContainer}>
-          {' '}
-          {/* IMG ==> TODO */}
           <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
           <input
             type="file"
@@ -131,8 +128,6 @@ export function Settings({ onClose, isVisible }:Props){
           />
         </div>
         <div style={modifContainer}>
-          {' '}
-          {/* PWD ==> ok */}
           <input
             type={passwordType}
             onChange={(e) =>
@@ -168,8 +163,6 @@ export function Settings({ onClose, isVisible }:Props){
           </button>
         </div>
         <div style={modifContainer}>
-          {' '}
-          {/* 2FA ==> ok */}
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>
@@ -177,7 +170,6 @@ export function Settings({ onClose, isVisible }:Props){
             }
             checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
           />
-          {/*recup l'etat de base du 2fa*/}
         </div>
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>

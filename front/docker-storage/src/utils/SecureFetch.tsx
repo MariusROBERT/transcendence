@@ -17,17 +17,24 @@ export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body:
     return {response: response, json:rep_json};
   }
 
-  console.log('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+  console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+
   window.location.href = '/login';
 }
 
-export async function unsecureFetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined) {
-
-  return await fetch('http://localhost:3001/api/' + url_end, {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: body
-  });
+export async function unsecureFetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined): Promise<undefined | Response> {
+  let response;
+  try{
+    response = await fetch('http://localhost:3001/api/' + url_end, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body
+    });
+    return response;
+  } catch (e) {
+    console.warn(e);
+    return;
+  }
 }

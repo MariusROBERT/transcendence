@@ -2,7 +2,6 @@ import {color, delay, Viewport, RedirectToHome, unsecureFetch} from "../../utils
 import React, {ChangeEvent, useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import {Border, Button, Flex, Background} from "..";
-import { useUserContext } from '../../contexts';
 
 const SIZE: number = 350;
 
@@ -58,11 +57,11 @@ export function Login({duration_ms = 900, viewport}: Props) {
           username: formData.username,
           password: formData.password,
         }));
-        if (registerResponse.ok) {
+        if (registerResponse?.ok) {
           return OnConnect();
         } else {
           setErrorMessage('this username is already used');
-          console.error('register failure. Error:', registerResponse.status,);
+          console.error('register failure. Error:', registerResponse?.status,);
         }
       } else {
         setErrorMessage('passwords are not corresponding');
@@ -77,12 +76,12 @@ export function Login({duration_ms = 900, viewport}: Props) {
           username: formData.username,
           password: formData.password,
         }));
-      if (response.ok) {
+      if (response?.ok) {
         return animateReturnToHome(response);
       } else {
-        const data = await response.json();
+        const data = await response?.json();
         setErrorMessage(data.message);
-        console.error('connection failure. Error:', response.status,);
+        console.error('connection failure. Error:', response?.status,);
       }
     } catch (error) {
       console.error(`Error : ${error}`);
