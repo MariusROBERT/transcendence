@@ -13,6 +13,7 @@ import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -54,6 +55,7 @@ export class UserService {
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...profil, // modif seulement les differences
+      urlImg: '',
     });
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
@@ -93,7 +95,7 @@ export class UserService {
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
     PublicProfile.username = profile.username;
-    PublicProfile.urlImg = profile.urlImg;
+    PublicProfile.urlImg = ''; //profile.urlImg.;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
@@ -298,5 +300,28 @@ export class UserService {
 
     this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
+  }
+
+  async updatePicture(user: UserEntity, file: Express.Multer.File) {
+    console.log(file.filename, file);
+    const uploadPath = `./public/${
+      user.username + '.' + file.filename.split('.')[1]
+    }`;
+    fs.rename(file.path, uploadPath, (err) => {
+      if (err) throw err;
+      user.urlImg = 'http://localhost:3001/' + uploadPath;
+      console.log('Rename complete!');
+    });
+    if (
+      user.urlImg != '' &&
+      !user.urlImg.startsWith('https://cdn.intra.42.fr')
+    ) {
+      fs.rm(user.urlImg, (err) => {
+        if (err) throw err;
+        console.log('Deleted old image');
+      });
+    }
+    await this.UserRepository.save(user);
+    return user;
   }
 }

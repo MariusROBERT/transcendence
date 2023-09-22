@@ -1,16 +1,16 @@
 import Cookies from 'js-cookie';
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import { Modifications, UserInfosForSetting, SettingsProps } from '../../utils/interfaces';
+import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 
-interface Props{
-  onClose:() => void;
-  isVisible:boolean;
+interface Props {
+  onClose: () => void;
+  isVisible: boolean;
 }
 
-export function Settings({ onClose, isVisible }:Props){
+export function Settings({ onClose, isVisible }: Props) {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -19,7 +19,7 @@ export function Settings({ onClose, isVisible }:Props){
   const [userInfosSettings, setUserInfosSettings] =
     useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
-    urlImg: '',
+    img: '',
     password: '',
     confirmpwd: '',
     is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
@@ -69,7 +69,7 @@ export function Settings({ onClose, isVisible }:Props){
     if (
       modifData.confirmpwd === '' &&
       modifData.password === '' &&
-      modifData.urlImg === '' &&
+      modifData.img === '' &&
       modifData.is2fa_active === userInfosSettings?.is2fa_active
     )
       // nothing changed
@@ -94,7 +94,7 @@ export function Settings({ onClose, isVisible }:Props){
     }
     if (
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.urlImg === userInfosSettings.urlImg
+      modifData.img === userInfosSettings.urlImg
     ) {
       console.log('\n\n=====verif OK');
       setIsDisabled(true);
@@ -102,14 +102,36 @@ export function Settings({ onClose, isVisible }:Props){
       return;
     }
 
-    const user = (await Fetch('user', 'PATCH',
-      JSON.stringify({
+    if (modifData.img !== '')
+    {
+      const formData = new FormData();
+      formData.append('file', modifData.img);
+      formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
+
+      console.log('img : ', modifData.img);
+      const user = await fetch('http://localhost:3001/api/user/update_picture', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: formData,
+      }).then(r => r.json());
+      console.log('user : ', user);
+      if (user) {
+        console.log('urlImg changed : ', user.urlImg);
+        setUserInfosSettings(user);
+      }
+    }
+    if (modifData.is2fa_active !== userInfosSettings?.is2fa_active)
+    {
+      const user = (await Fetch('user', 'PATCH',
+        JSON.stringify({
           is2fa_active: modifData.is2fa_active,
-          urlImg: modifData.urlImg,
         })))?.json;
-    if (user) {
-      console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
-      setUserInfosSettings(user);
+      if (user) {
+        console.log('2fa changed : ', user.is2fa_active);
+        setUserInfosSettings(user);
+      }
     }
     lockPwd();
     setErrorMessage('');
@@ -122,14 +144,19 @@ export function Settings({ onClose, isVisible }:Props){
         <div style={modifContainer}>
           {' '}
           {/* IMG ==> TODO */}
-          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
+          <img style={imgStyle} src={userInfosSettings?.urlImg} alt='' />
           <input
-            type="file"
-            onChange={(e) =>
-              setModifData({
-                ...modifData,
-                urlImg: e.target.value,
-              })
+            type='file'
+            accept={'image/*'}
+            onChange={(file: ChangeEvent) => {
+              const { files } = file.target as HTMLInputElement;
+              if (files && files.length !== 0) {
+                setModifData({
+                  ...modifData,
+                  img: files[0],
+                });
+              }
+            }
             }
           />
         </div>
@@ -145,7 +172,7 @@ export function Settings({ onClose, isVisible }:Props){
               })
             }
             disabled={isDisabled}
-            placeholder="password"
+            placeholder='password'
           />
           {showConfirmPassword && (
             <div style={modifContainer}>
@@ -157,16 +184,16 @@ export function Settings({ onClose, isVisible }:Props){
                     confirmpwd: e.target.value,
                   })
                 }
-                placeholder="Confirm Password"
+                placeholder='Confirm Password'
               />
             </div>
           )}
           {showConfirmPassword && (
-            <button type="button" onClick={togglePasswordVisibility}>
+            <button type='button' onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type="button" onClick={toggleLock}>
+          <button type='button' onClick={toggleLock}>
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
@@ -185,12 +212,12 @@ export function Settings({ onClose, isVisible }:Props){
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
-        <button type="submit">Enregistrer</button>
+        <button type='submit'>Enregistrer</button>
         <button onClick={onClose}>Fermer</button>
       </form>
     </div>
   );
-};
+}
 
 const imgStyle: React.CSSProperties = {
   width: '100px',
