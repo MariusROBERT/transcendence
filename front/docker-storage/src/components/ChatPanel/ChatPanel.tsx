@@ -4,6 +4,7 @@ import { color } from "../../utils/Global";
 import { Background, RoundButton } from "..";
 import { ChatMessage } from "../ChatMessage/ChatMessage";
 import { socket } from "../../socket";
+import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
 
 interface Props {
   viewport: Viewport;
@@ -34,6 +35,7 @@ export function ChatPanel({ viewport, width }: Props) {
   function onEnterPressed() {
     if (inputValue == "") return;
     socket?.emit("message", { message: inputValue, user: 0, channel: 0 });
+    console.log("send message to " + current_chan);
   }
 
   function chat() {
@@ -56,6 +58,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
 return (
   <Background flex_justifyContent={'space-evenly'}>
+    <ChatMenu></ChatMenu>
       <div style={{
           height:viewport.height - 125 + 'px',
           width:width - 50 + 'px',

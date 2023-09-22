@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseArrayPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -33,6 +34,15 @@ export class ChannelController {
     return await this.channelService.getChannelById(id);
   }
 
+  @Get('/name/:id')
+  //@UseGuards(JwtAuthGuard)
+  async GetChannelByName(
+    @Param('id') id: string,
+  ) {
+    // ==> renvoi toutes les infos channels
+    return await this.channelService.getChannelByName(id);
+  }
+
   @Get('/:id/msg')
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,
@@ -41,7 +51,7 @@ export class ChannelController {
   }
 
   @Post()
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
     //@User() user: UserChanDto,
@@ -52,7 +62,7 @@ export class ChannelController {
     );
     console.log('chan: ', chan);
     //console.log('chan.admins: ', chan.admins);
-    return null;
+    return chan;
   }
 
   @Patch('/:id') // id_chan
