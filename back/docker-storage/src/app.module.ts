@@ -8,6 +8,8 @@ import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessagesModule } from './messages/messages.module';
 import { ChatGateway } from './chat/chat.gateway';
+import { GameModule } from './game/game.module';
+
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { ChatGateway } from './chat/chat.gateway';
     ChannelModule,
     MessagesModule,
     ChannelModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService], // on mettra les gateway ici

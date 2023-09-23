@@ -34,7 +34,7 @@ export class AuthService {
     user.invited = [];
     user.invites = [];
     try {
-      console.log(user.salt);
+      //console.log(user.salt);
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
       throw new ConflictException(`username or password already used`);
@@ -57,7 +57,7 @@ export class AuthService {
     }
 
     const hashedPwd = await bcrypt.hash(password, user.salt);
-    console.log(hashedPwd);
+    //console.log(hashedPwd);
 
     if (hashedPwd === user.password) {
       // JWT
@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   async ftLogin(userData: ftLoginDto) {
-    console.log(userData.username);
+    //console.log(userData.username);
 
     userData.username = userData.username + '_42';
     const { username, urlImg } = userData;

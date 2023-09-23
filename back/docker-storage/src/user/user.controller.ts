@@ -19,10 +19,11 @@ import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import {
-  PublicProfileDto,
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto, SetSocketIdDto,
   UpdatePwdDto,
   UpdateUserDto,
-} from '../user/dto/user.dto';
+} from './dto/user.dto';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -37,7 +38,7 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
-    console.log('usr: ', user);
+    //console.log('usr: ', user);
     return user;
   }
 
@@ -151,5 +152,13 @@ export class UserController {
   ): Promise<UserEntity> {
     // ==> renvoi toutes les infos channels
     return await this.userService.getUserById(id);
+  }
+
+  // Sockets ----------------------------------------------------------------------------------------------------//
+
+  @Get('/from_socket_id')
+  @UseGuards(JwtAuthGuard)
+  async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
+    return this.userService.getUserFromSocketId(socketId);
   }
 }

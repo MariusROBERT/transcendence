@@ -57,6 +57,10 @@ export class PublicProfileDto {
 
   @IsNotEmpty()
   @IsString()
+  socketId: string;
+
+  @IsNotEmpty()
+  @IsString()
   username: string;
 
   @IsNotEmpty()
@@ -79,4 +83,20 @@ export class PublicProfileDto {
 export class UpdatePwdDto {
   @IsString()
   password: string;
+}
+
+export class SetSocketIdDto {
+  @IsNotEmpty()
+  @IsString()
+  socketId: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserStateEnum)
+  user_status: UserStateEnum;
+}
+
+export class GetUserIdFromSocketIdDto {
+  @IsNotEmpty()
+  @IsString()
+  socketId: string;
 }

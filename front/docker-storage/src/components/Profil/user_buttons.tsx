@@ -25,8 +25,8 @@ const UserButtons: React.FC<UserButtonsProps> = ({ id }) => {
     const fetchUserInfos = async () => {
       try {
         const response = await unsecureFetch('user', 'GET');
-        if (response.ok) {
-          const userData = await response.json();
+        if (response?.ok) {
+          const userData = await response?.json();
           setUserInfos(userData);
         } else {
           console.log('Réponse non OK');

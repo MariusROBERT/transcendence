@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { color } from "../../utils/Global";
-import { delay } from "../../utils/UtilityFunctions";
+import { color, delay } from "../../utils";
 
 interface Props {
   icon: string;

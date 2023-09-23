@@ -103,7 +103,7 @@ export class ChannelService {
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userdto.id);
-    console.log(user.username + " " + channel.channel_name);
+    //console.log(user.username + " " + channel.channel_name);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
     if (channel.users.includes(user))
@@ -112,7 +112,7 @@ export class ChannelService {
     if (userdto.password !== channel.password) throw new Error('Wrong password');
     channel.users = [...channel.users, user];
     await this.ChannelRepository.save(channel);
-    console.log(channel.users);
+    //console.log(channel.users);
     return channel;
   }
 
@@ -229,7 +229,7 @@ export class ChannelService {
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)
     //  throw new Error('The user is muted');
-    console.log(message + " " + user + " " + chan);
+    //console.log(message + " " + user + " " + chan);
     this.msgService.addMsg(message, user, chan);
   }
 }

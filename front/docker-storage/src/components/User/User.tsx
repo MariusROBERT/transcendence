@@ -17,25 +17,25 @@ export function User({
     console.log("open profile from " + user_name);
   }
 
-  function openChat() {
-    console.log("open chat with " + user_name);
-  }
+    function openChat(){
+        console.log('open chat with ' + user_name);
+    }
 
-  function sendGameInvite() {
-    console.log("invite " + user_name + " to play a game");
-  }
+    function sendGameInvite(){
+        console.log('invite ' + user_name + ' to play a game');
+    }
 
-  function lookGame() {
-    console.log("try to look game with " + user_name);
-  }
+    function lookGame(){
+        console.log('try to look game with ' + user_name);
+    }
 
-  function sendFriendInvite() {
-    console.log("send friend invite to " + user_name);
-  }
+    function sendFriendInvite(){
+        console.log('send friend invite to ' + user_name);
+    }
 
-  function openOptionDropdown() {
-    console.log("open option dropdown");
-  }
+    function openOptionDropdown(){
+        console.log('open option dropdown');
+    }
 
   return (
     <div

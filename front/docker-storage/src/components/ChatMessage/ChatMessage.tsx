@@ -1,5 +1,5 @@
-import { color } from "../../utils/Global";
-import { Background, RoundButton } from "..";
+import {color} from '../../utils';
+import {Background, RoundButton} from "..";
 
 interface Props {
   children: string;
