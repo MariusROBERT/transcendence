@@ -1,14 +1,15 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  SetSocketIdDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -38,7 +39,7 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    console.log('modifications apportées: ', profil);
+    //console.log('modifications apportées: ', profil);
 
     // NEW_IMAGE
     // if (profil.urlImg != '')
@@ -292,11 +293,55 @@ export class UserService {
   // logout
   async logout(user: UserEntity) {
     // pas testé
-    user.user_status = UserStateEnum.OFF;
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
-    // TODO : remove jwt
-    this.UserRepository.save(user);
+
+    user.user_status = UserStateEnum.OFF;
+    user.socketId = '';
+
+    await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
+  }
+
+  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
+    const user = await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+    return user;
+  }
+
+  async setUserSocketId(id: number, socketId: string) {
+    const user = await this.UserRepository.findOne({ where: { id: id }});
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
+    user.socketId = socketId;
+    user.user_status = UserStateEnum.ON;
+
+    return await this.UserRepository.save(user);
+  }
+
+  async getSocketIdFromUser(id: number) {
+    const user = await this.UserRepository.findOne({ where: { id: id }});
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
+    return user.socketId;
+  }
+
+  async getUserById(id: number): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    return user;
   }
 }

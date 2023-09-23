@@ -52,11 +52,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
   };
 
   useEffect(() => {
-    console.log('useEffect 1 Settings');
     const getUserInfos = async () => {
-      console.log('useEffect 2 Settings');
       const user = (await Fetch('user', 'GET'))?.json;
-      console.log('useEffect 3 Settings');
       if (user) {
         setUserInfosSettings(user);
       } else {
@@ -96,7 +93,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         const user = (await Fetch('user/update_password', 'PATCH',
           JSON.stringify({ password: modifData.password })))?.json;
         if (user) {
-          console.log('MDP changed : ', user.password);
+          //console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
         }
         lockPwd();
@@ -107,7 +104,6 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
       modifData.urlImg === userInfosSettings?.urlImg
     ) {
-      console.log('\n\n=====verif OK');
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -119,7 +115,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
           urlImg: modifData.urlImg,
         })))?.json;
     if (user) {
-      console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
+      //console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
       setUserInfosSettings(user);
     }
     lockPwd();
@@ -130,8 +126,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
-        <div style={modifContainer}> {/* IMG ==> TODO */}
-          <img style={imgStyle} src={userInfosSettings?.urlImg ? userInfosSettings?.urlImg : require('../../assets/imgs/icon_default_profil.png')} alt="" />
+        <div style={modifContainer}>
+          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
           <input
             type="file"
             onChange={(e) =>
@@ -142,7 +138,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             }
           />
         </div>
-        <div style={modifContainer}> {/* PWD ==> ok */}
+        <div style={modifContainer}>
           <input
             type={passwordType}
             onChange={(e) =>
@@ -177,7 +173,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
-        <div style={modifContainer}> {/* 2FA ==> ok */}
+        <div style={modifContainer}>
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>
@@ -185,7 +181,6 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             }
             checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
           />
-          {/*recup l'etat de base du 2fa*/}
         </div>
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>

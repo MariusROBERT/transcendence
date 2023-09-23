@@ -34,10 +34,30 @@ export class UpdateUserDto {
   winrate: number;
 }
 
+export class UserChanDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+}
+
+export class UserAddChanDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @IsString()
+  @IsOptional()
+  password: string;
+}
+
 export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
+
+  @IsNotEmpty()
+  @IsString()
+  socketId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -63,4 +83,20 @@ export class PublicProfileDto {
 export class UpdatePwdDto {
   @IsString()
   password: string;
+}
+
+export class SetSocketIdDto {
+  @IsNotEmpty()
+  @IsString()
+  socketId: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserStateEnum)
+  user_status: UserStateEnum;
+}
+
+export class GetUserIdFromSocketIdDto {
+  @IsNotEmpty()
+  @IsString()
+  socketId: string;
 }
