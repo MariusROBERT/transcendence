@@ -10,7 +10,7 @@ interface Props{
   meUser: IUserComplete|undefined
 }
 
-const Navbar: React.FC<Props>  = ({meUser}) => {
+const Navbar: React.FC<Props>  = ({ meUser }) => {
   const jwtToken = Cookies.get('jwtToken');
 	const navigate = useNavigate();
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const Navbar: React.FC<Props>  = ({meUser}) => {
     <>
       <div style={navbarStyle}>
           <RoundButton icon={require('../../assets/imgs/icon_setting.png')} icon_size={50} onClick={() => setSettingsVisible(!settingsVisible)}></RoundButton>
-          {settingsVisible && <Settings/>}
+          {settingsVisible && <Settings isVisible={settingsVisible} />}
           <RoundButton icon={require('../../assets/imgs/icon_user.png')} icon_size={50} onClick={() => setProfilVisible(!profilVisible)}></RoundButton>
           {profilVisible && <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)}/>}
           <RoundButton icon={require('../../assets/imgs/icon_logout.png')} icon_size={50} onClick={() => logout()}></RoundButton>

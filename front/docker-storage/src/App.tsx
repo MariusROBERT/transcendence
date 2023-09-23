@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Background from "./components/Background/Background";
-import { color, backgroundImage, Viewport, useEffectViewport } from "./utils/index";
+import { color, backgroundImage, Viewport, useEffectViewport } from "./utils";
 import { AuthGuard, Login, MainPage } from "./components";
 import { socket } from './socket';
 import { Route, Routes } from 'react-router-dom';

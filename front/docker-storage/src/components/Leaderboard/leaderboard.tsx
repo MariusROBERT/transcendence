@@ -1,26 +1,27 @@
 import Cookies from 'js-cookie';
 import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
-import { useNavigate } from 'react-router-dom';
-import { AuthGuard, Flex, RoundButton } from '..';
-import { LeaderboardProps, IUser, UserInfos } from '../../utils/interfaces';
-import { UserButton } from '../User/UserButton';
+import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
+import { IUser, IUserComplete, LeaderboardProps, UserInfos } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
 import { handleOpenProfil } from '../../utils/user_functions';
-import UserBanner from '../User/UserBanner';
+import { useNavigate } from 'react-router-dom';
 
-// TODO : rafraichir quand il click sur ask as friend
-
-export default function Leaderboard({ meUser, searchTerm, setUserComplete }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    navigate('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [userInfos, setUserInfos] = useState<IUserComplete>();
+
   console.log("meUser: ", meUser?.username);
-
-
 
   const closeProfil = () => {
     // close profil card
@@ -28,40 +29,33 @@ export default function Leaderboard({ meUser, searchTerm, setUserComplete }: Lea
     setProfilVisible(false);
   };
 
-  const getAllProfil = () => {
+  const getAllProfil = async () => {
     let cancelled = false;
-    fetch('http://localhost:3001/api/user/get_all_public_profile', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          navigate('/login');
-          alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-          // mettre ce message sur la page login ?
-          return;
-        }
-        return res.json();
-      })
-      .then((user) => {
-        // console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
-        if (cancelled) {
-          // au cas ou le client cancell le fetch avant la fin
-          return;
-        } else {
-          if (user && Array.isArray(user) && user.length === 0)
-            // Jamais le cas vu qu'il y en a au moins un : lui
-            setErrorMessage('Aucun utilisateur trouvé.');
-          else setAllUsers(user);
-        }
-      });
+    const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
+    // console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
+    if (cancelled) {
+      // au cas ou le client cancell le fetch avant la fin
+      return;
+    } else {
+      if (users && Array.isArray(users) && users.length === 0) // A TESTER
+        setErrorMessage('Aucun utilisateur trouvé.');
+      else
+        setAllUsers(users);
+    }
     return () => {
       cancelled = true;
     };
   };
+
+  useEffect(() => {
+    const getUserInfos = async () => {
+      getAllProfil();
+      const user = (await Fetch('user', 'GET'))?.json;
+      if (!user) return;
+      setUserInfos(user);
+    };
+    getUserInfos(); // appel de la fonction si le jwt est good
+  }, [isVisible]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
@@ -82,7 +76,7 @@ export default function Leaderboard({ meUser, searchTerm, setUserComplete }: Lea
             </Flex>
           </>
         ) :  (
-          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} setUserComplete={setUserComplete} />
+          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} />
         )}
         <>
             <p>SCORE %</p>
@@ -94,13 +88,8 @@ export default function Leaderboard({ meUser, searchTerm, setUserComplete }: Lea
   };
 
   useEffect(() => {
-    getAllProfil();
-    setUserComplete(meUser)
-  }, [jwtToken]);
-
-  useEffect(() => {
     displayAllProfil();
-    setUserComplete(meUser)
+    setUserInfos(meUser)
   }, [searchTerm, allUsers ,jwtToken]);
 
   return (

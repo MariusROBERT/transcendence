@@ -63,6 +63,7 @@ export interface IUserComplete {
 }
 
 export interface LeaderboardProps {
+  isVisible: boolean
   searchTerm: string;
   meUser: IUser | undefined;
   setUserComplete:any;

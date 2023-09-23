@@ -6,16 +6,24 @@ import {
   Modifications,
   UserInfosForSetting,
 } from '../../utils/interfaces';
+import { Fetch } from '../../utils/SecureFetch';
 
-const Settings = () => {
-  const jwtToken = Cookies.get('jwtToken');
+interface Props{
+  isVisible:boolean
+}
+
+const Settings: React.FC<Props> = ({ isVisible }) => {
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    navigate('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordType, setPasswordType] = useState('password'); // Type initial : password
-  const [userInfosSettings, setUserInfosSettings] =
-    useState<UserInfosForSetting>();
+  const [passwordType, setPasswordType] = useState('password');
+  const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
     urlImg: '',
     password: '',
@@ -34,7 +42,8 @@ const Settings = () => {
   };
 
   const toggleLock = () => {
-    if (!isDisabled) lockPwd();
+    if (!isDisabled)
+      lockPwd();
     else unlockPwd();
   };
 
@@ -43,33 +52,21 @@ const Settings = () => {
   };
 
   useEffect(() => {
+    console.log('useEffect 1 Settings');
     const getUserInfos = async () => {
-      const rep = await fetch('http://localhost:3001/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      if (rep.ok) {
-        const user = await rep.json();
+      console.log('useEffect 2 Settings');
+      const user = (await Fetch('user', 'GET'))?.json;
+      console.log('useEffect 3 Settings');
+      if (user) {
         setUserInfosSettings(user);
-        setModifData({
-          urlImg: '',
-          password: '',
-          confirmpwd: '',
-          is2fa_active: userInfosSettings?.is2fa_active,
-        })
-        console.log(userInfosSettings?.urlImg);
-        
       } else {
         // si je delete le cookie du jwt
         navigate('/login');
         alert('Vous avez été déconnecté');
       }
     };
-    if (jwtToken) getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
+    getUserInfos();
+  }, [isVisible]);
 
   // MODIFICATIONS
 
@@ -78,7 +75,7 @@ const Settings = () => {
     const jwtToken = Cookies.get('jwtToken');
     if (!jwtToken) {
       navigate('/login');
-      alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
+      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
     }
     if (
       modifData.confirmpwd === '' &&
@@ -92,34 +89,15 @@ const Settings = () => {
     // PASSWORD :
     if (!isDisabled) {
       if (modifData.password === '' || modifData.confirmpwd === '')
-        return setErrorMessage('les passwords ne correspondent pas !');
-      if (
-        modifData.password !== undefined &&
-        modifData.password !== modifData.confirmpwd
-      ) {
-        return setErrorMessage('les passwords ne correspondent pas !');
-      } else {
-        const response = await fetch(
-          'http://localhost:3001/api/user/update_password', // PATCH update_password
-          {
-            method: 'PATCH',
-            body: JSON.stringify({
-              password: modifData.password,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${jwtToken}`,
-            },
-          },
-        );
-        if (response.ok) {
-          const user = await response.json();
+        return setErrorMessage('passwords doesn\'t match !');
+      if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
+        return setErrorMessage('passwords doesn\'t match !');
+      else {
+        const user = (await Fetch('user/update_password', 'PATCH',
+          JSON.stringify({ password: modifData.password })))?.json;
+        if (user) {
           console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
-        } else {
-          navigate('/login');
-          alert(`Vous avez ete déconnecté car vous n'êtes pas authorisé`);
-          // ou recreer un jwt ?
         }
         lockPwd();
         setErrorMessage('');
@@ -135,28 +113,14 @@ const Settings = () => {
       return;
     }
 
-    const rep = await fetch(
-      'http://localhost:3001/api/user', // PATCH
-      {
-        method: 'PATCH',
-        body: JSON.stringify({
+    const user = (await Fetch('user', 'PATCH',
+      JSON.stringify({
           is2fa_active: modifData.is2fa_active,
           urlImg: modifData.urlImg,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      },
-    );
-    if (rep.ok) {
-      const user = await rep.json();
+        })))?.json;
+    if (user) {
       console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
       setUserInfosSettings(user);
-    } else {
-      navigate('/login');
-      alert('Vous avez été déconnecté');
-      // ou recreer un jwt
     }
     lockPwd();
     setErrorMessage('');

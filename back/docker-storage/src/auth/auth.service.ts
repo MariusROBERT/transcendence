@@ -19,8 +19,7 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -75,6 +74,8 @@ export class AuthService {
   }
 
   async ftLogin(userData: ftLoginDto) {
+    console.log(userData.username);
+
     userData.username = userData.username + '_42';
     const { username, urlImg } = userData;
     const user = await this.userRepository
@@ -85,8 +86,8 @@ export class AuthService {
       const user2 = this.userRepository.create({
         ...userData,
       });
-      user2.salt = '42';
-      user2.password = '42';
+      user2.salt = '42'; // = await bcrypt.genSalt();
+      user2.password = '42'; // = await bcrypt.hash(user.password, user.salt);
       user2.user_status = UserStateEnum.ON;
       user2.friends = [];
       user2.invited = [];
@@ -107,7 +108,6 @@ export class AuthService {
       username,
       role: user2.role,
     };
-    const jwt = this.jwtService.sign(payload);
-    return { 'access-token': jwt };
+    return this.jwtService.sign(payload);
   }
 }
