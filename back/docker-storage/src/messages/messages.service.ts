@@ -18,7 +18,7 @@ export class MessagesService {
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
     console.log("got here");
     const newMsg = this.messageRepository.create({content:message, sender: user, channel: chan});
-    console.log("here");
+    console.log("CHAN:" + chan.channel_name);
     return await this.messageRepository.save(newMsg);
   }
 }
