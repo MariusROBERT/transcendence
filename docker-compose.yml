@@ -55,11 +55,11 @@ volumes:
       o: "bind"
       device: "back/docker-storage"
   database:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "database/docker-storage"
+#    driver: local
+#    driver_opts:
+#      type: "none"
+#      o: "bind"
+#      device: "database/docker-storage"
 
 networks:
   database:
