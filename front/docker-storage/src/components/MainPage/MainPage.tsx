@@ -29,7 +29,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
 
   function onPlayClicked() {
-    console.log('start clicked', socket?.id);
+    // console.log('start clicked', socket?.id);
     socket?.emit('join_queue', { id:id })
   }
 

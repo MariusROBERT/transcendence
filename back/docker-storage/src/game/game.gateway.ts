@@ -28,7 +28,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
   async handleDisconnect(client: Socket) {
     const user = await this.UserService.getUserFromSocketId({ socketId: client.id })
-    console.log('DISCONNECTION: socket: ', client.id, ' username: ', user?.username, ' index: ', this.clients.indexOf(client));
+    // console.log('DISCONNECTION: socket: ', client.id, ' username: ', user?.username, ' index: ', this.clients.indexOf(client));
     this.clients = this.clients.filter(s => s !== client);
   }
 
@@ -37,7 +37,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     await this.UserService.setUserSocketId(message.id, message.socketId);
 
     const user = await this.UserService.getUserFromSocketId({ socketId: message.socketId })
-    console.log('CONNECTION: socket: ', message.socketId, ' username: ', user?.username, ' index: ', this.clients.indexOf(this.clients.find(s => s.id == message.socketId)), ' total_clients: ', this.clients.length);
+    // console.log('CONNECTION: socket: ', message.socketId, ' username: ', user?.username, ' index: ', this.clients.indexOf(this.clients.find(s => s.id == message.socketId)), ' total_clients: ', this.clients.length);
   }
 
   @SubscribeMessage('reset_user_socket_id')

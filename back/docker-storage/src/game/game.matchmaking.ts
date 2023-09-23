@@ -21,7 +21,7 @@ export class GameMatchmaking {
   }
 
   async joinQueue(queue: number[], id: number, isSpecial:boolean = false){
-    console.log('user:', id, ' is joined the queue');
+    // console.log('user:', id, ' is joined the queue');
     queue.push(id);
     await this.tryLaunchGames(queue, isSpecial);
   }
@@ -29,7 +29,7 @@ export class GameMatchmaking {
   // try launch games as long as there is more than 2 players in the queue
   async tryLaunchGames(queue: number[], isSpecial: boolean){
     while (queue.length >= 2){
-      console.log('try lanch game with:',queue[0] ,' and ', queue[1]);
+      // console.log('try lanch game with:',queue[0] ,' and ', queue[1]);
       queue = queue.filter(id => this.getGame(id) === undefined);
       await this.createGame(queue[0], queue[1], isSpecial);
       queue.slice(2);
@@ -59,7 +59,7 @@ export class GameMatchmaking {
       ready:false
     };
     this.controller.games.push(game);
-    console.log('game was created:', room);
+    // console.log('game was created:', room);
     this.controller.gateway.openGame(room);
   }
 

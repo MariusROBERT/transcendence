@@ -17,12 +17,6 @@ function App() {
   const [viewport, setViewport] = useState<Viewport>(view);
   useEffectViewport(viewport, SIZE, setViewport);
 
-  //console.log('Client\n');
-  // socket.emit('joinChat', 0);
-  // socket.emit('message', [0, 'chokbar']);
-  // socket.emit('leaveChat', 0);
-  // socket.connect();
-
   return (
     <Contexts>
       <div className={'cursor_perso'}

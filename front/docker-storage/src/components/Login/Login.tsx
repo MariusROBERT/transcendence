@@ -148,7 +148,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
             <h2>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
             <Button onClick={() => {
-              console.log(signIn ? 'sign up clicked' : 'sign in clicked');
+              // console.log(signIn ? 'sign up clicked' : 'sign in clicked');
               setSign(!signIn)
             }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
           </Background>

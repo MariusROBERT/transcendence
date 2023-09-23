@@ -1,6 +1,7 @@
 import { Fetch } from '../../utils'
 import { useState, createContext, useEffect, useContext, ReactNode } from 'react';
 import io, { Socket } from 'socket.io-client';
+import Cookies from "js-cookie";
 
 type UserContextType = {
   id: number;
@@ -68,12 +69,14 @@ export function UserContextProvider({ children }: Props){
 
   async function initSocket(){
     if (!socket) {
+      const token = Cookies.get('jwtToken');
       setSocket(
         io('http://localhost:3001', {
           withCredentials: true,
           reconnectionAttempts: 1,
           transports: ['websocket'],
-          autoConnect: false
+          autoConnect: false,
+          query: { token },
         }));
     }
     return () => { socket?.close(); }
