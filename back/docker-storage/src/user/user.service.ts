@@ -299,4 +299,20 @@ export class UserService {
     this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
   }
+
+  async getUserById(id: number): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    return user;
+  }
 }

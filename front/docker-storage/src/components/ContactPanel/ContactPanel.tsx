@@ -3,7 +3,7 @@ import { color } from "../../utils/Global";
 import { Viewport } from "../../utils/Viewport";
 
 interface Props {
-    viewport:Viewport,
+  viewport: Viewport;
 }
 
 export function ContactPanel({viewport}:Props)

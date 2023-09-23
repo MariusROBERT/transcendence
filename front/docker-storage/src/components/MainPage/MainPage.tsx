@@ -1,6 +1,7 @@
 import { color, Viewport, Fetch } from "../../utils";
-import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
+import { SidePanel, Background, ContactPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
 import { useEffect, useState } from "react";
+import { ChatPanel } from "../../components/ChatPanel/ChatPanel";
 import Cookies from "js-cookie";
 
 interface Props {

@@ -1,9 +1,9 @@
-import "../../App.css"
+import "../../App.css";
 
 interface Props {
-    children?: string,
-    minWidth?: number
-    minHeight?: number
+  children?: string;
+  minWidth?: number;
+  minHeight?: number;
 }
 
 export function Input({children, minWidth = 100, minHeight = 30}: Props)

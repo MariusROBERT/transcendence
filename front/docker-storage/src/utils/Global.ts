@@ -1,5 +1,4 @@
-
-export const styles = require('../App.css')
+export const styles = require("../App.css");
 
 export const color = {
   clear: '#00000000',
