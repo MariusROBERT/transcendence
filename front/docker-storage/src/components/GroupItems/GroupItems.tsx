@@ -10,10 +10,9 @@ interface Props{
     heading:string,
     duration_ms:number
     meUser: IUserComplete|undefined;
-    setUserComplete: any;
 }
 
-export function GroupItems({children, heading, duration_ms, meUser, setUserComplete}: Props)
+export function GroupItems({ children, heading, duration_ms, meUser }: Props)
 {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -40,7 +39,6 @@ export function GroupItems({children, heading, duration_ms, meUser, setUserCompl
 		})
 	}
 	useEffect(() => {
-        setUserComplete(meUser)
 		getAllUsers();
 	}, [meUser])
     console.log("header: ", heading);
@@ -52,7 +50,7 @@ export function GroupItems({children, heading, duration_ms, meUser, setUserCompl
             meUser?.friends.includes(user.id))
             .map((friend: IUser) => (
             <div key={friend.id} >
-                <UserBanner otherUser={friend} meUser={meUser} setUserComplete={setUserComplete}/> {/* rentre pas dedans*/}
+                <UserBanner otherUser={friend} meUser={meUser} /> {/* rentre pas dedans*/}
             </div>
         ));
         console.log("freids : ", friends); // ok
@@ -61,7 +59,7 @@ export function GroupItems({children, heading, duration_ms, meUser, setUserCompl
     const displayUsers = () => {
         const users = allUsers?.map((user: IUser) => (
             <div key={user.id} >
-                <UserBanner setUserComplete={setUserComplete} otherUser={user} meUser={meUser} /> {/* rentre pas dedans*/}
+                <UserBanner otherUser={user} meUser={meUser} /> {/* rentre pas dedans*/}
             </div>
         ));
         console.log("users: ", users); // ok

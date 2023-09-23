@@ -30,7 +30,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
             <>
               <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
               <p>ID : {meUser?.id}</p>
-              <img style={imgStyle} src={require('../../assets/imgs/icon_default_profil.png')}></img>
+              <img style={imgStyle} src={meUser?.urlImg}></img>
               {meUser?.user_status ? 
                 <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
               :
@@ -55,7 +55,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
-            <img style={imgStyle} src={require('../../assets/imgs/icon_default_profil.png')}></img>
+            <img style={imgStyle} src={otherUser.urlImg}></img>
             {otherUser.user_status ? 
               <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
             :

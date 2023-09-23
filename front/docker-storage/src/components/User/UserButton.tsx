@@ -9,10 +9,9 @@ import { lookGame, openChat, openOptionDropdown, sendFriendInvite, sendGameInvit
 interface Props {
 	otherUser: IUser
 	meUser: IUser| undefined;
-	setUserComplete: any;
 }
 
-export function UserButton({ otherUser, meUser, setUserComplete }: Props) {
+export function UserButton({ otherUser, meUser }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
 
@@ -20,7 +19,6 @@ export function UserButton({ otherUser, meUser, setUserComplete }: Props) {
 		if (meUser && meUser.invited.includes(otherUser.id as number)) {
 			setSendButton(true);
 		}
-		setUserComplete(meUser)
 	}, [otherUser, meUser]);
 
 	return (

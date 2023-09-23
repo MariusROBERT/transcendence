@@ -14,7 +14,7 @@ export { SidePanel } from './SidePanel/SidePanel';
 export { default as UserBanner } from './User/UserBanner';
 export { default as AuthGuard } from './AuthGuard/authguard'
 export { default as Navbar } from './Navbar/navbar'
-export { Settings } from './Settings/settings'
 export { default as switchToggle } from './Settings/settings'
 export { Leaderboard } from './Leaderboard/leaderboard'
 export { default as profil } from './Profil/profil'
+export { default as Settings } from './Settings/settings'
