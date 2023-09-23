@@ -2,7 +2,7 @@ import { Border, Background, GroupItems, SearchBar, User } from "..";
 import { color, Viewport } from "../../utils";
 
 interface Props {
-    viewport:Viewport,
+  viewport: Viewport;
 }
 
 export function ContactPanel({viewport}:Props)

@@ -25,7 +25,7 @@ import { GameModule } from './game/game.module';
     GameModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ChatGateway], // on mettra les gateway ici
+  providers: [AppService], // on mettra les gateway ici
   exports: [AppService],
 })
 export class AppModule {}

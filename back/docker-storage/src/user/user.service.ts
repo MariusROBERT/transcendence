@@ -54,7 +54,7 @@ export class UserService {
 
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
-      ...profil // modif seulement les differences
+      ...profil, // modif seulement les differences
     });
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
@@ -70,10 +70,11 @@ export class UserService {
     const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    updatePwdDto.password = await bcrypt.hash(
+    const hashedPwd = await bcrypt.hash(
       updatePwdDto.password,
       userForSalt.salt,
     );
+    updatePwdDto.password = hashedPwd;
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...updatePwdDto, // modif seulement les differences
@@ -292,8 +293,6 @@ export class UserService {
   // logout
   async logout(user: UserEntity) {
     // pas testé
-    console.log('logout')
-
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
 
@@ -328,5 +327,21 @@ export class UserService {
       return;
     }
     return user.socketId;
+  }
+
+  async getUserById(id: number): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    return user;
   }
 }
