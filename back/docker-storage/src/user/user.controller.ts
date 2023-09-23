@@ -51,7 +51,7 @@ export class UserController {
     return await this.userService.updateProfile(updateUserDto, user);
   }
 
-  @Patch('update_picture')
+  @Post('update_picture')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(userPictureFileInterception)
   async UpdatePicture(

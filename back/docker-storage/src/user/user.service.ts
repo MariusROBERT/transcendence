@@ -14,7 +14,7 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { randomUUID } from 'crypto';
+import { Express } from 'express';
 
 @Injectable()
 export class UserService {
@@ -205,8 +205,8 @@ export class UserService {
 
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
-    if (!user) return false;
-    return true;
+    return !!user;
+
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -304,21 +304,15 @@ export class UserService {
   }
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/i))
-      throw new Error('Only image file are accepted.');
-    const uploadPath = `public/${randomUUID()}.${file.filename.split('.')[1]}`;
-    fs.rename(file.path, uploadPath, (err) => {
-      if (err) console.error('rename', err);
-    });
     if (
       user.urlImg != '' &&
       !user.urlImg.startsWith('https://cdn.intra.42.fr')
     ) {
       fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
-        if (err) console.error('remove old', err);
+        if (err) console.error('remove old: ', err);
       });
     }
-    user.urlImg = 'http://localhost:3001/' + uploadPath;
+    user.urlImg = 'http://localhost:3001/' + file.path;
     await this.UserRepository.save(user);
     return user;
   }

@@ -15,7 +15,7 @@ export class userPictureFileInterception extends FileInterceptor('file', {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
       return cb(
         new HttpException(
-          'Only image files are allowed!',
+          'Wrong file format!',
           HttpStatus.BAD_REQUEST,
         ),
         false,

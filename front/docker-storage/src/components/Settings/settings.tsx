@@ -24,6 +24,8 @@ export function Settings({ onClose, isVisible }: Props) {
     confirmpwd: '',
     is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
   });
+  const [pictureError, setPictureError] = useState<string>('');
+  const [newImage, setNewImage] = useState<string>('');
 
   const unlockPwd = () => {
     setIsDisabled(false);
@@ -102,26 +104,27 @@ export function Settings({ onClose, isVisible }: Props) {
       return;
     }
 
+    // IMG :
     if (modifData.img !== '') {
       const formData = new FormData();
       formData.append('file', modifData.img);
       formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
 
-      console.log('img : ', modifData.img);
       const user = await fetch('http://localhost:3001/api/user/update_picture', {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
         body: formData,
       }).then(r => {
-        if (r.ok)
+        if (r.ok) {
+          setPictureError('');
           return r.json();
-        console.warn('error : ', r);
+        }
+        setPictureError('Error while uploading picture');
         return null;
       });
       if (user) {
-        console.log('urlImg changed : ', user.urlImg);
         modifData.img = '';
         setUserInfosSettings(user);
       }
@@ -146,24 +149,44 @@ export function Settings({ onClose, isVisible }: Props) {
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
-        <div style={modifContainer}>
-          {' '}
-          {/* IMG ==> TODO */}
-          <img style={imgStyle} src={userInfosSettings?.urlImg} alt='' />
-          <input
-            type='file'
-            accept={'image/png, image/jpeg, image/jpg'}
-            onChange={(file: ChangeEvent) => {
-              const { files } = file.target as HTMLInputElement;
-              if (files && files.length !== 0) {
-                setModifData({
-                  ...modifData,
-                  img: files[0],
-                });
+        <div>
+          <div style={modifContainer}>
+            {' '}
+            {/* IMG ==> ok */}
+            <img style={{
+              ...imgStyle,
+              borderColor: modifData.img === '' ? 'green' : 'orange',
+            }} // green = synced with back, orange = not uploaded yet
+                 src={newImage || userInfosSettings?.urlImg}
+                 alt='user profile pic'
+            />
+            <input
+              id={'image'}
+              type='file'
+              accept={'image/png, image/jpeg, image/jpg'}
+              onChange={(event: ChangeEvent) => {
+                const { files } = event.target as HTMLInputElement;
+                if (files && files.length !== 0) {
+                  if (files[0].size > 1024 * 1024 * 5) {
+                    setPictureError('File is too big!');
+                  } else {
+                    setNewImage(URL.createObjectURL(files[0]));
+                    setPictureError('');
+                    setModifData({
+                      ...modifData,
+                      img: files[0],
+                    });
+                  }
+                }
               }
-            }
-            }
-          />
+              }
+              style={{ visibility: 'hidden' }}
+            />
+            <label htmlFor='image'
+                   style={{ borderRadius: '10px', backgroundColor: 'darkgrey', padding: '1em' }}
+            ><p>Upload image</p></label>
+          </div>
+          <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
         <div style={modifContainer}>
           {' '}
@@ -226,7 +249,7 @@ export function Settings({ onClose, isVisible }: Props) {
 
 const imgStyle: React.CSSProperties = {
   width: '100px',
-  border: '1px solid red',
+  border: '2px solid',
 };
 
 const settingsStyle: React.CSSProperties = {
@@ -244,6 +267,9 @@ const settingsStyle: React.CSSProperties = {
 
 const modifContainer: React.CSSProperties = {
   display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  flexDirection: 'row',
 };
 
 export default Settings;
