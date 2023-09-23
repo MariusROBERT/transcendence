@@ -94,7 +94,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     userE = await this.userService.getUserByUsername(payload.username);
     console.log(payload);
     console.log(userE);
-    this.chanService.AddMessageToChannel({"content": message, "sender": user, "channel": channel});
+    this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     this.server.emit('message', this.messages[this.messages.length - 1]);
   }

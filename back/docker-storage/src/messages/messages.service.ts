@@ -15,9 +15,10 @@ export class MessagesService {
     private authService: AuthService,
   ) {}
 
-  async addMsg(msg: AddMsgDto) {
-    const newMsg = this.messageRepository.create(msg);
-    console.log(newMsg);
+  async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
+    console.log("got here");
+    const newMsg = this.messageRepository.create({content:message, sender: user, channel: chan});
+    console.log("here");
     return await this.messageRepository.save(newMsg);
   }
 }

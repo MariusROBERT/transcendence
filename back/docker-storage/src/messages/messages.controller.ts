@@ -10,9 +10,9 @@ export class MessagesController {
 
   constructor(private MessageService: MessagesService) {}
 
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  async AddMessage(@Body() AddMsgDto: AddMsgDto): Promise<MessageEntity> {
-    return await this.MessageService.addMsg(AddMsgDto);
-  }
+  //@Post()
+  //@UseGuards(JwtAuthGuard)
+  //async AddMessage(@Body() AddMsgDto: AddMsgDto): Promise<MessageEntity> {
+  //  return await this.MessageService.addMsg(AddMsgDto);
+  //}
 }

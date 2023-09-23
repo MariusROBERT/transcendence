@@ -149,9 +149,9 @@ export class ChannelController {
     return this.channelService.UnBanUserFromChannel(user.id, id);
   }
 
-  @Post('add_msg')
-  //@UseGuards(JwtAuthGuard)
-  async AddMessageToChannel(@Body() addmsgDto: AddMsgDto) {
-    return this.channelService.AddMessageToChannel(addmsgDto);
-  }
+  //@Post('add_msg')
+  ////@UseGuards(JwtAuthGuard)
+  //async AddMessageToChannel(@Body() addmsgDto: AddMsgDto) {
+  //  return this.channelService.AddMessageToChannel(addmsgDto);
+  //}
 }
