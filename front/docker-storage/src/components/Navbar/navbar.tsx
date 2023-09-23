@@ -15,7 +15,7 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
 	const navigate = useNavigate();
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-
+// todo : mettre le Fetch
   const logout = () => {
     fetch('http://localhost:3001/api/auth/logout', {
       method: 'GET',

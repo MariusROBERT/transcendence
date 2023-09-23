@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
+
   if (!jwtToken) {
     navigate('/login');
     alert('Vous avez été déconnecté');
@@ -20,8 +21,6 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfos, setUserInfos] = useState<IUserComplete>();
-
-  console.log("meUser: ", meUser?.username);
 
   const closeProfil = () => {
     // close profil card
@@ -57,6 +56,10 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     getUserInfos(); // appel de la fonction si le jwt est good
   }, [isVisible]);
 
+  useEffect(() => {
+		console.log("meUser in Leaderboard", meUser);
+	}, [meUser]);
+
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     const filteredUsers = allUsers
@@ -75,7 +78,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
                 <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest moi: {user.username}</p>
             </Flex>
           </>
-        ) :  (
+        ) : (
           <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} />
         )}
         <>
@@ -90,7 +93,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   useEffect(() => {
     displayAllProfil();
     setUserInfos(meUser)
-  }, [searchTerm, allUsers ,jwtToken]);
+  }, [searchTerm, allUsers, jwtToken, meUser]);
 
   return (
     <div style={container}>
@@ -100,7 +103,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
       <div className="container">{userElements}</div>
       {profilVisible && (
         <AuthGuard isAuthenticated>
-          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
+          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil}/>
         </AuthGuard>
       )}
     </div>
@@ -108,6 +111,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 }
 
 const container: CSSProperties = {
+  top: '200px',
   background: 'black',
   position: 'absolute',
   border: '1px solid red',

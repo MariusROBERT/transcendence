@@ -50,7 +50,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props)
             meUser?.friends.includes(user.id))
             .map((friend: IUser) => (
             <div key={friend.id} >
-                <UserBanner otherUser={friend} meUser={meUser} /> {/* rentre pas dedans*/}
+                {/* <UserBanner otherUser={friend} meUser={meUser} /> */}
             </div>
         ));
         console.log("freids : ", friends); // ok
@@ -59,7 +59,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props)
     const displayUsers = () => {
         const users = allUsers?.map((user: IUser) => (
             <div key={user.id} >
-                <UserBanner otherUser={user} meUser={meUser} /> {/* rentre pas dedans*/}
+                {/* <UserBanner otherUser={user} meUser={meUser} /> */}
             </div>
         ));
         console.log("users: ", users); // ok

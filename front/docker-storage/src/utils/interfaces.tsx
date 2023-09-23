@@ -65,12 +65,12 @@ export interface IUserComplete {
 export interface LeaderboardProps {
   isVisible: boolean
   searchTerm: string;
-  meUser: IUserComplete | undefined;
+  meUser?: IUserComplete;
 }
 
 export interface ProfilProps {
   otherUser: IUser | undefined | null;
-  meUser: IUser | undefined;
+  meUser: IUserComplete | undefined;
   onClose?: () => void;
 }
 

@@ -3,24 +3,35 @@ import { sendFriendInvite } from '../../utils/user_functions';
 import { ProfilProps, UserInfos } from '../../utils/interfaces';
 import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
+import { useUserContext } from '../../contexts';
 
 // TODO : rafraichir quand il click sur ask as friend
 
 const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const navigate = useNavigate();
+  const { setUser } = useUserContext();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken)
   {
     navigate('/login');
     alert('Vous avez été déconnecté');
   }
-  const [sendButton, setSendButton] = useState(false); 
+  const [sendButton, setSendButton] = useState(false);
 
   useEffect(() => {
+    console.log("update user in profile", meUser);
       if (meUser && meUser.invited.includes(otherUser?.id as number)) {
         setSendButton(true);
     }
   }, [otherUser?.id, meUser]);
+
+  const onClick = () => {
+    if (!otherUser || !meUser)
+      return
+    let usercpy = [...meUser.invited, otherUser.id];
+    setUser({...meUser, invited: usercpy});
+    sendFriendInvite(otherUser.id, jwtToken)
+  }
 
   if (otherUser?.id === meUser?.id)
   {
@@ -72,14 +83,14 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
                 {sendButton ? ( 
                  <button disabled>Sent !</button>
                 ) : (
-                  <button onClick={() => sendFriendInvite(otherUser.id, jwtToken)}>Add as friend</button>
+                  <button onClick={onClick}>Add as friend</button>
                 )}
                 <button>Send a message</button>
                 <button>Options</button>
               </>
             ) : (
               <>
-                <button>Add as friend</button>
+                <button>ASk</button>
                 <button>Play a Match</button>
                 <button>Look the Match</button>
                 <button>Options</button>

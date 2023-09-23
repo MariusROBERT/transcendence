@@ -13,25 +13,27 @@ interface Props {
 // const [userComplete, setUserComplete] = useState<IUserComplete>();
 
 export function MainPage({ panelWidth, viewport }: Props) {
-  const onCreation = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
-  const [user, setUser] = useState<IUserComplete>();
-  const { fetchContext, socket, id } = useUserContext();
+  const { fetchContext, socket, id, user } = useUserContext();
 
   useEffect(() => {
     const getInvites = async () => {
-      const user = (await Fetch('user', 'GET'))?.json;
-      setUser(user);
       await fetchContext();
-      if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-        setShowNotificationBadge(true);
     }
     getInvites();
-  }, [onCreation]);
+  }, []);
 
+
+  useEffect(() => {
+    console.log("user maj", user);
+    if (!user)
+        return 
+    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
+        setShowNotificationBadge(true);
+  }, [user]);
 
   function onPlayClicked() {
     // console.log('start clicked', socket?.id);
@@ -54,7 +56,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </SidePanel>
           <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
             <Navbar meUser={user}></Navbar>
-            <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}>Leader Board..</SearchBar>
+            <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)} isVisible={isLeaderboardVisible} >Leader Board..</SearchBar>
             <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
                          onClick={onPlayClicked}></RoundButton>
             <div style={{ height: '60px' }} />
