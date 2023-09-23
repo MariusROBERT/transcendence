@@ -43,10 +43,11 @@ export class ChannelController {
     return await this.channelService.getChannelByName(id);
   }
 
-  @Get('/:id/msg')
+  @Get('/msg/:id')
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MessageEntity[]> {
+    console.log("get message ^^");
     return await this.channelService.getChannelMessages(id);
   }
 

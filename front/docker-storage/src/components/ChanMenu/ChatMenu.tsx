@@ -36,6 +36,13 @@ export function ChatMenu() {
             }));
         }
         current_chan = inputValue;
+
+        const path2 = "channel/msg/1";
+        const res2 = await unsecureFetch(path2, 'GET');
+        if (res2?.ok)
+            console.log(res2);
+        else
+            console.log("error ^^");
     }
 
     return (

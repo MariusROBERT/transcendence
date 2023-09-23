@@ -67,9 +67,13 @@ export class ChannelService {
   }
 
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    const channel = await this.getChannelById(id);
-
-    return channel.messages;
+    const channel = await this.msgService.getMsg(id)
+    //const channel = await this.ChannelRepository.find({
+    //  where: {id},
+    //  //relations: ['message']
+    //})
+    console.log(channel);
+    return null;
   }
 
   async updateChannel(
