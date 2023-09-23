@@ -2,22 +2,28 @@ import Cookies from 'js-cookie';
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import { Modifications, UserInfosForSetting, SettingsProps } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
+import {
+  Modifications,
+  UserInfosForSetting,
+} from '../../utils/interfaces';
+import { Fetch } from '../../utils/SecureFetch';
 
 interface Props{
-  onClose:() => void;
-  isVisible:boolean;
+  isVisible:boolean
 }
 
-export function Settings({ onClose, isVisible }:Props){
+const Settings: React.FC<Props> = ({ isVisible }) => {
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    navigate('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordType, setPasswordType] = useState('password'); // Type initial : password
-  const [userInfosSettings, setUserInfosSettings] =
-    useState<UserInfosForSetting>();
+  const [passwordType, setPasswordType] = useState('password');
+  const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
     urlImg: '',
     password: '',
@@ -48,8 +54,13 @@ export function Settings({ onClose, isVisible }:Props){
   useEffect(() => {
     const getUserInfos = async () => {
       const user = (await Fetch('user', 'GET'))?.json;
-      if (user)
+      if (user) {
         setUserInfosSettings(user);
+      } else {
+        // si je delete le cookie du jwt
+        navigate('/login');
+        alert('Vous avez été déconnecté');
+      }
     };
     getUserInfos();
   }, [isVisible]);
@@ -91,7 +102,7 @@ export function Settings({ onClose, isVisible }:Props){
     }
     if (
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.urlImg === userInfosSettings.urlImg
+      modifData.urlImg === userInfosSettings?.urlImg
     ) {
       setIsDisabled(true);
       setShowConfirmPassword(false);
@@ -175,7 +186,6 @@ export function Settings({ onClose, isVisible }:Props){
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
         <button type="submit">Enregistrer</button>
-        <button onClick={onClose}>Fermer</button>
       </form>
     </div>
   );

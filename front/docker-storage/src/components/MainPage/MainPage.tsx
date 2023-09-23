@@ -1,6 +1,8 @@
 import { color, Viewport, Fetch } from "../../utils";
 import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { IUserComplete } from "../../utils/interfaces";
 import { useUserContext } from '../../contexts';
 import { Game } from '../game/Game';
 
@@ -8,25 +10,30 @@ interface Props {
   panelWidth: number
   viewport: Viewport
 }
+// const [userComplete, setUserComplete] = useState<IUserComplete>();
 
 export function MainPage({ panelWidth, viewport }: Props) {
-  const onCreation = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
-  const { fetchContext, socket, id } = useUserContext();
+  const { fetchContext, socket, id, user } = useUserContext();
 
   useEffect(() => {
     const getInvites = async () => {
-      const user = (await Fetch('user', 'GET'))?.json;
       await fetchContext();
-      if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-        setShowNotificationBadge(true);
     }
     getInvites();
-  }, [onCreation]);
+  }, []);
 
+
+  useEffect(() => {
+    console.log("user maj", user);
+    if (!user)
+        return 
+    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
+        setShowNotificationBadge(true);
+  }, [user]);
 
   function onPlayClicked() {
     // console.log('start clicked', socket?.id);
@@ -39,17 +46,17 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <div style={notificationBadgeStyle}>
             <span style={notificationCountStyle}>1</span>
           </div>)}
-        { isLeaderboardVisible && <Leaderboard searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard> }
+        { isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard> }
         { !inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                     flex_alignItems={'stretch'}>
           <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
             <Background flex_justifyContent={'flex-start'}>
-              <ContactPanel viewport={viewport}></ContactPanel>
+              <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
             </Background>
           </SidePanel>
           <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-            <Navbar></Navbar>
-            <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}>Leader Board..</SearchBar>
+            <Navbar meUser={user}></Navbar>
+            <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)} isVisible={isLeaderboardVisible} >Leader Board..</SearchBar>
             <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
                          onClick={onPlayClicked}></RoundButton>
             <div style={{ height: '60px' }} />

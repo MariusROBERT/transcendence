@@ -53,15 +53,19 @@ export function Login({duration_ms = 900, viewport}: Props) {
   async function OnRegister() {
     if (formData.username !== '' && formData.password !== '') {
       if (formData.password === formData.confirmPassword) {
-        const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }));
-        if (registerResponse?.ok) {
-          return OnConnect();
+        if (!formData.username.endsWith('_42')) {
+          const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }));
+          if (registerResponse?.ok) {
+            return OnConnect();
+          } else {
+            setErrorMessage('this username is already used');
+            console.error('register failure. Error:', registerResponse?.status,);
+          }
         } else {
-          setErrorMessage('this username is already used');
-          console.error('register failure. Error:', registerResponse?.status,);
+          setErrorMessage(`username can't be ended with _42`);
         }
       } else {
         setErrorMessage('passwords are not corresponding');

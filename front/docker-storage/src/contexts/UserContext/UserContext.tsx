@@ -1,20 +1,25 @@
 import { Fetch } from '../../utils'
-import { useState, createContext, useEffect, useContext, ReactNode } from 'react';
+import { useState, createContext, useEffect, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from "js-cookie";
+import { IUserComplete } from '../../utils/interfaces';
 
 type UserContextType = {
   id: number;
   isOnline: boolean;
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
+  user?: IUserComplete,
+  setUser: Dispatch<SetStateAction<IUserComplete | undefined>>,
 }
 
 const UserContext = createContext<UserContextType>({
   id: 0,
   isOnline: false,
   socket: undefined,
-  fetchContext: async () => {}
+  fetchContext: async () => {},
+  user: undefined,
+  setUser: () => {},
 });
 
 export function useUserContext() {
@@ -30,14 +35,17 @@ export function UserContextProvider({ children }: Props){
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
+  const [user, setUser] = useState<IUserComplete>();
 
   async function fetchContext() : Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
 
+    console.log("user reauest", user);
     if (!user) {
       setIsOnline(false);
     }
     else {
+      setUser(user);
       setUsername(user.username)
       setId(user.id);
       setIsOnline(true);
@@ -45,6 +53,10 @@ export function UserContextProvider({ children }: Props){
         await initSocket();
     }
   }
+
+  // useEffect(() => {
+	// 	console.log("user has been updated in context", user);
+	// }, [user, setUser]);
 
   useEffect(() => {
     socket?.on('connect_error', (err) => {
@@ -84,7 +96,7 @@ export function UserContextProvider({ children }: Props){
 
   return (
     <>
-      <UserContext.Provider value={{id, isOnline, socket, fetchContext}}>
+      <UserContext.Provider value={{id, isOnline, socket, fetchContext, user, setUser}}>
         {children}
       </UserContext.Provider>
     </>
