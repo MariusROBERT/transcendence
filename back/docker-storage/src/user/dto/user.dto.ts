@@ -34,6 +34,22 @@ export class UpdateUserDto {
   winrate: number;
 }
 
+export class UserChanDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+}
+
+export class UserAddChanDto {
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @IsString()
+  @IsOptional()
+  password: string;
+}
+
 export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()

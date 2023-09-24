@@ -161,4 +161,12 @@ export class UserController {
   async Delog(@User() user: UserEntity) {
     return await this.userService.logout(user);
   }
+
+  @Get('/:id')
+  async GetUserById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserEntity> {
+    // ==> renvoi toutes les infos channels
+    return await this.userService.getUserById(id);
+  }
 }

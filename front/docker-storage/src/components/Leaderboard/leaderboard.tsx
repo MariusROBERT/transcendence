@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
 import { AuthGuard } from '..';
@@ -69,7 +68,7 @@ export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
             {/* <p onClick={() => handleOpenProfil(user)}> ===> go to own profil ?? */}
             <p>coucou cest moi : {user.username}</p>
             {/* </p> */}
-            <img style={imgStyle} src={user?.urlImg} />
+            <img style={imgStyle} src={user?.urlImg} alt={'user\'s profile picture'}/>
             <p>winrate : {user.winrate}</p>
           </>
         ) : (
@@ -78,7 +77,7 @@ export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
               Nom d'utilisateur : {user.username}
             </p>
             {user.is_friend ? <p>Is a friend</p> : <></>}
-            <img style={imgStyle} src={user?.urlImg} />
+            <img style={imgStyle} src={user?.urlImg} alt={'user\'s profile picture'}/>
             <p>Status : {user.user_status}</p>
             <p>winrate : {user.winrate}</p>
           </>
@@ -98,7 +97,7 @@ export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className="container">{userElements}</div>
+      <div className='container'>{userElements}</div>
       {profilVisible && (
         <AuthGuard isAuthenticated>
           <Profil user={selectedUser} onClose={closeProfil} />

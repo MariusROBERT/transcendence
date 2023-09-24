@@ -33,7 +33,6 @@ export class UserService {
   async updateProfile(
     profil: UpdateUserDto,
     user: UserEntity,
-    // file // TODO: pour stocker img
   ): Promise<UserEntity> {
     const id: number = user.id;
     const errors = await validate(profil);
@@ -42,21 +41,9 @@ export class UserService {
     }
     console.log('modifications apportées: ', profil);
 
-    // NEW_IMAGE
-    // if (profil.urlImg != '')
-    // {
-    //     console.log("IMAGE ALLLRIGHT");
-
-    //     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    //         console.log("IMAGE ALLLRIGHT2222");
-    //         throw new Error('Ce type de fichier n\'est pas autorisé.');
-    //     }
-    // }
-
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...profil, // modif seulement les differences
-      urlImg: '',
     });
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
@@ -96,7 +83,7 @@ export class UserService {
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
     PublicProfile.username = profile.username;
-    PublicProfile.urlImg = ''; //profile.urlImg.;
+    PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
@@ -314,6 +301,22 @@ export class UserService {
     }
     user.urlImg = 'http://localhost:3001/' + file.path;
     await this.UserRepository.save(user);
+    return user;
+  }
+
+  async getUserById(id: number): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<UserEntity> {
+    const user = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (!user) throw new NotFoundException(`No User found for username ${username}`);
     return user;
   }
 }

@@ -10,6 +10,12 @@ import { UserEntity } from '../../database/entities/user.entity';
 
 // CHANNEL :
 
+export class ChannelNameDto {
+  @IsNotEmpty()
+  @IsString()
+  channel_name: string;
+}
+
 export class CreateChannelDto {
   @IsNotEmpty()
   @IsString()
@@ -24,9 +30,13 @@ export class CreateChannelDto {
   chan_status: ChanStateEnum;
 
   @IsNotEmpty()
-  owner: UserEntity;
+  @IsOptional()
+  @IsNumber()
+  owner_id: number;
+  //owner: UserEntity;
 
   @IsNotEmpty()
+  @IsOptional() //  TODO: RM later
   admin: UserEntity[];
 
   @IsNotEmpty()
