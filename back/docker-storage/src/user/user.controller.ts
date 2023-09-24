@@ -22,13 +22,14 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
   // --------- PROFILE --------- :
   // -- PRIVATE -- :
@@ -37,7 +38,6 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
-    console.log('usr: ', user);
     return user;
   }
 
@@ -65,7 +65,7 @@ export class UserController {
         fileIsRequired: true,
       }),
     )
-    file?: Express.Multer.File,
+      file?: Express.Multer.File,
   ): Promise<UserEntity> {
     return await this.userService.updatePicture(user, file);
   }
@@ -168,5 +168,13 @@ export class UserController {
   ): Promise<UserEntity> {
     // ==> renvoi toutes les infos channels
     return await this.userService.getUserById(id);
+  }
+
+  // Sockets ----------------------------------------------------------------------------------------------------//
+
+  @Get('/from_socket_id')
+  @UseGuards(JwtAuthGuard)
+  async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
+    return this.userService.getUserFromSocketId(socketId);
   }
 }

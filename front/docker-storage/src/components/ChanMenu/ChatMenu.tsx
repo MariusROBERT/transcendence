@@ -13,7 +13,7 @@ export function ChatMenu() {
   async function OnJoinChannel() {
     if (inputValue == '')
       return;
-    console.log('You are joining ' + inputValue);
+    // console.log("You are joining " + inputValue);
     setInputValue('');
     //request create channel
     //check if chan exist
@@ -21,7 +21,7 @@ export function ChatMenu() {
     const path = 'channel/name/' + inputValue;
     const res = await unsecureFetch(path, 'GET');
     //const res = await unsecureFetch('channel', 'GET', JSON.stringify({channel_name: "a"}));
-    if (res.ok) {
+    if (res?.ok) {
       console.log('found');
     } else {
       console.log('not found... Creating channel');

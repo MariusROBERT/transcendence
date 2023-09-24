@@ -35,18 +35,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     this.clients.push(client);
 
-    console.log(
-      `Server co id:${client.id} | clients: ${this.clients.length}\n`,
-    );
+    // console.log(
+    //   `Server co id:${client.id} | clients: ${this.clients.length}\n`,
+    // );
     this.server.emit('connect_ok');
   }
 
   async handleDisconnect(client: Socket) {
     const id = this.clients.indexOf(client);
     this.clients.splice(id);
-    console.log(
-      `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
-    );
+    // console.log(
+    //   `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
+    // );
     //console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
@@ -83,16 +83,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       console.log(error);
     }
-    console.log(chanE);
-    console.log("=======here=====");
-    const token = client.handshake.query.token.toString();
+    // console.log(chanE);
+    // console.log("=======here=====");
+    // console.log(client.handshake);
+
+    const token = String(client.handshake.query.token);
     const payload = this.jwtService.verify(
       token,
       {secret: process.env.JWT_SECRET}
     );
     userE = await this.userService.getUserByUsername(payload.username);
-    console.log(payload);
-    console.log(userE);
+    // console.log(payload);
+    // console.log(userE);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     this.server.emit('message', this.messages[this.messages.length - 1]);

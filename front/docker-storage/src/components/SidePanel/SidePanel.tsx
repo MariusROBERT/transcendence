@@ -1,5 +1,5 @@
-import { delay, Viewport } from '../../utils';
 import React, { ReactNode, useState } from 'react';
+import { delay, Viewport } from '../../utils';
 import { RoundButton } from '..';
 
 interface Props {
@@ -10,13 +10,14 @@ interface Props {
   duration_ms?: number;
 }
 
-export function SidePanel({
-                            children,
-                            viewport,
-                            width,
-                            isLeftPanel,
-                            duration_ms = 1000,
-                          }: Props) {
+export function SidePanel(
+  {
+    children,
+    viewport,
+    width,
+    isLeftPanel,
+    duration_ms = 1000,
+  }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);

@@ -1,4 +1,3 @@
-import '../../App.css';
 import { color } from '../../utils';
 import { ReactNode } from 'react';
 

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { color, Viewport } from '../../utils';
 import { Background, RoundButton } from '..';
 import { ChatMessage } from '../ChatMessage/ChatMessage';
-import { socket } from '../../socket';
 import { ChatMenu, current_chan } from '../ChanMenu/ChatMenu';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   viewport: Viewport;
@@ -12,6 +12,7 @@ interface Props {
 
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
+  const { socket } = useUserContext();
 
   // this should be in the back
   let [msg, setMessage] = useState<{ msg: string; owner: boolean }[]>([]);
@@ -19,7 +20,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const getMsg = (message: any) => {
     var owner = false;
 
-    if (message.sock_id == socket.id) owner = true;
+    if (message.sock_id === socket?.id) owner = true;
     setMessage([...msg, { msg: message.msg, owner: owner }]);
     setInputValue('');
   };

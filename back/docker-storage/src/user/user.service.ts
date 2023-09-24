@@ -1,14 +1,9 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -25,7 +20,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -39,7 +35,7 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    console.log('modifications apportées: ', profil);
+    //console.log('modifications apportées: ', profil);
 
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
@@ -59,11 +55,10 @@ export class UserService {
     const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    const hashedPwd = await bcrypt.hash(
+    updatePwdDto.password = await bcrypt.hash(
       updatePwdDto.password,
       userForSalt.salt,
     );
-    updatePwdDto.password = hashedPwd;
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...updatePwdDto, // modif seulement les differences
@@ -273,20 +268,21 @@ export class UserService {
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    const isAdmin = channel.admins.some(
+    return channel.admins.some(
       (adminUser) => adminUser.id === user.id,
     );
-    return isAdmin;
   }
 
   // logout
   async logout(user: UserEntity) {
     // pas testé
-    user.user_status = UserStateEnum.OFF;
     const lastMsg = await this.getLastMsg(user);
     user.last_msg_date = lastMsg.createdAt;
 
-    this.UserRepository.save(user);
+    user.user_status = UserStateEnum.OFF;
+    user.socketId = '';
+
+    await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
   }
 
@@ -302,6 +298,31 @@ export class UserService {
     user.urlImg = 'http://localhost:3001/' + file.path;
     await this.UserRepository.save(user);
     return user;
+  }
+
+  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
+    return await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+  }
+
+  async setUserSocketId(id: number, socketId: string) {
+    const user = await this.UserRepository.findOne({ where: { id: id } });
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
+    user.socketId = socketId;
+    user.user_status = UserStateEnum.ON;
+
+    return await this.UserRepository.save(user);
+  }
+
+  async getSocketIdFromUser(id: number) {
+    const user = await this.UserRepository.findOne({ where: { id: id } });
+    if (!user) {
+      console.error('user not found in setUserSocketId');
+      return;
+    }
+    return user.socketId;
   }
 
   async getUserById(id: number): Promise<UserEntity> {

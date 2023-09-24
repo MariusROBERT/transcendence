@@ -56,25 +56,25 @@ export class UserEntity {
   @JoinTable()
   public channels?: ChannelEntity[];
 
-  @ManyToMany((type) => ChannelEntity, (channel) => channel.admins)
+  @ManyToMany(() => ChannelEntity, (channel) => channel.admins)
   @JoinTable()
   public admin: ChannelEntity[];
 
-  @OneToMany((type) => ChannelEntity, (channel) => channel.owner)
+  @OneToMany(() => ChannelEntity, (channel) => channel.owner)
   @JoinTable()
   public own: ChannelEntity[];
 
-  @ManyToMany((type) => ChannelEntity, (channel) => channel.baned)
+  @ManyToMany(() => ChannelEntity, (channel) => channel.baned)
   @JoinTable()
   public baned: ChannelEntity[];
 
-  @OneToMany((type) => MutedEntity, (muted) => muted.user)
+  @OneToMany(() => MutedEntity, (muted) => muted.user)
   @JoinTable()
   public muted: MutedEntity[];
 
   // MESSAGE :
 
-  @OneToMany((type) => MessageEntity, (message) => message.sender)
+  @OneToMany(() => MessageEntity, (message) => message.sender)
   @JoinTable()
   public messages: MessageEntity[];
 
@@ -97,6 +97,9 @@ export class UserEntity {
 
   // GAME :
 
+  @Column({default: ''})
+  socketId: string;
+
   @Column({ default: 0 })
   winrate: number;
 
@@ -105,4 +108,7 @@ export class UserEntity {
 
   @OneToMany(() => GameEntity, (game) => game.player2)
   gamesAsPlayer2: GameEntity[];
+
+  @Column({ default: 0 })
+  elo: number;
 }

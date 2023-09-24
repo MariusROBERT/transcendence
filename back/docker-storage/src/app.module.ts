@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessagesModule } from './messages/messages.module';
+import { GameModule } from './game/game.module';
+
 
 @Module({
   imports: [
@@ -19,9 +21,11 @@ import { MessagesModule } from './messages/messages.module';
     ChannelModule,
     MessagesModule,
     ChannelModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService], // on mettra les gateway ici
   exports: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

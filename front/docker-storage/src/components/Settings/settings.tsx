@@ -6,18 +6,21 @@ import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 
 interface Props {
-  onClose: () => void;
   isVisible: boolean;
 }
 
-export function Settings({ onClose, isVisible }: Props) {
+const Settings: React.FC<Props> = ({ isVisible }) => {
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    navigate('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordType, setPasswordType] = useState('password'); // Type initial : password
-  const [userInfosSettings, setUserInfosSettings] =
-    useState<UserInfosForSetting>();
+  const [passwordType, setPasswordType] = useState('password');
+  const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
     img: '',
     password: '',
@@ -48,13 +51,15 @@ export function Settings({ onClose, isVisible }: Props) {
   };
 
   useEffect(() => {
-    console.log('useEffect 1 Settings');
     const getUserInfos = async () => {
-      console.log('useEffect 2 Settings');
       const user = (await Fetch('user', 'GET'))?.json;
-      console.log('useEffect 3 Settings');
-      if (user)
+      if (user) {
         setUserInfosSettings(user);
+      } else {
+        // si je delete le cookie du jwt
+        navigate('/login');
+        alert('Vous avez été déconnecté');
+      }
     };
     getUserInfos();
   }, [isVisible]);
@@ -87,7 +92,6 @@ export function Settings({ onClose, isVisible }: Props) {
         const user = (await Fetch('user/update_password', 'PATCH',
           JSON.stringify({ password: modifData.password })))?.json;
         if (user) {
-          console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
         }
         lockPwd();
@@ -96,9 +100,8 @@ export function Settings({ onClose, isVisible }: Props) {
     }
     if (
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.img === userInfosSettings.urlImg
+      modifData.img === userInfosSettings?.urlImg
     ) {
-      console.log('\n\n=====verif OK');
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -137,7 +140,6 @@ export function Settings({ onClose, isVisible }: Props) {
           is2fa_active: modifData.is2fa_active,
         })))?.json;
       if (user) {
-        console.log('2fa changed : ', user.is2fa_active);
         setUserInfosSettings(user);
       }
     }
@@ -151,8 +153,6 @@ export function Settings({ onClose, isVisible }: Props) {
         <p>{userInfosSettings?.username}</p>
         <div>
           <div style={modifContainer}>
-            {' '}
-            {/* IMG ==> ok */}
             <img style={{
               ...imgStyle,
               borderColor: modifData.img === '' ? 'green' : 'orange',
@@ -189,8 +189,6 @@ export function Settings({ onClose, isVisible }: Props) {
           <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
         <div style={modifContainer}>
-          {' '}
-          {/* PWD ==> ok */}
           <input
             type={passwordType}
             onChange={(e) =>
@@ -226,8 +224,6 @@ export function Settings({ onClose, isVisible }: Props) {
           </button>
         </div>
         <div style={modifContainer}>
-          {' '}
-          {/* 2FA ==> ok */}
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>
@@ -235,17 +231,15 @@ export function Settings({ onClose, isVisible }: Props) {
             }
             checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
           />
-          {/*recup l'etat de base du 2fa*/}
         </div>
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
         <button type='submit'>Enregistrer</button>
-        <button onClick={onClose}>Fermer</button>
       </form>
     </div>
   );
-}
+};
 
 const imgStyle: React.CSSProperties = {
   width: '100px',
@@ -267,9 +261,6 @@ const settingsStyle: React.CSSProperties = {
 
 const modifContainer: React.CSSProperties = {
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  flexDirection: 'row',
 };
 
 export default Settings;

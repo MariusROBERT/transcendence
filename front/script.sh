@@ -8,6 +8,4 @@ fi
 
 npm install
 echo "npm install done !"
-#npm update
-#echo "npm update done !"
 npm run start

@@ -14,6 +14,6 @@ export class MessageEntity extends TimeStampEntities {
   @ManyToOne(() => UserEntity, (user) => user.messages)
   sender!: UserEntity;
 
-  @ManyToOne((type) => ChannelEntity, (channel) => channel.messages)
+  @ManyToOne(() => ChannelEntity, (channel) => channel.messages)
   channel!: ChannelEntity;
 }

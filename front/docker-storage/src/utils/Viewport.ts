@@ -21,8 +21,11 @@ export function useEffectViewport(
     }
     window.addEventListener('resize', updateDimension);
 
-    return (() => {
-      window.removeEventListener('resize', updateDimension);
-    })
-  }, [viewport])
+
+        return(() => {
+            window.removeEventListener('resize', updateDimension);
+        })
+    }, [viewport, SIZE, setViewport])
 }
+
+
