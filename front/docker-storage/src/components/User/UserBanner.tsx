@@ -11,6 +11,9 @@ interface Props{
     setProfilVisible?: any
 }
 
+// si usr1 block usr2: usr2 peut demander usr1 en amis mais usr1 ne recevra jamais
+// mais que a un moment
+
 const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Props) => {
     let askYouInFriend = false;
     if (meUser && meUser.invites?.includes(otherUser?.id as number))

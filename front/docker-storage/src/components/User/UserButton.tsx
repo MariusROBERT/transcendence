@@ -18,6 +18,7 @@ interface Props {
 export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBlocked }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
+	const [handledAskRemove, setHandleAskRemove] = useState<boolean>(false);
 	const { setUser } = useUserContext();
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 
@@ -39,15 +40,21 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const handleRequestsFriend = async (bool: boolean) => {
 		if (!meUser)
 			return
+			console.log(handledAskRemove);
 		// check if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
 		if (meUser && meUser.blocked?.includes(otherUser.id as number)) 
 			return ;
 		const res = await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
-		let friendscopy = [...meUser.friends, otherUser.id];
-		let usercpy = [...meUser.invited, otherUser.id];
-		setUser({ ...meUser, invited: usercpy, friends: friendscopy });
+		if (bool == true)
+		{
+			let friendscopy = [...meUser.friends, otherUser.id];
+			let usercpy = [...meUser.invited, otherUser.id];
+			setUser({ ...meUser, invited: usercpy, friends: friendscopy });
+		}
+		setHandleAskRemove(true);
 	}
 	// todo metre a jour profil et ses btns
+	// todo enlever la notif en haut a droite
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);
@@ -69,7 +76,7 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 							<button onClick={() => blockAUser(otherUser.id)}>block</button>
 						</div>
 					)}
-					{!isBlocked && !otherUser.is_friend && askYouInFriend && !isFriend &&
+					{!isBlocked && !otherUser.is_friend && askYouInFriend && !handledAskRemove &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => handleRequestsFriend(true)}></RoundButton>
 							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => handleRequestsFriend(false)}></RoundButton>

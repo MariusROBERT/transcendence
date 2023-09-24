@@ -303,16 +303,10 @@ export class UserService {
         user.blocked = [...user.blocked, userToBlock.id];
         await this.UserRepository.save(user);
       } else {
-        console.log("OUAI CA AV");
-        
+        throw new ConflictException(`user ${id} already in blocked`);
       }
-      console.log(user.blocked);
-      
     } catch (e) {
-      console.log("Error in vlovkuser SERVICE");
-      
       console.log(e);
-      
     }
   }
 
