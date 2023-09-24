@@ -36,9 +36,18 @@ export function ChatMenu() {
             current_id = -1;
         }
         current_chan = inputValue;
+        const path2 = "channel/msg/" + current_id;
+        const res2 = await Fetch(path2, 'GET');
+        var len = res2?.json.length;
+        var msgs = [];
+        for (var i = 0; i < len; i++)
+        {
+          const mess = res2?.json[i].content;
+          msgs.push({ msg: mess, owner: true })
+        }
         let event = new CustomEvent('enter_chan', {
             detail: {
-                value: current_id,
+                value: msgs,
             },
         })
         dispatchEvent(event);

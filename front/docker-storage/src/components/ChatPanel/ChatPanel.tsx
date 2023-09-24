@@ -36,17 +36,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     window.addEventListener('enter_chan', async (event: any) => {
-      // TODO: check why there are multiples events
-      const path2 = "channel/msg/" + event.detail.value;
-      const res2 = await Fetch(path2, 'GET');
-      var len = res2?.json.length;
-      var msgs = [];
-      for (var i = 0; i < len; i++)
-      {
-        const mess = res2?.json[i].content;
-        msgs.push({ msg: mess, owner: true })
-      }
-      setMessage(msgs);
+      setMessage(event.detail.value);
     }, false);
   })
 
