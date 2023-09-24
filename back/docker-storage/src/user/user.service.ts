@@ -3,17 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import {
-  GetUserIdFromSocketIdDto,
-  PublicProfileDto,
-  SetSocketIdDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-} from './dto/user.dto';
+import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class UserService {
@@ -24,7 +20,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -32,8 +29,7 @@ export class UserService {
   async updateProfile(
     profil: UpdateUserDto,
     user: UserEntity,
-    // file // TODO: pour stocker img
-  ): Promise<UserEntity> {
+  ) {
     const id: number = user.id;
     const errors = await validate(profil);
     if (errors.length > 0) {
@@ -59,6 +55,13 @@ export class UserService {
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+    if (profil.is2fa_active) {
+      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfil);
+      return {
+        ...await this.UserRepository.save(newProfil),
+        qrCode: await toDataURL(otpauthUrl),
+      };
+    }
     return await this.UserRepository.save(newProfil);
   }
 
@@ -70,11 +73,10 @@ export class UserService {
     const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    const hashedPwd = await bcrypt.hash(
+    updatePwdDto.password = await bcrypt.hash(
       updatePwdDto.password,
       userForSalt.salt,
     );
-    updatePwdDto.password = hashedPwd;
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...updatePwdDto, // modif seulement les differences
@@ -203,8 +205,7 @@ export class UserService {
 
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
-    if (!user) return false;
-    return true;
+    return !!user;
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -284,10 +285,9 @@ export class UserService {
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    const isAdmin = channel.admins.some(
+    return channel.admins.some(
       (adminUser) => adminUser.id === user.id,
     );
-    return isAdmin;
   }
 
   // logout
@@ -304,12 +304,11 @@ export class UserService {
   }
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    const user = await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
-    return user;
+    return await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
   }
 
   async setUserSocketId(id: number, socketId: string) {
-    const user = await this.UserRepository.findOne({ where: { id: id }});
+    const user = await this.UserRepository.findOne({ where: { id: id } });
     if (!user) {
       console.error('user not found in setUserSocketId');
       return;
@@ -321,7 +320,7 @@ export class UserService {
   }
 
   async getSocketIdFromUser(id: number) {
-    const user = await this.UserRepository.findOne({ where: { id: id }});
+    const user = await this.UserRepository.findOne({ where: { id: id } });
     if (!user) {
       console.error('user not found in setUserSocketId');
       return;
@@ -343,5 +342,13 @@ export class UserService {
     });
     if (!user) throw new NotFoundException(`No User found for username ${username}`);
     return user;
+  }
+
+  async generateTwoFactorSecret(user: UserEntity) {
+    const secret = authenticator.generateSecret();
+    const otpauthUrl = authenticator.keyuri(user.username, 'Transcendence', secret);
+    user.secret2fa = secret;
+    await this.UserRepository.save(user);
+    return { secret, otpauthUrl };
   }
 }

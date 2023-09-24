@@ -2,14 +2,11 @@ import Cookies from 'js-cookie';
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import {
-  Modifications,
-  UserInfosForSetting,
-} from '../../utils/interfaces';
-import { Fetch } from '../../utils/SecureFetch';
+import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
 
-interface Props{
-  isVisible:boolean
+interface Props {
+  isVisible: boolean;
 }
 
 const Settings: React.FC<Props> = ({ isVisible }) => {
@@ -30,6 +27,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     confirmpwd: '',
     is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
   });
+  const [qrCode2fa, setQrCode2fa] = useState<string>('');
 
   const unlockPwd = () => {
     setIsDisabled(false);
@@ -111,13 +109,15 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
 
     const user = (await Fetch('user', 'PATCH',
       JSON.stringify({
-          is2fa_active: modifData.is2fa_active,
-          urlImg: modifData.urlImg,
-        })))?.json;
+        is2fa_active: modifData.is2fa_active,
+        urlImg: modifData.urlImg,
+      })))?.json;
     if (user) {
       //console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
       setUserInfosSettings(user);
     }
+    if (user?.is2fa_active)
+      setQrCode2fa(user.qrCode);
     lockPwd();
     setErrorMessage('');
   };
@@ -127,9 +127,9 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
         <div style={modifContainer}>
-          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
+          <img style={imgStyle} src={userInfosSettings?.urlImg} alt='' />
           <input
-            type="file"
+            type='file'
             onChange={(e) =>
               setModifData({
                 ...modifData,
@@ -148,7 +148,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               })
             }
             disabled={isDisabled}
-            placeholder="password"
+            placeholder='password'
           />
           {showConfirmPassword && (
             <div style={modifContainer}>
@@ -160,16 +160,16 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
                     confirmpwd: e.target.value,
                   })
                 }
-                placeholder="Confirm Password"
+                placeholder='Confirm Password'
               />
             </div>
           )}
           {showConfirmPassword && (
-            <button type="button" onClick={togglePasswordVisibility}>
+            <button type='button' onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type="button" onClick={toggleLock}>
+          <button type='button' onClick={toggleLock}>
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
@@ -185,8 +185,30 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
-        <button type="submit">Enregistrer</button>
+        <button type='submit'>Enregistrer</button>
       </form>
+      {qrCode2fa &&
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 999,
+          backgroundColor: 'rgba(70,70,70,0.5)',
+          height: '100vh',
+          width: '100vw',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', alignContent: 'space-evenly', flexDirection: 'column' }}>
+            <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
+              Scan this QrCode in your favorite 2fa application
+            </p>
+            <img src={qrCode2fa} alt='qrCode2fa' />
+            <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }}></button>
+            <label htmlFor={'2faDone'}>
+              <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
+            </label>
+          </div>
+        </div>
+      }
     </div>
   );
 };

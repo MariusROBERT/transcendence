@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -12,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { ftLoginDto } from './dtos/ft-login.dto';
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +16,8 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -54,6 +52,26 @@ export class AuthService {
       .getOne();
     if (!user) {
       throw new NotFoundException(`username not found`);
+    }
+
+    console.log('2fa active : ' + user.is2fa_active);
+    if (user.is2fa_active) {
+      console.log('2fa active');
+      if (creditentials.twoFactorCode) {
+        console.log('2fa code : ' + creditentials.twoFactorCode);
+        if (!authenticator.verify(
+          {
+            token: creditentials.twoFactorCode,
+            secret: user.secret2fa,
+          })) {
+          throw new UnauthorizedException(`Wrong 2fa code`);
+        } else {
+          console.log('2fa code OK');
+        }
+      } else {
+        console.log('no 2fa code');
+        throw new UnauthorizedException(`Missing 2fa code`);
+      }
     }
 
     const hashedPwd = await bcrypt.hash(password, user.salt);
