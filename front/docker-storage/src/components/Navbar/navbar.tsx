@@ -24,7 +24,7 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
         Authorization: `Bearer ${jwtToken}`,
       },
     })
-    .then((res) => {
+    .then(() => {
         navigate('/login');
     });
   }

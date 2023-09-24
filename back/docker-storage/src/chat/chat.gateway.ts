@@ -8,7 +8,6 @@ import {
 import { Socket, Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
-import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -75,8 +74,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, user, channel } = body;
-    var chanE;
-    var userE;
+    let chanE;
+    let userE;
 
     //  Todo: Move to middleware
     try {

@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import { sendFriendInvite } from '../../utils/user_functions';
-import { ProfilProps, UserInfos } from '../../utils/interfaces';
+import { ProfilProps } from '../../utils/interfaces';
 import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
@@ -11,54 +11,50 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
   const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken)
-  {
+  if (!jwtToken) {
     navigate('/login');
     alert('Vous avez été déconnecté');
   }
   const [sendButton, setSendButton] = useState(false);
 
   useEffect(() => {
-    console.log("update user in profile", meUser);
-      if (meUser && meUser.invited.includes(otherUser?.id as number)) {
-        setSendButton(true);
+    console.log('update user in profile', meUser);
+    if (meUser && meUser.invited.includes(otherUser?.id as number)) {
+      setSendButton(true);
     }
   }, [otherUser?.id, meUser]);
 
   const onClick = () => {
     if (!otherUser || !meUser)
-      return
+      return;
     let usercpy = [...meUser.invited, otherUser.id];
-    setUser({...meUser, invited: usercpy});
-    sendFriendInvite(otherUser.id, jwtToken)
-  }
+    setUser({ ...meUser, invited: usercpy });
+    sendFriendInvite(otherUser.id, jwtToken);
+  };
 
-  if (otherUser?.id === meUser?.id)
-  {
+  if (otherUser?.id === meUser?.id) {
     return (
       <div style={profilContainer}>
         <div style={profilContent}>
-            <>
-              <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
-              <p>ID : {meUser?.id}</p>
-              <img style={imgStyle} src={meUser?.urlImg}></img>
-              {meUser?.user_status ? 
-                <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
-              :
-                <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
-              }
-              <p>LAST MATCHS</p>
-              <p>--------------</p>
-              <p>--------------</p>
-              <p>LAST MATCHS</p>
-              <p>Winrate : {meUser?.winrate}</p>
-              <button onClick={onClose}>Fermer</button>
-            </>
+          <>
+            <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
+            <p>ID : {meUser?.id}</p>
+            <img style={imgStyle} src={meUser?.urlImg} alt={'user\'s profile picture'} />
+            <img style={meUser?.user_status ? statusStyle : imgStyle}
+                 src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
+                 alt={meUser?.user_status ? 'connected' : 'disconnected'} />
+            <p>LAST MATCHS</p>
+            <p>--------------</p>
+            <p>--------------</p>
+            <p>LAST MATCHS</p>
+            <p>Winrate : {meUser?.winrate}</p>
+            <button onClick={onClose}>Fermer</button>
+          </>
         </div>
       </div>
     );
   }
-	
+
   return (
     <div style={profilContainer}>
       <div style={profilContent}>
@@ -67,11 +63,9 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
             <img style={imgStyle} src={otherUser.urlImg}></img>
-            {otherUser.user_status ? 
-              <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
-            :
-              <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
-            }
+            <img style={otherUser?.user_status ? statusStyle : imgStyle}
+                 src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
+                 alt={meUser?.user_status ? 'connected' : 'disconnected'} />
             <p>LAST MATCHS</p>
             <p>--------------</p>
             <p>--------------</p>
@@ -80,8 +74,8 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
             <button onClick={onClose}>Fermer</button>
             {!otherUser.is_friend ? (
               <>
-                {sendButton ? ( 
-                 <button disabled>Sent !</button>
+                {sendButton ? (
+                  <button disabled>Sent !</button>
                 ) : (
                   <button onClick={onClick}>Add as friend</button>
                 )}
@@ -135,7 +129,7 @@ const imgStyle = {
 const statusStyle = {
   width: '10px',
   height: '10px',
-}
+};
 
 
 export default Profil;

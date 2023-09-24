@@ -8,6 +8,8 @@ import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 
@@ -36,17 +38,6 @@ export class UserService {
       throw new BadRequestException(errors);
     }
     //console.log('modifications apportées: ', profil);
-
-    // NEW_IMAGE
-    // if (profil.urlImg != '')
-    // {
-    //     console.log("IMAGE ALLLRIGHT");
-
-    //     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    //         console.log("IMAGE ALLLRIGHT2222");
-    //         throw new Error('Ce type de fichier n\'est pas autorisé.');
-    //     }
-    // }
 
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
@@ -206,6 +197,7 @@ export class UserService {
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
+
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -301,6 +293,20 @@ export class UserService {
 
     await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
+  }
+
+  async updatePicture(user: UserEntity, file: Express.Multer.File) {
+    if (
+      user.urlImg != '' &&
+      !user.urlImg.startsWith('https://cdn.intra.42.fr')
+    ) {
+      fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
+        if (err) console.error('remove old: ', err);
+      });
+    }
+    user.urlImg = 'http://localhost:3001/' + file.path;
+    await this.UserRepository.save(user);
+    return user;
   }
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {

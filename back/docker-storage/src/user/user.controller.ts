@@ -1,14 +1,18 @@
 import {
   Body,
   Controller,
+  FileTypeValidator,
   Get,
   HttpException,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
@@ -18,7 +22,8 @@ import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
-import { Request } from 'express';
+import { Express, Request } from 'express';
+import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
 
 @Controller('user')
 export class UserController {
@@ -32,7 +37,6 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
-    //console.log('usr: ', user);
     return user;
   }
 
@@ -43,7 +47,26 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
   ) {
-    return await this.userService.updateProfile(updateUserDto, user); //, file);
+    return await this.userService.updateProfile(updateUserDto, user);
+  }
+
+  @Post('update_picture')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(userPictureFileInterception)
+  async UpdatePicture(
+    @User() user: UserEntity,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5MB
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+        fileIsRequired: true,
+      }),
+    )
+      file?: Express.Multer.File,
+  ): Promise<UserEntity> {
+    return await this.userService.updatePicture(user, file);
   }
 
   @Patch('update_password')

@@ -1,30 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseArrayPipe,
-  ParseIntPipe,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import {
-  ChannelDto,
-  CreateChannelDto,
-  UpdateChannelDto,
-} from './dto/channel.dto';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserAddChanDto, UserChanDto } from 'src/user/dto/user.dto';
-import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
-import { ChannelEntity } from '../database/entities/channel.entity';
-import { MessageEntity } from '../database/entities/channel.entity';
+import { ChannelEntity, MessageEntity } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
   @Get('/:id')
   async GetChannelById(
@@ -85,9 +70,7 @@ export class ChannelController {
     @Body() user: UserAddChanDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const chan = await this.channelService.addUserInChannel(user, id);
-    //console.log(chan.users);
-    return chan;
+    return await this.channelService.addUserInChannel(user, id);
   }
 
   @Patch('add_admin/:id') // id_chan
@@ -96,9 +79,7 @@ export class ChannelController {
     @User() user: UserChanDto,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.channelService.addAdminInChannel(null, id);
-    //console.log(chan.users);
-    return chan;
+    return await this.channelService.addAdminInChannel(null, id);
   }
 
   @Patch('kick/:id') // id_chan

@@ -1,5 +1,5 @@
-import {color} from '../../utils';
-import {Background, RoundButton} from "..";
+import { color } from '../../utils';
+import { Background, RoundButton } from '..';
 
 interface Props {
   children: string;
@@ -16,28 +16,28 @@ export function ChatMessage({ children, isOwnMessage, user_icon }: Props) {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: isOwnMessage ? "row" : "row-reverse",
+        display: 'flex',
+        flexDirection: isOwnMessage ? 'row' : 'row-reverse',
       }}
     >
       <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
       <div
         style={{
-          flex: "auto",
-          width: "100%",
-          display: "flex",
-          borderRadius: 10 + "px",
-          overflow: "hidden",
-          border: "solid " + color.black + " " + 2 + "px",
+          flex: 'auto',
+          width: '100%',
+          display: 'flex',
+          borderRadius: 10 + 'px',
+          overflow: 'hidden',
+          border: 'solid ' + color.black + ' ' + 2 + 'px',
         }}
       >
         <Background
           bg_color={color.white}
-          flex_direction={"row"}
-          flex_alignItems={"stretch"}
-          flex_justifyContent={isOwnMessage ? "flex-start" : "flex-end"}
+          flex_direction={'row'}
+          flex_alignItems={'stretch'}
+          flex_justifyContent={isOwnMessage ? 'flex-start' : 'flex-end'}
         >
-          <p style={{ margin: "10px", color: color.black, textShadow: "none" }}>
+          <p style={{ margin: '10px', color: color.black, textShadow: 'none' }}>
             {children}
           </p>
         </Background>
