@@ -11,15 +11,17 @@ export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body:
     },
     body: body
   })
-
-  if (response.ok) {
-    const rep_json = await response.json();
+  try {
+    if (response.ok) {
+      const rep_json = await response.json();
     return {response: response, json:rep_json};
+    } else {
+      return undefined
+    }
+  } catch (e) {
+    console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+    window.location.href = '/login';
   }
-
-  console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-
-  window.location.href = '/login';
 }
 
 export async function unsecureFetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined): Promise<undefined | Response> {

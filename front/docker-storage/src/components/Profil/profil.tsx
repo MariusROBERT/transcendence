@@ -42,10 +42,10 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
               <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
               <p>ID : {meUser?.id}</p>
               <img style={imgStyle} src={meUser?.urlImg}></img>
-              {meUser?.user_status ? 
-                <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
+              {meUser?.user_status == 'on' ?
+                <img style={statusStyle} src={require('../../assets/imgs/icon_green_connect.png')} />
               :
-                <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
+                <img style={imgStyle} src={require('../../assets/imgs/icon_red_disconnect.png')} />
               }
               <p>LAST MATCHS</p>
               <p>--------------</p>

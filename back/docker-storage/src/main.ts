@@ -4,11 +4,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // =================================================================================
   // Configuration des en-têtes CORS
@@ -39,6 +41,8 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+
 
   await app.listen(parseInt(process.env.BACK_PORT));
 }

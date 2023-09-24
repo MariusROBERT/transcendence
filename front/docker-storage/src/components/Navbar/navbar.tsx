@@ -16,17 +16,23 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
 // todo : mettre le Fetch
-  const logout = () => {
-    fetch('http://localhost:3001/api/auth/logout', {
-      method: 'GET',
+  const logout = async () => {
+    const res =  await fetch('http://localhost:3001/api/user/logout', {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwtToken}`,
       },
     })
-    .then((res) => {
-        navigate('/login');
-    });
+    if (res.ok)
+    {
+      Cookies.remove('jwtToken');
+      navigate('/login');
+      
+    } else {
+      console.log(res.status);
+
+    }
   }
 
   return (

@@ -34,7 +34,6 @@ export class AuthService {
     user.invited = [];
     user.invites = [];
     try {
-      //console.log(user.salt);
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
       throw new ConflictException(`username or password already used`);

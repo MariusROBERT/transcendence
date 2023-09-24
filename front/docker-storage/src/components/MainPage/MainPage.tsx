@@ -23,7 +23,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
     const getInvites = async () => {
       await fetchContext();
     }
-    getInvites();
+    getInvites(); // => mettre cette merde dans fetchContext
   }, []);
 
 

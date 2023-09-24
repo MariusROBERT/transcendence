@@ -149,7 +149,7 @@ export class UserService {
   async handleAsk(
     user: UserEntity, // usr1
     id: number, // usr2
-    bool: number,
+    bool: boolean,
   ) {
     const userInvites = await this.UserRepository.findOne({
       where: { id },
@@ -181,7 +181,7 @@ export class UserService {
     }
     user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
     userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
-    if (bool == 1) {
+    if (bool == true) {
       // si il a été accepter, on ajoute dans la liste friends des deux cotés
       if (!user.friends) user.friends = [];
       user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
@@ -190,6 +190,7 @@ export class UserService {
     }
     this.UserRepository.save(user);
     this.UserRepository.save(userInvites);
+    return user
   }
 
   // CHANNEL & MESSAGE :
@@ -294,13 +295,12 @@ export class UserService {
   async logout(user: UserEntity) {
     // pas testé
     const lastMsg = await this.getLastMsg(user);
-    user.last_msg_date = lastMsg.createdAt;
-
+    if (lastMsg)
+      user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
     user.socketId = '';
-
+    
     await this.UserRepository.save(user);
-    return { message: 'Deconnexion reussie' };
   }
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
@@ -315,7 +315,7 @@ export class UserService {
       return;
     }
     user.socketId = socketId;
-    user.user_status = UserStateEnum.ON;
+    // user.user_status = UserStateEnum.ON; // todo : virer ca
 
     return await this.UserRepository.save(user);
   }
