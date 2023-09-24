@@ -1,7 +1,5 @@
-import Cookies from 'js-cookie';
-import React, { useEffect, useState } from 'react';
-import { UserInfos, UserButtonsProps } from '../../utils/interfaces';
-import { Fetch, unsecureFetch } from '../../utils';
+import React from 'react';
+import { UserButtonsProps } from '../../utils/interfaces';
 
 // TODO : quand on ask a friend dans Profil -> le button du profil dans leaderboard ne se met pas a jour... impossible de faire fonctionner cette merde
 

@@ -1,5 +1,5 @@
-import { color } from '../../utils'
-import { ReactNode } from "react";
+import { color } from '../../utils';
+import { ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;

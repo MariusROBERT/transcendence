@@ -23,7 +23,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isAnim, setIsAnim] = useState(false);
   const [isConnected, setIsConneted] = useState<boolean>(false);
-  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
+  // const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
@@ -202,7 +202,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
             <p>or sign in with Intra42</p>
             <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
               //console.log('intra 42 clicked');
-              setIsFTConnection(true);
+              // setIsFTConnection(true);
               window.location.replace('http://localhost:3001/api/auth/login/42');
               // console.log("end co 42");
             }}></Button>

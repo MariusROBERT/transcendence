@@ -1,4 +1,4 @@
-export const styles = require("../App.css");
+export const styles = require('../App.css');
 
 export const color = {
   clear: '#00000000',
@@ -8,4 +8,4 @@ export const color = {
   white: '#F3F3F3',
 };
 
-export const backgroundImage = require('../assets/imgs/login_background.png')
+export const backgroundImage = require('../assets/imgs/login_background.png');

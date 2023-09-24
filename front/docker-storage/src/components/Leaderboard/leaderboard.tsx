@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
 import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
-import { IUser, IUserComplete, LeaderboardProps, UserInfos } from '../../utils/interfaces';
+import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { handleOpenProfil } from '../../utils/user_functions';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [userInfos, setUserInfos] = useState<IUserComplete>();
+  // const [userInfos, setUserInfos] = useState<IUserComplete>();
 
   const closeProfil = () => {
     // close profil card
@@ -51,14 +51,14 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
       getAllProfil();
       const user = (await Fetch('user', 'GET'))?.json;
       if (!user) return;
-      setUserInfos(user);
+      // setUserInfos(user);
     };
     getUserInfos(); // appel de la fonction si le jwt est good
   }, [isVisible]);
 
   useEffect(() => {
-		console.log("meUser in Leaderboard", meUser);
-	}, [meUser]);
+    console.log('meUser in Leaderboard', meUser);
+  }, [meUser]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
@@ -73,16 +73,19 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
         <p>RANK : {count++}</p> {/* TO CHANGE */}
         {user.id === meUser?.id ? (
           <>
-            <Flex zIndex={'10'} flex_direction="row">
-                <RoundButton icon={user.urlImg} icon_size={50} onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
-                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest moi: {user.username}</p>
+            <Flex zIndex={'10'} flex_direction='row'>
+              <RoundButton icon={user.urlImg} icon_size={50}
+                           onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
+              <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest
+                moi: {user.username}</p>
             </Flex>
           </>
         ) : (
-          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser} setProfilVisible={setProfilVisible} />
+          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
+                      setProfilVisible={setProfilVisible} />
         )}
         <>
-            <p>SCORE %</p>
+          <p>SCORE %</p>
         </>
       </div>
     ));
@@ -92,7 +95,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 
   useEffect(() => {
     displayAllProfil();
-    setUserInfos(meUser)
+    // setUserInfos(meUser);
   }, [searchTerm, allUsers, jwtToken, meUser]);
 
   return (
@@ -100,10 +103,10 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className="container">{userElements}</div>
+      <div className='container'>{userElements}</div>
       {profilVisible && (
         <AuthGuard isAuthenticated>
-          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil}/>
+          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
         </AuthGuard>
       )}
     </div>
@@ -118,10 +121,10 @@ const container: CSSProperties = {
   height: '90vh',
   display: 'flex',
   justifyContent: 'center',
-  zIndex: '999'
+  zIndex: '999',
 };
 
-const imgStyle = {
+/*const imgStyle = {
   width: '100px',
   height: '100px',
   border: '1px solid red',
@@ -130,7 +133,7 @@ const imgStyle = {
 const statusStyle = {
   width: '10px',
   height: '10px',
-}
+};*/
 
 const userElementStyle = {
   width: '1000px',

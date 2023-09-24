@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import Background from "./components/Background/Background";
-import { color, backgroundImage, Viewport, useEffectViewport } from "./utils";
-import { AuthGuard, Login, MainPage } from "./components";
-// import { socket } from './socket';
+import Background from './components/Background/Background';
+import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
+import { AuthGuard, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 
@@ -20,18 +19,23 @@ function App() {
   return (
     <Contexts>
       <div className={'cursor_perso'}
-        style={{ height: viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE * 2) + 'px', width: '100%', color: color.white, overflow: 'hidden' }}>
+           style={{
+             height: viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE * 2) + 'px',
+             width: '100%',
+             color: color.white,
+             overflow: 'hidden',
+           }}>
         <Background image={backgroundImage} fixed={true}>
           <Routes>
             <Route
-              path="/"
+              path='/'
               element={
                 <AuthGuard isAuthenticated>
                   <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
                 </AuthGuard>
               }
             />
-            <Route path="/login" element={<Login
+            <Route path='/login' element={<Login
               viewport={viewport}
             ></Login>} />
           </Routes>

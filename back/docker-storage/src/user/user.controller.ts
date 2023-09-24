@@ -1,14 +1,18 @@
 import {
   Body,
   Controller,
+  FileTypeValidator,
   Get,
   HttpException,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   ParseIntPipe,
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,18 +22,14 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import {
-  GetUserIdFromSocketIdDto,
-  PublicProfileDto, SetSocketIdDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-} from './dto/user.dto';
-import { Request } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import { Express, Request } from 'express';
+import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
   // --------- PROFILE --------- :
   // -- PRIVATE -- :
@@ -38,20 +38,36 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
-    //console.log('usr: ', user);
     return user;
   }
 
   // update_profile
   @Patch()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('urlImg'))
   async UpdateProfile(
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
-    // @UploadedFile() file
   ): Promise<UserEntity> {
-    return await this.userService.updateProfile(updateUserDto, user); //, file);
+    return await this.userService.updateProfile(updateUserDto, user);
+  }
+
+  @Post('update_picture')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(userPictureFileInterception)
+  async UpdatePicture(
+    @User() user: UserEntity,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5MB
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+        fileIsRequired: true,
+      }),
+    )
+      file?: Express.Multer.File,
+  ): Promise<UserEntity> {
+    return await this.userService.updatePicture(user, file);
   }
 
   @Patch('update_password')
