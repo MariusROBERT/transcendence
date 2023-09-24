@@ -40,26 +40,22 @@ export const sendFriendInvite = (id: number | undefined, jwtToken: string | unde
 
 export async function blockAUser(id: number) {
     const jwtToken = Cookies.get('jwtToken');
-    // todo : secur if possible
-    const res = await fetch(`http://localhost:3001/api/user/block/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwtToken}`,
-    },
-  })
-  if (res.ok)
-  {
-    console.log("IT IS OK");
-    
-  } else {
-    console.log("ERROR NTMM");
+    try {
 
-  }
-}
-
-export function openProfile(){
-    // console.log('open profile from ' + user_name);
+        const res = await fetch(`http://localhost:3001/api/user/block/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${jwtToken}`,
+            },
+        })
+        if (res.ok)
+            console.log(`user ${id} blocked`);
+        else
+            console.log(`user ${id} already blocked`);
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 export const handleOpenProfil = (setSelectedUser:any, setProfilVisible:any, user: IUser) => {

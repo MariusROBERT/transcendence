@@ -15,6 +15,10 @@ interface Props {
 	isBlocked: boolean;
 }
 
+// si usr1 block usr2: usr2 peut demander usr1 en amis mais usr1 ne recevra jamais
+// mais que a un moment il l ajoute en amis : il faut enlever usr2 de la liste de blocked du usr1
+// donc a l ajout dun ami y faut chaber si il est dans blocked: si oui: remove
+
 export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBlocked }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
@@ -32,6 +36,16 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const askFriend = () => {
 		if (!meUser)
 			return
+			console.log("user asked");
+	
+		if (meUser && meUser.blocked?.includes(otherUser.id as number))
+		{
+			const indexToRemove = meUser.blocked.indexOf(otherUser.id);
+			if (indexToRemove !== -1) {
+				console.log("user remove from blocked list");
+				meUser.blocked.splice(indexToRemove, 1);
+			}
+		}
 		sendFriendInvite(otherUser.id, jwtToken);
 		let usercpy = [...meUser.invited, otherUser.id];
 		setUser({ ...meUser, invited: usercpy });
@@ -40,13 +54,11 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const handleRequestsFriend = async (bool: boolean) => {
 		if (!meUser)
 			return
-			console.log(handledAskRemove);
-		// check if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
+		// if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
 		if (meUser && meUser.blocked?.includes(otherUser.id as number)) 
 			return ;
-		const res = await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
-		if (bool == true)
-		{
+		await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
+		if (bool == true) {
 			let friendscopy = [...meUser.friends, otherUser.id];
 			let usercpy = [...meUser.invited, otherUser.id];
 			setUser({ ...meUser, invited: usercpy, friends: friendscopy });

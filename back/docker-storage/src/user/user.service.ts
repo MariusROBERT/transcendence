@@ -298,6 +298,9 @@ export class UserService {
         .where('user.id = :userId', { userId })
         .andWhere(':id = ANY(user.blocked)', { id });
       const result = await isHeInBlocked.getOne();
+      console.log("user.blocked : ", user.blocked);
+      console.log("idToBlock : ", id);
+      
       if (!result)
       {
         user.blocked = [...user.blocked, userToBlock.id];
@@ -306,7 +309,7 @@ export class UserService {
         throw new ConflictException(`user ${id} already in blocked`);
       }
     } catch (e) {
-      console.log(e);
+      throw new ConflictException(`user ${id} already in blocked`);
     }
   }
 
