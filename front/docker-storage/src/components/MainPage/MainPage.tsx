@@ -12,14 +12,14 @@ interface Props {
 export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
-  const [userID, setUserID] = useState<number>();
+  // const [userID, setUserID] = useState<number>();
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
   const jwtToken = Cookies.get('jwtToken');
 
   useEffect(() => {
     const getInvites = async () => {
       const user = (await Fetch('user', 'GET'))?.json;
-      setUserID(user.id);
+      // setUserID(user.id);
       if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
         setShowNotificationBadge(true);
     };
