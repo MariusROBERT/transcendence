@@ -3,7 +3,7 @@ import { RoundButton, Flex } from "..";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { IUser, IUserComplete } from "../../utils/interfaces";
-import { blockAUser, lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
+import { lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
 import { useUserContext } from "../../contexts";
 
 // TODO : Add Object User insteed of user_name and user icon
@@ -15,10 +15,6 @@ interface Props {
 	isBlocked: boolean;
 }
 
-// si usr1 block usr2: usr2 peut demander usr1 en amis mais usr1 ne recevra jamais
-// mais que a un moment il l ajoute en amis : il faut enlever usr2 de la liste de blocked du usr1
-// donc a l ajout dun ami y faut chaber si il est dans blocked: si oui: remove
-
 export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBlocked }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
@@ -26,21 +22,52 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const { setUser } = useUserContext();
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 
+	// todo : un usr est sense etre enleve de la list blocked dun autre user lorsque celui ci l'ask in friend mais ca marche pas
 
-// to test : usr1 block usr2 (usr2 is add in usr1.blocked). then usr1 ask in friend usr2 (usr2 has to be removed from usr1.blocked and usr2 received the request)
+	// to test : usr1 block usr2 (usr2 is add in usr1.blocked). then usr1 ask in friend usr2 (usr2 has to be removed from usr1.blocked and usr2 received the request)
+
 	useEffect(() => {
 		console.log("user has been updated in UserButton", meUser);
 		if (meUser && meUser.invited.includes(otherUser.id as number)) {
 			setSendButton(true);
 		}
+		console.log("CALLED");
+
 	}, [meUser]);
+
+	const blockAUser = async (id: number) => {
+		const jwtToken = Cookies.get('jwtToken');
+		try {
+
+			const res = await fetch(`http://localhost:3001/api/user/block/${id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${jwtToken}`,
+				},
+			})
+			if (res.ok) {
+
+				console.log(`user ${id} blocked`);
+				if (!meUser)
+					return
+				let blockedCpy = [...meUser.blocked, otherUser.id];
+				setUser({ ...meUser, blocked: blockedCpy });
+			}
+			else
+				console.log(`user ${id} already blocked`);
+		} catch (e) {
+			console.log(e);
+		}
+	}
 
 	const askFriend = () => {
 		if (!meUser)
 			return
-	
-		if (meUser && meUser.blocked?.includes(otherUser.id as number))
-		{
+		console.log("ASK FREIND");
+
+		if (meUser && meUser.blocked?.includes(otherUser.id as number)) {
+			console.log("OTHER INCLUDES IN BLOCKED");
 			const indexToRemove = meUser.blocked.indexOf(otherUser.id);
 			if (indexToRemove !== -1) {
 				console.log("user remove from blocked list");
@@ -56,8 +83,8 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 		if (!meUser)
 			return
 		// if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
-		if (meUser && meUser.blocked?.includes(otherUser.id as number)) 
-			return ;
+		if (meUser && meUser.blocked?.includes(otherUser.id as number))
+			return;
 		await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
 		if (bool == true) {
 			let friendscopy = [...meUser.friends, otherUser.id];
@@ -77,8 +104,8 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '410px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
+					{!isBlocked && isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
+					{!isBlocked && isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}></RoundButton>}
 					{!otherUser.is_friend && !sendButton &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}></RoundButton>
@@ -112,7 +139,7 @@ const askStyle = {
 	border: '1px solid red',
 };
 
-const optionStyle:React.CSSProperties = {
+const optionStyle: React.CSSProperties = {
 	position: 'relative',
 	top: '-50px',
 	left: '20%',
