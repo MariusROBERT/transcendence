@@ -79,6 +79,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     var userE;
 
     //  Todo: Move to middleware
+    if (channel < 0) {
+      console.log("error chan < 0");
+      return ;
+    }
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {

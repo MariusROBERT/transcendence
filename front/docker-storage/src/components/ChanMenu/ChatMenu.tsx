@@ -9,22 +9,21 @@ export var current_chan = "";
 
 export function ChatMenu() {
     const [inputValue, setInputValue] = useState<string>("");
+    var current_id = -1;
 
     async function OnJoinChannel()
     {
         if (inputValue == "")
             return ;
-        // console.log("You are joining " + inputValue);
         setInputValue("");
-        //request create channel
-        //check if chan exist
-
         const path = "channel/name/" + inputValue;
         const res = await unsecureFetch(path, 'GET');
-        //const res = await unsecureFetch('channel', 'GET', JSON.stringify({channel_name: "a"}));
         if (res?.ok)
         {
             console.log("found");
+            var data = await res.json();
+            console.log(data.id);
+            current_id = data.id;
         }
         else
         {
@@ -34,15 +33,15 @@ export function ChatMenu() {
                 channel_name: inputValue, 
                 priv_msg: false,
             }));
+            current_id = -1;
         }
         current_chan = inputValue;
-
-        const path2 = "channel/msg/1";
-        const res2 = await unsecureFetch(path2, 'GET');
-        if (res2?.ok)
-            console.log(res2);
-        else
-            console.log("error ^^");
+        let event = new CustomEvent('enter_chan', {
+            detail: {
+                value: current_id,
+            },
+        })
+        dispatchEvent(event);
     }
 
     return (

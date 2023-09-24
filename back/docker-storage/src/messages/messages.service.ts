@@ -17,7 +17,7 @@ export class MessagesService {
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
     // console.log("got here");
-    const id = chan.id;
+    const id = chan?.id;
     const newMsg = this.messageRepository.create({content:message, sender: user, channel: chan});
     // console.log("CHAN:" + chan.channel_name);
     return await this.messageRepository.save(newMsg);
@@ -31,7 +31,7 @@ export class MessagesService {
     var msgs= await this.messageRepository.createQueryBuilder("message")
                         .leftJoinAndSelect("message.channel", "channel")
                         .where('channel.id = :channelId', { channelId })
-                        .execute();
+                        .getMany();
     return msgs;
   }
 }

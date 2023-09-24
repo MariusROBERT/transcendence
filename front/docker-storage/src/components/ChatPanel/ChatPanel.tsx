@@ -4,7 +4,8 @@ import { color } from "../../utils/Global";
 import { Background, RoundButton } from "..";
 import { ChatMessage } from "../ChatMessage/ChatMessage";
 import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
-import {useUserContext} from "../../contexts";
+import {Contexts, useUserContext} from "../../contexts";
+import { Fetch, unsecureFetch } from '../../utils';
 
 interface Props {
   viewport: Viewport;
@@ -13,7 +14,7 @@ interface Props {
 
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>("");
-  const { socket } = useUserContext();
+  const { socket, id } = useUserContext();
 
   // this should be in the back
   let [msg, setMessage] = useState<{ msg: string; owner: boolean }[]>([]);
@@ -33,8 +34,24 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   }, [getMsg]);
 
+  useEffect(() => {
+    window.addEventListener('enter_chan', async (event: any) => {
+      // TODO: check why there are multiples events
+      const path2 = "channel/msg/" + event.detail.value;
+      const res2 = await Fetch(path2, 'GET');
+      var len = res2?.json.length;
+      var msgs = [];
+      for (var i = 0; i < len; i++)
+      {
+        const mess = res2?.json[i].content;
+        msgs.push({ msg: mess, owner: true })
+      }
+      setMessage(msgs);
+    }, false);
+  })
+
   function onEnterPressed() {
-    if (inputValue == "") return;
+    if (inputValue.length <= 0) return;
     console.log("send message to " + current_chan);
     socket?.emit("message", { message: inputValue, user: 0, channel: current_chan });
   }
