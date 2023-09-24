@@ -12,7 +12,7 @@ interface Props {
 export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
-  // const [userID, setUserID] = useState<number>();
+  const [userID, setUserID] = useState<number>();
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
   const jwtToken = Cookies.get('jwtToken');
 
