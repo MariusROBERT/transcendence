@@ -9,7 +9,7 @@ import { useUserContext } from "../../contexts";
 // TODO : Add Object User insteed of user_name and user icon
 interface Props {
 	otherUser: IUser;
-	meUser: IUserComplete| undefined;
+	meUser: IUserComplete | undefined;
 	askYouInFriend: boolean;
 	isFriend: boolean
 }
@@ -18,6 +18,7 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
 	const { setUser } = useUserContext();
+	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 
 	useEffect(() => {
 		console.log("user has been updated in UserButton", meUser);
@@ -28,21 +29,27 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 
 	const askFriend = () => {
 		if (!meUser)
-			return 
+			return
 		sendFriendInvite(otherUser.id, jwtToken);
 		let usercpy = [...meUser.invited, otherUser.id];
-		setUser({...meUser, invited: usercpy});
+		setUser({ ...meUser, invited: usercpy });
 	}
 
 	const handleRequestsFriend = async (bool: boolean) => {
 		if (!meUser)
-			return 
+			return
 		const res = await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
 		let friendscopy = [...meUser.friends, otherUser.id];
 		let usercpy = [...meUser.invited, otherUser.id];
-		setUser({...meUser, invited: usercpy, friends:friendscopy});
+		setUser({ ...meUser, invited: usercpy, friends: friendscopy });
 	}
-// todo metre a jour profil et ses btns
+	// todo metre a jour profil et ses btns
+
+	const openOptions = () => {
+		setIsOptionOpen(!isOpen);
+		openOptionDropdown()
+	}
+
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '410px', height: '25px' }}>
@@ -50,10 +57,17 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}></RoundButton>}
-					{!otherUser.is_friend && !sendButton && 
+					{!otherUser.is_friend && !sendButton &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}></RoundButton>
 					}
-					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptionDropdown()}></RoundButton>
+					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}></RoundButton>
+					{isOpen && (
+						<div
+							style={optionStyle}
+						>
+							<button>block</button>
+						</div>
+					)}
 					{!otherUser.is_friend && askYouInFriend && !isFriend &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => handleRequestsFriend(true)}></RoundButton>
@@ -67,12 +81,24 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 }
 
 const askStyle = {
-		display: 'flex',
-		borderRadius: '100px',
-		alignItem: 'center',
-		justifyContent: 'center',
-		background: 'white',
-    width: '80px',
-    height: '40px',
-    border: '1px solid red',
-  };
+	display: 'flex',
+	borderRadius: '100px',
+	alignItem: 'center',
+	justifyContent: 'center',
+	background: 'white',
+	width: '80px',
+	height: '40px',
+	border: '1px solid red',
+};
+
+const optionStyle:React.CSSProperties = {
+	position: 'relative',
+	top: '-50px',
+	left: '20%',
+	transform: 'translateX(-50%)',
+	backgroundColor: 'white',
+	color: 'black',
+	borderRadius: '6px',
+	padding: '10px',
+	boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
+}

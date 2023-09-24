@@ -64,8 +64,9 @@ export class AuthService {
         username,
         role: user.role,
       };
-      const jwt = this.jwtService.sign(payload);
       user.user_status = UserStateEnum.ON;
+      await this.userRepository.save(user);
+      const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     } else {
       throw new NotFoundException(`wrong password`);

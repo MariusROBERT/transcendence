@@ -315,7 +315,7 @@ export class UserService {
       return;
     }
     user.socketId = socketId;
-    // user.user_status = UserStateEnum.ON; // todo : virer ca
+    user.user_status = UserStateEnum.ON; // todo : virer ca
 
     return await this.UserRepository.save(user);
   }
