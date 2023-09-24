@@ -24,6 +24,7 @@ import { UserService } from './user.service';
 import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {

@@ -112,7 +112,6 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     if (modifData.img !== '') {
       const formData = new FormData();
       formData.append('file', modifData.img);
-      formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
 
       const user = await fetch('http://localhost:3001/api/user/update_picture', {
         method: 'POST',
@@ -143,9 +142,9 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       }
+      if (user?.is2fa_active)
+        setQrCode2fa(user.qrCode);
     }
-    if (user?.is2fa_active)
-      setQrCode2fa(user.qrCode);
     lockPwd();
     setErrorMessage('');
   };
