@@ -60,6 +60,7 @@ export interface IUserComplete {
   invited: number[];
   invites: number[];
   friends: number[];
+  blocked: number[];
 }
 
 export interface LeaderboardProps {

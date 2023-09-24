@@ -1,6 +1,6 @@
 import { RoundButton, Flex } from "..";
 import { UserButton } from "./UserButton";
-import { handleOpenProfil, openProfile } from "../../utils/user_functions";
+import { handleOpenProfil } from "../../utils/user_functions";
 import { IUser, IUserComplete } from "../../utils/interfaces";
 
 // TODO : Add Object User insteed of user_name and user icon
@@ -18,6 +18,9 @@ const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Pr
     let isFriend = false;
     if (meUser && meUser.friends?.includes(otherUser?.id as number))
       isFriend = true;
+    let isBlocked = false;
+    if (meUser && meUser.blocked?.includes(otherUser?.id as number))
+      isBlocked = true;
   return (
     <>
       <Flex zIndex={'10'} flex_direction="row">
@@ -29,7 +32,7 @@ const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Pr
         :
         <img style={statusStyle} src={require('../../assets/imgs/icon_red_disconnect.png')} />
       }
-      <UserButton isFriend={isFriend} askYouInFriend={askYouInFriend} otherUser={otherUser} meUser={meUser}></UserButton>
+      <UserButton isBlocked={isBlocked} isFriend={isFriend} askYouInFriend={askYouInFriend} otherUser={otherUser} meUser={meUser}></UserButton>
     </>
 	);
 }

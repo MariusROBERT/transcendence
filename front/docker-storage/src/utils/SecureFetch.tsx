@@ -14,8 +14,12 @@ export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body:
   try {
     if (response.ok) {
       const rep_json = await response.json();
+      console.log("REPONSE OK");
+      
     return {response: response, json:rep_json};
     } else {
+      console.log("REPONSE ERRROR");
+
       return undefined
     }
   } catch (e) {

@@ -148,6 +148,18 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
+  // --------- BLOCK --------- :
+
+  @Patch('/block/:id')
+  @UseGuards(JwtAuthGuard)
+  async BlockAUser(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity,
+  ) {
+    console.log('blockAUser CPONTROLER');
+
+    return await this.userService.blockAUser(id, user);
+  }
   // Sockets ----------------------------------------------------------------------------------------------------//
 
   @Get('/from_socket_id')

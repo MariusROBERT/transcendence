@@ -32,7 +32,6 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
     setUser({...meUser, invited: usercpy});
     sendFriendInvite(otherUser.id, jwtToken)
   }
-  console.log("USER STATUS == ", meUser?.user_status);
   
   if (otherUser?.id === meUser?.id)
   {

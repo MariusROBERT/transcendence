@@ -3,7 +3,7 @@ import { RoundButton, Flex } from "..";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { IUser, IUserComplete } from "../../utils/interfaces";
-import { lookGame, openChat, openOptionDropdown, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
+import { blockAUser, lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
 import { useUserContext } from "../../contexts";
 
 // TODO : Add Object User insteed of user_name and user icon
@@ -11,10 +11,11 @@ interface Props {
 	otherUser: IUser;
 	meUser: IUserComplete | undefined;
 	askYouInFriend: boolean;
-	isFriend: boolean
+	isFriend: boolean;
+	isBlocked: boolean;
 }
 
-export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Props) {
+export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBlocked }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
 	const { setUser } = useUserContext();
@@ -38,6 +39,9 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 	const handleRequestsFriend = async (bool: boolean) => {
 		if (!meUser)
 			return
+		// check if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
+		if (meUser && meUser.blocked?.includes(otherUser.id as number)) 
+			return ;
 		const res = await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
 		let friendscopy = [...meUser.friends, otherUser.id];
 		let usercpy = [...meUser.invited, otherUser.id];
@@ -47,7 +51,6 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);
-		openOptionDropdown()
 	}
 
 	return (
@@ -62,13 +65,11 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend }: Prop
 					}
 					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}></RoundButton>
 					{isOpen && (
-						<div
-							style={optionStyle}
-						>
-							<button>block</button>
+						<div style={optionStyle}>
+							<button onClick={() => blockAUser(otherUser.id)}>block</button>
 						</div>
 					)}
-					{!otherUser.is_friend && askYouInFriend && !isFriend &&
+					{!isBlocked && !otherUser.is_friend && askYouInFriend && !isFriend &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => handleRequestsFriend(true)}></RoundButton>
 							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => handleRequestsFriend(false)}></RoundButton>

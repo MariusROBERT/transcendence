@@ -33,6 +33,7 @@ export class AuthService {
     user.friends = [];
     user.invited = [];
     user.invites = [];
+    user.blocked = [];
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
@@ -92,6 +93,7 @@ export class AuthService {
       user2.friends = [];
       user2.invited = [];
       user2.invites = [];
+      user2.blocked = [];
       user2.urlImg = urlImg;
       try {
         await this.userRepository.save(user2); // save user in DB

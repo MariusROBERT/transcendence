@@ -1,4 +1,6 @@
+import { Fetch } from "./SecureFetch";
 import { IUser } from "./interfaces";
+import Cookies from 'js-cookie';
 
 export function openChat() {
     // console.log('open chat with ' + user_name);
@@ -36,8 +38,24 @@ export const sendFriendInvite = (id: number | undefined, jwtToken: string | unde
     // console.log('send friend invite to ' + user_name);
 };
 
-export function openOptionDropdown() {
-    console.log('open option dropdown');
+export async function blockAUser(id: number) {
+    const jwtToken = Cookies.get('jwtToken');
+    // todo : secur if possible
+    const res = await fetch(`http://localhost:3001/api/user/block/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  })
+  if (res.ok)
+  {
+    console.log("IT IS OK");
+    
+  } else {
+    console.log("ERROR NTMM");
+
+  }
 }
 
 export function openProfile(){

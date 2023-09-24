@@ -14,6 +14,7 @@ import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import { log } from 'console';
 
 @Injectable()
 export class UserService {
@@ -80,6 +81,17 @@ export class UserService {
       ...updatePwdDto, // modif seulement les differences
     });
     return await this.UserRepository.save(newProfil);
+  }
+
+  async logout(user: UserEntity) {
+    // pas testé
+    const lastMsg = await this.getLastMsg(user);
+    if (lastMsg)
+      user.last_msg_date = lastMsg.createdAt;
+    user.user_status = UserStateEnum.OFF;
+    user.socketId = '';
+    
+    await this.UserRepository.save(user);
   }
 
   // -- Public -- :
@@ -272,6 +284,38 @@ export class UserService {
       );
   }
 
+  async blockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    try {
+      const userToBlock = await this.UserRepository.findOne({ where: {id} });
+      if (!userToBlock)
+        throw new ConflictException(`user ${id} does not exist`);
+      const isHeInBlocked = this.UserRepository.createQueryBuilder('user');
+      let userId = user.id;
+      isHeInBlocked
+        .where('user.id = :userId', { userId })
+        .andWhere(':id = ANY(user.blocked)', { id });
+      const result = await isHeInBlocked.getOne();
+      if (!result)
+      {
+        user.blocked = [...user.blocked, userToBlock.id];
+        await this.UserRepository.save(user);
+      } else {
+        console.log("OUAI CA AV");
+        
+      }
+      console.log(user.blocked);
+      
+    } catch (e) {
+      console.log("Error in vlovkuser SERVICE");
+      
+      console.log(e);
+      
+    }
+  }
+
   // UTILS :
 
   isOwner(objet: any, user: UserEntity): boolean {
@@ -291,17 +335,7 @@ export class UserService {
     return isAdmin;
   }
 
-  // logout
-  async logout(user: UserEntity) {
-    // pas testé
-    const lastMsg = await this.getLastMsg(user);
-    if (lastMsg)
-      user.last_msg_date = lastMsg.createdAt;
-    user.user_status = UserStateEnum.OFF;
-    user.socketId = '';
-    
-    await this.UserRepository.save(user);
-  }
+  // SOCKETS :
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
     const user = await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
