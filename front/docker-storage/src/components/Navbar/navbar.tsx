@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Settings from '../Settings/settings';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { IUserComplete } from '../../utils/interfaces';
@@ -34,6 +34,20 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
 
     }
   }
+  
+  // delog the user if he close the navigator without click in logout button
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      logout();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
 
   return (
     <>

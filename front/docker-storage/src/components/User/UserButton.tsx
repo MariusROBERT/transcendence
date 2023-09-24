@@ -26,6 +26,8 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const { setUser } = useUserContext();
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 
+
+// to test : usr1 block usr2 (usr2 is add in usr1.blocked). then usr1 ask in friend usr2 (usr2 has to be removed from usr1.blocked and usr2 received the request)
 	useEffect(() => {
 		console.log("user has been updated in UserButton", meUser);
 		if (meUser && meUser.invited.includes(otherUser.id as number)) {
@@ -36,7 +38,6 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const askFriend = () => {
 		if (!meUser)
 			return
-			console.log("user asked");
 	
 		if (meUser && meUser.blocked?.includes(otherUser.id as number))
 		{
