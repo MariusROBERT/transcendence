@@ -30,6 +30,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
   const [pictureError, setPictureError] = useState<string>('');
   const [newImage, setNewImage] = useState<string>('');
+  const [code2fa, setCode2fa] = useState<string>('');
 
   const unlockPwd = () => {
     setIsDisabled(false);
@@ -99,10 +100,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         setErrorMessage('');
       }
     }
-    if (
-      modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.img === userInfosSettings?.urlImg
-    ) {
+    if (modifData.is2fa_active === userInfosSettings?.is2fa_active &&
+      modifData.img === userInfosSettings?.urlImg) {
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -142,8 +141,10 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       }
-      if (user?.is2fa_active)
+      if (user?.is2fa_active) {
         setQrCode2fa(user.qrCode);
+        setCode2fa(user.code2fa);
+      }
     }
     lockPwd();
     setErrorMessage('');
@@ -254,6 +255,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               Scan this QrCode in your favorite 2fa application
             </p>
             <img src={qrCode2fa} alt='qrCode2fa' />
+            <p style={{ backgroundColor: 'lightgrey', padding: '.7em', borderRadius: 5, color: 'black', fontSize:'1.75em', textShadow:'none' }}>{code2fa}</p>
             <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }}></button>
             <label htmlFor={'2faDone'}>
               <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>

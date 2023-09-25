@@ -48,9 +48,12 @@ export class UserService {
     }
     if (profil.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfil);
+      const secret = /secret=(.+?)&/.exec(otpauthUrl);
+
       return {
         ...await this.UserRepository.save(newProfil),
         qrCode: await toDataURL(otpauthUrl),
+        code2fa: secret ? secret[1]: '',
       };
     }
     return await this.UserRepository.save(newProfil);

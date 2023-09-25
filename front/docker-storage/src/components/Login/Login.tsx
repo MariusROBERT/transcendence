@@ -249,22 +249,43 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             <input id={'2fa'}
                    type='number'
                    name={'twoFactorCode'}
-                   pattern='[0-9]{6}'
                    autoComplete={'one-time-code'}
                    maxLength={6}
                    value={formData.twoFactorCode}
-                   onChange={handleChange}
-                   style={{ width: '7ch' }}
+                   onChange={(e) => {
+                     if (e.target.value.length > 6)
+                       e.target.value = e.target.value.slice(0, 6);
+                     handleChange(e);
+                   }}
+                   style={{
+                     width: '8ch',
+                     height: '2em',
+                     fontSize: '1.5em',
+                     textAlign: 'center',
+                     backgroundColor: 'darkgrey',
+                     borderRadius: 5,
+                   }}
             />
-            <button
-              id='2faValidate'
-              style={{ display: 'none' }}
-              onClick={() => OnConnect(formData.twoFactorCode)} />
-            <label htmlFor='2faValidate'>
-              <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>
-                Confirm
-              </p>
-            </label>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <button
+                id='2faCancel'
+                style={{ display: 'none' }}
+                onClick={() => setIs2fa(false)} />
+              <label htmlFor='2faCancel'>
+                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', margin: '1em', borderRadius: 5 }}>
+                  Cancel
+                </p>
+              </label>
+              <button
+                id='2faValidate'
+                style={{ display: 'none' }}
+                onClick={() => OnConnect(formData.twoFactorCode)} />
+              <label htmlFor='2faValidate'>
+                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', margin: '1em', borderRadius: 5 }}>
+                  Confirm
+                </p>
+              </label>
+            </div>
           </div>
         </div>
       }
