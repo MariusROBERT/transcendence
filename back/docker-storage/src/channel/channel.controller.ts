@@ -94,26 +94,29 @@ export class ChannelController {
     return chat;
   }
 
-  @Patch('/add_admin/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
+  @Post('/add_admin/:id')
+  //@UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
     @User() user: UserEntity,
-    @Param('id_chan', ParseIntPipe) id: number,
+    @Body() uDto: UserChanDto,
+    @Param('id', ParseIntPipe) id: number
   ) {
-    const chan = await this.channelService.addAdminInChannel(user, id);
+    const chan = await this.channelService.addAdminInChannel(uDto.id, id);
     //console.log(chan.users);
     return chan;
   }
 
   @Patch('kick/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
-    @User() user: UserChanDto,
-    @Param('id_chan', ParseIntPipe) id: number,
+    @User() user: UserEntity,
+    @Body() uDto: UserChanDto,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.channelService.KickUserFromChannel(null, id);
+    return this.channelService.KickUserFromChannel(uDto.id, id);
   }
 
+  //  TODO RECODE MUTE
   @Patch('mute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async MuteUserFromChannel(
@@ -124,7 +127,7 @@ export class ChannelController {
     return this.channelService.MuteUserFromChannel(user.id, id, time_sec);
   }
 
-  @Patch('mute/:id') // id_chan
+  @Patch('unmute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async UnMuteUserFromChannel(
     @User() user: UserChanDto,

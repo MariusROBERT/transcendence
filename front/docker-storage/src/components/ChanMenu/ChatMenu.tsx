@@ -26,8 +26,12 @@ export function ChatMenu() {
             var data = await res.json();
             console.log(data.id);
             current_id = data.id;
-            const path3 = "channel/add_user/" + data.id;
-            const res3 = await unsecureFetch(path3, 'POST', JSON.stringify({id: 1}));
+
+            //const path3 = "channel/add_user/" + data.id;
+            //const res3 = await unsecureFetch(path3, 'POST', JSON.stringify({id: 1})); 
+            
+            //const path3 = "channel/kick/" + data.id;
+            //const res3 = await unsecureFetch(path3, 'PATCH', JSON.stringify({id: 1}));
         }
         else
         {

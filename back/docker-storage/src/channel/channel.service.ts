@@ -105,34 +105,30 @@ export class ChannelService {
     const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-
     try
     {
       if (!channel.users) channel.users = [];
       channel.users = [...channel.users, user];
       await this.ChannelRepository.save(channel);
     } catch(e) {
-      console.log(e);
+      console.log("Error: " + e);
     }
     return channel;
   }
 
-  //console.log(user.username + " " + channel.channel_name);
-  //if (channel.users.includes(user))
-  //  throw new Error('The user is already in channel');
-  //if (channel.baned.includes(user)) throw new Error('The user is banned');
-  //if (user.password !== channel.password) throw new Error('Wrong password');
-
-  async addAdminInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
+  async addAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (!channel.users.includes(user))
-      throw new Error('The user is not in channel');
-    if (channel.admins.includes(user))
-      throw new Error('The user is already admin');
-    channel.admins = [...channel.admins, user];
-    await this.ChannelRepository.save(channel);
+    try
+    {
+      if (!channel.admins) channel.admins = [];
+      channel.admins = [...channel.admins, user];
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
     return channel;
   }
 
@@ -141,15 +137,15 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be kicked
-    if (channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
-    if (!channel.users.includes(user))
-      throw new Error('The user is not in channel');
-    channel.users.indexOf(user) !== -1 &&
-      channel.users.splice(channel.users.indexOf(user), 1);
-    await this.ChannelRepository.save(channel);
+      try
+      {
+        if (!channel.users) channel.users = [];
+        channel.users.indexOf(user) !== -1 &&
+          channel.users.splice(channel.users.indexOf(user), 1);
+        await this.ChannelRepository.save(channel);
+      } catch(e) {
+        console.log("Error: " + e);
+      }
     return channel;
   }
 
