@@ -116,7 +116,7 @@ export class ChannelController {
     return this.channelService.KickUserFromChannel(uDto.id, id);
   }
 
-  //  TODO RECODE MUTE
+  //  TODO RECODE MUTE DEMUTE
   @Patch('mute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async MuteUserFromChannel(
@@ -137,26 +137,21 @@ export class ChannelController {
   }
 
   @Patch('ban/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
-    @User() user: UserChanDto,
-    @Param('id_chan', ParseIntPipe) id: number,
+    @Body() uDto: UserChanDto,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.channelService.BanUserFromChannel(user.id, id);
+    return this.channelService.BanUserFromChannel(uDto.id, id);
   }
 
-  @Patch('ban/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
+  @Patch('unban/:id') // id_chan
+  //@UseGuards(JwtAuthGuard)
   async UnBanUserFromChannel(
-    @User() user: UserChanDto,
-    @Param('id_chan', ParseIntPipe) id: number,
+    @Body() uDto: UserChanDto,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.channelService.UnBanUserFromChannel(user.id, id);
+    console.log("here");
+    return this.channelService.UnBanUserFromChannel(uDto.id, id);
   }
-
-  //@Post('add_msg')
-  ////@UseGuards(JwtAuthGuard)
-  //async AddMessageToChannel(@Body() addmsgDto: AddMsgDto) {
-  //  return this.channelService.AddMessageToChannel(addmsgDto);
-  //}
 }

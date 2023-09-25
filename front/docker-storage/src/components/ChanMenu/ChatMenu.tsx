@@ -32,6 +32,9 @@ export function ChatMenu() {
             
             //const path3 = "channel/kick/" + data.id;
             //const res3 = await unsecureFetch(path3, 'PATCH', JSON.stringify({id: 1}));
+
+            const path3 = "channel/unban/" + data.id;
+            const res3 = await unsecureFetch(path3, 'PATCH', JSON.stringify({id: 1}));
         }
         else
         {

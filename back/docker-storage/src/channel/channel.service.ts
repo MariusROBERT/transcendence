@@ -200,29 +200,37 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be banned
-    if (channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user))
-      throw new Error('The user is already banned');
-    channel.users.indexOf(user) !== -1 &&
-      channel.users.splice(channel.users.indexOf(user), 1);
-    channel.baned = [...channel.baned, user];
+    try
+    {
+      if (!channel.users) channel.users = [];
+      if (!channel.baned) channel.baned = [];
+      channel.users.indexOf(user) !== -1 &&
+        channel.users.splice(channel.users.indexOf(user), 1);
+      channel.baned = [...channel.baned, user];
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
     await this.ChannelRepository.save(channel);
     return channel;
   }
 
+  //  Todo: check why isnt working
   async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user)) throw new Error('The user is in channel');
-    if (channel.baned.includes(user)) throw new Error('The user is not ban');
-    channel.baned.indexOf(user) !== -1 &&
-      channel.baned.splice(channel.baned.indexOf(user), 1);
-    channel.users = [...channel.users, user];
-    await this.ChannelRepository.save(channel);
+    try
+    {
+      if (!channel.baned) channel.baned = [];
+      channel.baned.indexOf(user) !== -1 &&
+        channel.baned.splice(channel.baned.indexOf(user), 1);
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
+    console.log("hes unbanned");
     return channel;
   }
 
