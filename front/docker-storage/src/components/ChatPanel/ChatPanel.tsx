@@ -6,6 +6,7 @@ import { ChatMessage } from "../ChatMessage/ChatMessage";
 import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
 import {Contexts, useUserContext} from "../../contexts";
 import { Fetch, unsecureFetch } from '../../utils';
+import { ChanUserList } from "../ChanUserList/ChanUserList";
 
 interface Props {
   viewport: Viewport;
@@ -67,6 +68,7 @@ export function ChatPanel({ viewport, width }: Props) {
 return (
   <Background flex_justifyContent={'space-evenly'}>
     <ChatMenu></ChatMenu>
+    <ChanUserList></ChanUserList>
       <div style={{
           height:viewport.height - 125 + 'px',
           width:width - 50 + 'px',
