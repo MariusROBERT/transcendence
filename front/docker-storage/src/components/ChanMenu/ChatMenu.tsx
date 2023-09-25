@@ -5,12 +5,14 @@ import { Fetch, unsecureFetch } from '../../utils';
     THIS FILE IS ONLY FOR TESTING AND SHOULD BE REMOVE LATER
 */
 
+//  TODO: Move this
 export var current_chan = "";
 
 export function ChatMenu() {
     const [inputValue, setInputValue] = useState<string>("");
     var current_id = -1;
 
+    //  TODO: clean here
     async function OnJoinChannel()
     {
         if (inputValue == "")
@@ -24,6 +26,8 @@ export function ChatMenu() {
             var data = await res.json();
             console.log(data.id);
             current_id = data.id;
+            const path3 = "channel/add_user/" + data.id;
+            const res3 = await unsecureFetch(path3, 'POST', JSON.stringify({id: 1}));
         }
         else
         {

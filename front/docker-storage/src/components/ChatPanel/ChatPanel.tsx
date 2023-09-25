@@ -36,6 +36,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     window.addEventListener('enter_chan', async (event: any) => {
+      //  TODO: add check for owner
       setMessage(event.detail.value);
     }, false);
   })
@@ -43,11 +44,10 @@ export function ChatPanel({ viewport, width }: Props) {
   function onEnterPressed() {
     if (inputValue.length <= 0) return;
     console.log("send message to " + current_chan);
-    socket?.emit("message", { message: inputValue, user: 0, channel: current_chan });
+    socket?.emit("message", { message: inputValue, channel: current_chan });
   }
 
   function chat() {
-    //TODO: get message from the DB and display them here.
     return (
       <>
         {msg.map((txt, idx) => (

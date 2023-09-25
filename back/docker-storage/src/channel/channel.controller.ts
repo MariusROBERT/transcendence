@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { MessageEntity } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
+import { UserEntity } from '../database/entities/channel.entity';
 
 @Controller('channel')
 export class ChannelController {
@@ -55,10 +56,11 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
-    //@User() user: UserChanDto,
+    @User() user: UserEntity
   ): Promise<ChannelEntity> {
     const chan = await this.channelService.createChannel(
       createChannelDto,
+      user
     );
     //console.log('chan: ', chan);
     //console.log('chan.admins: ', chan.admins);
@@ -79,25 +81,26 @@ export class ChannelController {
     );
   }
 
-  //@Patch('add_user/:id') // id_chan
-  @Patch('add_user/:id') // id_chan
+  @Post('/add_user/:id')
   //@UseGuards(JwtAuthGuard)
-  async AddUserInChannel(
-    @Body() user: UserAddChanDto,
+  async addUserInChannel(
+    @User() user: UserEntity,
+    @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
+    //@User() user: UserChanDto,
   ) {
-    const chan = await this.channelService.addUserInChannel(user, id);
-    //console.log(chan.users);
-    return chan;
+    const chat = this.channelService.addUserInChannel(uDto.id, id);
+    console.log(user + " " + uDto.id);
+    return chat;
   }
 
-  @Patch('add_admin/:id') // id_chan
+  @Patch('/add_admin/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
-    @User() user: UserChanDto,
+    @User() user: UserEntity,
     @Param('id_chan', ParseIntPipe) id: number,
   ) {
-    const chan = await this.channelService.addAdminInChannel(null, id);
+    const chan = await this.channelService.addAdminInChannel(user, id);
     //console.log(chan.users);
     return chan;
   }

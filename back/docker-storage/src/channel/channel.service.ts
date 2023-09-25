@@ -28,12 +28,12 @@ export class ChannelService {
   ) {}
 
   async createChannel(
-    channel: CreateChannelDto
+    channel: CreateChannelDto,
+    user: UserEntity
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
-    const user = await this.userService.getUserById(channel.owner_id);
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
@@ -98,27 +98,33 @@ export class ChannelService {
   }
 
   async addUserInChannel(
-    userdto: UserAddChanDto,
+    userid: number,
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(userdto.id);
-    //console.log(user.username + " " + channel.channel_name);
+    const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user))
-      throw new Error('The user is already in channel');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
-    if (userdto.password !== channel.password) throw new Error('Wrong password');
-    channel.users = [...channel.users, user];
-    await this.ChannelRepository.save(channel);
-    //console.log(channel.users);
+
+    try
+    {
+      if (!channel.users) channel.users = [];
+      channel.users = [...channel.users, user];
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log(e);
+    }
     return channel;
   }
 
-  async addAdminInChannel(uid: number, id: number): Promise<ChannelEntity> {
+  //console.log(user.username + " " + channel.channel_name);
+  //if (channel.users.includes(user))
+  //  throw new Error('The user is already in channel');
+  //if (channel.baned.includes(user)) throw new Error('The user is banned');
+  //if (user.password !== channel.password) throw new Error('Wrong password');
+
+  async addAdminInChannel(user: UserEntity, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
     if (!channel.users.includes(user))
