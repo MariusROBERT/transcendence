@@ -1,7 +1,4 @@
 import {Background, RoundButton} from "..";
-/*
-    This Pannel list all user of current chat
-*/
 
 interface Props {
     children: string;

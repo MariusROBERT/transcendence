@@ -1,7 +1,3 @@
-/*
-    This Pannel list all user of current chat
-*/
-
 import { ChanUser } from "../ChanUser/ChanUser";
 
 export function ChanUserList() {
