@@ -36,7 +36,7 @@ export class ChannelController {
   }
 
   @Get('/name/:id')
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async GetChannelByName(
     @Param('id') id: string,
   ) {
@@ -82,7 +82,7 @@ export class ChannelController {
   }
 
   @Post('/add_user/:id')
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async addUserInChannel(
     @User() user: UserEntity,
     @Body() uDto: UserChanDto,
@@ -95,7 +95,7 @@ export class ChannelController {
   }
 
   @Post('/add_admin/:id')
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
     @User() user: UserEntity,
     @Body() uDto: UserChanDto,
@@ -107,7 +107,7 @@ export class ChannelController {
   }
 
   @Patch('kick/:id') // id_chan
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
     @User() user: UserEntity,
     @Body() uDto: UserChanDto,
@@ -137,7 +137,7 @@ export class ChannelController {
   }
 
   @Patch('ban/:id') // id_chan
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
@@ -146,7 +146,7 @@ export class ChannelController {
   }
 
   @Patch('unban/:id') // id_chan
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async UnBanUserFromChannel(
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,

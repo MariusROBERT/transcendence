@@ -19,7 +19,7 @@ export async function Fetch(url_end: string, method: 'GET'|'PATCH'|'POST', body:
 
   console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
 
-  window.location.href = '/login';
+  //window.location.href = '/login';
 }
 
 export async function unsecureFetch(url_end: string, method: 'GET'|'PATCH'|'POST', body: any = undefined): Promise<undefined | Response> {
