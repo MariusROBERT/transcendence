@@ -31,12 +31,12 @@ export function ChatMenu() {
         else
         {
             console.log("not found... Creating channel");
-            Fetch('channel', 'POST',
+            const r = await Fetch('channel', 'POST',
             JSON.stringify({
                 channel_name: inputValue, 
                 priv_msg: false,
             }));
-            current_id = -1;
+            current_id = r?.json.id;
         }
         current_chan = inputValue;
 
