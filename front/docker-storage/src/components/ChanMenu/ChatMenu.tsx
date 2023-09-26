@@ -11,7 +11,7 @@ export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
 
   async function OnJoinChannel() {
-    if (inputValue == '')
+    if (inputValue === '')
       return;
     // console.log("You are joining " + inputValue);
     setInputValue('');

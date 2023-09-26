@@ -15,7 +15,7 @@ export function ContactPanel({ meUser, viewport }: Props) {
         <Background flex_gap={'1px 0px'} flex_alignItems={'stretch'} flex_justifyContent={'flex-start'}>
 
           <GroupItems meUser={meUser} heading={'Friends'} duration_ms={900} />
-          <GroupItems meUser={meUser} heading={'Groups'} duration_ms={900} />
+          <GroupItems meUser={meUser} heading={'Users'} duration_ms={900} />
           <GroupItems meUser={meUser} heading={'Last Chat'} duration_ms={900} />
 
           <Border borderSize={0} height={50} borderColor={color.black} borderRadius={0}>
