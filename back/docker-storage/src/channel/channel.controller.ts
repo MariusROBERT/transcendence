@@ -36,7 +36,7 @@ export class ChannelController {
   }
 
   @Get('/name/:id')
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async GetChannelByName(
     @Param('id') id: string,
   ) {
