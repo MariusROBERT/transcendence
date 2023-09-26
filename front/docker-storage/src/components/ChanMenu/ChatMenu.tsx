@@ -48,6 +48,7 @@ export function ChatMenu() {
           const mess = res2?.json[i].content;
           msgs.push({ msg: mess, owner: true })
         }
+        console.log(res2?.json);
         publish('enter_chan', {
                 detail: {
                     value: msgs,

@@ -18,6 +18,7 @@ export class MessagesService {
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
     // console.log("got here");
     const id = chan?.id;
+    console.log(user);
     const newMsg = this.messageRepository.create({content:message, sender: user, channel: chan});
     // console.log("CHAN:" + chan.channel_name);
     return await this.messageRepository.save(newMsg);
@@ -30,8 +31,15 @@ export class MessagesService {
     //})
     var msgs= await this.messageRepository.createQueryBuilder("message")
                         .leftJoinAndSelect("message.channel", "channel")
+                        .leftJoinAndSelect("message.sender", "sender")
                         .where('channel.id = :channelId', { channelId })
-                        .getMany();
+                        .select([
+                          'message.content',
+                          'message.createdAt',
+                          'sender.username',
+                          'sender.urlImg',
+                        ])
+                        .getRawMany();
     return msgs;
   }
 }
