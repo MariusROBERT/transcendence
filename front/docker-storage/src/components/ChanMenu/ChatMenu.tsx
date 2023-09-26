@@ -23,7 +23,7 @@ export function ChatMenu() {
             console.log(data.id);
             current_id = data.id;
             //  Adding user to channel if not in it
-            Fetch('channel/add_user/' + data.id , 'POST',
+            await Fetch('channel/add_user/' + data.id , 'POST',
             JSON.stringify({
                 id: -1 //current user id
             }));
