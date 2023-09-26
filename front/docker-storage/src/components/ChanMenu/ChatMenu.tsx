@@ -42,12 +42,12 @@ export function ChatMenu() {
         current_chan = inputValue;
         const res2 = await Fetch("channel/msg/" + current_id, 'GET');
         var len = res2?.json.length;
-        var msgs = [];
-        for (var i = 0; i < len; i++)
-        {
-          const mess = res2?.json[i].content;
-          msgs.push({ msg: mess, owner: true })
-        }
+        var msgs = res2?.json;
+        //for (var i = 0; i < len; i++)
+        //{
+        //  const mess = res2?.json[i].message_content;
+        //  msgs.push({ msg: mess, owner: true })
+        //}
         console.log(res2?.json);
         publish('enter_chan', {
                 detail: {

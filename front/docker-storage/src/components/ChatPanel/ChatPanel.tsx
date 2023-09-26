@@ -19,13 +19,13 @@ export function ChatPanel({ viewport, width }: Props) {
   const { socket, id } = useUserContext();
 
   // this should be in the back
-  let [msg, setMessage] = useState<{ msg: string; owner: boolean }[]>([]);
+  let [msg, setMessage] = useState<any[]>([]);
 
   const getMsg = (message: any) => {
-    var owner = false;
-
-    if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { msg: message.msg, owner: owner }]);
+    //var owner = false;
+//
+    //if (message.sock_id === socket?.id) owner = true;
+    setMessage([...msg, { message_content: message.msg, user_name: "Test" }]);
     setInputValue("");
   };
 
@@ -55,13 +55,14 @@ export function ChatPanel({ viewport, width }: Props) {
   function chat() {
     return (
       <>
-        {msg.map((txt, idx) => (
+        {msg.map((data, idx) => (
           <ChatMessage
             key={idx}
             user_icon={require("../../assets/imgs/icon_chat.png")}
-            isOwnMessage={txt.owner}
+            user_name={data.sender_username}
+            date={new Date()}
           >
-            {txt.msg}
+            {data.message_content}
           </ChatMessage>
         ))}
       </>
