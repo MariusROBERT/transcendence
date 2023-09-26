@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Fetch, unsecureFetch } from '../../utils';
+import { publish } from '../../utils/event';
 
 //  TODO: Move this
 export var current_chan = "";
@@ -39,11 +40,7 @@ export function ChatMenu() {
             current_id = r?.json.id;
         }
         current_chan = inputValue;
-
-
-        //  TODO: Clean
-        const path2 = "channel/msg/" + current_id;
-        const res2 = await Fetch(path2, 'GET');
+        const res2 = await Fetch("channel/msg/" + current_id, 'GET');
         var len = res2?.json.length;
         var msgs = [];
         for (var i = 0; i < len; i++)
@@ -51,23 +48,18 @@ export function ChatMenu() {
           const mess = res2?.json[i].content;
           msgs.push({ msg: mess, owner: true })
         }
-        let event = new CustomEvent('enter_chan', {
-            detail: {
-                value: msgs,
-            },
-        })
-        dispatchEvent(event);
-
-        const path3 = "channel/users/" + current_id;
-        const res3 = await Fetch(path3, 'GET');
+        publish('enter_chan', {
+                detail: {
+                    value: msgs,
+                }
+        });
+        const res3 = await Fetch("channel/users/" + current_id, 'GET');
         const usrs = res3?.json;
-        let event2 = new CustomEvent('enter_users', {
+        publish('enter_users', {
             detail: {
                 value: usrs,
             },
         })
-        console.log(usrs);
-        dispatchEvent(event2);
     }
 
     return (

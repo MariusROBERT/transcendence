@@ -7,6 +7,7 @@ import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
 import {Contexts, useUserContext} from "../../contexts";
 import { Fetch, unsecureFetch } from '../../utils';
 import { ChanUserList } from "../ChanUserList/ChanUserList";
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   viewport: Viewport;
@@ -36,10 +37,13 @@ export function ChatPanel({ viewport, width }: Props) {
   }, [getMsg]);
 
   useEffect(() => {
-    window.addEventListener('enter_chan', async (event: any) => {
+    subscribe('enter_chan', async (event: any) => {
       //  TODO: add check for owner
       setMessage(event.detail.value);
-    }, false);
+    });
+    return () => {
+      unsubscribe("enter_chan", null);
+    }
   })
 
   function onEnterPressed() {
