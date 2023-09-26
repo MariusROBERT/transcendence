@@ -12,6 +12,7 @@ interface Props {
 // const [userComplete, setUserComplete] = useState<IUserComplete>();
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
@@ -19,20 +20,15 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const { fetchContext, socket, id, user } = useUserContext();
 
   useEffect(() => {
-    const getInvites = async () => {
-      await fetchContext();
-    };
-    getInvites();
-  }, []);
+    fetchContext();
+  // eslint-disable-next-line
+  }, [OnLoad]);
 
 
   useEffect(() => {
-    console.log('user maj', user);
-    if (!user)
-      return;
-    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
+    if (user?.invites && Array.isArray(user?.invites) && user?.invites.length > 0)
       setShowNotificationBadge(true);
-  }, [user]);
+  }, [OnLoad, user?.invites]);
 
   function onPlayClicked() {
     // console.log('start clicked', socket?.id);
@@ -46,7 +42,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <span style={notificationCountStyle}>1</span>
         </div>)}
       {isLeaderboardVisible &&
-        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard>}
+        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
       {!inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                                flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
