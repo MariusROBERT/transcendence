@@ -54,7 +54,7 @@ export class ChannelController {
 
   //  Add get channel
   //          User Admin Ban Muted
-  @Get('/msg/:id')
+  @Get('/users/:id')
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity[]> {

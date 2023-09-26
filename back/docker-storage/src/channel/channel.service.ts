@@ -39,6 +39,8 @@ export class ChannelService {
     chan.admins.push(user);
     chan.users = [];
     chan.users.push(user);
+    //const user2 = await this.userService.getUserById(2);
+    //chan.users.push(user2);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {

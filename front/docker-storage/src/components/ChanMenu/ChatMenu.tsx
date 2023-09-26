@@ -49,6 +49,17 @@ export function ChatMenu() {
             },
         })
         dispatchEvent(event);
+
+        const path3 = "channel/users/" + current_id;
+        const res3 = await Fetch(path3, 'GET');
+        const usrs = res3?.json;
+        let event2 = new CustomEvent('enter_users', {
+            detail: {
+                value: usrs,
+            },
+        })
+        console.log(usrs);
+        dispatchEvent(event2);
     }
 
     return (
