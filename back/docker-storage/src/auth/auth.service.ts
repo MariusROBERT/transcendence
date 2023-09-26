@@ -65,7 +65,7 @@ export class AuthService {
             token: creditentials.twoFactorCode,
             secret: user.secret2fa,
           })) {
-          throw new UnauthorizedException(`Wrong 2fa code`);
+          throw new UnauthorizedException(`Invalid 2fa code`);
         } else {
           console.log('2fa code OK');
         }
@@ -112,6 +112,7 @@ export class AuthService {
       user2.invited = [];
       user2.invites = [];
       user2.urlImg = urlImg;
+      user2.id42 = userData.id42;
       try {
         await this.userRepository.save(user2); // save user in DB
       } catch (e) {
@@ -123,10 +124,59 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     // JWT
+    if (user2.is2fa_active) {
+      console.log('2fa active');
+      return '';
+    }
     const payload = {
       username,
       role: user2.role,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async ftLogin2fa(ftToken: string, code2fa: string) {
+    const id42: number = await fetch('https://api.intra.42.fr/v2/me', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + ftToken,
+      },
+    })
+      .then(res => res.json())
+      .then(json => parseInt(json.id));
+    console.log(id42);
+    if (!id42) {
+      throw new NotFoundException(`Invalid intra token`);
+    }
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id42 = :id42', { id42 })
+      .getOne();
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException(`user not found`);
+    }
+    if (user.is2fa_active) {
+      if (!authenticator.verify(
+        {
+          token: code2fa,
+          secret: user.secret2fa,
+        })) {
+        console.log('2fa code KO');
+        throw new UnauthorizedException(`Invalid 2fa code`);
+      }
+      const payload = {
+        username: user.username,
+        role: user.role,
+      }
+      console.log('2fa code OK');
+      const jwt = this.jwtService.sign(payload);
+      console.log('jwt: ', jwt);
+      return { 'access-token': jwt };
+      // return this.jwtService.sign(payload);
+    } else {
+      console.log('2fa not active');
+      throw new UnauthorizedException(`2fa not active`);
+    }
   }
 }

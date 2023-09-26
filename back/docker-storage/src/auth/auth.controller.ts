@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  Res,
-  UseFilters,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseFilters, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from '../database/entities/user.entity';
@@ -43,12 +34,27 @@ export class AuthController {
   @UseGuards(FtOAuthGuard)
   @UseFilters(FtAuthFilter)
   async auth42callback(@Request() req, @Res() res) {
+    console.log('id: ', req.user.id);
+    console.log('token: ', req.user.ftToken);
+    // const user = req.profile.user;
     const token = await this.authService.ftLogin({
       username: req.user.username,
       urlImg: req.user._json.image.link,
+      id42: req.user.id,
     } as ftLoginDto);
+
     return res.redirect(
-      'http://localhost:3000?' + new URLSearchParams({ 'access-token': token }),
+      'http://localhost:3000?' + new URLSearchParams({ 'access-token': token, 'ftToken': req.user.ftToken }),
     );
+  }
+
+  @Post('2fa/42')
+  async twoFa42(@Body() body) {
+    console.log(body);
+    const token = await this.authService.ftLogin2fa(body.ftToken, body.code2fa);
+    console.log('token: ', token);
+    console.log('yes ?');
+    return token;
+    // return this.authService.ftLogin2fa(body.ftToken, body.code2fa);
   }
 }

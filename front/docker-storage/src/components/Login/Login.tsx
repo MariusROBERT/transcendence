@@ -95,7 +95,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;
-      } else if (response?.statusText === 'Wrong 2fa code') {
+      } else if (response?.statusText === 'Invalid 2fa code') {
         setErrorMessage(response.statusText);
       }
 
@@ -107,8 +107,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         if (data.message === 'Missing 2fa code') {
           setIs2fa(true);
           return;
-        } else if (data.message === 'Wrong 2fa code') {
-          setError2fa('Wrong 2fa code');
+        } else if (data.message === 'Invalid 2fa code') {
+          setError2fa('Invalid 2fa code');
         } else {
           setErrorMessage(data.message);
           console.error('connection failure. Error:', response?.status);
