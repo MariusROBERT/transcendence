@@ -225,7 +225,7 @@ export class UserService {
     const users = this.UserRepository.createQueryBuilder('user')
                                     .innerJoin('user.channels', 'channel')
                                     .where('channel.id = :channelId', { channelId })
-                                    .select(['user.username', 'user.urlImg'])
+                                    .select(['user.id', 'user.username', 'user.urlImg'])
                                     .getMany();
     console.log("USER: " + users);
     return users;
