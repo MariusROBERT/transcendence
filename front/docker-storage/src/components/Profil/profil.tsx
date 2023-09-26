@@ -9,12 +9,13 @@ import { useUserContext } from '../../contexts';
 
 const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const navigate = useNavigate();
-  const { setUser } = useUserContext();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     navigate('/login');
     alert('Vous avez été déconnecté');
   }
+
+  const { fetchContext } = useUserContext();
   const [sendButton, setSendButton] = useState(false);
 
   useEffect(() => {
@@ -27,9 +28,8 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const onClick = () => {
     if (!otherUser || !meUser)
       return;
-    let usercpy = [...meUser.invited, otherUser.id];
-    setUser({ ...meUser, invited: usercpy });
-    sendFriendInvite(otherUser.id, jwtToken);
+    if (sendFriendInvite(otherUser.id, jwtToken))
+      fetchContext();
   };
 
   if (otherUser?.id === meUser?.id) {
@@ -39,7 +39,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
             <p>ID : {meUser?.id}</p>
-            <img style={imgStyle} src={meUser?.urlImg} alt={'user\'s profile picture'} />
+            <img style={imgStyle} src={meUser?.urlImg} alt={'user\'s profile'} />
             <img style={meUser?.user_status ? statusStyle : imgStyle}
                  src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
                  alt={meUser?.user_status ? 'connected' : 'disconnected'} />
@@ -62,7 +62,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
-            <img style={imgStyle} src={otherUser.urlImg}></img>
+            <img style={imgStyle} src={otherUser.urlImg} alt={'profile'} />
             <img style={otherUser?.user_status ? statusStyle : imgStyle}
                  src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
                  alt={meUser?.user_status ? 'connected' : 'disconnected'} />

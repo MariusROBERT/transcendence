@@ -1,5 +1,5 @@
 import { Fetch } from '../../utils'
-import { useState, createContext, useEffect, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, createContext, useEffect, useContext, ReactNode } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from "js-cookie";
 import { IUserComplete } from '../../utils/interfaces';
@@ -10,7 +10,6 @@ type UserContextType = {
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
   user?: IUserComplete,
-  setUser: Dispatch<SetStateAction<IUserComplete | undefined>>,
 }
 
 const UserContext = createContext<UserContextType>({
@@ -19,7 +18,6 @@ const UserContext = createContext<UserContextType>({
   socket: undefined,
   fetchContext: async () => {},
   user: undefined,
-  setUser: () => {},
 });
 
 export function useUserContext() {
@@ -77,7 +75,7 @@ export function UserContextProvider({ children }: Props){
       socket?.off('disconnect');
       socket?.off('connect');
     }
-  }, [socket]);
+  }, [socket, id, username]);
 
   async function initSocket(){
     if (!socket) {
@@ -96,7 +94,7 @@ export function UserContextProvider({ children }: Props){
 
   return (
     <>
-      <UserContext.Provider value={{id, isOnline, socket, fetchContext, user, setUser}}>
+      <UserContext.Provider value={{id, isOnline, socket, fetchContext, user}}>
         {children}
       </UserContext.Provider>
     </>

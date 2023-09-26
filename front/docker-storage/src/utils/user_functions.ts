@@ -1,4 +1,5 @@
 import { IUser } from "./interfaces";
+import { Fetch } from './SecureFetch';
 
 export function openChat() {
     // console.log('open chat with ' + user_name);
@@ -23,7 +24,7 @@ export const sendFriendInvite = (id: number | undefined, jwtToken: string | unde
     })
         .then((response) => {
             if (response.ok) {
-                //   setSendButton(true);
+              return true;
             } else if (response.status === 404) {
                 throw new Error(`Le user d'id ${id} n'existe pas.`);
             } else if (response.status === 409) {
@@ -33,6 +34,7 @@ export const sendFriendInvite = (id: number | undefined, jwtToken: string | unde
         .catch((error) => {
             console.log('Erreur 500:', error);
         });
+    return false;
     // console.log('send friend invite to ' + user_name);
 };
 
@@ -42,6 +44,14 @@ export function openOptionDropdown() {
 
 export function openProfile(){
     // console.log('open profile from ' + user_name);
+}
+
+export function acceptInvite(otherUser: IUser) {
+  Fetch(`user/handle_ask/${otherUser.id}/${1}`, 'PATCH');
+}
+
+export function declineInvite(otherUser: IUser) {
+  Fetch(`user/handle_ask/${otherUser.id}/${0}`, 'PATCH');
 }
 
 export const handleOpenProfil = (setSelectedUser:any, setProfilVisible:any, user: IUser) => {
