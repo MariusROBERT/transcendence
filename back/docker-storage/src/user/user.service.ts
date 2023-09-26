@@ -227,7 +227,7 @@ export class UserService {
                                     .where('channel.id = :channelId', { channelId })
                                     .select(['user.id', 'user.username', 'user.urlImg'])
                                     .getMany();
-    console.log("USER: " + users);
+    //console.log("USER: " + users);
     return users;
   }
 

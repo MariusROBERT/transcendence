@@ -50,7 +50,7 @@ export class ChannelService {
   async getChannelById(id: number): Promise<ChannelEntity> {
     var channel = await this.ChannelRepository.findOne({
       where: { id },
-      relations: ['admins'],
+      //relations: ['admins'],
     });
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
@@ -69,8 +69,8 @@ export class ChannelService {
 
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
     const channel = await this.msgService.getMsg(id)
-    console.log(channel);
-    console.log(await this.userService.getUsersInChannels(id));
+    //console.log(channel);
+    //console.log(await this.userService.getUsersInChannels(id));
     return channel;
   }
 
@@ -114,8 +114,12 @@ export class ChannelService {
       throw new Error('This channel is a private message channel');
     try
     {
-      if (!channel.users) channel.users = [];
-      channel.users = [...channel.users, user];
+      //if (!channel.users) channel.users = [];
+      //channel.users = [...channel.users, user];
+      const currentUsers = channel.users || [];
+      console.log("Curr " + channel.users + ".");
+      currentUsers.push(user);
+      channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
     } catch(e) {
       console.log("Error: " + e);
