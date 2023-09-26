@@ -91,6 +91,7 @@ export class ChannelController {
     );
   }
 
+  //todo check why old users are removed
   @Post('/add_user/:id')
   @UseGuards(JwtAuthGuard)
   async addUserInChannel(
@@ -99,8 +100,8 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
     //@User() user: UserChanDto,
   ) {
-    const chat = this.channelService.addUserInChannel(uDto.id, id);
-    console.log(user + " " + uDto.id);
+    const chat = this.channelService.addUserInChannel(user.id, id);
+    console.log("Add user " + user.username + " in channel id: ", id);
     return chat;
   }
 
