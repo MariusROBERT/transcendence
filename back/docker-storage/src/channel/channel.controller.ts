@@ -52,6 +52,16 @@ export class ChannelController {
     return await this.channelService.getChannelMessages(id);
   }
 
+  //  Add get channel
+  //          User Admin Ban Muted
+  @Get('/msg/:id')
+  async GetChannelUsers(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserEntity[]> {
+    console.log("get users ^^");
+    return await this.channelService.getChannelUsers(id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   async CreateChannel(

@@ -38,6 +38,7 @@ export class ChannelService {
     chan.admins = [];
     chan.admins.push(user);
     chan.users = [];
+    chan.users.push(user);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -69,7 +70,13 @@ export class ChannelService {
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
     const channel = await this.msgService.getMsg(id)
     console.log(channel);
+    console.log(await this.userService.getUsersInChannels(id));
     return channel;
+  }
+
+  async getChannelUsers(id: number): Promise<UserEntity[]> {
+    const users = await this.userService.getUsersInChannels(id);
+    return users;
   }
 
   async updateChannel(

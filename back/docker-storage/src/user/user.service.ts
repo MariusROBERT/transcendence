@@ -221,6 +221,16 @@ export class UserService {
     return true;
   }
 
+  async getUsersInChannels(channelId: number) {
+    const users = this.UserRepository.createQueryBuilder('user')
+                                    .innerJoin('user.channels', 'channel')
+                                    .where('channel.id = :channelId', { channelId })
+                                    .select(['user.username', 'user.urlImg'])
+                                    .getMany();
+    console.log("USER: " + users);
+    return users;
+  }
+
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
   async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
     // est ce quil a des new msg et si oui de quel cahnnel
