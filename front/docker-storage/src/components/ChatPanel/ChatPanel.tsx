@@ -17,23 +17,23 @@ export function ChatPanel({ viewport, width }: Props) {
   // this should be in the back
   let [msg, setMessage] = useState<{ msg: string; owner: boolean }[]>([]);
 
-  const getMsg = (message: any) => {
-    var owner = false;
-
-    if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { msg: message.msg, owner: owner }]);
-    setInputValue('');
-  };
-
   useEffect(() => {
+    const getMsg = (message: any) => {
+      let owner = false;
+
+      if (message.sock_id === socket?.id) owner = true;
+      setMessage([...msg, { msg: message.msg, owner: owner }]);
+      setInputValue('');
+    };
+
     socket?.on('message', getMsg);
     return () => {
       socket?.off('message', getMsg);
     };
-  }, [getMsg]);
+  }, [socket, msg]);
 
   function onEnterPressed() {
-    if (inputValue == '') return;
+    if (inputValue === '') return;
     console.log('send message to ' + current_chan);
     socket?.emit('message', { message: inputValue, user: 0, channel: current_chan });
   }
@@ -84,7 +84,7 @@ export function ChatPanel({ viewport, width }: Props) {
                  setInputValue(evt.target.value);
                }}
                onKeyDown={(e) => {
-                 if (e.keyCode != 13) return;
+                 if (e.keyCode !== 13) return;
                  onEnterPressed();
                }}
                style={{

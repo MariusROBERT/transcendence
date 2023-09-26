@@ -301,7 +301,8 @@ export class UserService {
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
       user.urlImg != '' &&
-      !user.urlImg.startsWith('https://cdn.intra.42.fr')
+      !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
+      user.urlImg !== 'http://localhost:3001/public/default.png'
     ) {
       fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
         if (err) console.error('remove old: ', err);
