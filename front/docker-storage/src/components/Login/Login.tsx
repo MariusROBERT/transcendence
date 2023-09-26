@@ -2,6 +2,7 @@ import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../uti
 import React, { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
+import TwoFA from './TwoFA';
 
 const SIZE: number = 350;
 
@@ -34,6 +35,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     twoFactorCode: '',
   });
   const [is2fa, setIs2fa] = useState<boolean>(false);
+  const [error2fa, setError2fa] = useState<string>(' ');
 
 
   // functions -------------------------------------------------------------------------------------------------------//
@@ -106,7 +108,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           setIs2fa(true);
           return;
         } else if (data.message === 'Wrong 2fa code') {
-          setErrorMessage('Wrong 2fa code');
+          setError2fa('Wrong 2fa code');
         } else {
           setErrorMessage(data.message);
           console.error('connection failure. Error:', response?.status);
@@ -226,69 +228,13 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
               <p>or sign in with Intra42</p>
               <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-                // setIsFTConnection(true);
                 window.location.replace('http://localhost:3001/api/auth/login/42');
-              }}></Button>
+              }}/>
             </Flex>
           </Background>
         </Border>
       </Background>
-
-      {is2fa &&
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 999,
-          backgroundColor: 'rgba(70,70,70,0.5)',
-          height: '100vh',
-          width: '100vw',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', alignContent: 'space-evenly', flexDirection: 'column' }}>
-            <h2>2FA</h2>
-            <input id={'2fa'}
-                   type='number'
-                   name={'twoFactorCode'}
-                   autoComplete={'one-time-code'}
-                   maxLength={6}
-                   value={formData.twoFactorCode}
-                   onChange={(e) => {
-                     if (e.target.value.length > 6)
-                       e.target.value = e.target.value.slice(0, 6);
-                     handleChange(e);
-                   }}
-                   style={{
-                     width: '8ch',
-                     height: '2em',
-                     fontSize: '1.5em',
-                     textAlign: 'center',
-                     backgroundColor: 'darkgrey',
-                     borderRadius: 5,
-                   }}
-            />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <button
-                id='2faCancel'
-                style={{ display: 'none' }}
-                onClick={() => setIs2fa(false)} />
-              <label htmlFor='2faCancel'>
-                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', margin: '1em', borderRadius: 5 }}>
-                  Cancel
-                </p>
-              </label>
-              <button
-                id='2faValidate'
-                style={{ display: 'none' }}
-                onClick={() => OnConnect(formData.twoFactorCode)} />
-              <label htmlFor='2faValidate'>
-                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', margin: '1em', borderRadius: 5 }}>
-                  Confirm
-                </p>
-              </label>
-            </div>
-          </div>
-        </div>
-      }
+      {is2fa && <TwoFA setIsVisible={setIs2fa} submit={OnConnect} errorMessage={error2fa} setErrorMessage={setError2fa} />}
     </div>
   );
 }
