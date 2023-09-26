@@ -1,5 +1,5 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
 import TwoFA from './TwoFA';
@@ -91,12 +91,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
       const response = await unsecureFetch('auth/login', 'POST',
         JSON.stringify(credits));
-      console.log('response : ', response);
+      // console.log('response : ', response);
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;
       } else if (response?.statusText === 'Wrong 2fa code') {
-        setErrorMessage('Wrong 2fa code');
+        setErrorMessage(response.statusText);
       }
 
       if (response?.ok) {
@@ -130,6 +130,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     return RedirectToHome(navigate, response);
   }
 
+  // reset 2fa error message when popup is closed
+  useEffect(() => {
+    if (!is2fa) {
+      setError2fa('');
+    }
+  }, [is2fa]);
 
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
@@ -229,12 +235,17 @@ export function Login({ duration_ms = 900, viewport }: Props) {
               <p>or sign in with Intra42</p>
               <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
                 window.location.replace('http://localhost:3001/api/auth/login/42');
-              }}/>
+              }} />
             </Flex>
           </Background>
         </Border>
       </Background>
-      {is2fa && <TwoFA setIsVisible={setIs2fa} submit={OnConnect} errorMessage={error2fa} setErrorMessage={setError2fa} />}
+      <TwoFA setIsVisible={setIs2fa}
+             isVisible={is2fa}
+             submit={OnConnect}
+             errorMessage={error2fa}
+             setErrorMessage={setError2fa}
+      />
     </div>
   );
 }
