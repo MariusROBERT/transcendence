@@ -1,8 +1,6 @@
 import { color, Viewport, Fetch } from "../../utils";
 import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { IUserComplete } from "../../utils/interfaces";
 import { useUserContext } from '../../contexts';
 import { Game } from '../game/Game';
 
@@ -10,29 +8,28 @@ interface Props {
   panelWidth: number
   viewport: Viewport
 }
-// const [userComplete, setUserComplete] = useState<IUserComplete>();
+
+// todo faire en sorte que quand le type refresh il retrouve ses components ouverts
 
 export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
-  const [showNotificationBadge, setShowNotificationBadge] = useState(false);
+  const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, socket, id, user } = useUserContext();
 
   useEffect(() => {
-    const getInvites = async () => {
+    const getUser = async () => {
       await fetchContext();
     }
-    getInvites(); // => mettre cette merde dans fetchContext
+    getUser();
   }, []);
 
-
   useEffect(() => {
-    console.log("user maj", user);
     if (!user)
         return 
     if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-        setShowNotificationBadge(true);
+      setNotifs(user.invites.length);
   }, [user]);
 
   function onPlayClicked() {
@@ -42,9 +39,9 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   return (
     <>
-        {showNotificationBadge && (
+        {notifs > 0 && (
           <div style={notificationBadgeStyle}>
-            <span style={notificationCountStyle}>1</span>
+            <span style={notificationCountStyle}>{notifs}</span>
           </div>)}
         { isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard> }
         { !inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}

@@ -69,11 +69,7 @@ export interface LeaderboardProps {
   meUser?: IUserComplete;
 }
 
-export interface ProfilProps {
-  otherUser: IUser | undefined | null;
-  meUser: IUserComplete | undefined;
-  onClose?: () => void;
-}
+
 
 export interface UserButtonsProps {
   id: number | undefined;

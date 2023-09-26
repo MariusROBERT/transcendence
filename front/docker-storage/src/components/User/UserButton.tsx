@@ -10,30 +10,15 @@ import { useUserContext } from "../../contexts";
 interface Props {
 	otherUser: IUser;
 	meUser: IUserComplete | undefined;
-	askYouInFriend: boolean;
-	isFriend: boolean;
-	isBlocked: boolean;
 }
 
-export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBlocked }: Props) {
+export function UserButton({ otherUser, meUser }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	const [sendButton, setSendButton] = useState(false);
-	const [handledAskRemove, setHandleAskRemove] = useState<boolean>(false);
-	const { setUser } = useUserContext();
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
-
-	// todo : un usr est sense etre enleve de la list blocked dun autre user lorsque celui ci l'ask in friend mais ca marche pas
-
-	// to test : usr1 block usr2 (usr2 is add in usr1.blocked). then usr1 ask in friend usr2 (usr2 has to be removed from usr1.blocked and usr2 received the request)
-
-	useEffect(() => {
-		console.log("user has been updated in UserButton", meUser);
-		if (meUser && meUser.invited.includes(otherUser.id as number)) {
-			setSendButton(true);
-		}
-		console.log("CALLED");
-
-	}, [meUser]);
+	const [requestReceived, setRequestReceived] = useState<boolean>(false);
+	const [isFriend, setIsFriend] = useState<boolean>(false);
+	const { setUser, fetchContext } = useUserContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');
@@ -47,7 +32,6 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 				},
 			})
 			if (res.ok) {
-
 				console.log(`user ${id} blocked`);
 				if (!meUser)
 					return
@@ -64,13 +48,10 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 	const askFriend = () => {
 		if (!meUser)
 			return
-		console.log("ASK FREIND");
-
 		if (meUser && meUser.blocked?.includes(otherUser.id as number)) {
-			console.log("OTHER INCLUDES IN BLOCKED");
 			const indexToRemove = meUser.blocked.indexOf(otherUser.id);
 			if (indexToRemove !== -1) {
-				console.log("user remove from blocked list");
+				console.log("user remove from blocked list"); // todo : to test
 				meUser.blocked.splice(indexToRemove, 1);
 			}
 		}
@@ -78,36 +59,38 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 		let usercpy = [...meUser.invited, otherUser.id];
 		setUser({ ...meUser, invited: usercpy });
 	}
-
-	const handleRequestsFriend = async (bool: boolean) => {
-		if (!meUser)
-			return
-		// if otherUser isn't include in meUser.blocked => if he is: go fuck yourself, if not: go on
-		if (meUser && meUser.blocked?.includes(otherUser.id as number))
-			return;
-		await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
-		if (bool == true) {
-			let friendscopy = [...meUser.friends, otherUser.id];
-			let usercpy = [...meUser.invited, otherUser.id];
-			setUser({ ...meUser, invited: usercpy, friends: friendscopy });
-		}
-		setHandleAskRemove(true);
-	}
-	// todo metre a jour profil et ses btns
-	// todo enlever la notif en haut a droite
+	
+	useEffect(() => {
+		if (meUser && meUser.invited.includes(otherUser.id as number))
+			setSendButton(true);
+		if (meUser && meUser.invites.includes(otherUser.id as number))
+			setRequestReceived(true);
+		if (meUser && meUser.friends.includes(otherUser.id as number))
+			setIsFriend(true);
+	}, [meUser]);
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);
+	}
+
+	const handleRequestsFriend = async (bool: boolean) => {
+		setRequestReceived(false);
+		if (!meUser || !otherUser)
+			return
+		if (meUser && meUser.blocked?.includes(otherUser.id as number))
+			return;
+		await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
+		fetchContext()
 	}
 
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '410px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
-					{!isBlocked && isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
-					{!isBlocked && isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}></RoundButton>}
-					{!otherUser.is_friend && !sendButton &&
+					{!isFriend && !sendButton &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}></RoundButton>
 					}
 					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}></RoundButton>
@@ -116,10 +99,14 @@ export function UserButton({ otherUser, meUser, askYouInFriend, isFriend, isBloc
 							<button onClick={() => blockAUser(otherUser.id)}>block</button>
 						</div>
 					)}
-					{!isBlocked && !otherUser.is_friend && askYouInFriend && !handledAskRemove &&
+					{requestReceived && !isFriend &&
 						<div style={askStyle}>
-							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => handleRequestsFriend(true)}></RoundButton>
-							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => handleRequestsFriend(false)}></RoundButton>
+							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => {
+								handleRequestsFriend(true);
+							}}></RoundButton>
+							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => {
+								handleRequestsFriend(false);
+							}}></RoundButton>
 						</div>
 					}
 				</Flex>

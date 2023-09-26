@@ -12,10 +12,9 @@ interface Props{
 
 const Navbar: React.FC<Props>  = ({ meUser }) => {
   const jwtToken = Cookies.get('jwtToken');
-	const navigate = useNavigate();
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-// todo : mettre le Fetch
+
   const logout = async () => {
     const res =  await fetch('http://localhost:3001/api/user/logout', {
       method: 'PATCH',
@@ -27,11 +26,9 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
     if (res.ok)
     {
       Cookies.remove('jwtToken');
-      navigate('/login');
-      
+      window.location.replace('/login');      
     } else {
       console.log(res.status);
-
     }
   }
   
@@ -40,14 +37,11 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
     const handleBeforeUnload = () => {
       logout();
     };
-
     window.addEventListener('beforeunload', handleBeforeUnload);
-
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
-
 
   return (
     <>
@@ -55,7 +49,7 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
           <RoundButton icon={require('../../assets/imgs/icon_setting.png')} icon_size={50} onClick={() => setSettingsVisible(!settingsVisible)}></RoundButton>
           {settingsVisible && <Settings isVisible={settingsVisible} />}
           <RoundButton icon={require('../../assets/imgs/icon_user.png')} icon_size={50} onClick={() => setProfilVisible(!profilVisible)}></RoundButton>
-          {profilVisible && <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)}/>}
+          {profilVisible && <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)} />}
           <RoundButton icon={require('../../assets/imgs/icon_logout.png')} icon_size={50} onClick={() => logout()}></RoundButton>
       </div>
     </>
@@ -66,6 +60,5 @@ const navbarStyle = {
   border: '1px solid black',
   display: 'flex'
 };
-
 
 export default Navbar;

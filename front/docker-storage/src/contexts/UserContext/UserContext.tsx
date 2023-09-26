@@ -40,7 +40,6 @@ export function UserContextProvider({ children }: Props){
   async function fetchContext() : Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
 
-    console.log("user reauest", user);
     if (!user) {
       setIsOnline(false);
     }
@@ -53,10 +52,6 @@ export function UserContextProvider({ children }: Props){
         await initSocket();
     }
   }
-
-  // useEffect(() => {
-	// 	console.log("user has been updated in context", user);
-	// }, [user, setUser]);
 
   useEffect(() => {
     socket?.on('connect_error', (err) => {
