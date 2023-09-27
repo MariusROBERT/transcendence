@@ -61,8 +61,9 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         alert('Vous avez été déconnecté');
       }
     };
+
     getUserInfos();
-  }, [isVisible]);
+  }, [navigate, isVisible]);
 
   // MODIFICATIONS
 

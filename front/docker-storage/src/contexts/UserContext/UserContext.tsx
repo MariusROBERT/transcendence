@@ -37,8 +37,6 @@ export function UserContextProvider({ children }: Props) {
 
   async function fetchContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
-
-    console.log('user reauest', user);
     if (!user) {
       setIsOnline(false);
     } else {
@@ -47,7 +45,7 @@ export function UserContextProvider({ children }: Props) {
       setId(user.id);
       setIsOnline(true);
       if (!socket)
-        await initSocket();
+        initSocket();
     }
   }
 
@@ -76,7 +74,7 @@ export function UserContextProvider({ children }: Props) {
     };
   }, [socket, id, username]);
 
-  async function initSocket() {
+  function initSocket() {
     if (!socket) {
       const token = Cookies.get('jwtToken');
       setSocket(
