@@ -63,19 +63,8 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
           <p>RANK : {count++}</p> {/* TO CHANGE */}
-          {user.id === meUser?.id ? (
-            <>
-              <Flex zIndex={'10'} flex_direction='row'>
-                <RoundButton icon={user.urlImg} icon_size={50}
-                             onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
-                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest
-                  moi: {user.username}</p>
-              </Flex>
-            </>
-          ) : (
-            <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
-                        setProfilVisible={setProfilVisible} />
-          )}
+          <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
+            setProfilVisible={setProfilVisible} />
           <>
             <p>SCORE %</p>
           </>

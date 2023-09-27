@@ -9,8 +9,6 @@ interface Props {
   viewport: Viewport;
 }
 
-// const [userComplete, setUserComplete] = useState<IUserComplete>();
-
 export function MainPage({ panelWidth, viewport }: Props) {
   const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');

@@ -39,7 +39,8 @@ export function UserButton({ otherUser, meUser }: Props) {
         justifyContent: 'space-between',
         borderRadius: '12.5px',
         backgroundColor: color.grey,
-        minWidth: '410px',
+        border: "1px solid red",
+        minWidth: '300px',
         height: '25px',
       }}>
         <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
