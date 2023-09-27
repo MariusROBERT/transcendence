@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+  UserGameStatus,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -281,6 +287,9 @@ export class UserService {
 
     user.user_status = UserStateEnum.OFF;
     user.socketId = '';
+    user.isInGameWith = -1;
+    user.gameInvitationTo = -1;
+    user.gameInvitationFrom = -1;
 
     await this.UserRepository.save(user);
     return { message: 'Deconnexion reussie' };
@@ -358,11 +367,12 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
-  getGameStatus(user: UserEntity): {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number}{
+  async getGameStatusWithId(id: number): Promise<UserGameStatus> {
+    const user = await this.getUserById(id);
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
-      isInGameWith:user.isInGameWith,
+      isInGameWith: user.isInGameWith,
     }
   }
 }

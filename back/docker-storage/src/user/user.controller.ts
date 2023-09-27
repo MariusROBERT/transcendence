@@ -22,7 +22,13 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+  UserGameStatus,
+} from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
 
@@ -170,11 +176,19 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
-  // Sockets ----------------------------------------------------------------------------------------------------//
+  // Sockets -------------------------------------------------------------------------------------------------------- //
 
-  @Get('/from_socket_id')
+  @Get('from_socket_id')
   @UseGuards(JwtAuthGuard)
   async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
     return this.userService.getUserFromSocketId(socketId);
+  }
+
+  // Game ----------------------------------------------------------------------------------------------------------- //
+  @Get('/game_status/:id')
+  @UseGuards(JwtAuthGuard)
+  async GetGameStatusWithId(@Param('id', ParseIntPipe) id: number): Promise<UserGameStatus> {
+    console.log('fetch user game infos')
+    return await this.userService.getGameStatusWithId(id);
   }
 }

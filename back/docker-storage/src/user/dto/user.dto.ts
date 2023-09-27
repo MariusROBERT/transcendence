@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
+import { Column } from 'typeorm';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -85,18 +86,19 @@ export class UpdatePwdDto {
   password: string;
 }
 
-export class SetSocketIdDto {
-  @IsNotEmpty()
-  @IsString()
-  socketId: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserStateEnum)
-  user_status: UserStateEnum;
-}
-
 export class GetUserIdFromSocketIdDto {
   @IsNotEmpty()
   @IsString()
   socketId: string;
+}
+
+export class UserGameStatus {
+  @IsNumber()
+  isInGameWith: number;
+
+  @IsNumber()
+  gameInvitationTo: number;
+
+  @IsNumber()
+  gameInvitationFrom: number;
 }
