@@ -8,6 +8,7 @@ import {Contexts, useUserContext} from "../../contexts";
 import { Fetch, unsecureFetch } from '../../utils';
 import { ChanUserList } from "../ChanUserList/ChanUserList";
 import { subscribe, unsubscribe } from '../../utils/event';
+import { publish } from '../../utils/event';
 
 interface Props {
   viewport: Viewport;
@@ -21,11 +22,19 @@ export function ChatPanel({ viewport, width }: Props) {
   // this should be in the back
   let [msg, setMessage] = useState<any[]>([]);
 
-  const getMsg = (message: any) => {
-    //var owner = false;
-//
-    //if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { message_content: message.msg, sender_id: id }]);
+  const getMsg = async (message: any) => {
+    console.log(message);
+    console.log("here");
+    const res2 = await Fetch("channel/msg/" + message.id, 'GET');
+
+    var len = res2?.json.length;
+    var msgs = res2?.json;
+    console.log(res2?.json);
+    publish('enter_chan', {
+            detail: {
+                value: msgs,
+            }
+    });
     setInputValue("");
   };
 
