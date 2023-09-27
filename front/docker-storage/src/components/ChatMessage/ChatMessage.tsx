@@ -1,15 +1,17 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
+import {Contexts, useUserContext} from "../../contexts";
 
 interface Props {
   children: string;
   user_icon: string;
   user_name: string;
   date: Date;
-
+  uid: number;
 }
 
-export function ChatMessage({ children, user_icon, user_name, date }: Props) {
+export function ChatMessage({ children, user_icon, user_name, date , uid}: Props) {
+  const { id } = useUserContext();
   function viewProfile() {
     // TODO: link the profile to the icon btn
     // to do so in the Props, get the User ID
@@ -19,7 +21,7 @@ export function ChatMessage({ children, user_icon, user_name, date }: Props) {
     <div
       style={{
         display: "flex",
-        flexDirection: true ? "row" : "row-reverse",
+        flexDirection: uid == id ? "row" : "row-reverse",
       }}
     >
       <div>{user_name}</div>

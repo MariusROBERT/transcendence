@@ -51,6 +51,7 @@ export function ChatMenu() {
         });
         const res3 = await Fetch("channel/users/" + current_id, 'GET');
         const usrs = res3?.json;
+        //console.log(usrs);
         publish('enter_users', {
             detail: {
                 value: usrs,

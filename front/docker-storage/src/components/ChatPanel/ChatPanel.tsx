@@ -25,7 +25,7 @@ export function ChatPanel({ viewport, width }: Props) {
     //var owner = false;
 //
     //if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { message_content: message.msg, user_name: "Test" }]);
+    setMessage([...msg, { message_content: message.msg, sender_id: id }]);
     setInputValue("");
   };
 
@@ -61,6 +61,7 @@ export function ChatPanel({ viewport, width }: Props) {
             user_icon={require("../../assets/imgs/icon_chat.png")}
             user_name={data.sender_username}
             date={new Date()}
+            uid={data.sender_id}
           >
             {data.message_content}
           </ChatMessage>

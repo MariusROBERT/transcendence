@@ -36,6 +36,7 @@ export class MessagesService {
                           'message.content',
                           'message.createdAt',
                           'sender.username',
+                          'sender.id',
                           'sender.urlImg',
                         ])
                         .getRawMany();
