@@ -28,6 +28,13 @@ export interface UserAndInvites {
   invites: number;
 }
 
+// --------------------------- Channels :
+
+export interface ChannelInfos {
+  id: number;
+  name: string;
+}
+
 // --------------------------- LeaderBoard & Profil :
 
 export interface UserInfos {

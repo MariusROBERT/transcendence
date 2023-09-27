@@ -1,7 +1,10 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Background, Border, RoundButton, UserBanner } from '..';
 import { color, Fetch } from '../../utils';
-import { IUser, IUserComplete } from '../../utils/interfaces';
+import { ChannelInfos, IUser, IUserComplete } from '../../utils/interfaces';
+import {Contexts, useUserContext} from "../../contexts";
+import { ChannelPannel } from './ChannelBanner';
+import { channel } from 'diagnostics_channel';
 
 interface Props {
   children?: ReactNode,
@@ -13,6 +16,9 @@ interface Props {
 export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
+  const { id } = useUserContext();
+
+  let [chans, setChannels] = useState<ChannelInfos[]>([]);
 
   useEffect(() => {
     async function getAllUsers() {
@@ -46,6 +52,18 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
     ));
   };
 
+  const displayChannels = () => {
+    return (
+      <>
+        {
+          chans.map((data, idx) => (
+            <ChannelPannel key={idx} id={data.id} name={data.name}></ChannelPannel>
+          ))
+        }
+      </>
+    );
+  };
+
   let buttonStyle: React.CSSProperties = {
     rotate: (isOpen ? 0 : 180) + 'deg',
     transition: duration_ms + 'ms ease',
@@ -63,19 +81,34 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
     transition: duration_ms + 'ms ease',
   };
 
+  async function FetchChannels() {
+    const res = await Fetch("channel/of_user", 'POST');
+    const channels = res?.json;
+    console.log(channels);
+    setChannels(channels);
+  }
+
+  function openGroup() {
+    setIsOpen(!isOpen);
+    //  Check if you open the right Group
+    if (!isOpen && heading === 'Channels')
+      FetchChannels();
+  }
+
   return (
     <>
       <Border borderSize={0} height={50} borderColor={color.black} borderRadius={0}>
         <Background bg_color={color.grey} flex_direction={'row'} flex_justifyContent={'flex-end'}>
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {setIsOpen(!isOpen)}}></RoundButton></div>
+            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={openGroup}></RoundButton></div>
         </Background>
       </Border>
       <div style={groupStyle}>
         { children }
         { isOpen && heading === 'Users' && displayUsers() }
         { isOpen && heading === 'Friends' && displayFriends() }
+        { isOpen && heading === 'Channels' && displayChannels() }
       </div>
     </>
   );

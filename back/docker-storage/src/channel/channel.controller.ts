@@ -47,6 +47,16 @@ export class ChannelController {
     return await this.channelService.getChannelUsers(id);
   }
 
+  //  TODO CHANGE TO GET
+  @Post('/of_user')
+  @UseGuards(JwtAuthGuard)
+  async GetChannelOfUser(
+    @User() user: UserEntity
+  ): Promise<ChannelEntity[]> {
+    console.log("get chans of users ^^");
+    return await this.channelService.getChannelOfUser(user.id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   async CreateChannel(

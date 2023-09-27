@@ -78,6 +78,15 @@ export class ChannelService {
     return users;
   }
 
+  async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
+    const chans = await this.ChannelRepository.createQueryBuilder("channel")
+                                              .leftJoinAndSelect("channel.users", "users")
+                                              .where("users.id = :id", {id})
+                                              .select(["channel.id as id", "channel.channel_name as name"])
+                                              .getRawMany();
+    return chans;
+  }
+
   async updateChannel(
     id: number,
     channelDto: UpdateChannelDto,
