@@ -34,7 +34,6 @@ export function Flex({
                      }: Props) {
   const style : CSSProperties = {
     position: 'relative',
-    border: '1px solid red',
     display: 'flex',
     flexDirection: flex_direction,
     flexWrap: flex_wrap,

@@ -60,6 +60,7 @@ export interface IUserComplete {
   invited: number[];
   invites: number[];
   friends: number[];
+  blocked: number[];
 }
 
 export interface LeaderboardProps {
@@ -69,11 +70,7 @@ export interface LeaderboardProps {
   meUser?: IUserComplete;
 }
 
-export interface ProfilProps {
-  otherUser: IUser | undefined | null;
-  meUser: IUserComplete | undefined;
-  onClose?: () => void;
-}
+
 
 export interface UserButtonsProps {
   id: number | undefined;

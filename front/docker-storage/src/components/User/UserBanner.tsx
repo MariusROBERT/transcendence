@@ -1,21 +1,26 @@
-import { Flex, RoundButton } from '..';
-import { UserButton } from './UserButton';
-import { handleOpenProfil } from '../../utils/user_functions';
-import { IUser, IUserComplete } from '../../utils/interfaces';
-import { CSSProperties } from 'react';
+import { RoundButton, Flex, AuthGuard } from "..";
+import { UserButton } from "./UserButton";
+import { handleOpenProfil } from "../../utils/user_functions";
+import { IUser, IUserComplete } from "../../utils/interfaces";
+import { CSSProperties, useState } from "react";
+import Profil from "../Profil/profil";
 
-// TODO : Add Object User insteed of user_name and user icon
 interface Props {
-  otherUser: IUser;
-  meUser: IUserComplete | undefined;
-  setSelectedUser?: any;
-  setProfilVisible?: any;
+  otherUser: IUser
+  meUser: IUserComplete
 }
 
-const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Props) => {
+const UserBanner = ({ otherUser, meUser }: Props) => {
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [profilVisible, setProfilVisible] = useState<boolean>(false);
+
+  const closeProfil = () => {
+    setSelectedUser(null);
+    setProfilVisible(!profilVisible);
+  };
 
   return (
-    <div >
+    <div>
       {otherUser.id === meUser?.id ? (
         <div style={UserBannerContainer}>
           <Flex zIndex={'10'} flex_direction='row'>
@@ -29,7 +34,7 @@ const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Pr
         <div style={UserBannerContainer}>
           <Flex zIndex={'10'} flex_direction='row'>
             <img style={statusStyle}
-              src={otherUser?.user_status == 'on' ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
+              src={otherUser?.user_status == 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
               alt={otherUser?.user_status ? 'connected' : 'disconnected'} />
             <RoundButton icon={otherUser.urlImg} icon_size={50}
               onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, otherUser)}></RoundButton>
@@ -37,17 +42,22 @@ const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Pr
           </Flex>
           <UserButton otherUser={otherUser} meUser={meUser}></UserButton>
         </div>
+        
+      )}
+       {profilVisible && (
+        <AuthGuard isAuthenticated>
+          <Profil otherUser={otherUser} meUser={meUser} onClose={closeProfil} />
+        </AuthGuard>
       )}
     </div>
   );
-};
+}
 export default UserBanner;
 
 const UserBannerContainer = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  border: '1px solid blue',
+  justifyContent: 'space-between',
   width: '500px'
 }
 

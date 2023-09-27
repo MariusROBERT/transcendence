@@ -247,7 +247,6 @@ const imgStyle: React.CSSProperties = {
 
 const popupStyle: React.CSSProperties = {  // tempooraire
   zIndex: '9999',
-  border: '4px solid red',
   height: '100%'
 }
 
@@ -259,7 +258,6 @@ const settingsStyle: React.CSSProperties = {
   flexDirection: 'column',
   background: 'grey',
   height: '100%',
-  border: '1px solid blue',
   color: 'white',
   margin: '10px',
   cursor: 'pointer',
@@ -269,7 +267,6 @@ const modifContainerImage: React.CSSProperties = {
   width: '350px',
   display: 'flex',
   flexDirection: 'column',
-  border: '3px solid green',
   justifyContent: 'center',
   alignItems: 'center',
 
@@ -278,14 +275,12 @@ const modifContainerImage: React.CSSProperties = {
 const modifContainer2FA = {
   width: '150px',
   display: 'flex',
-  border: '3px solid blue',
   justifyContent: 'space-around',
   alignItems: 'center',
   marginTop: '10px'
 }
 
 const modifContainerPwd : React.CSSProperties = {
-  border: '3px solid blue',
   width: '300px',
   display: 'flex',
   flexDirection: 'column',
@@ -297,7 +292,6 @@ const Btn: React.CSSProperties = {
   display: "flex",
   alignContent: 'center',
   justifyContent: 'center',
-  border: '1px solid red', 
   height: '30px',
   width: '200px',
   borderRadius: '6px', 

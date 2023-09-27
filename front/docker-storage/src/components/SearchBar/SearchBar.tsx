@@ -21,6 +21,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible }: Props
            src={require('../../assets/imgs/icon_search.png')} alt={'search'}/>
       <input
         style={{
+          outline: 'none',
           borderRadius: '10px',
           border: '0',
           position: 'relative',

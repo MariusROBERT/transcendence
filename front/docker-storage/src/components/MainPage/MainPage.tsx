@@ -14,19 +14,22 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
-  const [showNotificationBadge, setShowNotificationBadge] = useState(false);
+  const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, socket, id, user } = useUserContext();
 
   useEffect(() => {
-    fetchContext();
-  // eslint-disable-next-line
-  }, [OnLoad]);
-
+    const getUser = async () => {
+      await fetchContext();
+    }
+    getUser();
+  }, []);
 
   useEffect(() => {
-    if (user?.invites && Array.isArray(user?.invites) && user?.invites.length > 0)
-      setShowNotificationBadge(true);
-  }, [OnLoad, user?.invites]);
+    if (!user)
+      return;
+    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
+      setNotifs(user.invites.length);
+  }, [user]);
 
   function onPlayClicked() {
     // console.log('start clicked', socket?.id);
@@ -34,8 +37,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }
 
   return (
-    <>
-      {showNotificationBadge && (
+    <div style={MainPageStyle}>
+      {notifs && (
         <div style={notificationBadgeStyle}>
           <span style={notificationCountStyle}>1</span>
         </div>)}
@@ -63,8 +66,16 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </SidePanel>
       </Background>)}
       <Game inGame={inGame} setInGame={setInGame}></Game>
-    </>
+    </div>
   );
+}
+
+const MainPageStyle: React.CSSProperties = {
+  // border: '4px solid red',
+  position: 'relative',
+  width: '100%',
+  height: '100%'
+
 }
 
 const notificationBadgeStyle: React.CSSProperties = {

@@ -73,28 +73,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
-    const { message, user, channel } = body;
-    let chanE;
-    let userE;
+    const { message, channel } = body;
+    var chanE;
+    var userE;
 
-    //  Todo: Move to middleware
+    if (channel < 0) {
+      console.log("error chan < 0");
+      return ;
+    }
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {
       console.log(error);
+      return ;
     }
-    // console.log(chanE);
-    // console.log("=======here=====");
-    // console.log(client.handshake);
-
     const token = String(client.handshake.query.token);
     const payload = this.jwtService.verify(
       token,
       {secret: process.env.JWT_SECRET}
     );
     userE = await this.userService.getUserByUsername(payload.username);
-    // console.log(payload);
-    // console.log(userE);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     this.server.emit('message', this.messages[this.messages.length - 1]);
