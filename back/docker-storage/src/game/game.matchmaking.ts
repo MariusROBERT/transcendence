@@ -38,19 +38,15 @@ export class GameMatchmaking {
 
   // add a new game in the games lists
   async createGame(p1: number, p2:number, isSpecial){
-    const room = await this.controller.gateway.createRoom(p1, p2);
-    if (room === undefined)
-      return;
     let game = {
-      room: room,
       playerIds: [p1, p2],
       state: {
         running: true,
         isSpecial: isSpecial,
         ball: {x:size.width / 2, y:size.height / 2},
         dir: this.controller.service.normalize({x:Math.random() * 2 - 1, y:Math.random() * 2 - 1}),
-        p1: {x:size.ball / 2, y:size.height / 2},
-        p2: {x:size.width - size.ball / 2, y:size.height / 2},
+        p1: size.height / 2,
+        p2: size.height / 2,
         score: {p1: 0, p2: 0},
         speed: 1,
         moveP1: {isMoving: false, up: false},
@@ -59,8 +55,7 @@ export class GameMatchmaking {
       ready:false
     };
     this.controller.games.push(game);
-    // console.log('game was created:', room);
-    this.controller.gateway.openGame(room);
+    this.controller.gateway.openGame(game.playerIds);
   }
 
   async quitGame(id: number){
@@ -103,10 +98,6 @@ export class GameMatchmaking {
     //TODO: Save game score and update dataBase here
 
     //TODO: Send front event to show the GameOverPanel
-
-    // leave the room
-    (await this.controller.gateway.getSocketFromUser(game.playerIds[0]))?.leave(game.room);
-    (await this.controller.gateway.getSocketFromUser(game.playerIds[1]))?.leave(game.room);
 
     // remove the game from the controller's games
     this.controller.games = this.controller.games.filter(g => g.playerIds[0] != id || g.playerIds[1] != id);

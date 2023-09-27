@@ -54,12 +54,12 @@ export class GameService {
 
     // move the players
     if (state.moveP1.isMoving) {
-      state.p1.y += state.moveP1.up ? -state.speed : state.speed;
-      state.p1.y = clamp(state.p1.y, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
+      state.p1 += state.moveP1.up ? -state.speed : state.speed;
+      state.p1 = clamp(state.p1, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
     }
     if (state.moveP2.isMoving) {
-      state.p2.y += state.moveP2.up ? -state.speed : state.speed;
-      state.p2.y = clamp(state.p2.y, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
+      state.p2 += state.moveP2.up ? -state.speed : state.speed;
+      state.p2 = clamp(state.p2, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
     }
 
     //check if the ball enter a 'GOAL'
@@ -92,16 +92,16 @@ export class GameService {
       state.dir.y *= -1
 
     //collision with the left player
-    if ((state.ball.x - size.ball / 2) < (state.p1.x)
-      && (state.ball.y - size.halfBall) < (state.p1.y + size.halfBar)
-      && (state.ball.y + size.halfBall) > (state.p1.y - size.halfBar))
-      state.dir = {x:state.ball.x - (state.p1.x - size.ball), y: state.ball.y - state.p1.y}
+    if ((state.ball.x - size.ball / 2) < (size.p1X)
+      && (state.ball.y - size.halfBall) < (state.p1 + size.halfBar)
+      && (state.ball.y + size.halfBall) > (state.p1 - size.halfBar))
+      state.dir = {x:state.ball.x - (size.p1X - size.ball), y: state.ball.y - state.p1}
 
     //collision with the right player
-    if (state.ball.x + size.halfBall > state.p2.x
-      && state.ball.y - size.halfBall < state.p2.y + size.halfBar
-      && state.ball.y + size.halfBall > state.p2.y - size.halfBar)
-      state.dir = {x: state.ball.x - (state.p2.x + size.ball), y: state.ball.y - state.p2.y}
+    if (state.ball.x + size.halfBall > size.p2X
+      && state.ball.y - size.halfBall < state.p2 + size.halfBar
+      && state.ball.y + size.halfBall > state.p2 - size.halfBar)
+      state.dir = {x: state.ball.x - (size.p2X + size.ball), y: state.ball.y - state.p2}
 
     state.dir = this.normalize(state.dir)
   }
