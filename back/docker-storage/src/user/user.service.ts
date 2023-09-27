@@ -66,6 +66,16 @@ export class UserService {
     return await this.UserRepository.save(newProfil);
   }
 
+  async logout(user: UserEntity) {
+    // pas testé
+    const lastMsg = await this.getLastMsg(user);
+    if (lastMsg)
+      user.last_msg_date = lastMsg.createdAt;
+    user.user_status = UserStateEnum.OFF;
+    user.socketId = '';
+    await this.UserRepository.save(user);
+  }
+  
   //  USE FOR ADMIN BAN MUTE ..
   async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
     try
@@ -147,7 +157,7 @@ export class UserService {
   async handleAsk(
     user: UserEntity, // usr1
     id: number, // usr2
-    bool: number,
+    bool: boolean,
   ) {
     const userInvites = await this.UserRepository.findOne({
       where: { id },
@@ -179,7 +189,7 @@ export class UserService {
     }
     user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
     userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
-    if (bool == 1) {
+    if (bool == true) {
       // si il a été accepter, on ajoute dans la liste friends des deux cotés
       if (!user.friends) user.friends = [];
       user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
@@ -188,6 +198,7 @@ export class UserService {
     }
     this.UserRepository.save(user);
     this.UserRepository.save(userInvites);
+    return user
   }
 
   // CHANNEL & MESSAGE :
@@ -279,6 +290,35 @@ export class UserService {
       );
   }
 
+  async blockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    try {
+      const userToBlock = await this.UserRepository.findOne({ where: {id} });
+      if (!userToBlock)
+        throw new ConflictException(`user ${id} does not exist`);
+      const isHeInBlocked = this.UserRepository.createQueryBuilder('user');
+      let userId = user.id;
+      isHeInBlocked
+        .where('user.id = :userId', { userId })
+        .andWhere(':id = ANY(user.blocked)', { id });
+      const result = await isHeInBlocked.getOne();
+      console.log("user.blocked : ", user.blocked);
+      console.log("idToBlock : ", id);
+      
+      if (!result)
+      {
+        user.blocked = [...user.blocked, userToBlock.id];
+        await this.UserRepository.save(user);
+      } else {
+        throw new ConflictException(`user ${id} already in blocked`);
+      }
+    } catch (e) {
+      throw new ConflictException(`user ${id} already in blocked`);
+    }
+  }
+
   // UTILS :
 
   isOwner(objet: any, user: UserEntity): boolean {
@@ -297,18 +337,7 @@ export class UserService {
     );
   }
 
-  // logout
-  async logout(user: UserEntity) {
-    // pas testé
-    const lastMsg = await this.getLastMsg(user);
-    user.last_msg_date = lastMsg.createdAt;
-
-    user.user_status = UserStateEnum.OFF;
-    user.socketId = '';
-
-    await this.UserRepository.save(user);
-    return { message: 'Deconnexion reussie' };
-  }
+  // SOCKETS :
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
@@ -336,7 +365,7 @@ export class UserService {
       return;
     }
     user.socketId = socketId;
-    user.user_status = UserStateEnum.ON;
+    user.user_status = UserStateEnum.ON; // todo : virer ca
 
     return await this.UserRepository.save(user);
   }

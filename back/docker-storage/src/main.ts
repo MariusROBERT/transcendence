@@ -7,11 +7,12 @@ import * as session from 'express-session';
 import { json, urlencoded } from 'express';
 import { join } from 'path';
 import * as express from 'express';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // =================================================================================
   // Configuration des en-têtes CORS
