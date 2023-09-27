@@ -4,6 +4,7 @@ import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
 import { AuthGuard, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
+import { Game } from './components';
 
 const SIZE: number = 500;
 
@@ -27,17 +28,19 @@ function App() {
            }}>
         <Background image={backgroundImage} fixed={true}>
           <Routes>
-            <Route
-              path='/'
-              element={
-                <AuthGuard isAuthenticated>
-                  <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
-                </AuthGuard>
-              }
-            />
-            <Route path='/login' element={<Login
-              viewport={viewport}
-            ></Login>} />
+            <Route path='/login' element={
+              <Login viewport={viewport}></Login>}>
+            </Route>
+            <Route path='/' element={
+              <AuthGuard isAuthenticated>
+                <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
+              </AuthGuard>}>
+            </Route>
+            <Route path='/game' element={
+              <AuthGuard isAuthenticated>
+                <Game viewport={viewport}></Game>
+              </AuthGuard>}>
+            </Route>
           </Routes>
         </Background>
       </div>

@@ -2,7 +2,6 @@ import { color, Viewport } from '../../utils';
 import { Background, ChatPanel, ContactPanel, Leaderboard, Navbar, RoundButton, SearchBar, SidePanel } from '..';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
-import { Game } from '../game/Game';
 
 interface Props {
   panelWidth: number;
@@ -14,7 +13,6 @@ interface Props {
 export function MainPage({ panelWidth, viewport }: Props) {
   const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
-  const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
   const { fetchContext, socket, id, user } = useUserContext();
@@ -41,10 +39,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
         <div style={notificationBadgeStyle}>
           <span style={notificationCountStyle}>1</span>
         </div>)}
-      {isLeaderboardVisible &&
-        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
-      {!inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
-                               flex_alignItems={'stretch'}>
+      {isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
+      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
@@ -63,8 +59,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
             <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
           </Background>
         </SidePanel>
-      </Background>)}
-      <Game inGame={inGame} setInGame={setInGame}></Game>
+      </Background>
     </>
   );
 }
