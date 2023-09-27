@@ -73,15 +73,15 @@ export function UserButton({ otherUser, meUser }: Props) {
 		setIsOptionOpen(!isOpen);
 	}
 
-	const handleRequestsFriend = async (bool: boolean) => {
-		setRequestReceived(false);
-		if (!meUser || !otherUser)
-			return
-		if (meUser && meUser.blocked?.includes(otherUser.id as number))
-			return;
-		await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
-		fetchContext()
-	}
+	// const handleRequestsFriend = async (bool: boolean) => {
+	// 	setRequestReceived(false);
+	// 	if (!meUser || !otherUser)
+	// 		return
+	// 	if (meUser && meUser.blocked?.includes(otherUser.id as number))
+	// 		return;
+	// 	await Fetch(`user/handle_ask/${otherUser.id}/${bool}`, 'PATCH');
+	// 	fetchContext()
+	// }
 
 	return (
 		<>
@@ -102,10 +102,10 @@ export function UserButton({ otherUser, meUser }: Props) {
 					{requestReceived && !isFriend &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => {
-								handleRequestsFriend(true);
+								// handleRequestsFriend(true);
 							}}></RoundButton>
 							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => {
-								handleRequestsFriend(false);
+								// handleRequestsFriend(false);
 							}}></RoundButton>
 						</div>
 					}
