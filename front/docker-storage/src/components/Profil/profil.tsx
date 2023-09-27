@@ -18,8 +18,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
     alert('Vous avez été déconnecté');
   }
 
-  if (otherUser?.id === meUser?.id)
-  {
+  if (otherUser?.id === meUser?.id) {
     return (
       <div style={profilContainer}>
         <div style={profilContent}>
@@ -52,11 +51,9 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
             <img style={imgStyle} src={otherUser.urlImg}></img>
-            {otherUser.user_status ? 
-              <img style={statusStyle} src={require('../../assets/imgs/icon_status_connected.png')} />
-            :
-              <img style={imgStyle} src={require('../../assets/imgs/icon_status_disconnected.png')} />
-            }
+            <img style={otherUser?.user_status ? statusStyle : imgStyle}
+                 src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
+                 alt={meUser?.user_status ? 'connected' : 'disconnected'} />
             <p>LAST MATCHS</p>
             <p>--------------</p>
             <p>--------------</p>
@@ -102,7 +99,7 @@ const imgStyle = {
 const statusStyle = {
   width: '10px',
   height: '10px',
-}
+};
 
 
 export default Profil;

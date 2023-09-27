@@ -2,7 +2,7 @@ export { default as Background } from './Background/Background';
 export { Border } from './Border/Border';
 export { Button } from './Button/Button';
 export { ChatPanel } from './ChatPanel/ChatPanel';
-export { ChatMessage } from './ChatMessage/ChatMessage'
+export { ChatMessage } from './ChatMessage/ChatMessage';
 export { ContactPanel } from './ContactPanel/ContactPanel';
 export { Flex } from './Flex/FlexBox';
 export { GroupItems } from './GroupItems/GroupItems';

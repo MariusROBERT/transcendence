@@ -88,7 +88,7 @@ export interface NotificationBadgeProps {
 // }
 
 export interface Modifications {
-  urlImg: string;
+  img: string | File;
   password: string | undefined;
   confirmpwd: string | undefined;
   is2fa_active: boolean | undefined;

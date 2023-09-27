@@ -1,15 +1,13 @@
-import { color, Viewport, Fetch } from "../../utils";
-import { SidePanel, Background, ContactPanel, ChatPanel, SearchBar, RoundButton, Navbar, Leaderboard } from "..";
-import { useEffect, useState } from "react";
+import { color, Viewport } from '../../utils';
+import { Background, ChatPanel, ContactPanel, Leaderboard, Navbar, RoundButton, SearchBar, SidePanel } from '..';
+import { useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
 import { Game } from '../game/Game';
 
 interface Props {
-  panelWidth: number
-  viewport: Viewport
+  panelWidth: number;
+  viewport: Viewport;
 }
-
-// todo faire en sorte que quand le type refresh il retrouve ses components ouverts
 
 export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,45 +25,47 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   useEffect(() => {
     if (!user)
-        return 
+      return;
     if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
       setNotifs(user.invites.length);
   }, [user]);
 
   function onPlayClicked() {
     // console.log('start clicked', socket?.id);
-    socket?.emit('join_queue', { id:id })
+    socket?.emit('join_queue', { id: id });
   }
 
   return (
     <>
-        {notifs > 0 && (
-          <div style={notificationBadgeStyle}>
-            <span style={notificationCountStyle}>{notifs}</span>
-          </div>)}
-        { isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard> }
-        { !inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
-                    flex_alignItems={'stretch'}>
-          <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
-            <Background flex_justifyContent={'flex-start'}>
-              <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
-            </Background>
-          </SidePanel>
-          <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-            <Navbar meUser={user}></Navbar>
-            <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)} isVisible={isLeaderboardVisible} >Leader Board..</SearchBar>
-            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
-                         onClick={onPlayClicked}></RoundButton>
-            <div style={{ height: '60px' }} />
+      {notifs && (
+        <div style={notificationBadgeStyle}>
+          <span style={notificationCountStyle}>1</span>
+        </div>)}
+      {isLeaderboardVisible &&
+        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard>}
+      {!inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
+                               flex_alignItems={'stretch'}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
+          <Background flex_justifyContent={'flex-start'}>
+            <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
           </Background>
-          <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
-            <Background>
-              <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
-            </Background>
-          </SidePanel>
-        </Background>)}
-        <Game inGame={inGame} setInGame={setInGame}></Game>
-      </>
+        </SidePanel>
+        <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
+          <Navbar meUser={user}></Navbar>
+          <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}
+                     isVisible={isLeaderboardVisible}>Leader Board..</SearchBar>
+          <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
+                       onClick={onPlayClicked}></RoundButton>
+          <div style={{ height: '60px' }} />
+        </Background>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
+          <Background>
+            <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
+          </Background>
+        </SidePanel>
+      </Background>)}
+      <Game inGame={inGame} setInGame={setInGame}></Game>
+    </>
   );
 }
 

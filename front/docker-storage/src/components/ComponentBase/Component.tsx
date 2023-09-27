@@ -1,7 +1,7 @@
-import "../../App.css";
-import { color } from "../../utils/Global";
+import '../../App.css';
 
-interface Props {}
+interface Props {
+}
 
 export function Component({}: Props) {
   return <></>;

@@ -1,10 +1,9 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Viewport } from "../../utils/Viewport";
-import { color } from "../../utils/Global";
-import { Background, RoundButton } from "..";
-import { ChatMessage } from "../ChatMessage/ChatMessage";
-import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
-import {useUserContext} from "../../contexts";
+import { useEffect, useState } from 'react';
+import { color, Viewport } from '../../utils';
+import { Background, RoundButton } from '..';
+import { ChatMessage } from '../ChatMessage/ChatMessage';
+import { ChatMenu, current_chan } from '../ChanMenu/ChatMenu';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   viewport: Viewport;
@@ -12,7 +11,7 @@ interface Props {
 }
 
 export function ChatPanel({ viewport, width }: Props) {
-  const [inputValue, setInputValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>('');
   const { socket } = useUserContext();
 
   // this should be in the back
@@ -23,20 +22,20 @@ export function ChatPanel({ viewport, width }: Props) {
 
     if (message.sock_id === socket?.id) owner = true;
     setMessage([...msg, { msg: message.msg, owner: owner }]);
-    setInputValue("");
+    setInputValue('');
   };
 
   useEffect(() => {
-    socket?.on("message", getMsg);
+    socket?.on('message', getMsg);
     return () => {
-      socket?.off("message", getMsg);
+      socket?.off('message', getMsg);
     };
   }, [getMsg]);
 
   function onEnterPressed() {
-    if (inputValue == "") return;
-    console.log("send message to " + current_chan);
-    socket?.emit("message", { message: inputValue, user: 0, channel: current_chan });
+    if (inputValue == '') return;
+    console.log('send message to ' + current_chan);
+    socket?.emit('message', { message: inputValue, user: 0, channel: current_chan });
   }
 
   function chat() {
@@ -46,7 +45,7 @@ export function ChatPanel({ viewport, width }: Props) {
         {msg.map((txt, idx) => (
           <ChatMessage
             key={idx}
-            user_icon={require("../../assets/imgs/icon_chat.png")}
+            user_icon={require('../../assets/imgs/icon_chat.png')}
             isOwnMessage={txt.owner}
           >
             {txt.msg}
@@ -54,46 +53,52 @@ export function ChatPanel({ viewport, width }: Props) {
         ))}
       </>
     );
-}
+  }
 
 
-return (
-  <Background flex_justifyContent={'space-evenly'}>
-    <ChatMenu></ChatMenu>
+  return (
+    <Background flex_justifyContent={'space-evenly'}>
+      <ChatMenu></ChatMenu>
       <div style={{
-          height:viewport.height - 125 + 'px',
-          width:width - 50 + 'px',
-          backgroundColor:color.grey,
-          display:'flex',
-          flexDirection:'column',
-          gap:'5px 5px',
-          padding:'10px',
-          borderRadius: '15px',
-          overflow:'scroll',
+        height: viewport.height - 125 + 'px',
+        width: width - 50 + 'px',
+        backgroundColor: color.grey,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '5px 5px',
+        padding: '10px',
+        borderRadius: '15px',
+        overflow: 'scroll',
       }}>
-          {chat()}
+        {chat()}
       </div>
       <div style={{
-          display:'flex',
-          flexDirection:'row',
-          justifyContent:'space-between',
-          alignItems:'center',
-          width:width - 30 + 'px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: width - 30 + 'px',
       }}>
-          <input value={inputValue}
-                 onChange={(evt) => {setInputValue(evt.target.value);}}
-                 onKeyDown={(e) => { if (e.keyCode != 13) return; onEnterPressed()}}
-                 style={{
-                     height:50 + 'px',
-                     flex:'auto',
-                     backgroundColor:color.grey,
-                     borderRadius: '15px',
-                     border:'0',
-                 }}
-          >
-          </input>
-          <RoundButton icon_size={50} icon={require('../../assets/imgs/icon_play.png')} onClick={onEnterPressed}></RoundButton>
+        <input value={inputValue}
+               onChange={(evt) => {
+                 setInputValue(evt.target.value);
+               }}
+               onKeyDown={(e) => {
+                 if (e.keyCode != 13) return;
+                 onEnterPressed();
+               }}
+               style={{
+                 height: 50 + 'px',
+                 flex: 'auto',
+                 backgroundColor: color.grey,
+                 borderRadius: '15px',
+                 border: '0',
+               }}
+        >
+        </input>
+        <RoundButton icon_size={50} icon={require('../../assets/imgs/icon_play.png')}
+                     onClick={onEnterPressed}></RoundButton>
       </div>
-  </Background>
-);
+    </Background>
+  );
 }

@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import { CSSProperties, useEffect, useState } from 'react';
-import { UserBanner } from '..';
+import Profil from '../Profil/profil';
+import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
@@ -45,6 +46,11 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     getUserInfos();
   }, [isVisible, jwtToken]);
 
+  useEffect(() => {
+    console.log('meUser in Leaderboard', meUser);
+  }, [meUser]);
+
+  // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     if (!allUsers)
       return (<><p>No user</p></>)
@@ -88,7 +94,7 @@ const container: CSSProperties = {
   height: '90vh',
   display: 'flex',
   justifyContent: 'center',
-  zIndex: '999'
+  zIndex: '999',
 };
 
 const userElementStyle = {

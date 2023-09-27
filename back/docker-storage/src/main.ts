@@ -4,7 +4,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
+import { json, urlencoded } from 'express';
 import { join } from 'path';
+import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 dotenv.config();
@@ -41,8 +43,9 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
+  app.use('/public', express.static(join(__dirname, '..', 'public')));
 
   await app.listen(parseInt(process.env.BACK_PORT));
 }

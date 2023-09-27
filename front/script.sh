@@ -9,5 +9,3 @@ fi
 npm install
 echo "npm install done !"
 npm run start
-
-echo "script finished !"

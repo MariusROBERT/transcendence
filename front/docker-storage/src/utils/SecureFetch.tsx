@@ -33,7 +33,7 @@ export async function unsecureFetch(url_end: string, method: 'GET' | 'PATCH' | '
       headers: {
         'Content-Type': 'application/json',
       },
-      body: body
+      body: body,
     });
     return response;
   } catch (e) {
