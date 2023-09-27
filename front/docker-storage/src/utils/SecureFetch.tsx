@@ -21,6 +21,7 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
   }
 
   console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+  console.log(response);
 
   //window.location.href = '/login';
 }

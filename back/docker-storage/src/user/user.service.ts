@@ -66,6 +66,20 @@ export class UserService {
     return await this.UserRepository.save(newProfil);
   }
 
+  //  USE FOR ADMIN BAN MUTE ..
+  async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
+    try
+    {
+      if (!user.channels)
+        user.baned = [];
+      //user.channels.push(channel);
+      user.baned = [...user.baned, channel];
+      await this.UserRepository.save(user);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
+  }
+
   // -- Public -- :
 
   async getPublicProfile(
@@ -189,6 +203,16 @@ export class UserService {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
 
+  }
+
+  async getUsersInChannels(channelId: number) {
+    const users = this.UserRepository.createQueryBuilder('user')
+                                    .innerJoin('user.channels', 'channel')
+                                    .where('channel.id = :channelId', { channelId })
+                                    .select(['user.id', 'user.username', 'user.urlImg'])
+                                    .getMany();
+    //console.log("USER: " + users);
+    return users;
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
