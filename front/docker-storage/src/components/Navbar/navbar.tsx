@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import Settings from '../Settings/settings';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { IUserComplete } from '../../utils/interfaces';
@@ -56,9 +56,12 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
   );
 };
 
-const navbarStyle = {
-  border: '1px solid black',
-  display: 'flex'
+const navbarStyle: CSSProperties = {
+  top: '20px',
+  position: "absolute",
+  display: 'flex',
+  width: '250px',
+  justifyContent: 'space-around'
 };
 
 export default Navbar;

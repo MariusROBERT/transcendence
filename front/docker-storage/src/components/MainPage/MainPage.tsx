@@ -37,7 +37,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }
 
   return (
-    <>
+    <div style={MainPageStyle}>
       {notifs && (
         <div style={notificationBadgeStyle}>
           <span style={notificationCountStyle}>1</span>
@@ -66,8 +66,16 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </SidePanel>
       </Background>)}
       <Game inGame={inGame} setInGame={setInGame}></Game>
-    </>
+    </div>
   );
+}
+
+const MainPageStyle: React.CSSProperties = {
+  // border: '4px solid red',
+  position: 'relative',
+  width: '100%',
+  height: '100%'
+
 }
 
 const notificationBadgeStyle: React.CSSProperties = {

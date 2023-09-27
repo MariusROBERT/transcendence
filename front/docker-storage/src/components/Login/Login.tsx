@@ -195,7 +195,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
               <br/>
             </Background>
           </form>
-          <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
+          <Flex flex_direction={'row'} flex_justifyContent={'space-around'}>
             <p>or sign in with Intra42</p>
             <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
               setIsFTConnection(true);

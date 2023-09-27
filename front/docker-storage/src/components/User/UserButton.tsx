@@ -18,7 +18,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 	const [requestReceived, setRequestReceived] = useState<boolean>(false);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const { fetchContext, setUser } = useUserContext();
+	const { setUser } = useUserContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');
@@ -84,8 +84,8 @@ export function UserButton({ otherUser, meUser }: Props) {
 	// }
 
 	return (
-		<>
-			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '410px', height: '25px' }}>
+		<div style={UserbUttonContainer}>
+			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
@@ -111,11 +111,17 @@ export function UserButton({ otherUser, meUser }: Props) {
 					}
 				</Flex>
 			</div>
-		</>
+		</div>
 	);
 }
 
+const UserbUttonContainer: React.CSSProperties = { 
+	// border: '4px solid red',
+	width: '60%'
+}
+
 const askStyle = {
+	
 	display: 'flex',
 	borderRadius: '100px',
 	alignItem: 'center',
@@ -123,7 +129,7 @@ const askStyle = {
 	background: 'white',
 	width: '80px',
 	height: '40px',
-	border: '1px solid red',
+	border: '4px solid green',
 };
 
 const optionStyle: React.CSSProperties = {

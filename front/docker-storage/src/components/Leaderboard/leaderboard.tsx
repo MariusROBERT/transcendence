@@ -62,7 +62,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     let count = 1;
     const elements = filteredUsers.map((user: IUser) => (
       <div key={user.id} style={userElementStyle}>
-        <p>RANK : {count++}</p> {/* TO CHANGE */}
+        <p>{count++}</p> {/* TO CHANGE */}
         {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
         <>
           <p>SCORE %</p>
@@ -71,6 +71,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     ));
     setUserElements(elements);
   };
+
   useEffect(() => {
     displayAllProfil();
   }, [searchTerm, allUsers, jwtToken, meUser]);
@@ -85,25 +86,34 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   );
 }
 
+
 const container: CSSProperties = {
-  top: '200px',
+  left: '50%',
+  width: '70%',
+  minWidth: '500px',
+  top: '40%',
   background: 'black',
   position: 'absolute',
-  border: '3px solid blue',
-  height: '90vh',
+  transform: 'translate(-50%, -50%)',
+  padding: '10px',
   display: 'flex',
   justifyContent: 'center',
+  alignContent: 'center',
   zIndex: '999',
 };
 
-const userElementStyle = {
-  width: '1000px',
+const userElementStyle: CSSProperties = {
+  width: '600px',
+  border: '1px solid white',
+  flexWrap: 'wrap',
   display: 'flex',
   justifyContent: 'space-around',
+  alignContent: 'center',
   background: 'grey',
-  border: '1px solid black',
   color: 'white',
   margin: '10px',
   padding: '10px',
   cursor: 'pointer',
+  borderRadius: '10px',
+
 };
