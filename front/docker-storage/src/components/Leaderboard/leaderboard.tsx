@@ -1,10 +1,10 @@
-import Cookies from 'js-cookie';
 import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
 import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
+import Cookies from 'js-cookie';
 
 export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
   const jwtToken = Cookies.get('jwtToken');
@@ -71,7 +71,6 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     ));
     setUserElements(elements);
   };
-
   useEffect(() => {
     displayAllProfil();
   }, [searchTerm, allUsers, jwtToken, meUser]);

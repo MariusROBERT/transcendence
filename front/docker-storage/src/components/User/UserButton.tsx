@@ -18,7 +18,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 	const [requestReceived, setRequestReceived] = useState<boolean>(false);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const { setUser, fetchContext } = useUserContext();
+	const { fetchContext, setUser } = useUserContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');

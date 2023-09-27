@@ -50,7 +50,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
-            <img style={imgStyle} src={otherUser.urlImg}></img>
+            <img style={imgStyle} src={otherUser.urlImg} alt={'profile'} />
             <img style={otherUser?.user_status ? statusStyle : imgStyle}
                  src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
                  alt={meUser?.user_status ? 'connected' : 'disconnected'} />

@@ -1,38 +1,62 @@
 import { useState } from 'react';
 import { Fetch, unsecureFetch } from '../../utils';
+import { publish } from '../../utils/event';
 
-/*
-    THIS FILE IS ONLY FOR TESTING AND SHOULD BE REMOVE LATER
-*/
-
-export var current_chan = '';
+//  TODO: Move this
+export var current_chan = "";
 
 export function ChatMenu() {
-  const [inputValue, setInputValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<string>("");
+    var current_id = -1;
 
-  async function OnJoinChannel() {
-    if (inputValue == '')
-      return;
-    // console.log("You are joining " + inputValue);
-    setInputValue('');
-    //request create channel
-    //check if chan exist
-
-    const path = 'channel/name/' + inputValue;
-    const res = await unsecureFetch(path, 'GET');
-    //const res = await unsecureFetch('channel', 'GET', JSON.stringify({channel_name: "a"}));
-    if (res?.ok) {
-      console.log('found');
-    } else {
-      console.log('not found... Creating channel');
-      Fetch('channel', 'POST',
-        JSON.stringify({
-          channel_name: inputValue,
-          priv_msg: false,
-        }));
+    //  TODO: clean here
+    async function OnJoinChannel()
+    {
+        if (inputValue == "")
+            return ;
+        setInputValue("");
+        const path = "channel/name/" + inputValue;
+        const res = await unsecureFetch(path, 'GET');
+        if (res?.ok)
+        {
+            console.log("Channel Found, connecting to channel...");
+            var data = await res.json();
+            console.log(data.id);
+            current_id = data.id;
+            //  Adding user to channel if not in it
+            await Fetch('channel/add_user/' + data.id , 'POST',
+            JSON.stringify({
+                id: -1 //current user id
+            }));
+        }
+        else
+        {
+            console.log("not found... Creating channel");
+            const r = await Fetch('channel', 'POST',
+            JSON.stringify({
+                channel_name: inputValue, 
+                priv_msg: false,
+            }));
+            current_id = r?.json.id;
+        }
+        current_chan = inputValue;
+        const res2 = await Fetch("channel/msg/" + current_id, 'GET');
+        var len = res2?.json.length;
+        var msgs = res2?.json;
+        console.log(res2?.json);
+        publish('enter_chan', {
+                detail: {
+                    value: msgs,
+                }
+        });
+        const res3 = await Fetch("channel/users/" + current_id, 'GET');
+        const usrs = res3?.json;
+        publish('enter_users', {
+            detail: {
+                value: usrs,
+            },
+        })
     }
-    current_chan = inputValue;
-  }
 
   return (
     <div>

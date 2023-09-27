@@ -10,6 +10,7 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
@@ -42,7 +43,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <span style={notificationCountStyle}>1</span>
         </div>)}
       {isLeaderboardVisible &&
-        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible}></Leaderboard>}
+        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
       {!inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                                flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>

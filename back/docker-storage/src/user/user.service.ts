@@ -73,8 +73,21 @@ export class UserService {
       user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
     user.socketId = '';
-    
     await this.UserRepository.save(user);
+  }
+  
+  //  USE FOR ADMIN BAN MUTE ..
+  async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
+    try
+    {
+      if (!user.channels)
+        user.baned = [];
+      //user.channels.push(channel);
+      user.baned = [...user.baned, channel];
+      await this.UserRepository.save(user);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
   }
 
   // -- Public -- :
@@ -203,6 +216,16 @@ export class UserService {
 
   }
 
+  async getUsersInChannels(channelId: number) {
+    const users = this.UserRepository.createQueryBuilder('user')
+                                    .innerJoin('user.channels', 'channel')
+                                    .where('channel.id = :channelId', { channelId })
+                                    .select(['user.id', 'user.username', 'user.urlImg'])
+                                    .getMany();
+    //console.log("USER: " + users);
+    return users;
+  }
+
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
   async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
     // est ce quil a des new msg et si oui de quel cahnnel
@@ -319,7 +342,8 @@ export class UserService {
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
       user.urlImg != '' &&
-      !user.urlImg.startsWith('https://cdn.intra.42.fr')
+      !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
+      user.urlImg !== 'http://localhost:3001/public/default.png'
     ) {
       fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
         if (err) console.error('remove old: ', err);
