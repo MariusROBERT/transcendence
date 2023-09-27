@@ -3,10 +3,9 @@ import { Flex, RoundButton } from '..';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { IUser, IUserComplete } from '../../utils/interfaces';
-import { lookGame, openChat, openOptionDropdown, sendFriendInvite, sendGameInvite } from '../../utils/user_functions';
-import { useUserContext } from '../../contexts';
+import { lookGame, openChat, openOptionDropdown, sendFriendInvite } from '../../utils/user_functions';
+import { useGameContext, useUserContext } from '../../contexts';
 
-// TODO : Add Object User insteed of user_name and user icon
 interface Props {
   otherUser: IUser;
   meUser: IUserComplete | undefined;
@@ -16,6 +15,7 @@ export function UserButton({ otherUser, meUser }: Props) {
   const jwtToken = Cookies.get('jwtToken');
   const [sendButton, setSendButton] = useState(false);
   const { fetchContext } = useUserContext();
+  const { sendGameInvite } = useGameContext();
 
   useEffect(() => {
     console.log('user has been updated in UserButton', meUser);
@@ -23,6 +23,7 @@ export function UserButton({ otherUser, meUser }: Props) {
       setSendButton(true);
     }
   }, [meUser, otherUser.id]);
+
 
   const onClick = async () => {
     if (!meUser)
@@ -48,7 +49,7 @@ export function UserButton({ otherUser, meUser }: Props) {
           {otherUser.is_friend &&
             <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
           {otherUser.is_friend && <RoundButton icon={require('../../assets/imgs/icon_play.png')}
-                                               onClick={() => sendGameInvite()}></RoundButton>}
+                                               onClick={() => sendGameInvite(otherUser.id)}></RoundButton>}
           {otherUser.is_friend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')}
                                                onClick={() => lookGame()}></RoundButton>}
           {!otherUser.is_friend && !sendButton &&
