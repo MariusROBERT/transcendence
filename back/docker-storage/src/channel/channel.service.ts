@@ -113,10 +113,9 @@ export class ChannelService {
       throw new Error('This channel is a private message channel');
     try
     {
-      //if (!channel.users) channel.users = [];
-      //channel.users = [...channel.users, user];
-      const currentUsers = channel.users || [];
-      console.log("Curr " + channel.users + ".");
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      if (currentUsers.includes(user))
+        throw new Error("User already in channel");
       currentUsers.push(user);
       channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
@@ -240,7 +239,7 @@ export class ChannelService {
     } catch(e) {
       console.log("Error: " + e);
     }
-    console.log("hes unbanned");
+    //console.log("hes unbanned");
     return channel;
   }
 
