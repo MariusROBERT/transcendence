@@ -341,4 +341,28 @@ export class UserService {
     if (!user) throw new NotFoundException(`No User found for username ${username}`);
     return user;
   }
+
+  // Game Invites Management ---------------------------------------------------------------------------------------- //
+  async setUserSendInvitationTo(user: UserEntity, otherUserId: number | undefined) {
+    user.gameInvitationTo = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserReceivedInvitationFrom(user: UserEntity, otherUserId: number | undefined) {
+    user.gameInvitationFrom = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserInGameStatus(user: UserEntity, otherUserId: number | undefined) {
+    user.isInGameWith = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  getGameStatus(user: UserEntity): {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number}{
+    return {
+      gameInvitationFrom: user.gameInvitationFrom,
+      gameInvitationTo: user.gameInvitationTo,
+      isInGameWith:user.isInGameWith,
+    }
+  }
 }
