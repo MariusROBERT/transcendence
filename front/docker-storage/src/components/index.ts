@@ -1,3 +1,5 @@
+export { Game } from './Game/Game';
+
 export { default as Background } from './Background/Background';
 export { Border } from './Border/Border';
 export { Button } from './Button/Button';
