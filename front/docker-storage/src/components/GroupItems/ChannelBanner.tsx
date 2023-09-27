@@ -20,7 +20,8 @@ export function ChannelPannel({id, name} : ChannelInfos) {
             <RoundButton icon={require('../../assets/imgs/icon_leave.png')} onClick={() => console.log("leave")}></RoundButton>
             <RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => console.log("settings")}></RoundButton>
             <p style={{fontSize:"20px"}}>
-                {name}
+                {name.slice(0, 25)}
+                {name.length > 25 ? "..." : ""}
             </p>
             </Flex>
         </div>

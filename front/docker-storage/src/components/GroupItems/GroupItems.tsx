@@ -84,7 +84,6 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   async function FetchChannels() {
     const res = await Fetch("channel/of_user", 'POST');
     const channels = res?.json;
-    console.log(channels);
     setChannels(channels);
   }
 
