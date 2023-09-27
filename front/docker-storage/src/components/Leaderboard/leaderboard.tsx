@@ -62,7 +62,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
     let count = 1;
     const elements = filteredUsers.map((user: IUser) => (
       <div key={user.id} style={userElementStyle}>
-        <p>RANK : {count++}</p> {/* TO CHANGE */}
+        <p>{count++}</p> {/* TO CHANGE */}
         {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
         <>
           <p>SCORE %</p>
@@ -103,6 +103,7 @@ const container: CSSProperties = {
 };
 
 const userElementStyle: CSSProperties = {
+  width: '600px',
   border: '1px solid white',
   flexWrap: 'wrap',
   display: 'flex',

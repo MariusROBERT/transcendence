@@ -58,7 +58,7 @@ const UserBannerContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  width: '500px'
+  width: '400px'
 }
 
 const statusStyle: CSSProperties = {
