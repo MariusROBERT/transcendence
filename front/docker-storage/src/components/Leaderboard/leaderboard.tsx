@@ -1,26 +1,18 @@
-import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import Profil from '../Profil/profil';
-import { AuthGuard } from '..';
-import { LeaderboardProps, User, UserInfos } from '../../utils/interfaces';
+import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
+import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
+import { handleOpenProfil } from '../../utils/user_functions';
 
-export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [userInfos, setUserInfos] = useState<UserInfos>();
-
-  const handleOpenProfil = (user: User) => {
-    // open profil card
-    setSelectedUser(user);
-    setProfilVisible(true);
-  };
 
   const closeProfil = () => {
-    // close profil card
     setSelectedUser(null);
     setProfilVisible(false);
   };
@@ -48,81 +40,95 @@ export function Leaderboard({ searchTerm, isVisible }: LeaderboardProps) {
       getAllProfil();
       const user = (await Fetch('user', 'GET'))?.json;
       if (!user) return;
-      setUserInfos(user);
+      // setUserInfos(user);
     };
     getUserInfos(); // appel de la fonction si le jwt est good
   }, [isVisible]);
 
+  useEffect(() => {
+    console.log('meUser in Leaderboard', meUser);
+  }, [meUser]);
+
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-  const displayAllProfil = () => {
-    const filteredUsers = allUsers
-      .filter((user: User) =>
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-      .sort((a: User, b: User) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-    let count = 1;
-    const elements = filteredUsers.map((user: User) => (
-      <div key={user.id} style={userElementStyle}>
-        <p>RANK : {count++}</p> {/* TO CHANGE */}
-        {user.id === userInfos?.id ? (
-          <>
-            {/* <p onClick={() => handleOpenProfil(user)}> ===> go to own profil ?? */}
-            <p>coucou cest moi : {user.username}</p>
-            {/* </p> */}
-            <img style={imgStyle} src={user?.urlImg} />
-            <p>winrate : {user.winrate}</p>
-          </>
-        ) : (
-          <>
-            <p onClick={() => handleOpenProfil(user)}>
-              Nom d'utilisateur : {user.username}
-            </p>
-            {user.is_friend ? <p>Is a friend</p> : <></>}
-            <img style={imgStyle} src={user?.urlImg} />
-            <p>Status : {user.user_status}</p>
-            <p>winrate : {user.winrate}</p>
-          </>
-        )}
-      </div>
-    ));
-    setUserElements(elements);
-  };
+
 
   useEffect(() => {
+    const displayAllProfil = () => {
+      const filteredUsers = allUsers
+        .filter((user: IUser) =>
+          user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+        )
+        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
+      let count = 1;
+      const elements = filteredUsers.map((user: IUser) => (
+        <div key={user.id} style={userElementStyle}>
+          <p>RANK : {count++}</p> {/* TO CHANGE */}
+          {user.id === meUser?.id ? (
+            <>
+              <Flex zIndex={'10'} flex_direction='row'>
+                <RoundButton icon={user.urlImg} icon_size={50}
+                             onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
+                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest
+                  moi: {user.username}</p>
+              </Flex>
+            </>
+          ) : (
+            <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
+                        setProfilVisible={setProfilVisible} />
+          )}
+          <>
+            <p>SCORE %</p>
+          </>
+        </div>
+      ));
+
+      setUserElements(elements);
+    };
+
     displayAllProfil();
-  }, [searchTerm, allUsers]);
+    // setUserInfos(meUser);
+  }, [searchTerm, allUsers, meUser]);
 
   return (
     <div style={container}>
-      leaderboard
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className="container">{userElements}</div>
+      <div className='container'>{userElements}</div>
+      <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => setIsVisible(false)}></RoundButton>
       {profilVisible && (
         <AuthGuard isAuthenticated>
-          <Profil user={selectedUser} onClose={closeProfil} />
+          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
         </AuthGuard>
       )}
     </div>
   );
 }
 
-const container = {
+const container: CSSProperties = {
+  top: '200px',
+  background: 'black',
+  position: 'absolute',
   border: '1px solid red',
-  height: '1000px',
+  height: '90vh',
   display: 'flex',
   justifyContent: 'center',
+  zIndex: '999',
 };
 
-const imgStyle = {
+/*const imgStyle = {
   width: '100px',
   height: '100px',
   border: '1px solid red',
 };
 
+const statusStyle = {
+  width: '10px',
+  height: '10px',
+};*/
+
 const userElementStyle = {
-  width: '900px',
+  width: '1000px',
   display: 'flex',
   justifyContent: 'space-around',
   background: 'grey',

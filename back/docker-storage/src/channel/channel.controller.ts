@@ -1,31 +1,16 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseArrayPipe,
-  ParseIntPipe,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import {
-  ChannelDto,
-  CreateChannelDto,
-  UpdateChannelDto,
-} from './dto/channel.dto';
+import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserAddChanDto, UserChanDto } from 'src/user/dto/user.dto';
-import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
-import { ChannelEntity } from '../database/entities/channel.entity';
-import { MessageEntity } from '../database/entities/channel.entity';
+import { ChannelEntity, MessageEntity } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
   @Get('/:id')
   async GetChannelById(

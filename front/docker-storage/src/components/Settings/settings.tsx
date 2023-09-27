@@ -1,29 +1,34 @@
 import Cookies from 'js-cookie';
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import { Modifications, UserInfosForSetting, SettingsProps } from '../../utils/interfaces';
+import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 
-interface Props{
-  onClose:() => void;
-  isVisible:boolean;
+interface Props {
+  isVisible: boolean;
 }
 
-export function Settings({ onClose, isVisible }:Props){
+const Settings: React.FC<Props> = ({ isVisible }) => {
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    navigate('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordType, setPasswordType] = useState('password'); // Type initial : password
-  const [userInfosSettings, setUserInfosSettings] =
-    useState<UserInfosForSetting>();
+  const [passwordType, setPasswordType] = useState('password');
+  const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
-    urlImg: '',
+    img: '',
     password: '',
     confirmpwd: '',
     is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
   });
+  const [pictureError, setPictureError] = useState<string>('');
+  const [newImage, setNewImage] = useState<string>('');
 
   const unlockPwd = () => {
     setIsDisabled(false);
@@ -48,8 +53,13 @@ export function Settings({ onClose, isVisible }:Props){
   useEffect(() => {
     const getUserInfos = async () => {
       const user = (await Fetch('user', 'GET'))?.json;
-      if (user)
+      if (user) {
         setUserInfosSettings(user);
+      } else {
+        // si je delete le cookie du jwt
+        navigate('/login');
+        alert('Vous avez été déconnecté');
+      }
     };
     getUserInfos();
   }, [isVisible]);
@@ -66,7 +76,7 @@ export function Settings({ onClose, isVisible }:Props){
     if (
       modifData.confirmpwd === '' &&
       modifData.password === '' &&
-      modifData.urlImg === '' &&
+      modifData.img === '' &&
       modifData.is2fa_active === userInfosSettings?.is2fa_active
     )
       // nothing changed
@@ -82,7 +92,6 @@ export function Settings({ onClose, isVisible }:Props){
         const user = (await Fetch('user/update_password', 'PATCH',
           JSON.stringify({ password: modifData.password })))?.json;
         if (user) {
-          //console.log('MDP changed : ', user.password);
           setUserInfosSettings(user);
         }
         lockPwd();
@@ -91,21 +100,48 @@ export function Settings({ onClose, isVisible }:Props){
     }
     if (
       modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.urlImg === userInfosSettings.urlImg
+      modifData.img === userInfosSettings?.urlImg
     ) {
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
     }
 
-    const user = (await Fetch('user', 'PATCH',
-      JSON.stringify({
+    // IMG :
+    if (modifData.img !== '') {
+      const formData = new FormData();
+      formData.append('file', modifData.img);
+      formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
+
+      const user = await fetch('http://localhost:3001/api/user/update_picture', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: formData,
+      }).then(r => {
+        if (r.ok) {
+          setPictureError('');
+          return r.json();
+        }
+        setPictureError('Error while uploading picture');
+        return null;
+      });
+      if (user) {
+        modifData.img = '';
+        setUserInfosSettings(user);
+      }
+    }
+
+    // 2FA :
+    if (modifData.is2fa_active !== userInfosSettings?.is2fa_active) {
+      const user = (await Fetch('user', 'PATCH',
+        JSON.stringify({
           is2fa_active: modifData.is2fa_active,
-          urlImg: modifData.urlImg,
         })))?.json;
-    if (user) {
-      //console.log('2fa & urlImg changed : ', user.is2fa_active, user.urlImg);
-      setUserInfosSettings(user);
+      if (user) {
+        setUserInfosSettings(user);
+      }
     }
     lockPwd();
     setErrorMessage('');
@@ -115,17 +151,42 @@ export function Settings({ onClose, isVisible }:Props){
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
-        <div style={modifContainer}>
-          <img style={imgStyle} src={userInfosSettings?.urlImg} alt="" />
-          <input
-            type="file"
-            onChange={(e) =>
-              setModifData({
-                ...modifData,
-                urlImg: e.target.value,
-              })
-            }
-          />
+        <div>
+          <div style={modifContainer}>
+            <img style={{
+              ...imgStyle,
+              borderColor: modifData.img === '' ? 'green' : 'orange',
+            }} // green = synced with back, orange = not uploaded yet
+                 src={newImage || userInfosSettings?.urlImg}
+                 alt='user profile pic'
+            />
+            <input
+              id={'image'}
+              type='file'
+              accept={'image/png, image/jpeg, image/jpg'}
+              onChange={(event: ChangeEvent) => {
+                const { files } = event.target as HTMLInputElement;
+                if (files && files.length !== 0) {
+                  if (files[0].size > 1024 * 1024 * 5) {
+                    setPictureError('File is too big!');
+                  } else {
+                    setNewImage(URL.createObjectURL(files[0]));
+                    setPictureError('');
+                    setModifData({
+                      ...modifData,
+                      img: files[0],
+                    });
+                  }
+                }
+              }
+              }
+              style={{ visibility: 'hidden' }}
+            />
+            <label htmlFor='image'
+                   style={{ borderRadius: '10px', backgroundColor: 'darkgrey', padding: '1em' }}
+            ><p>Upload image</p></label>
+          </div>
+          <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
         <div style={modifContainer}>
           <input
@@ -137,7 +198,7 @@ export function Settings({ onClose, isVisible }:Props){
               })
             }
             disabled={isDisabled}
-            placeholder="password"
+            placeholder='password'
           />
           {showConfirmPassword && (
             <div style={modifContainer}>
@@ -149,16 +210,16 @@ export function Settings({ onClose, isVisible }:Props){
                     confirmpwd: e.target.value,
                   })
                 }
-                placeholder="Confirm Password"
+                placeholder='Confirm Password'
               />
             </div>
           )}
           {showConfirmPassword && (
-            <button type="button" onClick={togglePasswordVisibility}>
+            <button type='button' onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type="button" onClick={toggleLock}>
+          <button type='button' onClick={toggleLock}>
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
@@ -174,8 +235,7 @@ export function Settings({ onClose, isVisible }:Props){
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
-        <button type="submit">Enregistrer</button>
-        <button onClick={onClose}>Fermer</button>
+        <button type='submit'>Enregistrer</button>
       </form>
     </div>
   );
@@ -183,7 +243,7 @@ export function Settings({ onClose, isVisible }:Props){
 
 const imgStyle: React.CSSProperties = {
   width: '100px',
-  border: '1px solid red',
+  border: '2px solid',
 };
 
 const settingsStyle: React.CSSProperties = {

@@ -3,17 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import {
-  GetUserIdFromSocketIdDto,
-  PublicProfileDto,
-  SetSocketIdDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-} from './dto/user.dto';
+import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import { Express } from 'express';
 
 @Injectable()
 export class UserService {
@@ -24,7 +20,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -32,7 +29,6 @@ export class UserService {
   async updateProfile(
     profil: UpdateUserDto,
     user: UserEntity,
-    // file // TODO: pour stocker img
   ): Promise<UserEntity> {
     const id: number = user.id;
     const errors = await validate(profil);
@@ -40,17 +36,6 @@ export class UserService {
       throw new BadRequestException(errors);
     }
     //console.log('modifications apportées: ', profil);
-
-    // NEW_IMAGE
-    // if (profil.urlImg != '')
-    // {
-    //     console.log("IMAGE ALLLRIGHT");
-
-    //     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    //         console.log("IMAGE ALLLRIGHT2222");
-    //         throw new Error('Ce type de fichier n\'est pas autorisé.');
-    //     }
-    // }
 
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
@@ -70,11 +55,10 @@ export class UserService {
     const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    const hashedPwd = await bcrypt.hash(
+    updatePwdDto.password = await bcrypt.hash(
       updatePwdDto.password,
       userForSalt.salt,
     );
-    updatePwdDto.password = hashedPwd;
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
       ...updatePwdDto, // modif seulement les differences
@@ -217,8 +201,8 @@ export class UserService {
 
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
-    if (!user) return false;
-    return true;
+    return !!user;
+
   }
 
   async getUsersInChannels(channelId: number) {
@@ -308,10 +292,9 @@ export class UserService {
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    const isAdmin = channel.admins.some(
+    return channel.admins.some(
       (adminUser) => adminUser.id === user.id,
     );
-    return isAdmin;
   }
 
   // logout
@@ -327,13 +310,27 @@ export class UserService {
     return { message: 'Deconnexion reussie' };
   }
 
-  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    const user = await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+  async updatePicture(user: UserEntity, file: Express.Multer.File) {
+    if (
+      user.urlImg != '' &&
+      !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
+      user.urlImg !== 'http://localhost:3001/public/default.png'
+    ) {
+      fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
+        if (err) console.error('remove old: ', err);
+      });
+    }
+    user.urlImg = 'http://localhost:3001/' + file.path;
+    await this.UserRepository.save(user);
     return user;
   }
 
+  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
+    return await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+  }
+
   async setUserSocketId(id: number, socketId: string) {
-    const user = await this.UserRepository.findOne({ where: { id: id }});
+    const user = await this.UserRepository.findOne({ where: { id: id } });
     if (!user) {
       console.error('user not found in setUserSocketId');
       return;
@@ -345,7 +342,7 @@ export class UserService {
   }
 
   async getSocketIdFromUser(id: number) {
-    const user = await this.UserRepository.findOne({ where: { id: id }});
+    const user = await this.UserRepository.findOne({ where: { id: id } });
     if (!user) {
       console.error('user not found in setUserSocketId');
       return;

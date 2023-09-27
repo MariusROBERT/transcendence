@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Fetch, unsecureFetch } from '../../utils';
 import { publish } from '../../utils/event';
 
@@ -43,11 +43,6 @@ export function ChatMenu() {
         const res2 = await Fetch("channel/msg/" + current_id, 'GET');
         var len = res2?.json.length;
         var msgs = res2?.json;
-        //for (var i = 0; i < len; i++)
-        //{
-        //  const mess = res2?.json[i].message_content;
-        //  msgs.push({ msg: mess, owner: true })
-        //}
         console.log(res2?.json);
         publish('enter_chan', {
                 detail: {
@@ -63,16 +58,18 @@ export function ChatMenu() {
         })
     }
 
-    return (
-        <div>
-            <label>
-                <input value={inputValue}
-                    onChange={(evt) => {setInputValue(evt.target.value);}}
-                />
-            </label>
-            <button onClick={OnJoinChannel}>
-                Join chat
-            </button>
-        </div>
-    )
+  return (
+    <div>
+      <label>
+        <input value={inputValue}
+               onChange={(evt) => {
+                 setInputValue(evt.target.value);
+               }}
+        />
+      </label>
+      <button onClick={OnJoinChannel}>
+        Join chat
+      </button>
+    </div>
+  );
 }

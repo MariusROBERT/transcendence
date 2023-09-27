@@ -23,7 +23,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isAnim, setIsAnim] = useState(false);
   const [isConnected, setIsConneted] = useState<boolean>(false);
-  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
+  // const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
@@ -53,15 +53,19 @@ export function Login({duration_ms = 900, viewport}: Props) {
   async function OnRegister() {
     if (formData.username !== '' && formData.password !== '') {
       if (formData.password === formData.confirmPassword) {
-        const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }));
-        if (registerResponse?.ok) {
-          return OnConnect();
+        if (!formData.username.endsWith('_42')) {
+          const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }));
+          if (registerResponse?.ok) {
+            return OnConnect();
+          } else {
+            setErrorMessage('this username is already used');
+            console.error('register failure. Error:', registerResponse?.status,);
+          }
         } else {
-          setErrorMessage('this username is already used');
-          console.error('register failure. Error:', registerResponse?.status,);
+          setErrorMessage(`username can't be ended with _42`);
         }
       } else {
         setErrorMessage('passwords are not corresponding');
@@ -198,7 +202,7 @@ export function Login({duration_ms = 900, viewport}: Props) {
             <p>or sign in with Intra42</p>
             <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
               //console.log('intra 42 clicked');
-              setIsFTConnection(true);
+              // setIsFTConnection(true);
               window.location.replace('http://localhost:3001/api/auth/login/42');
               // console.log("end co 42");
             }}></Button>

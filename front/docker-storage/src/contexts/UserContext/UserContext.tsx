@@ -1,44 +1,49 @@
-import { Fetch } from '../../utils'
-import { useState, createContext, useEffect, useContext, ReactNode } from 'react';
+import { Fetch } from '../../utils';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
+import { IUserComplete } from '../../utils/interfaces';
 
 type UserContextType = {
   id: number;
   isOnline: boolean;
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
+  user?: IUserComplete,
 }
 
 const UserContext = createContext<UserContextType>({
   id: 0,
   isOnline: false,
   socket: undefined,
-  fetchContext: async () => {}
+  fetchContext: async () => {},
+  user: undefined,
 });
 
 export function useUserContext() {
   return useContext(UserContext);
 }
 
-interface Props{
-  children:ReactNode
+interface Props {
+  children: ReactNode;
 }
 
-export function UserContextProvider({ children }: Props){
+export function UserContextProvider({ children }: Props) {
   const [username, setUsername] = useState<number>(0);
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
+  const [user, setUser] = useState<IUserComplete>();
 
-  async function fetchContext() : Promise<void> {
+  async function fetchContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
 
+    console.log('user reauest', user);
     if (!user) {
       setIsOnline(false);
-    }
-    else {
-      setUsername(user.username)
+    } else {
+      setUser(user);
+      setUsername(user.username);
       setId(user.id);
       setIsOnline(true);
       if (!socket)
@@ -46,16 +51,20 @@ export function UserContextProvider({ children }: Props){
     }
   }
 
+  // useEffect(() => {
+  // 	console.log("user has been updated in context", user);
+  // }, [user, setUser]);
+
   useEffect(() => {
     socket?.on('connect_error', (err) => {
       console.log('Connection to socket.io server failed', err);
     });
     socket?.on('disconnect', (reason) => {
-      socket?.emit('reset_user_socket_id', { id:id });
+      socket?.emit('reset_user_socket_id', { id: id });
       console.log('Disconnected from socket.io server', reason);
     });
     socket?.on('connect', () => {
-      socket?.emit('update_user_socket_id', { id:id, socketId: socket?.id });
+      socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
       console.log('Connected, Socket ID: ', socket?.id, ' UserName: `', username, '` ID: ', id);
     });
     socket?.connect();
@@ -64,10 +73,10 @@ export function UserContextProvider({ children }: Props){
       socket?.off('connect_error');
       socket?.off('disconnect');
       socket?.off('connect');
-    }
-  }, [socket]);
+    };
+  }, [socket, id, username]);
 
-  async function initSocket(){
+  async function initSocket() {
     if (!socket) {
       const token = Cookies.get('jwtToken');
       setSocket(
@@ -79,12 +88,14 @@ export function UserContextProvider({ children }: Props){
           query: { token },
         }));
     }
-    return () => { socket?.close(); }
+    return () => {
+      socket?.close();
+    };
   }
 
   return (
     <>
-      <UserContext.Provider value={{id, isOnline, socket, fetchContext}}>
+      <UserContext.Provider value={{ id, isOnline, socket, fetchContext, user }}>
         {children}
       </UserContext.Provider>
     </>

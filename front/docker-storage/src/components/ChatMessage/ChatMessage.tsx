@@ -1,5 +1,5 @@
-import {color} from '../../utils';
-import {Background, RoundButton} from "..";
+import { color } from '../../utils';
+import { Background, RoundButton } from '..';
 
 interface Props {
   children: string;
@@ -26,12 +26,12 @@ export function ChatMessage({ children, user_icon, user_name, date }: Props) {
       <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
       <div
         style={{
-          flex: "auto",
-          width: "100%",
-          display: "flex",
-          borderRadius: 10 + "px",
-          overflow: "hidden",
-          border: "solid " + color.black + " " + 2 + "px",
+          flex: 'auto',
+          width: '100%',
+          display: 'flex',
+          borderRadius: 10 + 'px',
+          overflow: 'hidden',
+          border: 'solid ' + color.black + ' ' + 2 + 'px',
         }}
       >
         <Background
@@ -40,7 +40,7 @@ export function ChatMessage({ children, user_icon, user_name, date }: Props) {
           flex_alignItems={"stretch"}
           flex_justifyContent={true ? "flex-start" : "flex-end"}
         >
-          <p style={{ margin: "10px", color: color.black, textShadow: "none" }}>
+          <p style={{ margin: '10px', color: color.black, textShadow: 'none' }}>
             {children}
           </p>
         </Background>

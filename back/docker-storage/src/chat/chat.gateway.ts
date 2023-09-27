@@ -8,7 +8,6 @@ import {
 import { Socket, Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
-import { AddMsgDto } from 'src/messages/dto/add-msg.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';

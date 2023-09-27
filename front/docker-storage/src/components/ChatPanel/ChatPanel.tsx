@@ -67,7 +67,7 @@ export function ChatPanel({ viewport, width }: Props) {
         ))}
       </>
     );
-}
+  }
 
 
 return (
@@ -75,39 +75,45 @@ return (
     <ChatMenu></ChatMenu>
     <ChanUserList></ChanUserList>
       <div style={{
-          height:viewport.height - 125 + 'px',
-          width:width - 50 + 'px',
-          backgroundColor:color.grey,
-          display:'flex',
-          flexDirection:'column',
-          gap:'5px 5px',
-          padding:'10px',
-          borderRadius: '15px',
-          overflow:'scroll',
+        height: viewport.height - 125 + 'px',
+        width: width - 50 + 'px',
+        backgroundColor: color.grey,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '5px 5px',
+        padding: '10px',
+        borderRadius: '15px',
+        overflow: 'scroll',
       }}>
-          {chat()}
+        {chat()}
       </div>
       <div style={{
-          display:'flex',
-          flexDirection:'row',
-          justifyContent:'space-between',
-          alignItems:'center',
-          width:width - 30 + 'px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: width - 30 + 'px',
       }}>
-          <input value={inputValue}
-                 onChange={(evt) => {setInputValue(evt.target.value);}}
-                 onKeyDown={(e) => { if (e.keyCode != 13) return; onEnterPressed()}}
-                 style={{
-                     height:50 + 'px',
-                     flex:'auto',
-                     backgroundColor:color.grey,
-                     borderRadius: '15px',
-                     border:'0',
-                 }}
-          >
-          </input>
-          <RoundButton icon_size={50} icon={require('../../assets/imgs/icon_play.png')} onClick={onEnterPressed}></RoundButton>
+        <input value={inputValue}
+               onChange={(evt) => {
+                 setInputValue(evt.target.value);
+               }}
+               onKeyDown={(e) => {
+                 if (e.keyCode !== 13) return;
+                 onEnterPressed();
+               }}
+               style={{
+                 height: 50 + 'px',
+                 flex: 'auto',
+                 backgroundColor: color.grey,
+                 borderRadius: '15px',
+                 border: '0',
+               }}
+        >
+        </input>
+        <RoundButton icon_size={50} icon={require('../../assets/imgs/icon_play.png')}
+                     onClick={onEnterPressed}></RoundButton>
       </div>
-  </Background>
-);
+    </Background>
+  );
 }
