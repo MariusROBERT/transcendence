@@ -1,6 +1,6 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
-import {Contexts, useUserContext} from "../../contexts";
+import { Contexts, useUserContext } from "../../contexts";
 
 interface Props {
   children: string;
@@ -10,7 +10,7 @@ interface Props {
   uid: number;
 }
 
-export function ChatMessage({ children, user_icon, user_name, date , uid}: Props) {
+export function ChatMessage({ children, user_icon, user_name, date, uid }: Props) {
   const { id } = useUserContext();
   function viewProfile() {
     // TODO: link the profile to the icon btn
@@ -24,13 +24,13 @@ export function ChatMessage({ children, user_icon, user_name, date , uid}: Props
         flexDirection: uid == id ? "row" : "row-reverse",
       }}
     >
-      <div>{user_name}</div>
       <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
       <div
         style={{
           flex: 'auto',
           width: '100%',
           display: 'flex',
+          flexDirection: "column",
           borderRadius: 10 + 'px',
           overflow: 'hidden',
           border: 'solid ' + color.black + ' ' + 2 + 'px',
@@ -38,7 +38,7 @@ export function ChatMessage({ children, user_icon, user_name, date , uid}: Props
       >
         <Background
           bg_color={color.white}
-          flex_direction={"row"}
+          flex_direction={"column"}
           flex_alignItems={"stretch"}
           flex_justifyContent={true ? "flex-start" : "flex-end"}
         >
@@ -46,7 +46,11 @@ export function ChatMessage({ children, user_icon, user_name, date , uid}: Props
             {children}
           </p>
         </Background>
+        <p style={{ margin: '10px', color: color.black, textShadow: 'none', fontSize: '12px' }}>
+          {date.toUTCString()}
+        </p>
       </div>
+
     </div>
   );
 }

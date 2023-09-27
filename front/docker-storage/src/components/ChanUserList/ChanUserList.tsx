@@ -22,7 +22,7 @@ export function ChanUserList() {
               {usrs.map((item) => (
               <ChanUser
                 key={item.id}
-                user_icon={require("../../assets/imgs/logo_42.png")}
+                user_icon={item.urlImg}
                 online={true}
               >
                 {item.username}

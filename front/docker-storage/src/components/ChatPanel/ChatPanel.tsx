@@ -67,7 +67,7 @@ export function ChatPanel({ viewport, width }: Props) {
         {msg.map((data, idx) => (
           <ChatMessage
             key={idx}
-            user_icon={require("../../assets/imgs/icon_chat.png")}
+            user_icon={data.sender_urlImg}
             user_name={data.sender_username}
             date={new Date()}
             uid={data.sender_id}
