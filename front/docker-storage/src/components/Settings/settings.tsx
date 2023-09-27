@@ -183,7 +183,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               }
               style={{ display: 'none' }}
             />
-            <label style={Btn} htmlFor='image'><p style={{ textAlign: 'center', width:'150px', margin: '0', padding: '0'}}>Upload Image</p></label>
+            <label style={Btn} htmlFor='image'><p style={{ height:'10px',  textAlign: 'center', width:'150px', margin: '0', padding: '0'}}>Upload Image</p></label>
           </div>
           <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
@@ -275,18 +275,6 @@ const modifContainerImage: React.CSSProperties = {
 
 }
 
-const UpoadImgBtn: React.CSSProperties = {
-  display: "flex",
-  alignContent: 'center',
-  justifyContent: 'center',
-  border: '1px solid red', 
-  height: '20px',
-  width: '200px',
-  borderRadius: '6px', 
-  backgroundColor: 'darkgrey',
-  padding: '5px',
-}
-
 const modifContainer2FA = {
   width: '150px',
   display: 'flex',
@@ -315,7 +303,7 @@ const Btn: React.CSSProperties = {
   borderRadius: '6px', 
   backgroundColor: 'darkgrey',
   padding: '5px',
-  marginTop: '5px'
+  marginTop: '5px',
 }
 
 export default Settings;
