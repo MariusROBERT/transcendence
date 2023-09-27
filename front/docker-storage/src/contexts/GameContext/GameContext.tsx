@@ -1,8 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../UserContext/UserContext';
-import { useNavigate } from 'react-router-dom';
-import { declineInvite } from '../../utils/user_functions';
 
 type GameContextType = {
   hasReceivedInvitationFrom: number | undefined,
@@ -39,19 +37,15 @@ interface Props {
 }
 
 export function GameContextProvider({ children }: Props) {
-  const navigate = useNavigate();
   const { socket, id } = useUserContext();
   const [hasReceivedInvitationFrom, setHasReceivedInvitationFrom] = useState<number | undefined>();
   const [hasSendInvitationTo, setHasSendInvitationTo] = useState<number | undefined>();
   const [isInGameWith, setIsInGameWith] = useState<number | undefined>();
 
   async function fetchGameContext(): Promise<void> {
-    let gameStatus: {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number};
-    try{
-      gameStatus = (await Fetch('user/get_game_status', 'GET'))?.json;
-    } catch (e) {
-      console.log(e);
-    }
+    let gameStatus: {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number} | undefined
+      = await (await Fetch('user/game_status/' + id, 'GET'))?.json;
+
     if (!gameStatus) return;
     setHasReceivedInvitationFrom(gameStatus?.gameInvitationFrom);
     setHasSendInvitationTo(gameStatus?.gameInvitationTo);
@@ -108,9 +102,9 @@ export function GameContextProvider({ children }: Props) {
     console.log('user [' + id + '] CANCEL game invite to [' + hasSendInvitationTo + ']');
   }
 
-  // Invites -- Event reception ------------------------------------------------------------------------------------- //
-  function onGameInviteReceived(body:{ sender: number, receiver: number }){
-    if (id != body.receiver)
+  // Invites -- Event reception ----------------------------------------------------------------------------------- //
+  function onGameInviteReceived(body:{ sender: number, receiver: number }) {
+    if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'send_invite\'');
 
     if (isInGameWith)
@@ -130,7 +124,7 @@ export function GameContextProvider({ children }: Props) {
   }
 
   function onGameInviteAccepted(body:{ sender: number, receiver: number }){
-    if (id != body.receiver)
+    if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'accept_invite\'');
 
     if (body.sender !== hasSendInvitationTo)
@@ -144,7 +138,7 @@ export function GameContextProvider({ children }: Props) {
   }
 
   function onGameInviteDeclined(body:{ sender: number, receiver: number }){
-    if (id != body.receiver)
+    if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'decline_invite\'');
 
     if (body.sender !== hasSendInvitationTo)
@@ -156,7 +150,7 @@ export function GameContextProvider({ children }: Props) {
   }
 
   function onGameInviteCanceled(body:{ sender: number, receiver: number }){
-    if (id != body.receiver)
+    if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'cancel_invite\'');
 
     if (body.sender !== hasReceivedInvitationFrom)
@@ -167,8 +161,8 @@ export function GameContextProvider({ children }: Props) {
     console.log('user [' + body.sender + '] CANCELED game invite to [' + id + ']');
   }
 
-  // Invites -- Connection Socket ----------------------------------------------------------------------------------- //
   useEffect(() => {
+    // Invites -- Connection Socket --------------------------------------------------------------------------------- //
     socket?.on('send_invite', onGameInviteReceived);
     socket?.on('accept_invite', onGameInviteAccepted);
     socket?.on('decline_invite', onGameInviteDeclined);
@@ -180,6 +174,7 @@ export function GameContextProvider({ children }: Props) {
       socket?.off('decline_invite', onGameInviteDeclined);
       socket?.off('cancel_invite', onGameInviteCanceled);
     };
+    // eslint-disable-next-line
   }, [socket]);
 
   // Start Game Management ------------------------------------------------------------------------- //

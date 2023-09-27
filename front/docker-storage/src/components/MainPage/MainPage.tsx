@@ -1,35 +1,43 @@
 import { color, Viewport } from '../../utils';
 import { Background, ChatPanel, ContactPanel, Leaderboard, Navbar, RoundButton, SearchBar, SidePanel } from '..';
 import { useEffect, useState } from 'react';
-import { useUserContext } from '../../contexts';
+import { useUserContext, useGameContext } from '../../contexts';
 
 interface Props {
   panelWidth: number;
   viewport: Viewport;
 }
 
-// const [userComplete, setUserComplete] = useState<IUserComplete>();
-
 export function MainPage({ panelWidth, viewport }: Props) {
-  const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(false);
   const { fetchContext, socket, id, user } = useUserContext();
+  const { fetchGameContext } = useGameContext();
 
   useEffect(() => {
-    fetchContext();
-  // eslint-disable-next-line
-  }, [OnLoad]);
+    async function fetchContexts(){
+      await fetchContext();
+    }
+    fetchContexts();
+    // eslint-disable-next-line
+  }, []);
 
+  useEffect(() => {
+    async function fetchContexts(){
+      if (id === 0) return;
+      await fetchGameContext();
+    }
+    fetchContexts();
+    // eslint-disable-next-line
+  }, [socket, id]);
 
   useEffect(() => {
     if (user?.invites && Array.isArray(user?.invites) && user?.invites.length > 0)
       setShowNotificationBadge(true);
-  }, [OnLoad, user?.invites]);
+  }, [user]);
 
   function onPlayClicked() {
-    // console.log('start clicked', socket?.id);
     socket?.emit('join_queue', { id: id });
   }
 
