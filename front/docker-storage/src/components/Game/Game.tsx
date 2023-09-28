@@ -1,138 +1,142 @@
 import React, { useEffect, useState } from 'react';
 import { basesize, Size, start, State } from './game.utils';
-import { useUserContext } from '../../contexts';
+import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from "react-p5";
 import p5Types from "p5";
+import { RoundButton } from '../RoundButton/RoundButton';
+import { useNavigate } from 'react-router-dom';
 
 export function Game({ viewport }:{ viewport: Viewport }) {
-  const [state, setState] = useState<State>(start);
+  const navigate = useNavigate();
   const { id, socket } = useUserContext();
-  const [size, setSize] = useState<Size>(basesize);
-  const [started, setStarted] = useState<boolean>(false);
-  const [upPressed, setUpPressed] = useState<boolean>(false);
-  const [downPressed, setDownPressed] = useState<boolean>(false);
-  const [factor, setFactor] = useState<number>(1);
+  const { leaveGame, isInGameWith } = useGameContext();
 
+  const [state, setState] = useState<State>(start);
+  const [size, setSize] = useState<Size>(basesize);
+  let upPressed: boolean = false;
+  let downPressed: boolean = false;
+  let factor: number = 1;
+
+  // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
-    function stateListener(state: {
+    if (!isInGameWith)
+      return navigate('/');
+    console.log('[', id, '] emit start_game', { id: id });
+    socket?.emit('start_game', { id: id });
+    // eslint-disable-next-line
+  }, []);
+
+  // In Game Management --------------------------------------------------------------------------------------------- //
+  // In Game -- Key Hook -------------------------------------------------------------------------------------------- //
+  function keyPressed(p5: p5Types){
+    switch (p5.keyCode) {
+      case 38: upPressed = true; break;
+      case 40: downPressed = true; break;
+    }
+    move();
+  }
+
+  function keyReleased(p5: p5Types){
+    switch (p5.keyCode) {
+      case 38: upPressed = false; break;
+      case 40: downPressed = false; break;
+    }
+    move();
+  }
+
+  // In Game -- Event emission -------------------------------------------------------------------------------------- //
+  function move() {
+    const isMoving = (upPressed && !downPressed) || (!upPressed && downPressed);
+    const moveUp = upPressed
+
+    socket?.emit('move_player', { id: id, isMoving: isMoving, moveUp: moveUp });
+  }
+
+  // In Game -- Event reception ------------------------------------------------------------------------------------- //
+  // In Game -- Connection Socket ----------------------------------------------------------------------------------- //
+  useEffect(() => {
+    function onGameStateUpdate(updatedState: {
       ball: { x:number, y:number },
       p1: number,
       p2: number,
       score: { p1:number, p2:number }
-    }) {
+    }){
       setState({
-        ball: { x: state.ball.x * factor, y: state.ball.y * factor },
-        p1: state.p1 * factor,
-        p2: state.p2 * factor,
-        score: { p1:state.score.p1, p2:state.score.p2 }
+        ball: { x: updatedState.ball.x * factor, y: updatedState.ball.y * factor },
+        p1: updatedState.p1 * factor,
+        p2: updatedState.p2 * factor,
+        score: { p1:updatedState.score.p1, p2:updatedState.score.p2 }
       });
     }
 
-    socket?.on('sendState', stateListener);
+    console.log('[', id, '] subscribed to update_game_state');
+    socket?.on('update_game_state', onGameStateUpdate);
     return () => {
-      socket?.off('sendState', stateListener);
+      socket?.off('update_game_state', onGameStateUpdate);
     };
-  }, [socket, factor]);
+    // eslint-disable-next-line
+  }, [socket]);
+
+  // Resize Window Management --------------------------------------------------------------------------------------- //
+  const updateDimension = () => {
+    factor = Math.min(viewport.width / basesize.width, viewport.height / basesize.height);
+    setSize({
+      height: basesize.height * factor,
+      width: basesize.width * factor,
+      ball: basesize.ball * factor,
+      bar: {x:basesize.bar.x * factor, y:basesize.bar.y * factor},
+      halfBar: basesize.halfBar * factor,
+      halfBall: basesize.halfBall * factor,
+      p1X: basesize.p1X * factor,
+      p2X: basesize.p2X * factor,
+    });
+  }
 
   useEffect(() => {
-    function getSize(){
-      setFactor(basesize.width / viewport.width);
-      setSize({
-        height: basesize.height * factor,
-        width: basesize.width * factor,
-        ball: basesize.ball * factor,
-        bar: {x:basesize.bar.x * factor, y:basesize.bar.y * factor},
-        halfBar: basesize.halfBar * factor,
-        halfBall: basesize.halfBall * factor,
-        p1X: basesize.p1X * factor,
-        p2X: basesize.p2X * factor,
-      });
-    }
-    getSize();
+    updateDimension();
   }, [viewport, factor]);
 
+  // Display Game Management ---------------------------------------------------------------------------------------- //
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    const game = p5.createCanvas(viewport.width, viewport.height);
+    const game = p5.createCanvas(size.width, size.height);
     game.parent('container')
     p5.background(0);
   };
 
   const draw = (p5: p5Types) => {
+    updateDimension();
+    p5.resizeCanvas(size.width, size.height);
     p5.background(0);
     p5.textSize(32);
     p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
-    p5.textAlign(p5.CENTER, p5.CENTER)
+    p5.textAlign(p5.CENTER, p5.CENTER);
     p5.fill(255);
     p5.ellipse(state.ball.x, state.ball.y, size.ball);
     p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
     p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
   };
 
-  function windowResized(p5: p5Types) {
-    p5.resizeCanvas(viewport.width, viewport.height);
-  }
-
-  function onKeyPressed(moveUp: boolean){
-    if (!started){
-      console.log('start !')
-      setStarted(true);
-      socket?.emit('start_game', {id : id});
-    }
-    if (moveUp)
-      setUpPressed(true);
-    else
-      setDownPressed(true);
-    if (downPressed && upPressed)
-      stop();
-    else
-      move(moveUp);
-  }
-
-  function onKeyReleased(moveUp: boolean){
-    if (moveUp)
-      setUpPressed(false);
-    else
-      setDownPressed(false);
-    if (!downPressed && !upPressed)
-      stop();
-    else if (downPressed)
-      move(false);
-    else if (upPressed)
-      move(true);
-  }
-
-  function move(moveUp: boolean) {
-    socket?.emit('move_player', { id: id, isMoving: true, moveUp: moveUp });
-  }
-
-  function stop() {
-    socket?.emit('move_player', { id: id, isMoving: false, moveUp: false });
-  }
-
-  function keyDown(p5: p5Types){
-    if (p5.keyCode === p5.UP_ARROW)
-      onKeyPressed(true);
-    if (p5.keyCode === p5.DOWN_ARROW)
-      onKeyPressed(false);
-  }
-
-  function keyUp(p5: p5Types){
-    if (p5.keyCode === p5.UP_ARROW)
-      onKeyReleased(true);
-    if (p5.keyCode === p5.DOWN_ARROW)
-      onKeyReleased(false);
+  function windowResize(p5: p5Types) {
+    updateDimension();
+    p5.resizeCanvas(size.width, size.height);
   }
 
   return(
-    <div id={'container'} style={{
-      minHeight: '100vh -webkit - fill - available',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'absolute'
-    }}>
-      <Sketch setup={setup} draw={draw} keyPressed={keyDown} keyReleased={keyUp} style={{position:'relative', top:'0'}} windowResized={windowResized}></Sketch>
+    <div id={'container'} style={containerStyle}>
+      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize} style={{position:'relative', top:'0'}}></Sketch>
+      <div style={{position:'absolute', left:0, top:0}}>
+        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
+      </div>
     </div>
   );
+}
+
+const containerStyle: React.CSSProperties = {
+  minHeight: '100%',
+  minWidth: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'absolute'
 }
