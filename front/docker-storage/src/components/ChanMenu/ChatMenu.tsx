@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Fetch, unsecureFetch } from '../../utils';
 import { publish } from '../../utils/event';
-
-//  TODO: Move this
-export var current_chan = "";
+import { UpdateChannelMessage, UpdateChannelUsers, SetCurrChan } from '../../utils/channel_functions';
 
 export function ChatMenu() {
     const [inputValue, setInputValue] = useState<string>("");
@@ -39,24 +37,9 @@ export function ChatMenu() {
             }));
             current_id = r?.json.id;
         }
-        current_chan = inputValue;
-        const res2 = await Fetch("channel/msg/" + current_id, 'GET');
-        var len = res2?.json.length;
-        var msgs = res2?.json;
-        console.log(res2?.json);
-        publish('enter_chan', {
-                detail: {
-                    value: msgs,
-                }
-        });
-        const res3 = await Fetch("channel/users/" + current_id, 'GET');
-        const usrs = res3?.json;
-        //console.log(usrs);
-        publish('enter_users', {
-            detail: {
-                value: usrs,
-            },
-        })
+        SetCurrChan(inputValue);
+        UpdateChannelMessage(current_id);
+        UpdateChannelUsers(current_id);
     }
 
   return (

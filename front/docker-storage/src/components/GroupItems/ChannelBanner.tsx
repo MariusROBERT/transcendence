@@ -1,9 +1,15 @@
 import { ChannelInfos } from "../../utils/interfaces";
 import { Flex, RoundButton } from '..';
 import { color } from '../../utils';
-import { openChat } from '../../utils/user_functions';
+import { UpdateChannelMessage, UpdateChannelUsers, SetCurrChan } from "../../utils/channel_functions";
 
 export function ChannelPannel({id, name} : ChannelInfos) {
+
+    async function OnJoinChannel() {
+        UpdateChannelMessage(id);
+        UpdateChannelUsers(id);
+        SetCurrChan(name);
+    }    
 
     return (
         <div style={{
@@ -16,7 +22,7 @@ export function ChannelPannel({id, name} : ChannelInfos) {
             height: '25px',
           }}>
             <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
-            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => console.log("open")}></RoundButton>
+            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={OnJoinChannel}></RoundButton>
             <RoundButton icon={require('../../assets/imgs/icon_leave.png')} onClick={() => console.log("leave")}></RoundButton>
             <RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => console.log("settings")}></RoundButton>
             <p style={{fontSize:"20px"}}>

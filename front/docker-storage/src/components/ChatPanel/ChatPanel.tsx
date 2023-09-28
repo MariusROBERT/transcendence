@@ -3,12 +3,13 @@ import { Viewport } from "../../utils/Viewport";
 import { color } from "../../utils/Global";
 import { Background, RoundButton } from "..";
 import { ChatMessage } from "../ChatMessage/ChatMessage";
-import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
+import { ChatMenu } from "../ChanMenu/ChatMenu";
 import {Contexts, useUserContext} from "../../contexts";
 import { Fetch, unsecureFetch } from '../../utils';
 import { ChanUserList } from "../ChanUserList/ChanUserList";
 import { subscribe, unsubscribe } from '../../utils/event';
 import { publish } from '../../utils/event';
+import { GetCurrChan } from "../../utils/channel_functions";
 
 interface Props {
   viewport: Viewport;
@@ -55,10 +56,11 @@ export function ChatPanel({ viewport, width }: Props) {
     }
   })
 
-  function onEnterPressed() {
+  async function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    console.log("send message to " + current_chan);
-    socket?.emit("message", { message: inputValue, channel: current_chan });
+    const chan = await GetCurrChan();
+    console.log("send message to " +chan);
+    socket?.emit("message", { message: inputValue, channel: chan });
   }
 
   function chat() {
