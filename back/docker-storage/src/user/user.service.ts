@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
@@ -64,17 +70,24 @@ export class UserService {
 
     const id = user.id;
     const name = user.username;
-    const userForSalt = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
+    const currentUser = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    updatePwdDto.password = await bcrypt.hash(
-      updatePwdDto.password,
-      userForSalt.salt,
+    if (currentUser.id42 > 0)
+      throw new UnauthorizedException('Oauth42 user can\'t change password')
+    const newPassword = await bcrypt.hash(
+      updatePwdDto.newPassword,
+      currentUser.salt,
     );
     const newProfil = await this.UserRepository.preload({
       id, // search user == id
-      ...updatePwdDto, // modif seulement les differences
+      password: newPassword, // modif seulement password
     });
+    const oldHash = await bcrypt.hash(updatePwdDto.oldPassword, currentUser.salt);
+    if (oldHash !== currentUser.password) {
+      throw new UnauthorizedException(`Wrong password`);
+    }
+
     return await this.UserRepository.save(newProfil);
   }
 
