@@ -9,7 +9,7 @@ import { Fetch, unsecureFetch } from '../../utils';
 import { ChanUserList } from "../ChanUserList/ChanUserList";
 import { subscribe, unsubscribe } from '../../utils/event';
 import { publish } from '../../utils/event';
-import { GetCurrChan } from "../../utils/channel_functions";
+import { GetCurrChan, SetCurrChan, UpdateChannelMessage } from "../../utils/channel_functions";
 
 interface Props {
   viewport: Viewport;
@@ -28,14 +28,7 @@ export function ChatPanel({ viewport, width }: Props) {
     console.log("here");
     const res2 = await Fetch("channel/msg/" + message.id, 'GET');
 
-    var len = res2?.json.length;
-    var msgs = res2?.json;
-    console.log(res2?.json);
-    publish('enter_chan', {
-            detail: {
-                value: msgs,
-            }
-    });
+    UpdateChannelMessage(message.id);
     setInputValue("");
   };
 
