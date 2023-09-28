@@ -74,7 +74,7 @@ export class GameService {
       // Start the new Round
       state.ball = {x:size.width/2, y:size.height/2};
       state.dir.x *= -1;
-      state.speed = Math.max(state.speed - 1, 1);
+      state.speed = Math.max(state.speed - 1.5, 2);
     }
 
     //manage the 'physics' of the game
@@ -82,7 +82,7 @@ export class GameService {
       this.bounce(state);
 
     //increase progressively the speed
-    state.speed = Math.min(state.speed + 0.02, 30)
+    state.speed = Math.min(state.speed + 0.01, 30)
   }
 
   //manage the 'physics' of the game
@@ -92,15 +92,15 @@ export class GameService {
       state.dir.y *= -1
 
     //collision with the left player
-    if ((state.ball.x - size.ball / 2) < (size.p1X)
-      && (state.ball.y - size.halfBall) < (state.p1 + size.halfBar)
-      && (state.ball.y + size.halfBall) > (state.p1 - size.halfBar))
+    if (((state.ball.x - size.halfBall) <= (size.p1X))
+      && ((state.ball.y - size.halfBall) < (state.p1 + size.halfBar))
+      && ((state.ball.y + size.halfBall) > (state.p1 - size.halfBar)))
       state.dir = {x:state.ball.x - (size.p1X - size.ball), y: state.ball.y - state.p1}
 
     //collision with the right player
-    if (state.ball.x + size.halfBall > size.p2X
-      && state.ball.y - size.halfBall < state.p2 + size.halfBar
-      && state.ball.y + size.halfBall > state.p2 - size.halfBar)
+    if (((state.ball.x + size.halfBall) >= (size.p2X))
+      && ((state.ball.y - size.halfBall) < (state.p2 + size.halfBar))
+      && ((state.ball.y + size.halfBall) > (state.p2 - size.halfBar)))
       state.dir = {x: state.ball.x - (size.p2X + size.ball), y: state.ball.y - state.p2}
 
     state.dir = this.normalize(state.dir)
@@ -115,5 +115,4 @@ export class GameService {
       state.moveP2.up = moveUp;
     }
   }
-
 }
