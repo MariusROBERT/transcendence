@@ -96,4 +96,7 @@ export class UserGameStatus {
 
   @IsNumber()
   gameInvitationFrom: number;
+
+  @IsString()
+  gameInviteType: string;
 }
