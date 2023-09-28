@@ -35,7 +35,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
       console.log('goToLogin');
       navigate('/login');
     }
-  }, [is2fa]);
+  }, [is2fa, auth, navigate]);
 
   useEffect(() => {
     // if (!auth) {
@@ -43,7 +43,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
       console.log('goToLogin');
       navigate('/login');
     }
-  }, [auth, navigate]);
+  }, [auth, navigate, intraToken]);
 
   if (auth)
     return (children);

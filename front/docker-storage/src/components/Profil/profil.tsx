@@ -1,7 +1,4 @@
 import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
-import { useUserContext } from '../../contexts';
-import { UserButton } from '../User/UserButton';
 import { IUser, IUserComplete } from '../../utils/interfaces';
 
 export interface ProfilProps {
@@ -12,8 +9,7 @@ export interface ProfilProps {
 
 const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken)
-  {
+  if (!jwtToken) {
     window.location.replace('/login');
     alert('Vous avez été déconnecté');
   }
@@ -22,22 +18,21 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
     return (
       <div style={profilContainer}>
         <div style={profilContent}>
-            <>
-              <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
-              <p>ID : {meUser?.id}</p>
-              <img style={imgStyle} src={meUser?.urlImg}></img>
-              {meUser?.user_status == 'on' ?
-                <img style={statusStyle} src={require('../../assets/imgs/icon_green_connect.png')} />
-              :
-                <img style={statusStyle} src={require('../../assets/imgs/icon_red_disconnect.png')} />
-              }
-              <p>LAST MATCHS</p>
-              <p>--------------</p>
-              <p>--------------</p>
-              <p>LAST MATCHS</p>
-              <p>Winrate : {meUser?.winrate}</p>
-              <button onClick={onClose}>Fermer</button>
-            </>
+          <>
+            <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
+            <p>ID : {meUser?.id}</p>
+            <img style={imgStyle} src={meUser?.urlImg} alt={'user'}></img>
+            <img style={statusStyle}
+                 src={meUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
+                   require('../../assets/imgs/icon_red_disconnect.png')}
+                 alt={meUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
+            <p>LAST MATCHS</p>
+            <p>--------------</p>
+            <p>--------------</p>
+            <p>LAST MATCHS</p>
+            <p>Winrate : {meUser?.winrate}</p>
+            <button onClick={onClose}>Fermer</button>
+          </>
         </div>
       </div>
     );

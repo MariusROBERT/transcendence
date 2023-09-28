@@ -25,7 +25,6 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isAnim, setIsAnim] = useState(false);
   const [isConnected, setIsConneted] = useState<boolean>(false);
-  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({

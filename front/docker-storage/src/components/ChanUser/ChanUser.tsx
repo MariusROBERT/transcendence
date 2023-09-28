@@ -1,4 +1,4 @@
-import {Background, RoundButton} from "..";
+import { RoundButton} from "..";
 
 interface Props {
     children: string;
@@ -6,7 +6,7 @@ interface Props {
     online: boolean;
 }
 
-export function ChanUser({ children, user_icon, online }: Props) {
+export function ChanUser({ user_icon }: Props) {
     function viewProfile() {
         // TODO: link the profile to the icon btn
         // to do so in the Props, get the User ID

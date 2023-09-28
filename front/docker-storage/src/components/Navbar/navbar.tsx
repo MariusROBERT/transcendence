@@ -4,7 +4,6 @@ import { RoundButton } from '../RoundButton/RoundButton';
 import { IUserComplete } from '../../utils/interfaces';
 import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 
 interface Props {
   meUser: IUserComplete | undefined;

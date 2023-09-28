@@ -64,7 +64,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       }
     };
     getUserInfos();
-  }, [isVisible]);
+  }, [isVisible, navigate]);
 
   // MODIFICATIONS
 

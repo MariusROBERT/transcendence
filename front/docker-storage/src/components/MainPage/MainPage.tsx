@@ -10,7 +10,6 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
-  const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
@@ -22,7 +21,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
       await fetchContext();
     }
     getUser();
-  }, []);
+  }, [fetchContext]);
 
   useEffect(() => {
     if (!user)

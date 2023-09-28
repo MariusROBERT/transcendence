@@ -33,8 +33,8 @@ export class AuthController {
   @UseGuards(FtOAuthGuard)
   @UseFilters(FtAuthFilter)
   async auth42callback(@Request() req, @Res() res) {
-    console.log('id: ', req.user.id);
-    console.log('token: ', req.user.ftToken);
+    // console.log('id: ', req.user.id);
+    // console.log('token: ', req.user.ftToken);
     // const user = req.profile.user;
     const token = await this.authService.ftLogin({
       username: req.user.username,

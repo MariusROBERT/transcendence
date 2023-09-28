@@ -1,12 +1,10 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Viewport } from "../../utils/Viewport";
-import { color } from "../../utils/Global";
-import { Background, RoundButton } from "..";
-import { ChatMessage } from "../ChatMessage/ChatMessage";
-import { ChatMenu, current_chan } from "../ChanMenu/ChatMenu";
-import {Contexts, useUserContext} from "../../contexts";
-import { Fetch, unsecureFetch } from '../../utils';
-import { ChanUserList } from "../ChanUserList/ChanUserList";
+import { useEffect, useState } from 'react';
+import { color, Viewport } from '../../utils';
+import { Background, RoundButton } from '..';
+import { ChatMessage } from '../ChatMessage/ChatMessage';
+import { ChatMenu, current_chan } from '../ChanMenu/ChatMenu';
+import { useUserContext } from '../../contexts';
+import { ChanUserList } from '../ChanUserList/ChanUserList';
 import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
@@ -15,8 +13,8 @@ interface Props {
 }
 
 export function ChatPanel({ viewport, width }: Props) {
-  const [inputValue, setInputValue] = useState<string>("");
-  const { socket, id } = useUserContext();
+  const [inputValue, setInputValue] = useState<string>('');
+  const { socket } = useUserContext();
 
   // this should be in the back
   let [msg, setMessage] = useState<any[]>([]);
@@ -25,14 +23,14 @@ export function ChatPanel({ viewport, width }: Props) {
     //var owner = false;
 //
     //if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { message_content: message.msg, user_name: "Test" }]);
-    setInputValue("");
+    setMessage([...msg, { message_content: message.msg, user_name: 'Test' }]);
+    setInputValue('');
   };
 
   useEffect(() => {
-    socket?.on("message", getMsg);
+    socket?.on('message', getMsg);
     return () => {
-      socket?.off("message", getMsg);
+      socket?.off('message', getMsg);
     };
   }, [getMsg]);
 
@@ -42,14 +40,14 @@ export function ChatPanel({ viewport, width }: Props) {
       setMessage(event.detail.value);
     });
     return () => {
-      unsubscribe("enter_chan", null);
-    }
-  })
+      unsubscribe('enter_chan', null);
+    };
+  });
 
   function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    console.log("send message to " + current_chan);
-    socket?.emit("message", { message: inputValue, channel: current_chan });
+    console.log('send message to ' + current_chan);
+    socket?.emit('message', { message: inputValue, channel: current_chan });
   }
 
   function chat() {
@@ -58,7 +56,7 @@ export function ChatPanel({ viewport, width }: Props) {
         {msg.map((data, idx) => (
           <ChatMessage
             key={idx}
-            user_icon={require("../../assets/imgs/icon_chat.png")}
+            user_icon={require('../../assets/imgs/icon_chat.png')}
             user_name={data.sender_username}
             date={new Date()}
           >
@@ -70,10 +68,10 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
 
-return (
-  <Background flex_justifyContent={'space-evenly'}>
-    <ChatMenu></ChatMenu>
-    <ChanUserList></ChanUserList>
+  return (
+    <Background flex_justifyContent={'space-evenly'}>
+      <ChatMenu></ChatMenu>
+      <ChanUserList></ChanUserList>
       <div style={{
         height: viewport.height - 125 + 'px',
         width: width - 50 + 'px',
