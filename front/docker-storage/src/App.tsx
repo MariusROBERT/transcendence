@@ -5,6 +5,7 @@ import { AuthGuard, Game, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 import NotFoundPage from './components/404Page/404Page';
+import { GameScore } from './components/Game/GameScore';
 
 const SIZE: number = 500;
 
@@ -39,6 +40,11 @@ function App() {
             <Route path='/game' element={
               <AuthGuard isAuthenticated>
                 <Game viewport={viewport}></Game>
+              </AuthGuard>}>
+            </Route>
+            <Route path='/game/score' element={
+              <AuthGuard isAuthenticated>
+                <GameScore viewport={viewport}></GameScore>
               </AuthGuard>}>
             </Route>
             <Route path='*' element={<NotFoundPage />}/>
