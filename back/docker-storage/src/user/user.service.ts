@@ -206,13 +206,41 @@ export class UserService {
   }
 
   async getUsersInChannels(channelId: number) {
-    const users = this.UserRepository.createQueryBuilder('user')
+    const users = await this.UserRepository.createQueryBuilder('user')
                                     .innerJoin('user.channels', 'channel')
                                     .where('channel.id = :channelId', { channelId })
                                     .select(['user.id', 'user.username', 'user.urlImg'])
+                                    .addSelect('true AS data') 
                                     .getMany();
-    //console.log("USER: " + users);
-    return users;
+    const admin = await this.UserRepository.createQueryBuilder('user')
+                                    .innerJoin('user.admin', 'admin')
+                                    .where('admin.id = :channelId', { channelId })
+                                    .select(['user.id', 'user.username', 'user.urlImg'])
+                                    .addSelect('true AS data') 
+                                    .getMany();
+    const owner = await this.UserRepository.createQueryBuilder('user')
+                                    .innerJoin('user.own', 'own')
+                                    .where('own.id = :channelId', { channelId })
+                                    .select(['user.id', 'user.username', 'user.urlImg'])
+                                    .addSelect('true AS data') 
+                                    .getMany();
+    const fusers = users.map(d => {
+      var data = { ...d };
+      data["type"] = "member";
+      return data;
+    });
+    const fadmin = admin.map(d => {
+      var data = { ...d };
+      data["type"] = "admin";
+      return data;
+    });
+    const fowner = owner.map(d => {
+      var data = { ...d };
+      data["type"] = "owner";
+      return data;
+    });
+    const all = fusers.concat(fadmin, fowner);
+    return all;
   }
 
   //  The diff here is that full data are sent

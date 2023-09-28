@@ -34,10 +34,10 @@ export class ChannelService {
       ...channel,
     });
     chan.owner = user;
-    chan.admins = [];
-    chan.admins.push(user);
-    chan.users = [];
-    chan.users.push(user);
+    //chan.admins = [];
+    //chan.admins.push(user);
+    //chan.users = [];
+    //chan.users.push(user);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
