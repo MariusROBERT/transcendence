@@ -40,7 +40,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [profilVisible]);
 
   return (
     <>
@@ -59,7 +59,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
           onClick={() => setProfilVisible(!profilVisible)}
         />
         <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-          <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)} />
+          <Profil otherUser={meUser} meUser={meUser} />
         </Popup>
         <RoundButton
           icon={require('../../assets/imgs/icon_logout.png')}
