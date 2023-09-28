@@ -34,7 +34,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible }: Props
         placeholder={children}
         onChange={handleInputChange}
         onClick={onClick}
-      ></input>
+      />
     </div>
   );
 }

@@ -32,13 +32,13 @@ function App() {
               path='/'
               element={
                 <AuthGuard isAuthenticated>
-                  <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
+                  <MainPage panelWidth={SIZE} viewport={viewport}/>
                 </AuthGuard>
               }
             />
             <Route path='/login' element={<Login
               viewport={viewport}
-            ></Login>} />
+            />} />
             <Route path='*' element={<NotFoundPage />}/>
           </Routes>
         </Background>

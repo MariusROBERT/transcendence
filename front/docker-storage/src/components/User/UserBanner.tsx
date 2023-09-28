@@ -25,7 +25,7 @@ const UserBanner = ({ otherUser, meUser }: Props) => {
         <div style={UserBannerContainer}>
           <Flex zIndex={'10'} flex_direction='row'>
             <RoundButton icon={meUser.urlImg} icon_size={50}
-                         onClick={() => handleOpenProfil(setProfilVisible)}></RoundButton> {/* go to own profil */}
+                         onClick={() => handleOpenProfil(setProfilVisible)}/> {/* go to own profil */}
             <p onClick={() => handleOpenProfil(setProfilVisible)}>coucou cest
               moi: {meUser.username}</p>
           </Flex>
@@ -37,10 +37,10 @@ const UserBanner = ({ otherUser, meUser }: Props) => {
                  src={otherUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
                  alt={otherUser?.user_status ? 'connected' : 'disconnected'} />
             <RoundButton icon={otherUser.urlImg} icon_size={50}
-                         onClick={() => handleOpenProfil(setProfilVisible)}></RoundButton>
+                         onClick={() => handleOpenProfil(setProfilVisible)}/>
             <p onClick={() => handleOpenProfil(setProfilVisible)}>{otherUser.username}</p>
           </Flex>
-          <UserButton otherUser={otherUser} meUser={meUser}></UserButton>
+          <UserButton otherUser={otherUser} meUser={meUser}/>
         </div>
 
       )}

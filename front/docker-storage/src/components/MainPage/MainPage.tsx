@@ -46,29 +46,29 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <span style={notificationCountStyle}>1</span>
         </div>)}
       {isLeaderboardVisible &&
-        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
+        <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}/>}
       {!inGame && (<Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                                flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
+            <ContactPanel meUser={user} viewport={viewport}/>
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-          <Navbar meUser={user}></Navbar>
+          <Navbar meUser={user}/>
           <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}
                      isVisible={isLeaderboardVisible}>Leader Board..</SearchBar>
           <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
-                       onClick={onPlayClicked}></RoundButton>
+                       onClick={onPlayClicked}/>
           <div style={{ height: '60px' }} />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
           <Background>
-            <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
+            <ChatPanel viewport={viewport} width={panelWidth}/>
           </Background>
         </SidePanel>
       </Background>)}
-      <Game inGame={inGame} setInGame={setInGame}></Game>
+      <Game inGame={inGame} setInGame={setInGame}/>
     </div>
   );
 }

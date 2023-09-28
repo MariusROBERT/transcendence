@@ -52,7 +52,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     if (!allUsers)
-      return (<><p>No user</p></>)
+      return (<p>No user</p>)
     const filteredUsers = allUsers
       .filter((user: IUser) =>
         user.username.toLowerCase().includes(searchTerm.toLowerCase()),

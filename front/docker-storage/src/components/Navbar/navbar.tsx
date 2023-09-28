@@ -45,14 +45,14 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     <>
       <div style={navbarStyle}>
         <RoundButton icon={require('../../assets/imgs/icon_setting.png')} icon_size={50}
-                     onClick={() => setSettingsVisible(!settingsVisible)}></RoundButton>
+                     onClick={() => setSettingsVisible(!settingsVisible)}/>
         {settingsVisible && <Settings isVisible={settingsVisible} />}
         <RoundButton icon={require('../../assets/imgs/icon_user.png')} icon_size={50}
-                     onClick={() => setProfilVisible(!profilVisible)}></RoundButton>
+                     onClick={() => setProfilVisible(!profilVisible)}/>
         {profilVisible &&
           <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)} />}
         <RoundButton icon={require('../../assets/imgs/icon_logout.png')} icon_size={50}
-                     onClick={() => logout()}></RoundButton>
+                     onClick={() => logout()}/>
       </div>
     </>
   );

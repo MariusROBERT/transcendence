@@ -21,7 +21,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
             <p>ID : {meUser?.id}</p>
-            <img style={imgStyle} src={meUser?.urlImg} alt={'user'}></img>
+            <img style={imgStyle} src={meUser?.urlImg} alt={'user'}/>
             <img style={statusStyle}
                  src={meUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
                    require('../../assets/imgs/icon_red_disconnect.png')}
