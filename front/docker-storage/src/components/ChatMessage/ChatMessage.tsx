@@ -3,11 +3,13 @@ import { Background, RoundButton } from '..';
 
 interface Props {
   children: string;
-  isOwnMessage: boolean;
   user_icon: string;
+  user_name: string;
+  date: Date;
+
 }
 
-export function ChatMessage({ children, isOwnMessage, user_icon }: Props) {
+export function ChatMessage({ children, user_icon, user_name, date }: Props) {
   function viewProfile() {
     // TODO: link the profile to the icon btn
     // to do so in the Props, get the User ID
@@ -16,10 +18,11 @@ export function ChatMessage({ children, isOwnMessage, user_icon }: Props) {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: isOwnMessage ? 'row' : 'row-reverse',
+        display: "flex",
+        flexDirection: true ? "row" : "row-reverse",
       }}
     >
+      <div>{user_name}</div>
       <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
       <div
         style={{
@@ -33,9 +36,9 @@ export function ChatMessage({ children, isOwnMessage, user_icon }: Props) {
       >
         <Background
           bg_color={color.white}
-          flex_direction={'row'}
-          flex_alignItems={'stretch'}
-          flex_justifyContent={isOwnMessage ? 'flex-start' : 'flex-end'}
+          flex_direction={"row"}
+          flex_alignItems={"stretch"}
+          flex_justifyContent={true ? "flex-start" : "flex-end"}
         >
           <p style={{ margin: '10px', color: color.black, textShadow: 'none' }}>
             {children}

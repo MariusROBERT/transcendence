@@ -28,7 +28,6 @@ export class AuthController {
   @Post('/login')
   async Login(
     @Body() credentials: LoginCreditDto,
-    // @Res() res: Response
   ) {
     return await this.authService.login(credentials); // return acces_token
   }

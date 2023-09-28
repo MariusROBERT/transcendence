@@ -3,8 +3,6 @@ import {
   Controller,
   FileTypeValidator,
   Get,
-  HttpException,
-  HttpStatus,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -150,22 +148,16 @@ export class UserController {
   async responseAsks(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
-    @Param('bool', ParseIntPipe) bool: number,
-  ) {
-    if (bool >= 0 && bool <= 1)
-      return await this.userService.handleAsk(user, id, bool);
-    else
-      throw new HttpException(
-        'Le nombre doit être 0 ou 1',
-        HttpStatus.BAD_REQUEST,
-      );
+    @Param('bool') bool: boolean,
+  ): Promise<UserEntity> {
+    return await this.userService.handleAsk(user, id, bool);
   }
 
   // logout
-  @Post('/logout')
+  @Patch('/logout')
   @UseGuards(JwtAuthGuard)
   async Delog(@User() user: UserEntity) {
-    return await this.userService.logout(user);
+    await this.userService.logout(user);
   }
 
   @Get('/:id')
@@ -176,9 +168,21 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
+  // --------- BLOCK --------- :
+
+  @Patch('/block/:id')
+  @UseGuards(JwtAuthGuard)
+  async BlockAUser(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity,
+  ) {
+    console.log('blockAUser CPONTROLER');
+
+    return await this.userService.blockAUser(id, user);
+  }
   // Sockets -------------------------------------------------------------------------------------------------------- //
 
-  @Get('from_socket_id')
+  @Get('/from_socket_id')
   @UseGuards(JwtAuthGuard)
   async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
     return this.userService.getUserFromSocketId(socketId);

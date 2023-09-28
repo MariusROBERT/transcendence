@@ -143,17 +143,18 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       }
-    }
+    }  
+
     lockPwd();
     setErrorMessage('');
   };
 
   return (
-    <div>
+    <div style={popupStyle}>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
         <div>
-          <div style={modifContainer}>
+          <div style={modifContainerImage}>
             <img style={{
               ...imgStyle,
               borderColor: modifData.img === '' ? 'green' : 'orange',
@@ -181,15 +182,13 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
                 }
               }
               }
-              style={{ visibility: 'hidden' }}
+              style={{ display: 'none' }}
             />
-            <label htmlFor='image'
-                   style={{ borderRadius: '10px', backgroundColor: 'darkgrey', padding: '1em' }}
-            ><p>Upload image</p></label>
+            <label style={Btn} htmlFor='image'><p style={{ height:'10px',  textAlign: 'center', width:'150px', margin: '0', padding: '0'}}>Upload Image</p></label>
           </div>
           <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
-        <div style={modifContainer}>
+        <div style={modifContainerPwd}>
           <input
             type={passwordType}
             onChange={(e) =>
@@ -202,7 +201,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             placeholder='password'
           />
           {showConfirmPassword && (
-            <div style={modifContainer}>
+            <div style={modifContainerPwd}>
               <input
                 type={passwordType}
                 onChange={(e) =>
@@ -216,15 +215,15 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             </div>
           )}
           {showConfirmPassword && (
-            <button type='button' onClick={togglePasswordVisibility}>
+            <button style={Btn} type='button' onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type='button' onClick={toggleLock}>
+          <button style={Btn} type='button' onClick={toggleLock}>
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
-        <div style={modifContainer}>
+        <div style={modifContainer2FA}>
           <p>2FA</p>
           <SwitchToggle
             onChange={(change) =>
@@ -236,7 +235,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
-        <button type='submit'>Enregistrer</button>
+        <button style={Btn} type='submit'>Enregistrer</button>
       </form>
     </div>
   );
@@ -244,24 +243,62 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
 
 const imgStyle: React.CSSProperties = {
   width: '100px',
-  border: '2px solid',
+  border: '2px solid'
 };
 
+const popupStyle: React.CSSProperties = {  // tempooraire
+  zIndex: '9999',
+  height: '100%'
+}
+
 const settingsStyle: React.CSSProperties = {
+  padding: '40px 10px',
   alignItems: 'center',
   width: '400px',
   display: 'flex',
   flexDirection: 'column',
   background: 'grey',
-  border: '1px solid black',
+  height: '100%',
   color: 'white',
   margin: '10px',
-  padding: '10px',
   cursor: 'pointer',
 };
 
-const modifContainer: React.CSSProperties = {
+const modifContainerImage: React.CSSProperties = {
+  width: '350px',
   display: 'flex',
-};
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+}
+
+const modifContainer2FA = {
+  width: '150px',
+  display: 'flex',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  marginTop: '10px'
+}
+
+const modifContainerPwd : React.CSSProperties = {
+  width: '300px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+}
+
+const Btn: React.CSSProperties = {
+  display: "flex",
+  alignContent: 'center',
+  justifyContent: 'center',
+  height: '30px',
+  width: '200px',
+  borderRadius: '6px', 
+  backgroundColor: 'darkgrey',
+  padding: '5px',
+  marginTop: '5px',
+}
 
 export default Settings;

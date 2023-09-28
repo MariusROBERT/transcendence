@@ -49,10 +49,6 @@ export function UserContextProvider({ children }: Props) {
     }
   }
 
-  // useEffect(() => {
-  // 	console.log("user has been updated in context", user);
-  // }, [user, setUser]);
-
   useEffect(() => {
     socket?.on('connect_error', (err) => {
       console.log('Connection to socket.io server failed', err);

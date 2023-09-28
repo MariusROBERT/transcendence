@@ -7,7 +7,6 @@ import {
   IsString,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
-import { Column } from 'typeorm';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -21,10 +20,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   secret2fa: string;
-
-  @IsOptional()
-  @IsEnum(UserStateEnum)
-  user_status: UserStateEnum;
 
   @IsOptional()
   @IsEnum(UserRoleEnum)

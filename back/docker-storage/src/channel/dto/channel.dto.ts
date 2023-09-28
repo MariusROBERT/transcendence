@@ -29,13 +29,6 @@ export class CreateChannelDto {
   @IsEnum(ChanStateEnum)
   chan_status: ChanStateEnum;
 
-  @IsNotEmpty()
-  @IsOptional()
-  @IsNumber()
-  owner_id: number;
-  //owner: UserEntity;
-
-  @IsNotEmpty()
   @IsOptional() //  TODO: RM later
   admin: UserEntity[];
 

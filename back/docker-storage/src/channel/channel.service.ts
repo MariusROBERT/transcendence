@@ -15,7 +15,6 @@ import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
-import { UserAddChanDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class ChannelService {
@@ -27,16 +26,17 @@ export class ChannelService {
   ) {}
 
   async createChannel(
-    channel: CreateChannelDto
+    channel: CreateChannelDto,
+    user: UserEntity
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
-    const user = await this.userService.getUserById(channel.owner_id);
     chan.owner = user;
     chan.admins = [];
     chan.admins.push(user);
     chan.users = [];
+    chan.users.push(user);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -48,7 +48,7 @@ export class ChannelService {
   async getChannelById(id: number): Promise<ChannelEntity> {
     var channel = await this.ChannelRepository.findOne({
       where: { id },
-      relations: ['admins'],
+      //relations: ['admins'],
     });
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
@@ -66,9 +66,15 @@ export class ChannelService {
   }
 
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    const channel = await this.getChannelById(id);
+    const channel = await this.msgService.getMsg(id)
+    //console.log(channel);
+    //console.log(await this.userService.getUsersInChannels(id));
+    return channel;
+  }
 
-    return channel.messages;
+  async getChannelUsers(id: number): Promise<UserEntity[]> {
+    const users = await this.userService.getUsersInChannels(id);
+    return users;
   }
 
   async updateChannel(
@@ -97,35 +103,41 @@ export class ChannelService {
   }
 
   async addUserInChannel(
-    userdto: UserAddChanDto,
+    userid: number,
     id: number,
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(userdto.id);
-    //console.log(user.username + " " + channel.channel_name);
+    const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user))
-      throw new Error('The user is already in channel');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
-    if (userdto.password !== channel.password) throw new Error('Wrong password');
-    channel.users = [...channel.users, user];
-    await this.ChannelRepository.save(channel);
-    //console.log(channel.users);
+    try
+    {
+      //if (!channel.users) channel.users = [];
+      //channel.users = [...channel.users, user];
+      const currentUsers = channel.users || [];
+      console.log("Curr " + channel.users + ".");
+      currentUsers.push(user);
+      channel.users = currentUsers;
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
     return channel;
   }
 
-  async addAdminInChannel(uid: number, id: number): Promise<ChannelEntity> {
+  async addAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(uid);
+    const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (!channel.users.includes(user))
-      throw new Error('The user is not in channel');
-    if (channel.admins.includes(user))
-      throw new Error('The user is already admin');
-    channel.admins = [...channel.admins, user];
-    await this.ChannelRepository.save(channel);
+    try
+    {
+      if (!channel.admins) channel.admins = [];
+      channel.admins = [...channel.admins, user];
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
     return channel;
   }
 
@@ -134,15 +146,15 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be kicked
-    if (channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
-    if (!channel.users.includes(user))
-      throw new Error('The user is not in channel');
-    channel.users.indexOf(user) !== -1 &&
-      channel.users.splice(channel.users.indexOf(user), 1);
-    await this.ChannelRepository.save(channel);
+      try
+      {
+        if (!channel.users) channel.users = [];
+        channel.users.indexOf(user) !== -1 &&
+          channel.users.splice(channel.users.indexOf(user), 1);
+        await this.ChannelRepository.save(channel);
+      } catch(e) {
+        console.log("Error: " + e);
+      }
     return channel;
   }
 
@@ -197,29 +209,37 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be banned
-    if (channel && channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user))
-      throw new Error('The user is already banned');
-    channel.users.indexOf(user) !== -1 &&
-      channel.users.splice(channel.users.indexOf(user), 1);
-    channel.baned = [...channel.baned, user];
+    try
+    {
+      if (!channel.users) channel.users = [];
+      if (!channel.baned) channel.baned = [];
+      channel.users.indexOf(user) !== -1 &&
+        channel.users.splice(channel.users.indexOf(user), 1);
+      channel.baned = [...channel.baned, user];
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
     await this.ChannelRepository.save(channel);
     return channel;
   }
 
+  //  Todo: check why isnt working
   async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    if (channel.users.includes(user)) throw new Error('The user is in channel');
-    if (channel.baned.includes(user)) throw new Error('The user is not ban');
-    channel.baned.indexOf(user) !== -1 &&
-      channel.baned.splice(channel.baned.indexOf(user), 1);
-    channel.users = [...channel.users, user];
-    await this.ChannelRepository.save(channel);
+    try
+    {
+      if (!channel.baned) channel.baned = [];
+      channel.baned.indexOf(user) !== -1 &&
+        channel.baned.splice(channel.baned.indexOf(user), 1);
+      await this.ChannelRepository.save(channel);
+    } catch(e) {
+      console.log("Error: " + e);
+    }
+    console.log("hes unbanned");
     return channel;
   }
 

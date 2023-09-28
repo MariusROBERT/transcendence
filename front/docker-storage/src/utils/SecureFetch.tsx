@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | { response: Response, json: any }> {
   const jwtToken = Cookies.get('jwtToken');
   try {
-    console.log('try to fetch ' + url_end);
     const response = await fetch('http://localhost:3001/api/' + url_end, {
       method: method,
       headers: {
@@ -17,12 +16,12 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
       return { response: response, json: rep_json };
     } else {
       console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-      //window.location.href = '/login';
+      window.location.href = '/login';
     }
   } catch (e) {
     console.log(e);
     console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-    //window.location.href = '/login';
+    window.location.href = '/login';
   }
 }
 
