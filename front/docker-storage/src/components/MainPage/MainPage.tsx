@@ -3,6 +3,7 @@ import { Background, ChatPanel, ContactPanel, Leaderboard, Navbar, RoundButton, 
 import { useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
 import { Game } from '../game/Game';
+import Cookies from 'js-cookie';
 
 interface Props {
   panelWidth: number;
@@ -10,6 +11,10 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken)
+    window.location.replace('http://localhost:3001/api/auth/login');
+  const OnLoad = '';
   const [searchTerm, setSearchTerm] = useState('');
   const [inGame, setInGame] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
