@@ -13,8 +13,10 @@ export function lookGame() {
   // console.log('try to look game with ' + user_name);
 }
 
-
-export const sendFriendInvite = (id: number | undefined, jwtToken: string | undefined) => {
+export const sendFriendInvite = (
+  id: number | undefined,
+  jwtToken: string | undefined,
+) => {
   fetch(`http://localhost:3001/api/user/demand/${id}`, {
     method: 'PATCH',
     headers: {
@@ -54,7 +56,11 @@ export function declineInvite(otherUser: IUser) {
   Fetch(`user/handle_ask/${otherUser.id}/${0}`, 'PATCH');
 }
 
-export const handleOpenProfil = (setSelectedUser: any, setProfilVisible: any, user: IUser) => {
+export const handleOpenProfil = (
+  setSelectedUser: any,
+  setProfilVisible: any,
+  user: IUser,
+) => {
   // open profil card
   setSelectedUser(user);
   setProfilVisible(true);

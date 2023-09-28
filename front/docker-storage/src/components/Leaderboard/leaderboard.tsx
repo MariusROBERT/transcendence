@@ -5,7 +5,12 @@ import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { handleOpenProfil } from '../../utils/user_functions';
 
-export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: LeaderboardProps) {
+export function Leaderboard({
+  meUser,
+  searchTerm,
+  isVisible,
+  setIsVisible,
+}: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
@@ -25,10 +30,10 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
       // au cas ou le client cancell le fetch avant la fin
       return;
     } else {
-      if (users && Array.isArray(users) && users.length === 0) // A TESTER
+      if (users && Array.isArray(users) && users.length === 0)
+        // A TESTER
         setErrorMessage('Aucun utilisateur trouvé.');
-      else
-        setAllUsers(users);
+      else setAllUsers(users);
     }
     return () => {
       cancelled = true;
@@ -51,7 +56,6 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
 
-
   useEffect(() => {
     const displayAllProfil = () => {
       const filteredUsers = allUsers
@@ -65,16 +69,31 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
           <p>RANK : {count++}</p> {/* TO CHANGE */}
           {user.id === meUser?.id ? (
             <>
-              <Flex zIndex={'10'} flex_direction='row'>
-                <RoundButton icon={user.urlImg} icon_size={50}
-                             onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
-                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest
-                  moi: {user.username}</p>
+              <Flex zIndex={'10'} flex_direction="row">
+                <RoundButton
+                  icon={user.urlImg}
+                  icon_size={50}
+                  onClick={() =>
+                    handleOpenProfil(setSelectedUser, setProfilVisible, user)
+                  }
+                ></RoundButton>{' '}
+                {/* go to own profil */}
+                <p
+                  onClick={() =>
+                    handleOpenProfil(setSelectedUser, setProfilVisible, user)
+                  }
+                >
+                  coucou cest moi: {user.username}
+                </p>
               </Flex>
             </>
           ) : (
-            <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
-                        setProfilVisible={setProfilVisible} />
+            <UserBanner
+              otherUser={user}
+              meUser={meUser}
+              setSelectedUser={setSelectedUser}
+              setProfilVisible={setProfilVisible}
+            />
           )}
           <>
             <p>SCORE %</p>
@@ -94,11 +113,18 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className='container'>{userElements}</div>
-      <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => setIsVisible(false)}></RoundButton>
+      <div className="container">{userElements}</div>
+      <RoundButton
+        icon={require('../../assets/imgs/icon_close.png')}
+        onClick={() => setIsVisible(false)}
+      ></RoundButton>
       {profilVisible && (
         <AuthGuard isAuthenticated>
-          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
+          <Profil
+            otherUser={selectedUser}
+            meUser={meUser}
+            onClose={closeProfil}
+          />
         </AuthGuard>
       )}
     </div>

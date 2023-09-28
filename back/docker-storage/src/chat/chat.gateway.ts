@@ -24,7 +24,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private chanService: ChannelService,
     private messService: MessagesService,
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   @WebSocketServer()
@@ -78,24 +78,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     var userE;
 
     if (channel < 0) {
-      console.log("error chan < 0");
-      return ;
+      console.log('error chan < 0');
+      return;
     }
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {
       console.log(error);
-      return ;
+      return;
     }
     const token = String(client.handshake.query.token);
-    const payload = this.jwtService.verify(
-      token,
-      {secret: process.env.JWT_SECRET}
-    );
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
     userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
-    const data = {id: chanE.id, name: chanE.channel_name}
+    const data = { id: chanE.id, name: chanE.channel_name };
     this.server.emit('message', data);
   }
 }

@@ -1,9 +1,19 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -20,8 +30,7 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {
-  }
+  ) {}
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -68,15 +77,13 @@ export class UserService {
 
   //  USE FOR ADMIN BAN MUTE ..
   async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
-    try
-    {
-      if (!user.channels)
-        user.baned = [];
+    try {
+      if (!user.channels) user.baned = [];
       //user.channels.push(channel);
       user.baned = [...user.baned, channel];
       await this.UserRepository.save(user);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log('Error: ' + e);
     }
   }
 
@@ -202,41 +209,40 @@ export class UserService {
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
-
   }
 
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')
-                                    .innerJoin('user.channels', 'channel')
-                                    .where('channel.id = :channelId', { channelId })
-                                    .select(['user.id', 'user.username', 'user.urlImg'])
-                                    .addSelect('true AS data') 
-                                    .getMany();
+      .innerJoin('user.channels', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .select(['user.id', 'user.username', 'user.urlImg'])
+      .addSelect('true AS data')
+      .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
-                                    .innerJoin('user.admin', 'admin')
-                                    .where('admin.id = :channelId', { channelId })
-                                    .select(['user.id', 'user.username', 'user.urlImg'])
-                                    .addSelect('true AS data') 
-                                    .getMany();
+      .innerJoin('user.admin', 'admin')
+      .where('admin.id = :channelId', { channelId })
+      .select(['user.id', 'user.username', 'user.urlImg'])
+      .addSelect('true AS data')
+      .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
-                                    .innerJoin('user.own', 'own')
-                                    .where('own.id = :channelId', { channelId })
-                                    .select(['user.id', 'user.username', 'user.urlImg'])
-                                    .addSelect('true AS data') 
-                                    .getMany();
-    const fusers = users.map(d => {
+      .innerJoin('user.own', 'own')
+      .where('own.id = :channelId', { channelId })
+      .select(['user.id', 'user.username', 'user.urlImg'])
+      .addSelect('true AS data')
+      .getMany();
+    const fusers = users.map((d) => {
       var data = { ...d };
-      data["type"] = "member";
+      data['type'] = 'member';
       return data;
     });
-    const fadmin = admin.map(d => {
+    const fadmin = admin.map((d) => {
       var data = { ...d };
-      data["type"] = "admin";
+      data['type'] = 'admin';
       return data;
     });
-    const fowner = owner.map(d => {
+    const fowner = owner.map((d) => {
       var data = { ...d };
-      data["type"] = "owner";
+      data['type'] = 'owner';
       return data;
     });
     const all = fusers.concat(fadmin, fowner);
@@ -246,9 +252,9 @@ export class UserService {
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
     const users = this.UserRepository.createQueryBuilder('user')
-                                    .innerJoin('user.channels', 'channel')
-                                    .where('channel.id = :channelId', { channelId })
-                                    .getMany();
+      .innerJoin('user.channels', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .getMany();
     //console.log("USER: " + users);
     return users;
   }
@@ -330,9 +336,7 @@ export class UserService {
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    return channel.admins.some(
-      (adminUser) => adminUser.id === user.id,
-    );
+    return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 
   // logout
@@ -364,7 +368,9 @@ export class UserService {
   }
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    return await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+    return await this.UserRepository.findOne({
+      where: { socketId: socketId.socketId },
+    });
   }
 
   async setUserSocketId(id: number, socketId: string) {
@@ -400,7 +406,8 @@ export class UserService {
     const user = await this.UserRepository.findOne({
       where: { username },
     });
-    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    if (!user)
+      throw new NotFoundException(`No User found for username ${username}`);
     return user;
   }
 }

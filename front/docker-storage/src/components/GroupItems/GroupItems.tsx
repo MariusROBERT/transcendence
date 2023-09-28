@@ -2,48 +2,44 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Background, Border, RoundButton, UserBanner } from '..';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser, IUserComplete } from '../../utils/interfaces';
-import {Contexts, useUserContext} from "../../contexts";
-import { ChannelPannel } from './ChannelBanner';
-import { channel } from 'diagnostics_channel';
+import { ChannelPannel } from '../ChannelBanner/ChannelBanner';
 
 interface Props {
-  children?: ReactNode,
-  heading: string,
-  duration_ms: number
+  children?: ReactNode;
+  heading: string;
+  duration_ms: number;
   meUser: IUserComplete | undefined;
 }
 
 export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
-  const { id } = useUserContext();
 
   let [chans, setChannels] = useState<ChannelInfos[]>([]);
 
   useEffect(() => {
     async function getAllUsers() {
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-      if (users)
-        setAllUsers(users);
+      if (users) setAllUsers(users);
     }
-
     getAllUsers();
   }, [isOpen]);
 
-
   const displayFriends = () => {
     console.log('friends list');
-    const friends: IUser[] = allUsers.filter(u => meUser?.friends.includes(u.id));
+    const friends: IUser[] = allUsers.filter(
+      (u) => meUser?.friends.includes(u.id),
+    );
 
     return friends.map((friend: IUser) => (
-        <div key={friend.id}>
-          <UserBanner otherUser={friend} meUser={meUser} />
-        </div>
-      ));
+      <div key={friend.id}>
+        <UserBanner otherUser={friend} meUser={meUser} />
+      </div>
+    ));
   };
 
   const displayUsers = () => {
-    const others: IUser[] = allUsers.filter(u => u.id !== meUser?.id);
+    const others: IUser[] = allUsers.filter((u) => u.id !== meUser?.id);
 
     return others.map((other: IUser) => (
       <div key={other.id}>
@@ -55,11 +51,14 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   const displayChannels = () => {
     return (
       <>
-        {
-          chans.map((data, idx) => (
-            <ChannelPannel key={idx} id={data.id} name={data.name} type={data.type}></ChannelPannel>
-          ))
-        }
+        {chans.map((data, idx) => (
+          <ChannelPannel
+            key={idx}
+            id={data.id}
+            name={data.name}
+            type={data.type}
+          ></ChannelPannel>
+        ))}
       </>
     );
   };
@@ -82,7 +81,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   };
 
   async function FetchChannels() {
-    const res = await Fetch("channel/of_user", 'POST');
+    const res = await Fetch('channel/of_user', 'POST');
     const channels = res?.json;
     setChannels(channels);
   }
@@ -90,24 +89,37 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   function openGroup() {
     setIsOpen(!isOpen);
     //  Check if you open the right Group
-    if (!isOpen && heading === 'Channels')
-      FetchChannels();
+    if (!isOpen && heading === 'Channels') FetchChannels();
   }
 
   return (
     <>
-      <Border borderSize={0} height={50} borderColor={color.black} borderRadius={0}>
-        <Background bg_color={color.grey} flex_direction={'row'} flex_justifyContent={'flex-end'}>
+      <Border
+        borderSize={0}
+        height={50}
+        borderColor={color.black}
+        borderRadius={0}
+      >
+        <Background
+          bg_color={color.grey}
+          flex_direction={'row'}
+          flex_justifyContent={'flex-end'}
+        >
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={openGroup}></RoundButton></div>
+            <RoundButton
+              icon={require('../../assets/imgs/side_panel_button.png')}
+              icon_size={40}
+              onClick={openGroup}
+            ></RoundButton>
+          </div>
         </Background>
       </Border>
       <div style={groupStyle}>
-        { children }
-        { isOpen && heading === 'Users' && displayUsers() }
-        { isOpen && heading === 'Friends' && displayFriends() }
-        { isOpen && heading === 'Channels' && displayChannels() }
+        {children}
+        {isOpen && heading === 'Users' && displayUsers()}
+        {isOpen && heading === 'Friends' && displayFriends()}
+        {isOpen && heading === 'Channels' && displayChannels()}
       </div>
     </>
   );

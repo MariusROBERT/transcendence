@@ -11,18 +11,39 @@ interface Props {
   setProfilVisible?: any;
 }
 
-const UserBanner = ({ otherUser, meUser, setSelectedUser, setProfilVisible }: Props) => {
-
+const UserBanner = ({
+  otherUser,
+  meUser,
+  setSelectedUser,
+  setProfilVisible,
+}: Props) => {
   return (
     <>
-      <Flex zIndex={'10'} flex_direction='row'>
-        <RoundButton icon={otherUser.urlImg} icon_size={50}
-                     onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, otherUser)}></RoundButton>
-        <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, otherUser)}>{otherUser.username}</p>
+      <Flex zIndex={'10'} flex_direction="row">
+        <RoundButton
+          icon={otherUser.urlImg}
+          icon_size={50}
+          onClick={() =>
+            handleOpenProfil(setSelectedUser, setProfilVisible, otherUser)
+          }
+        ></RoundButton>
+        <p
+          onClick={() =>
+            handleOpenProfil(setSelectedUser, setProfilVisible, otherUser)
+          }
+        >
+          {otherUser.username}
+        </p>
       </Flex>
-      <img style={otherUser?.user_status ? statusStyle : imgStyle}
-           src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
-           alt={meUser?.user_status ? 'connected' : 'disconnected'} />
+      <img
+        style={otherUser?.user_status ? statusStyle : imgStyle}
+        src={
+          meUser?.user_status
+            ? require('../../assets/imgs/icon_status_connected.png')
+            : require('../../assets/imgs/icon_status_disconnected.png')
+        }
+        alt={meUser?.user_status ? 'connected' : 'disconnected'}
+      />
       <UserButton otherUser={otherUser} meUser={meUser}></UserButton>
     </>
   );
@@ -39,4 +60,3 @@ const statusStyle = {
   width: '10px',
   height: '10px',
 };
-  

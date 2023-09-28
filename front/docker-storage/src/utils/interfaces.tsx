@@ -1,6 +1,5 @@
 // --------------------------- Auth :
 
-
 // --------------------------- Register :
 
 export interface FormDataRegister {
@@ -36,6 +35,31 @@ export interface ChannelInfos {
   type: string;
 }
 
+//  Use later for a function
+export interface ChannelCreate {
+  channel_name: string;
+  priv_msg: boolean;
+}
+
+export interface ChannelMessage {
+  sender_id: number;
+  sender_urlImg: string;
+  sender_username: string;
+  message_content: string;
+}
+
+export interface ChannelUsers {
+  id: number;
+  username: string;
+  urlImg: string;
+  type: string;
+}
+
+export interface SocketMessage {
+  name: string;
+  id: number;
+}
+
 // --------------------------- LeaderBoard & Profil :
 
 export interface UserInfos {
@@ -62,7 +86,7 @@ export interface IUserComplete {
   username: string;
   urlImg: string;
   user_status: string;
-  role: string
+  role: string;
   winrate: number;
   is_friend: boolean;
   invited: number[];
@@ -71,8 +95,8 @@ export interface IUserComplete {
 }
 
 export interface LeaderboardProps {
-  isVisible: boolean,
-  setIsVisible: (b:boolean) => void,
+  isVisible: boolean;
+  setIsVisible: (b: boolean) => void;
   searchTerm: string;
   meUser?: IUserComplete;
 }

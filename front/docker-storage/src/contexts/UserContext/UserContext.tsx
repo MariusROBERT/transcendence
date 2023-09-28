@@ -1,5 +1,11 @@
 import { Fetch } from '../../utils';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { IUserComplete } from '../../utils/interfaces';
@@ -7,10 +13,10 @@ import { IUserComplete } from '../../utils/interfaces';
 type UserContextType = {
   id: number;
   isOnline: boolean;
-  socket: Socket | undefined,
-  fetchContext: () => Promise<void>,
-  user?: IUserComplete,
-}
+  socket: Socket | undefined;
+  fetchContext: () => Promise<void>;
+  user?: IUserComplete;
+};
 
 const UserContext = createContext<UserContextType>({
   id: 0,
@@ -46,8 +52,7 @@ export function UserContextProvider({ children }: Props) {
       setUsername(user.username);
       setId(user.id);
       setIsOnline(true);
-      if (!socket)
-        await initSocket();
+      if (!socket) await initSocket();
     }
   }
 
@@ -65,7 +70,14 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      console.log('Connected, Socket ID: ', socket?.id, ' UserName: `', username, '` ID: ', id);
+      console.log(
+        'Connected, Socket ID: ',
+        socket?.id,
+        ' UserName: `',
+        username,
+        '` ID: ',
+        id,
+      );
     });
     socket?.connect();
 
@@ -86,7 +98,8 @@ export function UserContextProvider({ children }: Props) {
           transports: ['websocket'],
           autoConnect: false,
           query: { token },
-        }));
+        }),
+      );
     }
     return () => {
       socket?.close();
@@ -95,7 +108,9 @@ export function UserContextProvider({ children }: Props) {
 
   return (
     <>
-      <UserContext.Provider value={{ id, isOnline, socket, fetchContext, user }}>
+      <UserContext.Provider
+        value={{ id, isOnline, socket, fetchContext, user }}
+      >
         {children}
       </UserContext.Provider>
     </>

@@ -1,24 +1,45 @@
 import { color } from '../../utils';
 
 interface Props {
-  setSearchTerm: (value: string) => void,
-  onClick: () => void,
-  children: string,
-  isVisible: boolean
+  setSearchTerm: (value: string) => void;
+  onClick: () => void;
+  children: string;
+  isVisible: boolean;
 }
 
-export function SearchBar({ setSearchTerm, onClick, children, isVisible }: Props) {
+export function SearchBar({
+  setSearchTerm,
+  onClick,
+  children,
+  isVisible,
+}: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
   return (
-    <div style={{
-      position: isVisible ? 'absolute' : 'relative', top: isVisible ? '100px' : '',
-      borderRadius: '10px', backgroundColor: color.white, height: '60px', width: '400px',
-    }} className={'text cursor_pointer'}>
-      <img style={{ height: '80px', width: '80px', position: 'relative', top: '-10px', left: '-15px' }}
-           src={require('../../assets/imgs/icon_search.png')} alt={'search'}/>
+    <div
+      style={{
+        position: isVisible ? 'absolute' : 'relative',
+        top: isVisible ? '100px' : '',
+        borderRadius: '10px',
+        backgroundColor: color.white,
+        height: '60px',
+        width: '400px',
+      }}
+      className={'text cursor_pointer'}
+    >
+      <img
+        style={{
+          height: '80px',
+          width: '80px',
+          position: 'relative',
+          top: '-10px',
+          left: '-15px',
+        }}
+        src={require('../../assets/imgs/icon_search.png')}
+        alt={'search'}
+      />
       <input
         style={{
           borderRadius: '10px',

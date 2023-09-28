@@ -20,7 +20,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordType, setPasswordType] = useState('password');
-  const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
+  const [userInfosSettings, setUserInfosSettings] =
+    useState<UserInfosForSetting>();
   const [modifData, setModifData] = useState<Modifications>({
     img: '',
     password: '',
@@ -41,8 +42,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
   };
 
   const toggleLock = () => {
-    if (!isDisabled)
-      lockPwd();
+    if (!isDisabled) lockPwd();
     else unlockPwd();
   };
 
@@ -71,7 +71,9 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     const jwtToken = Cookies.get('jwtToken');
     if (!jwtToken) {
       navigate('/login');
-      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+      alert(
+        'You have been disconnected \n(your Authorisation Cookie has been modified or deleted)',
+      );
     }
     if (
       modifData.confirmpwd === '' &&
@@ -85,12 +87,20 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     // PASSWORD :
     if (!isDisabled) {
       if (modifData.password === '' || modifData.confirmpwd === '')
-        return setErrorMessage('passwords doesn\'t match !');
-      if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
-        return setErrorMessage('passwords doesn\'t match !');
+        return setErrorMessage("passwords doesn't match !");
+      if (
+        modifData.password !== undefined &&
+        modifData.password !== modifData.confirmpwd
+      )
+        return setErrorMessage("passwords doesn't match !");
       else {
-        const user = (await Fetch('user/update_password', 'PATCH',
-          JSON.stringify({ password: modifData.password })))?.json;
+        const user = (
+          await Fetch(
+            'user/update_password',
+            'PATCH',
+            JSON.stringify({ password: modifData.password }),
+          )
+        )?.json;
         if (user) {
           setUserInfosSettings(user);
         }
@@ -113,13 +123,16 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       formData.append('file', modifData.img);
       formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
 
-      const user = await fetch('http://localhost:3001/api/user/update_picture', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
+      const user = await fetch(
+        'http://localhost:3001/api/user/update_picture',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: formData,
         },
-        body: formData,
-      }).then(r => {
+      ).then((r) => {
         if (r.ok) {
           setPictureError('');
           return r.json();
@@ -135,10 +148,15 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
 
     // 2FA :
     if (modifData.is2fa_active !== userInfosSettings?.is2fa_active) {
-      const user = (await Fetch('user', 'PATCH',
-        JSON.stringify({
-          is2fa_active: modifData.is2fa_active,
-        })))?.json;
+      const user = (
+        await Fetch(
+          'user',
+          'PATCH',
+          JSON.stringify({
+            is2fa_active: modifData.is2fa_active,
+          }),
+        )
+      )?.json;
       if (user) {
         setUserInfosSettings(user);
       }
@@ -153,16 +171,17 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         <p>{userInfosSettings?.username}</p>
         <div>
           <div style={modifContainer}>
-            <img style={{
-              ...imgStyle,
-              borderColor: modifData.img === '' ? 'green' : 'orange',
-            }} // green = synced with back, orange = not uploaded yet
-                 src={newImage || userInfosSettings?.urlImg}
-                 alt='user profile pic'
+            <img
+              style={{
+                ...imgStyle,
+                borderColor: modifData.img === '' ? 'green' : 'orange',
+              }} // green = synced with back, orange = not uploaded yet
+              src={newImage || userInfosSettings?.urlImg}
+              alt="user profile pic"
             />
             <input
               id={'image'}
-              type='file'
+              type="file"
               accept={'image/png, image/jpeg, image/jpg'}
               onChange={(event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;
@@ -178,13 +197,19 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
                     });
                   }
                 }
-              }
-              }
+              }}
               style={{ visibility: 'hidden' }}
             />
-            <label htmlFor='image'
-                   style={{ borderRadius: '10px', backgroundColor: 'darkgrey', padding: '1em' }}
-            ><p>Upload image</p></label>
+            <label
+              htmlFor="image"
+              style={{
+                borderRadius: '10px',
+                backgroundColor: 'darkgrey',
+                padding: '1em',
+              }}
+            >
+              <p>Upload image</p>
+            </label>
           </div>
           <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
@@ -198,7 +223,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               })
             }
             disabled={isDisabled}
-            placeholder='password'
+            placeholder="password"
           />
           {showConfirmPassword && (
             <div style={modifContainer}>
@@ -210,16 +235,16 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
                     confirmpwd: e.target.value,
                   })
                 }
-                placeholder='Confirm Password'
+                placeholder="Confirm Password"
               />
             </div>
           )}
           {showConfirmPassword && (
-            <button type='button' onClick={togglePasswordVisibility}>
+            <button type="button" onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button type='button' onClick={toggleLock}>
+          <button type="button" onClick={toggleLock}>
             {isDisabled ? 'Modifier' : 'Verouiller'}
           </button>
         </div>
@@ -235,7 +260,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         {errorMessage && (
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         )}
-        <button type='submit'>Enregistrer</button>
+        <button type="submit">Enregistrer</button>
       </form>
     </div>
   );

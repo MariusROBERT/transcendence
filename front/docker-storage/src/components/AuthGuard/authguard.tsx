@@ -8,12 +8,14 @@ interface AuthGuardProps {
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const ft_token = new URLSearchParams(window.location.search).get('access-token');
+  const ft_token = new URLSearchParams(window.location.search).get(
+    'access-token',
+  );
   if (ft_token)
     Cookies.set('jwtToken', ft_token, {
       expires: 7, // 7 jours
     });
-  const jwtToken = Cookies.get('jwtToken')
+  const jwtToken = Cookies.get('jwtToken');
   let auth = !!jwtToken;
   const navigate = useNavigate();
   useEffect(() => {

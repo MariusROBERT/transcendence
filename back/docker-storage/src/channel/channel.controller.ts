@@ -1,16 +1,27 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserAddChanDto, UserChanDto } from 'src/user/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
-import { ChannelEntity, MessageEntity } from '../database/entities/channel.entity';
+import {
+  ChannelEntity,
+  MessageEntity,
+} from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {
-  }
+  constructor(private channelService: ChannelService) {}
 
   @Get('/:id')
   async GetChannelById(
@@ -22,9 +33,7 @@ export class ChannelController {
 
   @Get('/name/:id')
   //@UseGuards(JwtAuthGuard)
-  async GetChannelByName(
-    @Param('id') id: string,
-  ) {
+  async GetChannelByName(@Param('id') id: string) {
     // ==> renvoi toutes les infos channels
     return await this.channelService.getChannelByName(id);
   }
@@ -33,7 +42,7 @@ export class ChannelController {
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MessageEntity[]> {
-    console.log("get message ^^");
+    console.log('get message ^^');
     return await this.channelService.getChannelMessages(id);
   }
 
@@ -43,17 +52,15 @@ export class ChannelController {
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity[]> {
-    console.log("get users ^^");
+    console.log('get users ^^');
     return await this.channelService.getChannelUsers(id);
   }
 
   //  TODO CHANGE TO GET
   @Post('/of_user')
   @UseGuards(JwtAuthGuard)
-  async GetChannelOfUser(
-    @User() user: UserEntity
-  ): Promise<ChannelEntity[]> {
-    console.log("get chans of users ^^");
+  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelEntity[]> {
+    console.log('get chans of users ^^');
     return await this.channelService.getChannelOfUser(user.id);
   }
 
@@ -61,11 +68,11 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ): Promise<ChannelEntity> {
     const chan = await this.channelService.createChannel(
       createChannelDto,
-      user
+      user,
     );
     //console.log('chan: ', chan);
     //console.log('chan.admins: ', chan.admins);
@@ -96,7 +103,7 @@ export class ChannelController {
     //@User() user: UserChanDto,
   ) {
     const chat = this.channelService.addUserInChannel(user.id, id);
-    console.log("Add user " + user.username + " in channel id: ", id);
+    console.log('Add user ' + user.username + ' in channel id: ', id);
     return chat;
   }
 
@@ -105,7 +112,7 @@ export class ChannelController {
   async AddAdminInChannel(
     @User() user: UserEntity,
     @Body() uDto: UserChanDto,
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
   ) {
     const chan = await this.channelService.addAdminInChannel(uDto.id, id);
     //console.log(chan.users);
@@ -157,7 +164,7 @@ export class ChannelController {
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    console.log("here");
+    console.log('here');
     return this.channelService.UnBanUserFromChannel(uDto.id, id);
   }
 }

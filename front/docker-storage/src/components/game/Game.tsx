@@ -4,8 +4,8 @@ import { gameRoom, start, State } from './game.utils';
 import { useUserContext } from '../../contexts';
 
 interface Props {
-  inGame: boolean,
-  setInGame: (value: boolean) => void
+  inGame: boolean;
+  setInGame: (value: boolean) => void;
 }
 
 export function Game({ inGame, setInGame }: Props) {
@@ -36,13 +36,15 @@ export function Game({ inGame, setInGame }: Props) {
   }, [openGame]);
 
   return (
-    <div style={{
-      position: 'absolute',
-      left: '0px',
-      top: '0px',
-      width: inGame ? '100%' : '0px',
-      height: inGame ? '100%' : '0px',
-    }}>
+    <div
+      style={{
+        position: 'absolute',
+        left: '0px',
+        top: '0px',
+        width: inGame ? '100%' : '0px',
+        height: inGame ? '100%' : '0px',
+      }}
+    >
       {inGame && <DrawGame state={state}></DrawGame>}
     </div>
   );

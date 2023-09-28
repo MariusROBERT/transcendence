@@ -28,7 +28,7 @@ export class ChannelService {
 
   async createChannel(
     channel: CreateChannelDto,
-    user: UserEntity
+    user: UserEntity,
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
@@ -64,7 +64,7 @@ export class ChannelService {
   }
 
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    const channel = await this.msgService.getMsg(id)
+    const channel = await this.msgService.getMsg(id);
     //console.log(channel);
     //console.log(await this.userService.getUsersInChannels(id));
     return channel;
@@ -76,24 +76,30 @@ export class ChannelService {
   }
 
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
-    var chans = await this.ChannelRepository.createQueryBuilder("channel")
-                                              .leftJoinAndSelect("channel.users", "users")
-                                              .where("users.id = :id", {id})
-                                              .select(["channel.id as id", "channel.channel_name as name"])
-                                              .getRawMany();
-    var admchans = await this.ChannelRepository.createQueryBuilder("channel")
-                                              .leftJoinAndSelect("channel.admins", "admins")
-                                              .where("admins.id = :id", {id})
-                                              .select(["channel.id as id", "channel.channel_name as name"])
-                                              .getRawMany();
-    var ownchans = await this.ChannelRepository.createQueryBuilder("channel")
-                                              .leftJoinAndSelect("channel.owner", "owner")
-                                              .where("owner.id = :id", {id})
-                                              .select(["channel.id as id", "channel.channel_name as name"])
-                                              .getRawMany();
-    chans.forEach(chan => { chan["type"] = "member"; });
-    admchans.forEach(admchans => { admchans["type"] = "admin"; });
-    ownchans.forEach(ownchans => { ownchans["type"] = "owner"; });
+    var chans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.users', 'users')
+      .where('users.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    var admchans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.admins', 'admins')
+      .where('admins.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    var ownchans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.owner', 'owner')
+      .where('owner.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    chans.forEach((chan) => {
+      chan['type'] = 'member';
+    });
+    admchans.forEach((admchans) => {
+      admchans['type'] = 'admin';
+    });
+    ownchans.forEach((ownchans) => {
+      ownchans['type'] = 'owner';
+    });
     const all = chans.concat(admchans, ownchans);
     console.log(all);
     return all;
@@ -124,24 +130,20 @@ export class ChannelService {
       );
   }
 
-  async addUserInChannel(
-    userid: number,
-    id: number,
-  ): Promise<ChannelEntity> {
+  async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
+    try {
       var allusers = await this.userService.getUsersInChannels(id);
-      if (allusers.some(u => u.id === userid))
-        throw new Error("User already in channel");
+      if (allusers.some((u) => u.id === userid))
+        throw new Error('User already in channel');
       var currentUsers = await this.userService.getFullUsersInChannels(id);
       currentUsers.push(user);
       channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
     return channel;
@@ -152,13 +154,12 @@ export class ChannelService {
     const user = await this.userService.getUserById(userid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
+    try {
       if (!channel.admins) channel.admins = [];
       channel.admins = [...channel.admins, user];
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log('Error: ' + e);
     }
     return channel;
   }
@@ -168,15 +169,14 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-      try
-      {
-        if (!channel.users) channel.users = [];
-        channel.users.indexOf(user) !== -1 &&
-          channel.users.splice(channel.users.indexOf(user), 1);
-        await this.ChannelRepository.save(channel);
-      } catch(e) {
-        console.log("Error: " + e);
-      }
+    try {
+      if (!channel.users) channel.users = [];
+      channel.users.indexOf(user) !== -1 &&
+        channel.users.splice(channel.users.indexOf(user), 1);
+      await this.ChannelRepository.save(channel);
+    } catch (e) {
+      console.log('Error: ' + e);
+    }
     return channel;
   }
 
@@ -231,16 +231,15 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
+    try {
       if (!channel.users) channel.users = [];
       if (!channel.baned) channel.baned = [];
       channel.users.indexOf(user) !== -1 &&
         channel.users.splice(channel.users.indexOf(user), 1);
       channel.baned = [...channel.baned, user];
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log('Error: ' + e);
     }
     await this.ChannelRepository.save(channel);
     return channel;
@@ -252,20 +251,23 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
+    try {
       if (!channel.baned) channel.baned = [];
       channel.baned.indexOf(user) !== -1 &&
         channel.baned.splice(channel.baned.indexOf(user), 1);
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log('Error: ' + e);
     }
     //console.log("hes unbanned");
     return channel;
   }
 
-  async AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
+  async AddMessageToChannel(
+    message: string,
+    user: UserEntity,
+    chan: ChannelEntity,
+  ) {
     //if (!msg.channel.users.includes(msg.sender))
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)

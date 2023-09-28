@@ -32,18 +32,18 @@ interface Props {
 }
 
 function Background({
-                      children,
-                      image,
-                      bg_color = color.black,
-                      flex_direction = 'column',
-                      flex_wrap = 'nowrap',
-                      flex_justifyContent = 'center',
-                      flex_alignItems = 'center',
-                      flex_gap = '5px 5px',
-                      padding = '0',
-                      margin = '0',
-                      fixed = false,
-                    }: Props) {
+  children,
+  image,
+  bg_color = color.black,
+  flex_direction = 'column',
+  flex_wrap = 'nowrap',
+  flex_justifyContent = 'center',
+  flex_alignItems = 'center',
+  flex_gap = '5px 5px',
+  padding = '0',
+  margin = '0',
+  fixed = false,
+}: Props) {
   const style = {
     backgroundImage: 'url(' + image + ')',
     backgroundSize: 'cover',

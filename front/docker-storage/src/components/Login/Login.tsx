@@ -1,13 +1,19 @@
-import {color, delay, Viewport, RedirectToHome, unsecureFetch} from "../../utils";
-import React, {ChangeEvent, useState} from "react";
-import {useNavigate} from 'react-router-dom';
-import {Border, Button, Flex, Background} from "..";
+import {
+  color,
+  delay,
+  Viewport,
+  RedirectToHome,
+  unsecureFetch,
+} from '../../utils';
+import React, { ChangeEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Border, Button, Flex, Background } from '..';
 
 const SIZE: number = 350;
 
 interface Props {
-  duration_ms?: number,
-  viewport: Viewport,
+  duration_ms?: number;
+  viewport: Viewport;
 }
 
 interface FormData {
@@ -16,8 +22,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export function Login({duration_ms = 900, viewport}: Props) {
-
+export function Login({ duration_ms = 900, viewport }: Props) {
   // ReactHook -------------------------------------------------------------------------------------------------------//
   const [signIn, setSign] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -32,10 +37,9 @@ export function Login({duration_ms = 900, viewport}: Props) {
     confirmPassword: '',
   });
 
-
   // functions -------------------------------------------------------------------------------------------------------//
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -44,25 +48,27 @@ export function Login({duration_ms = 900, viewport}: Props) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (signIn)
-      return OnConnect();
-    else
-      return OnRegister();
+    if (signIn) return OnConnect();
+    else return OnRegister();
   }
 
   async function OnRegister() {
     if (formData.username !== '' && formData.password !== '') {
       if (formData.password === formData.confirmPassword) {
         if (!formData.username.endsWith('_42')) {
-          const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
-            username: formData.username,
-            password: formData.password,
-          }));
+          const registerResponse = await unsecureFetch(
+            'auth/register',
+            'POST',
+            JSON.stringify({
+              username: formData.username,
+              password: formData.password,
+            }),
+          );
           if (registerResponse?.ok) {
             return OnConnect();
           } else {
             setErrorMessage('this username is already used');
-            console.error('register failure. Error:', registerResponse?.status,);
+            console.error('register failure. Error:', registerResponse?.status);
           }
         } else {
           setErrorMessage(`username can't be ended with _42`);
@@ -75,17 +81,20 @@ export function Login({duration_ms = 900, viewport}: Props) {
 
   async function OnConnect() {
     try {
-      const response = await unsecureFetch('auth/login', 'POST',
+      const response = await unsecureFetch(
+        'auth/login',
+        'POST',
         JSON.stringify({
           username: formData.username,
           password: formData.password,
-        }));
+        }),
+      );
       if (response?.ok) {
         return animateReturnToHome(response);
       } else {
         const data = await response?.json();
         setErrorMessage(data.message);
-        console.error('connection failure. Error:', response?.status,);
+        console.error('connection failure. Error:', response?.status);
       }
     } catch (error) {
       console.error(`Error : ${error}`);
@@ -103,7 +112,6 @@ export function Login({duration_ms = 900, viewport}: Props) {
     return RedirectToHome(navigate, response);
   }
 
-
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
     height: viewport.isLandscape
@@ -115,19 +123,25 @@ export function Login({duration_ms = 900, viewport}: Props) {
   };
 
   const animStyle: React.CSSProperties = {
-    height: viewport.isLandscape ? (Math.max(SIZE, viewport.height) - 50) + 'px' : (Math.max(2 * SIZE, viewport.height) - 50) + 'px',
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) - 50 + 'px'
+      : Math.max(2 * SIZE, viewport.height) - 50 + 'px',
     width: '100%',
-    position: "absolute",
+    position: 'absolute',
     top: '50px',
-    transition: duration_ms / 3 + 'ms ease'
+    transition: duration_ms / 3 + 'ms ease',
   };
 
   const connectingStyle: React.CSSProperties = {
-    height: viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) + 'px'
+      : Math.max(2 * SIZE, viewport.height) + 'px',
     width: '100%',
-    position: "absolute",
-    top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
-    transition: duration_ms + 'ms ease'
+    position: 'absolute',
+    top: viewport.isLandscape
+      ? -Math.max(SIZE, viewport.height) + 'px'
+      : -Math.max(2 * SIZE, viewport.height) + 'px',
+    transition: duration_ms + 'ms ease',
   };
 
   const connectedStyle: React.CSSProperties = {
@@ -144,69 +158,106 @@ export function Login({duration_ms = 900, viewport}: Props) {
 
   return (
     <div
-    style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
-      <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-            flex_justifyContent={'space-around'}>
+      style={
+        isConnected
+          ? connectedStyle
+          : isConnecting
+          ? connectingStyle
+          : isAnim
+          ? animStyle
+          : connectionStyle
+      }
+    >
+      <Background
+        bg_color={color.clear}
+        flex_direction={viewport.isLandscape ? 'row' : 'column'}
+        flex_justifyContent={'space-around'}
+      >
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => {
-              // console.log(signIn ? 'sign up clicked' : 'sign in clicked');
-              setSign(!signIn)
-            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            <Button
+              onClick={() => {
+                // console.log(signIn ? 'sign up clicked' : 'sign in clicked');
+                setSign(!signIn);
+              }}
+            >
+              {signIn ? 'Sign Up' : 'Sign In'}
+            </Button>
           </Background>
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
-          <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-          <form onSubmit={handleSubmit}>
-            <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-              {errorMessage && <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>}
-              <input
-                style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="login.."
-                required
-              />
-              <input
-                style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="password.."
-                required
-              />
-              {!signIn &&
-              <input
-                style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="password confirmation.."
-                required
-              />}
-              <Flex flex_direction={'row'} flex_justifyContent={"flex-end"}>
-                <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
-                  <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
-                </button>
-              </Flex>
-              <br/>
-            </Background>
-          </form>
-          <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-            <p>or sign in with Intra42</p>
-            <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-              //console.log('intra 42 clicked');
-              // setIsFTConnection(true);
-              window.location.replace('http://localhost:3001/api/auth/login/42');
-              // console.log("end co 42");
-            }}></Button>
-          </Flex>
+          <Background
+            bg_color={color.clear}
+            flex_alignItems={'stretch'}
+            padding={'10px'}
+          >
+            <form onSubmit={handleSubmit}>
+              <Background
+                bg_color={color.clear}
+                flex_alignItems={'stretch'}
+                padding={'10px'}
+              >
+                {errorMessage && (
+                  <div style={{ color: 'red', marginTop: '5px' }}>
+                    {errorMessage}
+                  </div>
+                )}
+                <input
+                  style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="login.."
+                  required
+                />
+                <input
+                  style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="password.."
+                  required
+                />
+                {!signIn && (
+                  <input
+                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="password confirmation.."
+                    required
+                  />
+                )}
+                <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
+                  <button
+                    type={'submit'}
+                    className={'button-30 color-3 cursor_pointer'}
+                  >
+                    <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
+                  </button>
+                </Flex>
+                <br />
+              </Background>
+            </form>
+            <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
+              <p>or sign in with Intra42</p>
+              <Button
+                icon={require('../../assets/imgs/logo_42.png')}
+                onClick={() => {
+                  //console.log('intra 42 clicked');
+                  // setIsFTConnection(true);
+                  window.location.replace(
+                    'http://localhost:3001/api/auth/login/42',
+                  );
+                  // console.log("end co 42");
+                }}
+              ></Button>
+            </Flex>
           </Background>
         </Border>
       </Background>

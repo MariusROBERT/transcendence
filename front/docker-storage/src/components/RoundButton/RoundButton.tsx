@@ -8,13 +8,12 @@ interface Props {
   onClick: () => void;
 }
 
-export function RoundButton(
-  {
-    icon,
-    icon_size = 35,
-    transition_duration_ms = 200,
-    onClick,
-  }: Props) {
+export function RoundButton({
+  icon,
+  icon_size = 35,
+  transition_duration_ms = 200,
+  onClick,
+}: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -36,13 +35,13 @@ export function RoundButton(
     const size = isClicked
       ? icon_size * 0.9
       : isHovered
-        ? icon_size * 1.2
-        : icon_size;
+      ? icon_size * 1.2
+      : icon_size;
     const borderColor = isClicked
       ? color.white
       : isHovered
-        ? color.beige
-        : color.grey;
+      ? color.beige
+      : color.grey;
 
     return {
       backgroundImage: 'url(' + icon + ')',

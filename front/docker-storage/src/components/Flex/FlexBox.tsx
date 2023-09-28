@@ -24,14 +24,14 @@ interface Props {
 }
 
 export function Flex({
-                       children,
-                       zIndex = '0',
-                       flex_direction = 'column',
-                       flex_wrap = 'nowrap',
-                       flex_justifyContent = 'center',
-                       flex_alignItems = 'center',
-                       flex_gap = '5px 5px',
-                     }: Props) {
+  children,
+  zIndex = '0',
+  flex_direction = 'column',
+  flex_wrap = 'nowrap',
+  flex_justifyContent = 'center',
+  flex_alignItems = 'center',
+  flex_gap = '5px 5px',
+}: Props) {
   const style = {
     display: 'flex',
     flexDirection: flex_direction,
@@ -41,9 +41,5 @@ export function Flex({
     gap: flex_gap,
     zIndex: zIndex,
   };
-  return (
-    <div style={style}>
-      {children}
-    </div>
-  );
+  return <div style={style}>{children}</div>;
 }

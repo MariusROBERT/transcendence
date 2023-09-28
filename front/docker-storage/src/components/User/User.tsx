@@ -8,12 +8,11 @@ interface Props {
   is_friend?: boolean;
 }
 
-export function User(
-  {
-    icon_url = require('../../assets/imgs/icon_user.png'),
-    user_name = 'Jean Michel',
-    is_friend = false,
-  }: Props) {
+export function User({
+  icon_url = require('../../assets/imgs/icon_user.png'),
+  user_name = 'Jean Michel',
+  is_friend = false,
+}: Props) {
   function openProfile() {
     console.log('open profile from ' + user_name);
   }
@@ -50,7 +49,7 @@ export function User(
         height: '25px',
       }}
     >
-      <Flex zIndex={'10'} flex_direction='row'>
+      <Flex zIndex={'10'} flex_direction="row">
         <RoundButton
           icon={icon_url || ''}
           icon_size={50}
@@ -60,7 +59,7 @@ export function User(
       </Flex>
       <Flex
         zIndex={'10'}
-        flex_direction='row'
+        flex_direction="row"
         flex_justifyContent={'space-evenly'}
       >
         {is_friend && (

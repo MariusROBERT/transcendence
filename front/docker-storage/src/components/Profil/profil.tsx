@@ -26,10 +26,8 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
   }, [otherUser?.id, meUser]);
 
   const onClick = () => {
-    if (!otherUser || !meUser)
-      return;
-    if (sendFriendInvite(otherUser.id, jwtToken))
-      fetchContext();
+    if (!otherUser || !meUser) return;
+    if (sendFriendInvite(otherUser.id, jwtToken)) fetchContext();
   };
 
   if (otherUser?.id === meUser?.id) {
@@ -39,10 +37,16 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
           <>
             <h2>COUCOU C"EST OUAM {meUser?.username}</h2>
             <p>ID : {meUser?.id}</p>
-            <img style={imgStyle} src={meUser?.urlImg} alt={'user\'s profile'} />
-            <img style={meUser?.user_status ? statusStyle : imgStyle}
-                 src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
-                 alt={meUser?.user_status ? 'connected' : 'disconnected'} />
+            <img style={imgStyle} src={meUser?.urlImg} alt={"user's profile"} />
+            <img
+              style={meUser?.user_status ? statusStyle : imgStyle}
+              src={
+                meUser?.user_status
+                  ? require('../../assets/imgs/icon_status_connected.png')
+                  : require('../../assets/imgs/icon_status_disconnected.png')
+              }
+              alt={meUser?.user_status ? 'connected' : 'disconnected'}
+            />
             <p>LAST MATCHS</p>
             <p>--------------</p>
             <p>--------------</p>
@@ -63,9 +67,15 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
             <h2>Profil de {otherUser.username}</h2>
             <p>ID : {otherUser.id}</p>
             <img style={imgStyle} src={otherUser.urlImg} alt={'profile'} />
-            <img style={otherUser?.user_status ? statusStyle : imgStyle}
-                 src={meUser?.user_status ? require('../../assets/imgs/icon_status_connected.png') : require('../../assets/imgs/icon_status_disconnected.png')}
-                 alt={meUser?.user_status ? 'connected' : 'disconnected'} />
+            <img
+              style={otherUser?.user_status ? statusStyle : imgStyle}
+              src={
+                meUser?.user_status
+                  ? require('../../assets/imgs/icon_status_connected.png')
+                  : require('../../assets/imgs/icon_status_disconnected.png')
+              }
+              alt={meUser?.user_status ? 'connected' : 'disconnected'}
+            />
             <p>LAST MATCHS</p>
             <p>--------------</p>
             <p>--------------</p>
@@ -89,8 +99,7 @@ const Profil: React.FC<ProfilProps> = ({ otherUser, meUser, onClose }) => {
                 <button>Look the Match</button>
                 <button>Options</button>
               </>
-            )
-            }
+            )}
           </>
         ) : (
           <p>Utilisateur introuvable.</p>
@@ -125,11 +134,9 @@ const imgStyle = {
   border: '1px solid red',
 };
 
-
 const statusStyle = {
   width: '10px',
   height: '10px',
 };
-
 
 export default Profil;
