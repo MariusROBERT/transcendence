@@ -3,6 +3,7 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
 import TwoFA from './TwoFA';
+import { PasswordInput } from '../Input/PasswordInput';
 
 const SIZE: number = 350;
 
@@ -35,7 +36,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   });
   const [is2fa, setIs2fa] = useState<boolean>(false);
   const [error2fa, setError2fa] = useState<string>(' ');
-
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -48,6 +51,11 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setFormData({
+      ...formData,
+      password: password,
+      confirmPassword: confirmPassword,
+    })
     if (signIn)
       return OnConnect();
     else
@@ -206,25 +214,24 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                   placeholder='login..'
                   required
                 />
-                <input
-                  style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
-                  type='password'
-                  name='password'
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder='password..'
+                <PasswordInput
+                  hidePassword={hidePassword}
+                  setHidePassword={setHidePassword}
+                  password={password}
+                  setPassword={setPassword}
                   required
+                  style={{ minWidth: '100px', minHeight: '30px' }}
                 />
                 {!signIn &&
-                  <input
-                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
-                    type='password'
-                    name='confirmPassword'
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder='password confirmation..'
-                    required
-                  />}
+                  <PasswordInput
+                    hidePassword={hidePassword}
+                    setHidePassword={setHidePassword}
+                    password={confirmPassword}
+                    setPassword={setConfirmPassword}
+                    placeholder={'confirm password'}
+                    style={{ minWidth: '100px', minHeight: '30px' }}
+                  />
+                }
                 <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
                   <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
                     <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
