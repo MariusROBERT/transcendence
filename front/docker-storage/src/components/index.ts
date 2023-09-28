@@ -10,7 +10,7 @@ export { Input } from './Input/Input';
 export { Login } from './Login/Login';
 export { MainPage } from './MainPage/MainPage';
 export { RoundButton } from './RoundButton/RoundButton';
-export { SearchBar } from './SearchBar/SearchBar';
+export { SearchBar } from './Search/SearchBar';
 export { SidePanel } from './SidePanel/SidePanel';
 export { default as UserBanner } from './User/UserBanner';
 export { default as AuthGuard } from './AuthGuard/authguard'

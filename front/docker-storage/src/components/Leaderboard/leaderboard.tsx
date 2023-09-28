@@ -5,7 +5,7 @@ import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import Cookies from 'js-cookie';
 
-export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     window.location.replace('/login');
@@ -34,7 +34,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 
   useEffect(() => {
     fetchContext()
-  }, [fetchContext])
+  }, [])
 
   useEffect(() => {
     const getUserInfos = async () => {
@@ -43,7 +43,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
       if (!user) return;
     };
     getUserInfos();
-  }, [isVisible, jwtToken]);
+  }, [jwtToken]);
 
   useEffect(() => {
     console.log('meUser in Leaderboard', meUser);
@@ -87,18 +87,12 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 
 
 const container: CSSProperties = {
-  left: '50%',
-  width: '70%',
   minWidth: '500px',
-  top: '40%',
   background: 'black',
-  position: 'absolute',
-  transform: 'translate(-50%, -50%)',
   padding: '10px',
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
-  zIndex: '999',
 };
 
 const userElementStyle: CSSProperties = {
