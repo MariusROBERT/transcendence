@@ -14,7 +14,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible }: Props
 
   return (
     <div style={{
-      position: isVisible ? 'absolute' : 'relative', top: isVisible ? '100px' : '200px',
+      position: isVisible ? 'absolute' : 'relative', top: isVisible ? '150px' : '10px',
       borderRadius: '10px', backgroundColor: color.white, height: '60px', width: '400px',
     }} className={'text cursor_pointer'}>
       <img style={{ height: '80px', width: '80px', position: 'relative', top: '-10px', left: '-15px' }}
