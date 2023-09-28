@@ -14,7 +14,6 @@ import {
   Req,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
@@ -30,6 +29,7 @@ import {
 } from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -51,7 +51,7 @@ export class UserController {
   async UpdateProfile(
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
-  ): Promise<UserEntity> {
+  ) {
     return await this.userService.updateProfile(updateUserDto, user);
   }
 
@@ -148,22 +148,16 @@ export class UserController {
   async responseAsks(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
-    @Param('bool', ParseIntPipe) bool: number,
-  ) {
-    if (bool >= 0 && bool <= 1)
-      return await this.userService.handleAsk(user, id, bool);
-    else
-      throw new HttpException(
-        'Le nombre doit être 0 ou 1',
-        HttpStatus.BAD_REQUEST,
-      );
+    @Param('bool') bool: boolean,
+  ): Promise<UserEntity> {
+    return await this.userService.handleAsk(user, id, bool);
   }
 
   // logout
-  @Post('/logout')
+  @Patch('/logout')
   @UseGuards(JwtAuthGuard)
   async Delog(@User() user: UserEntity) {
-    return await this.userService.logout(user);
+    await this.userService.logout(user);
   }
 
   @Get('/:id')
@@ -174,6 +168,18 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
+  // --------- BLOCK --------- :
+
+  @Patch('/block/:id')
+  @UseGuards(JwtAuthGuard)
+  async BlockAUser(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity,
+  ) {
+    console.log('blockAUser CPONTROLER');
+
+    return await this.userService.blockAUser(id, user);
+  }
   // Sockets ----------------------------------------------------------------------------------------------------//
 
   @Get('/from_socket_id')

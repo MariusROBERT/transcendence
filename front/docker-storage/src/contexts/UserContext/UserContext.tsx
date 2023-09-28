@@ -13,10 +13,11 @@ import { IUserComplete } from '../../utils/interfaces';
 type UserContextType = {
   id: number;
   isOnline: boolean;
-  socket: Socket | undefined;
-  fetchContext: () => Promise<void>;
-  user?: IUserComplete;
-};
+  socket: Socket | undefined,
+  fetchContext: () => Promise<void>,
+  user?: IUserComplete,
+  setUser: Function,
+}
 
 const UserContext = createContext<UserContextType>({
   id: 0,
@@ -24,6 +25,7 @@ const UserContext = createContext<UserContextType>({
   socket: undefined,
   fetchContext: async () => {},
   user: undefined,
+  setUser: () => {}
 });
 
 export function useUserContext() {
@@ -44,7 +46,6 @@ export function UserContextProvider({ children }: Props) {
   async function fetchContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
 
-    console.log('user reauest', user);
     if (!user) {
       setIsOnline(false);
     } else {
@@ -55,10 +56,6 @@ export function UserContextProvider({ children }: Props) {
       if (!socket) await initSocket();
     }
   }
-
-  // useEffect(() => {
-  // 	console.log("user has been updated in context", user);
-  // }, [user, setUser]);
 
   useEffect(() => {
     socket?.on('connect_error', (err) => {
@@ -108,9 +105,7 @@ export function UserContextProvider({ children }: Props) {
 
   return (
     <>
-      <UserContext.Provider
-        value={{ id, isOnline, socket, fetchContext, user }}
-      >
+      <UserContext.Provider value={{ id, isOnline, socket, fetchContext, user, setUser }}>
         {children}
       </UserContext.Provider>
     </>

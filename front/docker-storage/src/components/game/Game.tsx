@@ -36,16 +36,14 @@ export function Game({ inGame, setInGame }: Props) {
   }, [openGame]);
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        left: '0px',
-        top: '0px',
-        width: inGame ? '100%' : '0px',
-        height: inGame ? '100%' : '0px',
-      }}
-    >
-      {inGame && <DrawGame state={state}></DrawGame>}
+    <div style={{
+      position: 'absolute',
+      left: '0px',
+      top: '0px',
+      width: inGame ? '100%' : '0px',
+      height: inGame ? '100%' : '0px',
+    }}>
+      {inGame && <DrawGame state={state}/>}
     </div>
   );
 }

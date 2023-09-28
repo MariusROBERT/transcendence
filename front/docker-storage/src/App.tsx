@@ -4,6 +4,7 @@ import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
 import { AuthGuard, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
+import NotFoundPage from './components/404Page/404Page';
 
 const SIZE: number = 500;
 
@@ -37,14 +38,14 @@ function App() {
               path="/"
               element={
                 <AuthGuard isAuthenticated>
-                  <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
+                  <MainPage panelWidth={SIZE} viewport={viewport}/>
                 </AuthGuard>
               }
             />
-            <Route
-              path="/login"
-              element={<Login viewport={viewport}></Login>}
-            />
+            <Route path='/login' element={<Login
+              viewport={viewport}
+            />} />
+            <Route path='*' element={<NotFoundPage />}/>
           </Routes>
         </Background>
       </div>

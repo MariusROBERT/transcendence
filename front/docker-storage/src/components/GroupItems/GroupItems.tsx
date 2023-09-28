@@ -26,6 +26,8 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   }, [isOpen]);
 
   const displayFriends = () => {
+    if (!meUser)
+      return ;
     console.log('friends list');
     const friends: IUser[] = allUsers.filter(
       (u) => meUser?.friends.includes(u.id),
@@ -39,7 +41,9 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   };
 
   const displayUsers = () => {
-    const others: IUser[] = allUsers.filter((u) => u.id !== meUser?.id);
+    if (!meUser)
+      return ;
+    const others: IUser[] = allUsers.filter(u => u.id !== meUser?.id);
 
     return others.map((other: IUser) => (
       <div key={other.id}>
@@ -107,12 +111,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
         >
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton
-              icon={require('../../assets/imgs/side_panel_button.png')}
-              icon_size={40}
-              onClick={openGroup}
-            ></RoundButton>
-          </div>
+            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {openGroup()}}/></div>
         </Background>
       </Border>
       <div style={groupStyle}>

@@ -92,20 +92,17 @@ export interface IUserComplete {
   invited: number[];
   invites: number[];
   friends: number[];
+  blocked: number[];
 }
 
 export interface LeaderboardProps {
-  isVisible: boolean;
-  setIsVisible: (b: boolean) => void;
+  //isVisible: boolean;
+  //setIsVisible: (b: boolean) => void;
   searchTerm: string;
   meUser?: IUserComplete;
 }
 
-export interface ProfilProps {
-  otherUser: IUser | undefined | null;
-  meUser: IUserComplete | undefined;
-  onClose?: () => void;
-}
+
 
 export interface UserButtonsProps {
   id: number | undefined;

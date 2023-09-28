@@ -24,16 +24,10 @@ export class UserEntity {
   @Column({ unique: true, nullable: false })
   username!: string;
 
-  // @Column({ unique: true })
-  // email: string; // pour le 2fa ??
-
   @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
   role!: UserRoleEnum;
 
-  @Column({
-    default:
-      '../../../../../front/docker-storage/src/assets/imgs/icon_default_profil.png',
-  })
+  @Column({ default: '/icon_default_profil.png' })
   urlImg!: string;
 
   @Column()
@@ -48,8 +42,11 @@ export class UserEntity {
   @Column({ default: 'ta gueule' })
   secret2fa?: string;
 
-  @Column({ type: 'enum', enum: UserStateEnum, default: UserStateEnum.ON })
+  @Column({ type: 'enum', enum: UserStateEnum })
   user_status!: UserStateEnum;
+
+  @Column({ default: -1 })
+  id42!: number;
 
   // CHANNEL :
 

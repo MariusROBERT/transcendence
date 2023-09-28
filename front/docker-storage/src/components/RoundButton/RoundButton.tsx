@@ -73,7 +73,7 @@ export function RoundButton({
           onClick();
           handleMouseClick();
         }}
-      ></button>
+      />
     </div>
   );
 }

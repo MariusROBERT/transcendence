@@ -92,7 +92,7 @@ export function SidePanel({
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
             onClick={isOpen ? Close : Open}
-          ></RoundButton>
+          />
         </div>
       </div>
     );
@@ -105,7 +105,7 @@ export function SidePanel({
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
           onClick={isOpen ? Close : Open}
-        ></RoundButton>
+        />
       </div>
       <div style={{ overflow: 'hidden', display: 'flex', height: '100%' }}>
         {children}
