@@ -73,7 +73,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
         <Background bg_color={color.grey} flex_direction={'row'} flex_justifyContent={'flex-end'}>
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {setIsOpen(!isOpen)}}></RoundButton></div>
+            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {setIsOpen(!isOpen)}}/></div>
         </Background>
       </Border>
       <div style={groupStyle}>

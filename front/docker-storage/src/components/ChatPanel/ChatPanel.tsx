@@ -70,8 +70,8 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <ChatMenu></ChatMenu>
-      <ChanUserList></ChanUserList>
+      <ChatMenu/>
+      <ChanUserList/>
       <div style={{
         height: viewport.height - 125 + 'px',
         width: width - 50 + 'px',
@@ -110,7 +110,7 @@ export function ChatPanel({ viewport, width }: Props) {
         >
         </input>
         <RoundButton icon_size={50} icon={require('../../assets/imgs/icon_play.png')}
-                     onClick={onEnterPressed}></RoundButton>
+                     onClick={onEnterPressed}/>
       </div>
     </Background>
   );

@@ -64,8 +64,6 @@ export interface IUserComplete {
 }
 
 export interface LeaderboardProps {
-  isVisible: boolean,
-  setIsVisible: (b:boolean) => void,
   searchTerm: string;
   meUser?: IUserComplete;
 }

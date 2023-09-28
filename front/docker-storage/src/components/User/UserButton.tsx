@@ -87,13 +87,13 @@ export function UserButton({ otherUser, meUser }: Props) {
 		<div style={UserbUttonContainer}>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}></RoundButton>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}></RoundButton>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}></RoundButton>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}/>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}/>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}/>}
 					{!isFriend && !sendButton &&
-						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}></RoundButton>
+						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}/>
 					}
-					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}></RoundButton>
+					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}/>
 					{isOpen && (
 						<div style={optionStyle}>
 							<button onClick={() => blockAUser(otherUser.id)}>block</button>
@@ -103,10 +103,10 @@ export function UserButton({ otherUser, meUser }: Props) {
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => {
 								// handleRequestsFriend(true);
-							}}></RoundButton>
+							}}/>
 							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => {
 								// handleRequestsFriend(false);
-							}}></RoundButton>
+							}}/>
 						</div>
 					}
 				</Flex>

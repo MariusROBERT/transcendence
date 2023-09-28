@@ -23,7 +23,7 @@ export function ChatMessage({ children, user_icon, user_name, date }: Props) {
       }}
     >
       <div>{user_name}</div>
-      <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
+      <RoundButton icon={user_icon} onClick={viewProfile}/>
       <div
         style={{
           flex: 'auto',

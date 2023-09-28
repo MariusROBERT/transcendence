@@ -5,7 +5,7 @@ import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import Cookies from 'js-cookie';
 
-export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     window.location.replace('/login');
@@ -34,7 +34,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 
   useEffect(() => {
     fetchContext()
-  }, [fetchContext])
+  }, [])
 
   useEffect(() => {
     const getUserInfos = async () => {
@@ -43,7 +43,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
       if (!user) return;
     };
     getUserInfos();
-  }, [isVisible, jwtToken]);
+  }, [jwtToken]);
 
   useEffect(() => {
     console.log('meUser in Leaderboard', meUser);
@@ -52,7 +52,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
   const displayAllProfil = () => {
     if (!allUsers)
-      return (<><p>No user</p></>)
+      return (<p>No user</p>)
     const filteredUsers = allUsers
       .filter((user: IUser) =>
         user.username.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -87,21 +87,13 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 
 
 const container: CSSProperties = {
-  left: '50%',
-  width: '70%',
-  minWidth: '700px',
-  maxHeight: '850px',
-  flexWrap: 'nowrap',
-  top: '220px',
-  background: 'black',
-  position: 'relative',
-  transform: 'translate(-50%, 0%)',
-  padding: '10px',
+  minWidth: '500px',
+  background: 'grey',
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
-  zIndex: '999',
-  overflowY: 'auto' 
+  maxHeight: '500px',
+  overflowY: 'scroll',
 };
 
 const userElementStyle: CSSProperties = {
@@ -111,7 +103,7 @@ const userElementStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-around',
   alignContent: 'center',
-  background: 'grey',
+  background: '#646464',
   color: 'white',
   margin: '10px',
   padding: '10px',

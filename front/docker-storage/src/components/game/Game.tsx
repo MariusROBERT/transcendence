@@ -43,7 +43,7 @@ export function Game({ inGame, setInGame }: Props) {
       width: inGame ? '100%' : '0px',
       height: inGame ? '100%' : '0px',
     }}>
-      {inGame && <DrawGame state={state}></DrawGame>}
+      {inGame && <DrawGame state={state}/>}
     </div>
   );
 }
