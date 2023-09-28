@@ -90,16 +90,19 @@ export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps)
 const container: CSSProperties = {
   left: '50%',
   width: '70%',
-  minWidth: '500px',
-  top: '40%',
+  minWidth: '700px',
+  maxHeight: '850px',
+  flexWrap: 'nowrap',
+  top: '220px',
   background: 'black',
-  position: 'absolute',
-  transform: 'translate(-50%, -50%)',
+  position: 'relative',
+  transform: 'translate(-50%, 0%)',
   padding: '10px',
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
   zIndex: '999',
+  overflowY: 'auto' 
 };
 
 const userElementStyle: CSSProperties = {

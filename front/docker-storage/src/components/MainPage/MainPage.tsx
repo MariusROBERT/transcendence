@@ -55,8 +55,11 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <Navbar meUser={user}></Navbar>
           <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}
                      isVisible={isLeaderboardVisible}>Leader Board..</SearchBar>
+                     <div style={btn}>
+
           <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
                        onClick={onPlayClicked}></RoundButton>
+                       </div>
           <div style={{ height: '60px' }} />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
@@ -70,8 +73,13 @@ export function MainPage({ panelWidth, viewport }: Props) {
   );
 }
 
+const btn: React.CSSProperties = {
+  left: '50%',
+  top: '50%',
+  position: 'absolute',
+  transform: 'translate(-50%, -50%)'
+}
 const MainPageStyle: React.CSSProperties = {
-  // border: '4px solid red',
   position: 'relative',
   width: '100%',
   height: '100%'
