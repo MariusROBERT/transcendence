@@ -13,13 +13,10 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, socket, id, user } = useUserContext();
-  const { fetchGameContext } = useGameContext();
+  const { fetchGameContext, joinQueue } = useGameContext();
 
   useEffect(() => {
-    const getUser = async () => {
-      await fetchContext();
-    }
-    getUser();
+    fetchContext();
     // eslint-disable-next-line
   }, []);
 
@@ -39,10 +36,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
       setNotifs(user.invites.length);
   }, [user]);
 
-  function onPlayClicked() {
-    socket?.emit('join_queue', { id: id });
-  }
-
   return (
     <div style={MainPageStyle}>
       {notifs && (
@@ -61,7 +54,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}
                      isVisible={isLeaderboardVisible}>Leader Board..</SearchBar>
           <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
-                       onClick={onPlayClicked}></RoundButton>
+                       onClick={() => joinQueue('normal')}></RoundButton>
           <div style={{ height: '60px' }} />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
