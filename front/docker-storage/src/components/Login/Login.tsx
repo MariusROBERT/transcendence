@@ -1,21 +1,15 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
 import TwoFA from './TwoFA';
+import { PasswordInput } from '../Input/PasswordInput';
 
 const SIZE: number = 350;
 
 interface Props {
   duration_ms?: number,
   viewport: Viewport,
-}
-
-interface FormData {
-  username: string;
-  password: string;
-  confirmPassword: string;
-  twoFactorCode: string;
 }
 
 export function Login({ duration_ms = 900, viewport }: Props) {
@@ -27,24 +21,15 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [isConnected, setIsConneted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    twoFactorCode: '',
-  });
   const [is2fa, setIs2fa] = useState<boolean>(false);
   const [error2fa, setError2fa] = useState<string>(' ');
-
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  }
+
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -55,12 +40,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   }
 
   async function OnRegister() {
-    if (formData.username !== '' && formData.password !== '') {
-      if (formData.password === formData.confirmPassword) {
-        if (!formData.username.endsWith('_42')) {
+    if (username !== '' && password !== '') {
+      if (password === confirmPassword) {
+        if (!username.endsWith('_42')) {
           const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
-            username: formData.username,
-            password: formData.password,
+            username: username,
+            password: password,
           }));
           if (registerResponse?.ok) {
             return OnConnect();
@@ -80,12 +65,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   async function OnConnect(twoFactorCode?: string) {
     try {
       const credits = is2fa ? {
-        username: formData.username,
-        password: formData.password,
+        username: username,
+        password: password,
         twoFactorCode: twoFactorCode,
       } : {
-        username: formData.username,
-        password: formData.password,
+        username: username,
+        password: password,
       };
 
       const response = await unsecureFetch('auth/login', 'POST',
@@ -136,6 +121,11 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     }
   }, [is2fa]);
 
+  //focus on input when login or signup is clicked
+  useEffect(() => {
+    document.getElementById('username')?.focus();
+  }, [signIn]);
+
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
     height: viewport.isLandscape
@@ -183,7 +173,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => { setSign(!signIn) }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            <Button onClick={() => {
+              setSign(!signIn);
+            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
           </Background>
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
@@ -195,30 +187,30 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                   style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
                   type='text'
                   name='username'
-                  value={formData.username}
-                  onChange={handleChange}
+                  id={'username'}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder='login..'
                   required
                 />
-                <input
-                  style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
-                  type='password'
-                  name='password'
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder='password..'
+                <PasswordInput
+                  hidePassword={hidePassword}
+                  setHidePassword={setHidePassword}
+                  password={password}
+                  setPassword={setPassword}
                   required
+                  style={{ minWidth: '100px', minHeight: '30px' }}
                 />
                 {!signIn &&
-                  <input
-                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
-                    type='password'
-                    name='confirmPassword'
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder='password confirmation..'
-                    required
-                  />}
+                  <PasswordInput
+                    hidePassword={hidePassword}
+                    setHidePassword={setHidePassword}
+                    password={confirmPassword}
+                    setPassword={setConfirmPassword}
+                    placeholder={'confirm password'}
+                    style={{ minWidth: '100px', minHeight: '30px' }}
+                  />
+                }
                 <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
                   <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
                     <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>

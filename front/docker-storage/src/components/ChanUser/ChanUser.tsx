@@ -14,7 +14,7 @@ export function ChanUser({ user_icon }: Props) {
 
     return (
         <div>
-            <RoundButton icon={user_icon} icon_size={42} onClick={viewProfile}></RoundButton>
+            <RoundButton icon={user_icon} icon_size={42} onClick={viewProfile}/>
         </div>
     )
 }

@@ -1,22 +1,22 @@
 import Cookies from 'js-cookie';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
 import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
+import { PasswordInput } from '../Input/PasswordInput';
 
 interface Props {
   isVisible: boolean;
 }
 
-const Settings: React.FC<Props> = ({ isVisible }) => {
+export function Settings(props: Props) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     navigate('/login');
     alert('Vous avez été déconnecté');
   }
-  const [isDisabled, setIsDisabled] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordType, setPasswordType] = useState('password');
@@ -31,39 +31,28 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
   const [pictureError, setPictureError] = useState<string>('');
   const [newImage, setNewImage] = useState<string>('');
   const [code2fa, setCode2fa] = useState<string>('');
-
-  const unlockPwd = () => {
-    setIsDisabled(false);
-    setShowConfirmPassword(true);
-  };
-
-  const lockPwd = () => {
-    setIsDisabled(true);
-    setShowConfirmPassword(false);
-  };
-
-  const toggleLock = () => {
-    if (!isDisabled)
-      lockPwd();
-    else unlockPwd();
-  };
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   const togglePasswordVisibility = () => {
     setPasswordType(passwordType === 'password' ? 'text' : 'password');
   };
 
   useEffect(() => {
-    const getUserInfos = async () => {
-      const user = (await Fetch('user', 'GET'))?.json;
-      if (user) {
-        setUserInfosSettings(user);
-      } else {
-        window.location.replace('http://localhost:3001/api/auth/login');
-        // alert('Vous avez été déconnecté');
-      }
-    };
-    getUserInfos();
-  }, [isVisible, navigate]);
+    if (props.isVisible) {
+      const getUserInfos = async () => {
+        const user = (await Fetch('user', 'GET'))?.json;
+        if (user) {
+          setUserInfosSettings(user);
+        } else {
+          window.location.replace('http://localhost:3001/api/auth/login');
+          // alert('Vous avez été déconnecté');
+        }
+      };
+      getUserInfos();
+    }
+  }, [props.isVisible, navigate]);
 
   // MODIFICATIONS
 
@@ -82,26 +71,22 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     )
       // nothing changed
       return;
-
     // PASSWORD :
-    if (!isDisabled) {
-      if (modifData.password === '' || modifData.confirmpwd === '')
-        return setErrorMessage('passwords doesn\'t match !');
-      if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
-        return setErrorMessage('passwords doesn\'t match !');
-      else {
-        const user = (await Fetch('user/update_password', 'PATCH',
-          JSON.stringify({ password: modifData.password })))?.json;
-        if (user) {
-          setUserInfosSettings(user);
-        }
-        lockPwd();
-        setErrorMessage('');
+    if (modifData.password === '' || modifData.confirmpwd === '')
+      return setErrorMessage('passwords doesn\'t match !');
+    if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
+      return setErrorMessage('passwords doesn\'t match !');
+    else {
+      const user = (await Fetch('user/update_password', 'PATCH',
+        JSON.stringify({ password: modifData.password })))?.json;
+      if (user) {
+        setUserInfosSettings(user);
       }
+      setErrorMessage('');
     }
+
     if (modifData.is2fa_active === userInfosSettings?.is2fa_active &&
       modifData.img === userInfosSettings?.urlImg) {
-      setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
     }
@@ -145,12 +130,11 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         setCode2fa(user.code2fa);
       }
     }
-    lockPwd();
     setErrorMessage('');
   };
 
   return (
-    <div style={popupStyle}>
+    <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
         <p>{userInfosSettings?.username}</p>
         <div>
@@ -184,43 +168,40 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               }
               style={{ display: 'none' }}
             />
-            <label style={Btn} htmlFor='image'><p style={{ height:'10px',  textAlign: 'center', width:'150px', margin: '0', padding: '0'}}>Upload Image</p></label>
+            <label style={Btn} htmlFor='image'><p
+              style={{ height: '10px', textAlign: 'center', width: '150px', margin: '0', padding: '0' }}>Upload
+              Image</p></label>
           </div>
           <p style={{ color: 'red' }}>{pictureError}</p>
         </div>
         <div style={modifContainerPwd}>
-          <input
-            type={passwordType}
-            onChange={(e) =>
-              setModifData({
-                ...modifData,
-                password: e.target.value,
-              })
-            }
-            disabled={isDisabled}
-            placeholder='password'
+          <PasswordInput hidePassword={hidePassword}
+                         setHidePassword={setHidePassword}
+                         password={password}
+                         setPassword={setPassword}
           />
-          {showConfirmPassword && (
-            <div style={modifContainerPwd}>
-              <input
-                type={passwordType}
-                onChange={(e) =>
-                  setModifData({
-                    ...modifData,
-                    confirmpwd: e.target.value,
-                  })
-                }
-                placeholder='Confirm Password'
-              />
-            </div>
-          )}
+          <PasswordInput hidePassword={hidePassword}
+                         setHidePassword={setHidePassword}
+                         password={confirmPassword}
+                         setPassword={setConfirmPassword}
+                         placeholder={'Confirm password'}
+          />
           {showConfirmPassword && (
             <button style={Btn} type='button' onClick={togglePasswordVisibility}>
               {passwordType === 'password' ? 'Afficher' : 'Masquer'}
             </button>
           )}
-          <button style={Btn} type='button' onClick={toggleLock}>
-            {isDisabled ? 'Modifier' : 'Verouiller'}
+          <button style={Btn} type='button' onClick={() => {
+            setModifData({
+              ...modifData,
+              password: password,
+              confirmpwd: confirmPassword,
+            });
+            console.log(modifData);
+          }}
+                  disabled={(password != confirmPassword) || password == ''}
+          >
+            Confirm
           </button>
         </div>
         <div style={modifContainer2FA}>
@@ -232,9 +213,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
             checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
           />
         </div>
-        {errorMessage && (
-          <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
-        )}
+        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         <button style={Btn} type='submit'>Enregistrer</button>
       </form>
       {qrCode2fa &&
@@ -252,8 +231,15 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
               Scan this QrCode in your favorite 2fa application
             </p>
             <img src={qrCode2fa} alt='qrCode2fa' />
-            <p style={{ backgroundColor: 'lightgrey', padding: '.7em', borderRadius: 5, color: 'black', fontSize:'1.75em', textShadow:'none' }}>{code2fa}</p>
-            <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }}></button>
+            <p style={{
+              backgroundColor: 'lightgrey',
+              padding: '.7em',
+              borderRadius: 5,
+              color: 'black',
+              fontSize: '1.75em',
+              textShadow: 'none',
+            }}>{code2fa}</p>
+            <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }} />
             <label htmlFor={'2faDone'}>
               <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
             </label>
@@ -262,22 +248,18 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       }
     </div>
   );
-};
-
-const imgStyle: React.CSSProperties = {
-  width: '100px',
-  border: '2px solid'
-};
-
-const popupStyle: React.CSSProperties = {  // tempooraire
-  zIndex: '9999',
-  height: '100%'
 }
 
+const imgStyle: React.CSSProperties = {
+  width: '200px',
+  borderRadius: '5px',
+  border: '2px solid',
+};
+
 const settingsStyle: React.CSSProperties = {
-  padding: '40px 10px',
+  borderRadius: '10px',
+  padding: '30px',
   alignItems: 'center',
-  width: '400px',
   display: 'flex',
   flexDirection: 'column',
   background: 'grey',
@@ -285,35 +267,35 @@ const settingsStyle: React.CSSProperties = {
   color: 'white',
   margin: '10px',
   cursor: 'pointer',
+  width: '300px',
+
+};
+
+const modifContainer: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
 };
 
 const modifContainerImage: React.CSSProperties = {
-  width: '350px',
-  display: 'flex',
+  ...modifContainer,
   flexDirection: 'column',
   justifyContent: 'center',
-  alignItems: 'center',
-
-}
+};
 
 const modifContainer2FA = {
-  width: '150px',
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  marginTop: '10px'
-}
+  ...modifContainer,
+  justifyContent: 'space-evenly',
+  width: '100%',
+};
 
-const modifContainerPwd : React.CSSProperties = {
-  width: '300px',
-  display: 'flex',
+const modifContainerPwd: React.CSSProperties = {
+  ...modifContainer,
   flexDirection: 'column',
   justifyContent: 'space-around',
-  alignItems: 'center',
-}
+};
 
 const Btn: React.CSSProperties = {
-  display: "flex",
+  display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
   height: '30px',
@@ -322,6 +304,6 @@ const Btn: React.CSSProperties = {
   backgroundColor: 'darkgrey',
   padding: '5px',
   marginTop: '5px',
-}
+};
 
 export default Settings;
