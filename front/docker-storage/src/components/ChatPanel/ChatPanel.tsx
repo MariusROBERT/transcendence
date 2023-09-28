@@ -26,9 +26,10 @@ export function ChatPanel({ viewport, width }: Props) {
   const getMsg = async (message: any) => {
     console.log(message);
     console.log("here");
-    const res2 = await Fetch("channel/msg/" + message.id, 'GET');
 
-    UpdateChannelMessage(message.id);
+    console.log(await GetCurrChan());
+    if (await GetCurrChan() === message.name)
+      UpdateChannelMessage(message.id);
     setInputValue("");
   };
 
@@ -52,7 +53,7 @@ export function ChatPanel({ viewport, width }: Props) {
   async function onEnterPressed() {
     if (inputValue.length <= 0) return;
     const chan = await GetCurrChan();
-    console.log("send message to " +chan);
+    console.log("send message to " + chan);
     socket?.emit("message", { message: inputValue, channel: chan });
   }
 
