@@ -56,9 +56,3 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
     </div>
   );
 }
-
-const imgStyle = {
-  width: '100px',
-  height: '100px',
-  border: '1px solid red',
-};

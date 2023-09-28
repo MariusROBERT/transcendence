@@ -1,6 +1,6 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
-import { Contexts, useUserContext } from '../../contexts';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   children: string;
@@ -27,7 +27,7 @@ export function ChatMessage({
     <div
       style={{
         display: 'flex',
-        flexDirection: uid == id ? 'row' : 'row-reverse',
+        flexDirection: uid === id ? 'row' : 'row-reverse',
       }}
     >
       <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>

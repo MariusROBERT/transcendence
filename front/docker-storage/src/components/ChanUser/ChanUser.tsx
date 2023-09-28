@@ -1,4 +1,4 @@
-import { Background, RoundButton } from '..';
+import { RoundButton } from '..';
 
 interface Props {
   children: string;

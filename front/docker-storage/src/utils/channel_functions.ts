@@ -1,4 +1,4 @@
-import { Fetch, unsecureFetch } from '.';
+import { Fetch } from '.';
 import { publish } from './event';
 
 var current_chan = '';

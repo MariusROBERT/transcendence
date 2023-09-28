@@ -6,7 +6,7 @@ import { ChatMessage } from '../ChatMessage/ChatMessage';
 import { ChatMenu } from '../ChanMenu/ChatMenu';
 import { useUserContext } from '../../contexts';
 import { ChanUserList } from '../ChanUserList/ChanUserList';
-import { subscribe, unsubscribe } from '../../utils/event';
+import { subscribe } from '../../utils/event';
 import {
   GetCurrChan,
   UpdateChannelMessage,
