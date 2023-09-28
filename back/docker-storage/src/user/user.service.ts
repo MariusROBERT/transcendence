@@ -419,12 +419,18 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
+  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
+    user.gameInvitationType = gameType;
+    return await this.UserRepository.save(user);
+  }
+
   async getGameStatusWithId(id: number): Promise<UserGameStatus> {
     const user = await this.getUserById(id);
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
       isInGameWith: user.isInGameWith,
+      gameInviteType: user.gameInvitationType
     }
   }
 }
