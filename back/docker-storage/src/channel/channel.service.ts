@@ -134,14 +134,15 @@ export class ChannelService {
       throw new Error('This channel is a private message channel');
     try
     {
-      var currentUsers = await this.userService.getFullUsersInChannels(id);
-      if (currentUsers.includes(user))
+      var allusers = await this.userService.getUsersInChannels(id);
+      if (allusers.some(u => u.id === userid))
         throw new Error("User already in channel");
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
       currentUsers.push(user);
       channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
     } catch(e) {
-      console.log("Error: " + e);
+      console.log(e);
     }
     return channel;
   }
