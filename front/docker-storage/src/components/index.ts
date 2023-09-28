@@ -15,7 +15,7 @@ export { MainPage } from './MainPage/MainPage';
 export { default as Navbar } from './Navbar/navbar';
 export { default as profil } from './Profil/profil';
 export { RoundButton } from './RoundButton/RoundButton';
-export { SearchBar } from './SearchBar/SearchBar';
+export { SearchBar } from './Search/SearchBar';
 export { default as Settings } from './Settings/settings';
 export { SidePanel } from './SidePanel/SidePanel';
 export { default as switchToggle } from './Settings/settings';

@@ -1,6 +1,8 @@
 import { color, Viewport } from '../../utils';
-import { Background, ChatPanel, ContactPanel, Leaderboard, Navbar, RoundButton, SearchBar, SidePanel } from '..';
-import { useEffect, useState } from 'react';
+import { Background, ChatPanel, ContactPanel, Navbar, RoundButton, SidePanel } from '..';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { Search } from '../Search/Search';
 import { useUserContext, useGameContext } from '../../contexts';
 
 interface Props {
@@ -9,6 +11,9 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken)
+    window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<number>(0);
@@ -21,11 +26,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }, []);
 
   useEffect(() => {
-    async function fetchContexts(){
-      if (id === 0) return;
-      await fetchGameContext();
-    }
-    fetchContexts();
+    fetchGameContext();
     // eslint-disable-next-line
   }, [socket, id]);
 
@@ -44,22 +45,31 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </div>)}
       {isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
+
+      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
+                  flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport}></ContactPanel>
+            <ContactPanel meUser={user} viewport={viewport} />
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-          <Navbar meUser={user}></Navbar>
-          <SearchBar setSearchTerm={setSearchTerm} onClick={() => setIsLeaderboardVisible(true)}
-                     isVisible={isLeaderboardVisible}>Leader Board..</SearchBar>
-          <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
+          <Navbar meUser={user} />
+          <Search
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            placeHolder={'Leader Board...'}
+            user={user}
+          />
+          <div style={Btn}>
+            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
                        onClick={() => joinQueue('normal')}></RoundButton>
+          </div>
           <div style={{ height: '60px' }} />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
           <Background>
-            <ChatPanel viewport={viewport} width={panelWidth}></ChatPanel>
+            <ChatPanel viewport={viewport} width={panelWidth} />
           </Background>
         </SidePanel>
       </Background>
@@ -67,13 +77,19 @@ export function MainPage({ panelWidth, viewport }: Props) {
   );
 }
 
+const Btn: React.CSSProperties = {
+  left: '50%',
+  top: '50%',
+  transform: 'translate(0%, -12%)'
+}
+
 const MainPageStyle: React.CSSProperties = {
-  // border: '4px solid red',
+  border: '4px solid red',
   position: 'relative',
   width: '100%',
   height: '100%'
 
-}
+};
 
 const notificationBadgeStyle: React.CSSProperties = {
   position: 'absolute',
