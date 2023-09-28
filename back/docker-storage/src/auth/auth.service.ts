@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -12,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { ftLoginDto } from './dtos/ft-login.dto';
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +16,8 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -55,6 +53,20 @@ export class AuthService {
       .getOne();
     if (!user) {
       throw new NotFoundException(`username not found`);
+    }
+
+    if (user.is2fa_active) {
+      if (creditentials.twoFactorCode) {
+        if (!authenticator.verify(
+          {
+            token: creditentials.twoFactorCode,
+            secret: user.secret2fa,
+          })) {
+          throw new UnauthorizedException(`Invalid 2fa code`);
+        }
+      } else {
+        throw new UnauthorizedException(`Missing 2fa code`);
+      }
     }
 
     const hashedPwd = await bcrypt.hash(password, user.salt);
@@ -96,6 +108,7 @@ export class AuthService {
       user2.invites = [];
       user2.blocked = [];
       user2.urlImg = urlImg;
+      user2.id42 = userData.id42;
       try {
         await this.userRepository.save(user2); // save user in DB
       } catch (e) {
@@ -107,10 +120,52 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     // JWT
+    if (user2.is2fa_active) {
+      return '';
+    }
     const payload = {
       username,
       role: user2.role,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async ftLogin2fa(ftToken: string, code2fa: string) {
+    const id42: number = await fetch('https://api.intra.42.fr/v2/me', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + ftToken,
+      },
+    })
+      .then(res => res.json())
+      .then(json => parseInt(json.id));
+    if (!id42) {
+      throw new NotFoundException(`Invalid intra token`);
+    }
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id42 = :id42', { id42 })
+      .getOne();
+    if (!user) {
+      throw new NotFoundException(`user not found`);
+    }
+    if (user.is2fa_active) {
+      if (!authenticator.verify(
+        {
+          token: code2fa,
+          secret: user.secret2fa,
+        })) {
+        throw new UnauthorizedException(`Invalid 2fa code`);
+      }
+      const payload = {
+        username: user.username,
+        role: user.role,
+      }
+      const jwt = this.jwtService.sign(payload);
+      return { 'access-token': jwt };
+      // return this.jwtService.sign(payload);
+    } else {
+      throw new UnauthorizedException(`2fa not active`);
+    }
   }
 }

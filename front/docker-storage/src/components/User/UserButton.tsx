@@ -1,4 +1,4 @@
-import { Fetch, color } from "../../utils";
+import { color } from "../../utils";
 import { RoundButton, Flex } from "..";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -67,7 +67,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 			setRequestReceived(true);
 		if (meUser && meUser.friends.includes(otherUser.id as number))
 			setIsFriend(true);
-	}, [meUser]);
+	}, [meUser, otherUser.id]);
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);

@@ -27,8 +27,10 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     confirmpwd: '',
     is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
   });
+  const [qrCode2fa, setQrCode2fa] = useState<string>('');
   const [pictureError, setPictureError] = useState<string>('');
   const [newImage, setNewImage] = useState<string>('');
+  const [code2fa, setCode2fa] = useState<string>('');
 
   const unlockPwd = () => {
     setIsDisabled(false);
@@ -56,13 +58,12 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez été déconnecté');
+        window.location.replace('http://localhost:3001/api/auth/login');
+        // alert('Vous avez été déconnecté');
       }
     };
     getUserInfos();
-  }, [isVisible]);
+  }, [isVisible, navigate]);
 
   // MODIFICATIONS
 
@@ -70,7 +71,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
     if (!jwtToken) {
-      navigate('/login');
+      window.location.replace('http://localhost:3001/api/auth/login');
       alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
     }
     if (
@@ -98,10 +99,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         setErrorMessage('');
       }
     }
-    if (
-      modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.img === userInfosSettings?.urlImg
-    ) {
+    if (modifData.is2fa_active === userInfosSettings?.is2fa_active &&
+      modifData.img === userInfosSettings?.urlImg) {
       setIsDisabled(true);
       setShowConfirmPassword(false);
       return;
@@ -111,7 +110,6 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     if (modifData.img !== '') {
       const formData = new FormData();
       formData.append('file', modifData.img);
-      formData.append('is2fa_active', JSON.stringify(modifData.is2fa_active));
 
       const user = await fetch('http://localhost:3001/api/user/update_picture', {
         method: 'POST',
@@ -142,8 +140,11 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       }
-    }  
-
+      if (user?.is2fa_active) {
+        setQrCode2fa(user.qrCode);
+        setCode2fa(user.code2fa);
+      }
+    }
     lockPwd();
     setErrorMessage('');
   };
@@ -236,6 +237,29 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
         )}
         <button style={Btn} type='submit'>Enregistrer</button>
       </form>
+      {qrCode2fa &&
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 999,
+          backgroundColor: 'rgba(70,70,70,0.5)',
+          height: '100vh',
+          width: '100vw',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', alignContent: 'space-evenly', flexDirection: 'column' }}>
+            <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
+              Scan this QrCode in your favorite 2fa application
+            </p>
+            <img src={qrCode2fa} alt='qrCode2fa' />
+            <p style={{ backgroundColor: 'lightgrey', padding: '.7em', borderRadius: 5, color: 'black', fontSize:'1.75em', textShadow:'none' }}>{code2fa}</p>
+            <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }}></button>
+            <label htmlFor={'2faDone'}>
+              <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
+            </label>
+          </div>
+        </div>
+      }
     </div>
   );
 };
@@ -294,7 +318,7 @@ const Btn: React.CSSProperties = {
   justifyContent: 'center',
   height: '30px',
   width: '200px',
-  borderRadius: '6px', 
+  borderRadius: '6px',
   backgroundColor: 'darkgrey',
   padding: '5px',
   marginTop: '5px',

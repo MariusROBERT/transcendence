@@ -1,6 +1,6 @@
 import { subscribe, unsubscribe } from "../../utils/event";
 import { ChanUser } from "../ChanUser/ChanUser";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ChanUserList() {
 

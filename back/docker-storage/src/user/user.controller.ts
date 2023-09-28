@@ -14,7 +14,6 @@ import {
   Req,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
@@ -25,6 +24,7 @@ import { UserService } from './user.service';
 import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -47,7 +47,7 @@ export class UserController {
   async UpdateProfile(
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
-  ): Promise<UserEntity> {
+  ) {
     return await this.userService.updateProfile(updateUserDto, user);
   }
 

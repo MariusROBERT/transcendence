@@ -12,7 +12,7 @@ export function ChatMenu() {
     //  TODO: clean here
     async function OnJoinChannel()
     {
-        if (inputValue == "")
+        if (inputValue === "")
             return ;
         setInputValue("");
         const path = "channel/name/" + inputValue;
@@ -41,8 +41,7 @@ export function ChatMenu() {
         }
         current_chan = inputValue;
         const res2 = await Fetch("channel/msg/" + current_id, 'GET');
-        var len = res2?.json.length;
-        var msgs = res2?.json;
+        const msgs = res2?.json;
         console.log(res2?.json);
         publish('enter_chan', {
                 detail: {

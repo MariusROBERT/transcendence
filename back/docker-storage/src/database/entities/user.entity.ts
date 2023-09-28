@@ -45,6 +45,9 @@ export class UserEntity {
   @Column({ type: 'enum', enum: UserStateEnum })
   user_status!: UserStateEnum;
 
+  @Column({ default: -1 })
+  id42!: number;
+
   // CHANNEL :
 
   @ManyToMany(() => ChannelEntity, (channel) => channel.users, {

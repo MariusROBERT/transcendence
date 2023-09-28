@@ -10,6 +10,8 @@ import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import { Express } from 'express';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class UserService {
@@ -29,7 +31,7 @@ export class UserService {
   async updateProfile(
     profil: UpdateUserDto,
     user: UserEntity,
-  ): Promise<UserEntity> {
+  ) {
     const id: number = user.id;
     const errors = await validate(profil);
     if (errors.length > 0) {
@@ -43,6 +45,16 @@ export class UserService {
     });
     if (!newProfil) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
+    }
+    if (profil.is2fa_active) {
+      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfil);
+      const secret = /secret=(.+?)&/.exec(otpauthUrl);
+
+      return {
+        ...await this.UserRepository.save(newProfil),
+        qrCode: await toDataURL(otpauthUrl),
+        code2fa: secret ? secret[1]: '',
+      };
     }
     return await this.UserRepository.save(newProfil);
   }
@@ -393,5 +405,13 @@ export class UserService {
     });
     if (!user) throw new NotFoundException(`No User found for username ${username}`);
     return user;
+  }
+
+  async generateTwoFactorSecret(user: UserEntity) {
+    const secret = authenticator.generateSecret();
+    const otpauthUrl = authenticator.keyuri(user.username, 'Transcendence', secret);
+    user.secret2fa = secret;
+    await this.UserRepository.save(user);
+    return { secret, otpauthUrl };
   }
 }

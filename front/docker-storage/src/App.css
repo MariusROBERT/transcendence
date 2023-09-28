@@ -145,3 +145,13 @@ button p {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
+
+/* Hide input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
