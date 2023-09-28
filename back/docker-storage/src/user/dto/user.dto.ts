@@ -22,10 +22,6 @@ export class UpdateUserDto {
   secret2fa: string;
 
   @IsOptional()
-  @IsEnum(UserStateEnum)
-  user_status: UserStateEnum;
-
-  @IsOptional()
   @IsEnum(UserRoleEnum)
   user_role: UserRoleEnum;
 

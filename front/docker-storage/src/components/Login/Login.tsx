@@ -25,7 +25,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isAnim, setIsAnim] = useState(false);
   const [isConnected, setIsConneted] = useState<boolean>(false);
-  // const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
+  const [isFTConnection, setIsFTConnection] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
@@ -184,10 +184,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => {
-              // console.log(signIn ? 'sign up clicked' : 'sign in clicked');
-              setSign(!signIn);
-            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            <Button onClick={() => { setSign(!signIn) }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
           </Background>
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>

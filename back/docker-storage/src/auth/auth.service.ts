@@ -32,8 +32,8 @@ export class AuthService {
     user.friends = [];
     user.invited = [];
     user.invites = [];
+    user.blocked = [];
     try {
-      //console.log(user.salt);
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
       throw new ConflictException(`username or password already used`);
@@ -84,8 +84,9 @@ export class AuthService {
         username,
         role: user.role,
       };
-      const jwt = this.jwtService.sign(payload);
       user.user_status = UserStateEnum.ON;
+      await this.userRepository.save(user);
+      const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     } else {
       throw new NotFoundException(`wrong password`);
@@ -111,6 +112,7 @@ export class AuthService {
       user2.friends = [];
       user2.invited = [];
       user2.invites = [];
+      user2.blocked = [];
       user2.urlImg = urlImg;
       user2.id42 = userData.id42;
       try {

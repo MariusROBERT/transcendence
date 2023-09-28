@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;
@@ -32,7 +32,8 @@ export function Flex({
                        flex_alignItems = 'center',
                        flex_gap = '5px 5px',
                      }: Props) {
-  const style = {
+  const style : CSSProperties = {
+    position: 'relative',
     display: 'flex',
     flexDirection: flex_direction,
     flexWrap: flex_wrap,

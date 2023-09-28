@@ -3,29 +3,27 @@ import Profil from '../Profil/profil';
 import { AuthGuard, Flex, RoundButton, UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { handleOpenProfil } from '../../utils/user_functions';
+import { useUserContext } from '../../contexts';
+import Cookies from 'js-cookie';
 
-export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm, isVisible }: LeaderboardProps) {
+  const jwtToken = Cookies.get('jwtToken');
+  if (!jwtToken) {
+    window.location.replace('/login');
+    alert('Vous avez été déconnecté');
+  }
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const closeProfil = () => {
-    setSelectedUser(null);
-    setProfilVisible(false);
-  };
+  const { fetchContext } = useUserContext();
 
   const getAllProfil = async () => {
     let cancelled = false;
     const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-    // console.log(cancelled); // si on print en Slow 3g on a : 2xtrue si on cancell, et 1 true 1 false si on cancell pas
-    if (cancelled) {
-      // au cas ou le client cancell le fetch avant la fin
+    if (cancelled) { // todo : voir si cest utile ici
       return;
     } else {
-      if (users && Array.isArray(users) && users.length === 0) // A TESTER
+      if (users && Array.isArray(users) && users.length === 0)
         setErrorMessage('Aucun utilisateur trouvé.');
       else
         setAllUsers(users);
@@ -36,105 +34,86 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
   };
 
   useEffect(() => {
+    fetchContext()
+  }, [])
+
+  useEffect(() => {
     const getUserInfos = async () => {
       getAllProfil();
       const user = (await Fetch('user', 'GET'))?.json;
       if (!user) return;
-      // setUserInfos(user);
     };
-    getUserInfos(); // appel de la fonction si le jwt est good
-  }, [isVisible]);
+    getUserInfos();
+  }, [isVisible, jwtToken]);
 
   useEffect(() => {
     console.log('meUser in Leaderboard', meUser);
   }, [meUser]);
 
   // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-
+  const displayAllProfil = () => {
+    if (!allUsers)
+      return (<><p>No user</p></>)
+    const filteredUsers = allUsers
+      .filter((user: IUser) =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
+    let count = 1;
+    const elements = filteredUsers.map((user: IUser) => (
+      <div key={user.id} style={userElementStyle}>
+        <p>{count++}</p> {/* TO CHANGE */}
+        {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
+        <>
+          <p>SCORE %</p>
+        </>
+      </div>
+    ));
+    setUserElements(elements);
+  };
 
   useEffect(() => {
-    const displayAllProfil = () => {
-      const filteredUsers = allUsers
-        .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()),
-        )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-      let count = 1;
-      const elements = filteredUsers.map((user: IUser) => (
-        <div key={user.id} style={userElementStyle}>
-          <p>RANK : {count++}</p> {/* TO CHANGE */}
-          {user.id === meUser?.id ? (
-            <>
-              <Flex zIndex={'10'} flex_direction='row'>
-                <RoundButton icon={user.urlImg} icon_size={50}
-                             onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}></RoundButton> {/* go to own profil */}
-                <p onClick={() => handleOpenProfil(setSelectedUser, setProfilVisible, user)}>coucou cest
-                  moi: {user.username}</p>
-              </Flex>
-            </>
-          ) : (
-            <UserBanner otherUser={user} meUser={meUser} setSelectedUser={setSelectedUser}
-                        setProfilVisible={setProfilVisible} />
-          )}
-          <>
-            <p>SCORE %</p>
-          </>
-        </div>
-      ));
-
-      setUserElements(elements);
-    };
-
     displayAllProfil();
-    // setUserInfos(meUser);
-  }, [searchTerm, allUsers, meUser]);
+  }, [searchTerm, allUsers, jwtToken, meUser]);
 
   return (
     <div style={container}>
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className='container'>{userElements}</div>
-      <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => setIsVisible(false)}></RoundButton>
-      {profilVisible && (
-        <AuthGuard isAuthenticated>
-          <Profil otherUser={selectedUser} meUser={meUser} onClose={closeProfil} />
-        </AuthGuard>
-      )}
+      <div className="container">{userElements}</div>
     </div>
   );
 }
 
+
 const container: CSSProperties = {
-  top: '200px',
+  left: '50%',
+  width: '70%',
+  minWidth: '500px',
+  top: '40%',
   background: 'black',
   position: 'absolute',
-  border: '1px solid red',
-  height: '90vh',
+  transform: 'translate(-50%, -50%)',
+  padding: '10px',
   display: 'flex',
   justifyContent: 'center',
+  alignContent: 'center',
   zIndex: '999',
 };
 
-/*const imgStyle = {
-  width: '100px',
-  height: '100px',
-  border: '1px solid red',
-};
-
-const statusStyle = {
-  width: '10px',
-  height: '10px',
-};*/
-
-const userElementStyle = {
-  width: '1000px',
+const userElementStyle: CSSProperties = {
+  width: '600px',
+  border: '1px solid white',
+  flexWrap: 'wrap',
   display: 'flex',
   justifyContent: 'space-around',
+  alignContent: 'center',
   background: 'grey',
-  border: '1px solid black',
   color: 'white',
   margin: '10px',
   padding: '10px',
   cursor: 'pointer',
+  borderRadius: '10px',
+
 };
