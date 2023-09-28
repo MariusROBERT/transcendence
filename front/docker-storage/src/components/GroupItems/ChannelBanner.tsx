@@ -3,7 +3,13 @@ import { Flex, RoundButton } from '..';
 import { color } from '../../utils';
 import { UpdateChannelMessage, UpdateChannelUsers, SetCurrChan } from "../../utils/channel_functions";
 
-export function ChannelPannel({id, name} : ChannelInfos) {
+export function ChannelPannel({id, name, type} : ChannelInfos) {
+
+    var div_color = color.grey;
+    if (type === "admin")
+        div_color = color.red;
+    if (type === "owner")
+        div_color = color.green;
 
     async function OnJoinChannel() {
         UpdateChannelMessage(id);
@@ -17,7 +23,7 @@ export function ChannelPannel({id, name} : ChannelInfos) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             borderRadius: '12.5px',
-            backgroundColor: color.grey,
+            backgroundColor: div_color,
             minWidth: '410px',
             height: '25px',
           }}>

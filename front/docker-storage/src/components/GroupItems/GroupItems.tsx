@@ -57,7 +57,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
       <>
         {
           chans.map((data, idx) => (
-            <ChannelPannel key={idx} id={data.id} name={data.name}></ChannelPannel>
+            <ChannelPannel key={idx} id={data.id} name={data.name} type={data.type}></ChannelPannel>
           ))
         }
       </>

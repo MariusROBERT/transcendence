@@ -33,6 +33,7 @@ export interface UserAndInvites {
 export interface ChannelInfos {
   id: number;
   name: string;
+  type: string;
 }
 
 // --------------------------- LeaderBoard & Profil :
