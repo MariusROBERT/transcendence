@@ -1,9 +1,10 @@
-import { CSSProperties, useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import Settings from '../Settings/settings';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { IUserComplete } from '../../utils/interfaces';
 import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
+import Popup from '../ComponentBase/Popup';
 
 interface Props {
   meUser: IUserComplete | undefined;
@@ -44,15 +45,27 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
   return (
     <>
       <div style={navbarStyle}>
-        <RoundButton icon={require('../../assets/imgs/icon_setting.png')} icon_size={50}
-                     onClick={() => setSettingsVisible(!settingsVisible)}/>
-        {settingsVisible && <Settings isVisible={settingsVisible} />}
-        <RoundButton icon={require('../../assets/imgs/icon_user.png')} icon_size={50}
-                     onClick={() => setProfilVisible(!profilVisible)}/>
-        {profilVisible &&
-          <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)} />}
-        <RoundButton icon={require('../../assets/imgs/icon_logout.png')} icon_size={50}
-                     onClick={() => logout()}/>
+        <RoundButton
+          icon={require('../../assets/imgs/icon_setting.png')}
+          icon_size={50}
+          onClick={() => setSettingsVisible(!settingsVisible)}
+        />
+        <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
+          <Settings isVisible={settingsVisible}/>
+        </Popup>
+        <RoundButton
+          icon={require('../../assets/imgs/icon_user.png')}
+          icon_size={50}
+          onClick={() => setProfilVisible(!profilVisible)}
+        />
+        <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+          <Profil otherUser={meUser} meUser={meUser} onClose={() => setProfilVisible(!profilVisible)} />
+        </Popup>
+        <RoundButton
+          icon={require('../../assets/imgs/icon_logout.png')}
+          icon_size={50}
+          onClick={() => logout()}
+        />
       </div>
     </>
   );
