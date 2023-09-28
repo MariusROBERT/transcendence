@@ -1,11 +1,11 @@
 import { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, UserBanner } from '..';
+import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import Cookies from 'js-cookie';
 
-export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: LeaderboardProps) {
+export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     window.location.replace('/login');
@@ -37,6 +37,7 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
     // eslint-disable-next-line
   }, [])
 
+
   useEffect(() => {
     const getUserInfos = async () => {
       getAllProfil();
@@ -44,10 +45,10 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
       if (!user) return;
     };
     getUserInfos(); // appel de la fonction si le jwt est good
-  }, [isVisible]);
+  }, [jwtToken]);
 
   useEffect(() => {
-    console.log('meUser in Leaderboard', meUser);
+    //console.log('meUser in Leaderboard', meUser);
   }, [meUser]);
 
   useEffect(() => {
@@ -82,7 +83,6 @@ export function Leaderboard({ meUser, searchTerm, isVisible, setIsVisible }: Lea
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
       <div className='container'>{userElements}</div>
-      <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => setIsVisible(false)}></RoundButton>
     </div>
   );
 }

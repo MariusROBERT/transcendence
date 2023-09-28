@@ -95,6 +95,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
 
   useEffect(() => {
     updateDimension();
+    // eslint-disable-next-line
   }, [viewport, factor]);
 
   // Display Game Management ---------------------------------------------------------------------------------------- //

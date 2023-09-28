@@ -199,7 +199,7 @@ export function Settings(props: Props) {
             });
             console.log(modifData);
           }}
-                  disabled={(password != confirmPassword) || password == ''}
+                  disabled={(password !== confirmPassword) || password === ''}
           >
             Confirm
           </button>

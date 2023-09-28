@@ -59,7 +59,7 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      console.log('Connected, Socket ID: ', socket?.id, ' UserName: \"', username, '\" ID: ', id);
+      console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
     });
     socket?.connect();
 

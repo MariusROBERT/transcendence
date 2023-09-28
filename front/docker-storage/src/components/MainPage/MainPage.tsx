@@ -15,7 +15,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
   if (!jwtToken)
     window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLeaderboardVisible, setIsLeaderboardVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, socket, id, user } = useUserContext();
   const { fetchGameContext, joinQueue } = useGameContext();
@@ -26,7 +25,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }, []);
 
   useEffect(() => {
-    fetchGameContext();
+    if (id !== 0)
+      fetchGameContext();
     // eslint-disable-next-line
   }, [socket, id]);
 
@@ -39,15 +39,13 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   return (
     <div style={MainPageStyle}>
-      {notifs && (
+      {
+        notifs && (
         <div style={notificationBadgeStyle}>
           <span style={notificationCountStyle}>1</span>
-        </div>)}
-      {isLeaderboardVisible && <Leaderboard meUser={user} searchTerm={searchTerm} isVisible={isLeaderboardVisible} setIsVisible={setIsLeaderboardVisible}></Leaderboard>}
+        </div>)
+      }
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
-
-      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
-                  flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel meUser={user} viewport={viewport} />
@@ -55,15 +53,9 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
           <Navbar meUser={user} />
-          <Search
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            placeHolder={'Leader Board...'}
-            user={user}
-          />
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <div style={Btn}>
-            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
-                       onClick={() => joinQueue('normal')}></RoundButton>
+            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
           </div>
           <div style={{ height: '60px' }} />
         </Background>
@@ -84,7 +76,7 @@ const Btn: React.CSSProperties = {
 }
 
 const MainPageStyle: React.CSSProperties = {
-  border: '4px solid red',
+  //border: '4px solid red',
   position: 'relative',
   width: '100%',
   height: '100%'
