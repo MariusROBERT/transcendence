@@ -136,6 +136,11 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     }
   }, [is2fa]);
 
+  //focus on input when login or signup is clicked
+  useEffect(() => {
+    document.getElementById('username')?.focus();
+  }, [signIn]);
+
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
     height: viewport.isLandscape
@@ -195,6 +200,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                   style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
                   type='text'
                   name='username'
+                  id={'username'}
                   value={formData.username}
                   onChange={handleChange}
                   placeholder='login..'
