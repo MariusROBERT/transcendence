@@ -1,5 +1,5 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
 import TwoFA from './TwoFA';
@@ -12,13 +12,6 @@ interface Props {
   viewport: Viewport,
 }
 
-interface FormData {
-  username: string;
-  password: string;
-  confirmPassword: string;
-  twoFactorCode: string;
-}
-
 export function Login({ duration_ms = 900, viewport }: Props) {
 
   // ReactHook -------------------------------------------------------------------------------------------------------//
@@ -28,34 +21,18 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [isConnected, setIsConneted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    twoFactorCode: '',
-  });
   const [is2fa, setIs2fa] = useState<boolean>(false);
   const [error2fa, setError2fa] = useState<string>(' ');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  }
+
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setFormData({
-      ...formData,
-      password: password,
-      confirmPassword: confirmPassword,
-    })
     if (signIn)
       return OnConnect();
     else
@@ -63,12 +40,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   }
 
   async function OnRegister() {
-    if (formData.username !== '' && formData.password !== '') {
-      if (formData.password === formData.confirmPassword) {
-        if (!formData.username.endsWith('_42')) {
+    if (username !== '' && password !== '') {
+      if (password === confirmPassword) {
+        if (!username.endsWith('_42')) {
           const registerResponse = await unsecureFetch('auth/register', 'POST', JSON.stringify({
-            username: formData.username,
-            password: formData.password,
+            username: username,
+            password: password,
           }));
           if (registerResponse?.ok) {
             return OnConnect();
@@ -88,12 +65,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   async function OnConnect(twoFactorCode?: string) {
     try {
       const credits = is2fa ? {
-        username: formData.username,
-        password: formData.password,
+        username: username,
+        password: password,
         twoFactorCode: twoFactorCode,
       } : {
-        username: formData.username,
-        password: formData.password,
+        username: username,
+        password: password,
       };
 
       const response = await unsecureFetch('auth/login', 'POST',
@@ -196,7 +173,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => { setSign(!signIn) }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            <Button onClick={() => {
+              setSign(!signIn);
+            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
           </Background>
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
@@ -209,8 +188,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                   type='text'
                   name='username'
                   id={'username'}
-                  value={formData.username}
-                  onChange={handleChange}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder='login..'
                   required
                 />
