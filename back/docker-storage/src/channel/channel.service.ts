@@ -34,10 +34,10 @@ export class ChannelService {
       ...channel,
     });
     chan.owner = user;
-    //chan.admins = [];
+    chan.admins = [];
     //chan.admins.push(user);
-    //chan.users = [];
-    //chan.users.push(user);
+    chan.users = [];
+    chan.users.push(user);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -79,12 +79,27 @@ export class ChannelService {
   }
 
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
-    const chans = await this.ChannelRepository.createQueryBuilder("channel")
+    var chans = await this.ChannelRepository.createQueryBuilder("channel")
                                               .leftJoinAndSelect("channel.users", "users")
                                               .where("users.id = :id", {id})
                                               .select(["channel.id as id", "channel.channel_name as name"])
                                               .getRawMany();
-    return chans;
+    var admchans = await this.ChannelRepository.createQueryBuilder("channel")
+                                              .leftJoinAndSelect("channel.admins", "admins")
+                                              .where("admins.id = :id", {id})
+                                              .select(["channel.id as id", "channel.channel_name as name"])
+                                              .getRawMany();
+    var ownchans = await this.ChannelRepository.createQueryBuilder("channel")
+                                              .leftJoinAndSelect("channel.owner", "owner")
+                                              .where("owner.id = :id", {id})
+                                              .select(["channel.id as id", "channel.channel_name as name"])
+                                              .getRawMany();
+    chans.forEach(chan => { chan["type"] = "member"; });
+    admchans.forEach(admchans => { admchans["type"] = "admin"; });
+    ownchans.forEach(ownchans => { ownchans["type"] = "owner"; });
+    const all = chans.concat(admchans, ownchans);
+    console.log(all);
+    return all;
   }
 
   async updateChannel(
