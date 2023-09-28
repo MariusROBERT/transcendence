@@ -142,24 +142,23 @@ export class UserService {
   // FRIEND'S DEMAND :
 
   async askFriend(user: UserEntity, id: number): Promise<UserEntity> {
-    // check si le user demandé est connecté
     const userAsked = await this.UserRepository.findOne({ where: { id } });
     if (!userAsked)
       throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-    // if (userAsked.user_status == UserStateEnum.ON)
-    //     // passer par les socket
-    // else {
-    if (!user.invited) user.invited = [];
-    if (!userAsked.invited) userAsked.invites = [];
-    if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
-      // secu en + :
-      const invitedExist = user.invited.indexOf(userAsked.id);
-      const invitesExist = userAsked.invites.indexOf(user.id);
-      if (invitesExist != -1 || invitedExist != -1)
-        throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
+    const isAlreadyFriend = user.friends.indexOf(id);
+    if (isAlreadyFriend !== -1) {
+      throw new ConflictException(
+        `le user d'id ${id} est fait déjà de vos friends`,
+      );
+    }
+    // if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
+    //   const invitedExist = user.invited.indexOf(userAsked.id);
+    //   const invitesExist = userAsked.invites.indexOf(user.id);
+    //   if (invitesExist != -1 || invitedExist != -1)
+    //     throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
       user.invited.push(userAsked.id);
       userAsked.invites.push(user.id);
-    }
+    // }
     // }
     await this.UserRepository.save(user);
     await this.UserRepository.save(userAsked);
@@ -168,48 +167,35 @@ export class UserService {
 
   async handleAsk(
     user: UserEntity, // usr1
-    id: number, // usr2
+    id: number, // sender
     bool: boolean,
   ) {
-    const userInvites = await this.UserRepository.findOne({
-      where: { id },
-    }); // search le user d'id :id
-    if (!userInvites)
+    const sender = await this.UserRepository.findOne({ where: { id } });
+    if (!sender) {
       throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
-    if (!user.invites) {
+    }
+    const indexSenderInInvites = user.invites.indexOf(sender.id); // get l'index du sender dans la liste d'invites de usr1
+    if (indexSenderInInvites !== -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites`,
+        `le sender d'id ${id} ne fait parti de la liste d'invites du user (receiver) d'id ${user.id}`,
       );
     }
-    const friendsExist = user.friends.indexOf(userInvites.id);
-    if (friendsExist != -1) {
-      throw new ConflictException(
-        `le user d'id ${id} est fait déjà de vos friends`,
-      );
-    }
-    const indexToRemove = user.invites.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemove !== -1) {
+    const indexReceiverInInvited = sender.invited.indexOf(user.id); // get l'index du user (receiver) dans la liste d'invited du sender
+    if (indexReceiverInInvited !== -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites du user d'id ${user.id}`,
+        `Vous ne ne faite pas parti de la liste d'invited du sender d'id ${id}`,
       );
     }
-    const indexToRemoveusr = userInvites.invited.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemoveusr !== -1) {
-      throw new NotFoundException(
-        `le user d'id ${user.id} ne fait partit de la liste d'invited du user d'id ${id}`,
-      );
-    }
-    user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
-    userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
+    user.invites.splice(indexSenderInInvites, 1); // remove sender dans liste d'invites du receiver
+    sender.invited.splice(indexReceiverInInvited, 1); // remove receiver dans liste d'invited du sender
     if (bool == true) {
-      // si il a été accepter, on ajoute dans la liste friends des deux cotés
       if (!user.friends) user.friends = [];
-      user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
-      if (!userInvites.friends) userInvites.friends = [];
-      userInvites.friends = [...userInvites.friends, user.id]; // ajout usr1 dans list friends de usr2
+      user.friends = [...user.friends, sender.id]; // ajout sender dans list friends de usr1
+      if (!sender.friends) sender.friends = [];
+      sender.friends = [...sender.friends, user.id]; // ajout usr1 dans list friends de sender
     }
     this.UserRepository.save(user);
-    this.UserRepository.save(userInvites);
+    this.UserRepository.save(sender);
     return user
   }
 
