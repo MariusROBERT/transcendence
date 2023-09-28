@@ -26,6 +26,7 @@ export function Game({ inGame, setInGame }: Props) {
     return () => {
       socket?.off('sendState', stateListener);
     };
+    // eslint-disable-next-line
   }, [stateListener]);
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export function Game({ inGame, setInGame }: Props) {
     return () => {
       socket?.off('open_game', openGame);
     };
+    // eslint-disable-next-line
   }, [openGame]);
 
   return (

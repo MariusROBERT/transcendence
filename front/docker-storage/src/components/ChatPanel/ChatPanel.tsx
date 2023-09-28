@@ -32,6 +32,7 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('message', getMsg);
     };
+    // eslint-disable-next-line
   }, [getMsg]);
 
   useEffect(() => {
