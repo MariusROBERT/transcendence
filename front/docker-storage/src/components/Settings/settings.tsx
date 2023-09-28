@@ -58,9 +58,8 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
       if (user) {
         setUserInfosSettings(user);
       } else {
-        // si je delete le cookie du jwt
-        navigate('/login');
-        alert('Vous avez été déconnecté');
+        window.location.replace('http://localhost:3001/api/auth/login');
+        // alert('Vous avez été déconnecté');
       }
     };
     getUserInfos();
@@ -72,7 +71,7 @@ const Settings: React.FC<Props> = ({ isVisible }) => {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
     if (!jwtToken) {
-      navigate('/login');
+      window.location.replace('http://localhost:3001/api/auth/login');
       alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
     }
     if (
