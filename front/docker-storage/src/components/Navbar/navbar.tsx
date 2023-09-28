@@ -40,6 +40,7 @@ const Navbar: React.FC<Props>  = ({ meUser }) => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
+    // eslint-disable-next-line
   }, []);
 
   return (

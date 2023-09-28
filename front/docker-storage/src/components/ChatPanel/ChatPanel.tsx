@@ -19,20 +19,21 @@ export function ChatPanel({ viewport, width }: Props) {
   // this should be in the back
   let [msg, setMessage] = useState<any[]>([]);
 
-  const getMsg = (message: any) => {
-    //var owner = false;
-//
-    //if (message.sock_id === socket?.id) owner = true;
-    setMessage([...msg, { message_content: message.msg, user_name: "Test" }]);
-    setInputValue("");
-  };
 
   useEffect(() => {
+    const getMsg = (message: any) => {
+      //var owner = false;
+//
+      //if (message.sock_id === socket?.id) owner = true;
+      setMessage([...msg, { message_content: message.msg, user_name: "Test" }]);
+      setInputValue("");
+    };
+
     socket?.on("message", getMsg);
     return () => {
       socket?.off("message", getMsg);
     };
-  }, [getMsg]);
+  }, [socket, msg]);
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
