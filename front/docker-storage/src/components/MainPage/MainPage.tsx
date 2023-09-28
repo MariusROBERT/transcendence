@@ -25,7 +25,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
       await fetchContext();
     }
     getUser();
-  }, [fetchContext]);
+  }, []);
 
   useEffect(() => {
     if (!user)
