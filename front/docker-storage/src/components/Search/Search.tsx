@@ -40,6 +40,7 @@ export function Search(props: Props) {
           alignItems: 'center',
           backgroundColor: 'grey',
           borderRadius: '10px',
+          padding: '10px',
         }}>
           <SearchBar setSearchTerm={props.setSearchTerm}
                      isVisible={searchMode}

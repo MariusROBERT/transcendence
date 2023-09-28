@@ -14,17 +14,12 @@ const UserBanner = ({ otherUser, meUser }: Props) => {
   // const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
 
-  const closeProfil = () => {
-    // setSelectedUser(null);
-    setProfilVisible(!profilVisible);
-  };
-
   const isMe = otherUser.id === meUser?.id;
 
   return (
     <div>
       <div style={UserBannerContainer}>
-        <Flex zIndex={'10'} flex_direction='row'>
+        <Flex flex_direction='row'>
           {isMe  || <img style={statusStyle}
                 src={(isMe ? meUser : otherUser)?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
                 alt={(isMe ? meUser : otherUser)?.user_status ? 'connected' : 'disconnected'} />}

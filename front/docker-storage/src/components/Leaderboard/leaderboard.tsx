@@ -88,11 +88,12 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
 
 const container: CSSProperties = {
   minWidth: '500px',
-  background: 'black',
-  padding: '10px',
+  background: 'grey',
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
+  maxHeight: '500px',
+  overflowY: 'scroll',
 };
 
 const userElementStyle: CSSProperties = {
@@ -102,7 +103,7 @@ const userElementStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-around',
   alignContent: 'center',
-  background: 'grey',
+  background: '#646464',
   color: 'white',
   margin: '10px',
   padding: '10px',

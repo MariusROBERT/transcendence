@@ -16,7 +16,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id }: P
   return (
     <div style={{
       visibility: isVisible ? 'visible' : 'hidden',
-      margin: '50px',
+      margin: '30px',
       borderRadius: '10px',
       backgroundColor: color.white,
       height: '60px',
