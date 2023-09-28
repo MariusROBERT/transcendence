@@ -55,22 +55,16 @@ export class AuthService {
       throw new NotFoundException(`username not found`);
     }
 
-    console.log('2fa active : ' + user.is2fa_active);
     if (user.is2fa_active) {
-      console.log('2fa active');
       if (creditentials.twoFactorCode) {
-        console.log('2fa code : ' + creditentials.twoFactorCode);
         if (!authenticator.verify(
           {
             token: creditentials.twoFactorCode,
             secret: user.secret2fa,
           })) {
           throw new UnauthorizedException(`Invalid 2fa code`);
-        } else {
-          console.log('2fa code OK');
         }
       } else {
-        console.log('no 2fa code');
         throw new UnauthorizedException(`Missing 2fa code`);
       }
     }
@@ -127,7 +121,6 @@ export class AuthService {
       .getOne();
     // JWT
     if (user2.is2fa_active) {
-      console.log('2fa active');
       return '';
     }
     const payload = {
@@ -146,7 +139,6 @@ export class AuthService {
     })
       .then(res => res.json())
       .then(json => parseInt(json.id));
-    console.log(id42);
     if (!id42) {
       throw new NotFoundException(`Invalid intra token`);
     }
@@ -154,7 +146,6 @@ export class AuthService {
       .createQueryBuilder('user')
       .where('user.id42 = :id42', { id42 })
       .getOne();
-    console.log(user);
     if (!user) {
       throw new NotFoundException(`user not found`);
     }
@@ -164,20 +155,16 @@ export class AuthService {
           token: code2fa,
           secret: user.secret2fa,
         })) {
-        console.log('2fa code KO');
         throw new UnauthorizedException(`Invalid 2fa code`);
       }
       const payload = {
         username: user.username,
         role: user.role,
       }
-      console.log('2fa code OK');
       const jwt = this.jwtService.sign(payload);
-      console.log('jwt: ', jwt);
       return { 'access-token': jwt };
       // return this.jwtService.sign(payload);
     } else {
-      console.log('2fa not active');
       throw new UnauthorizedException(`2fa not active`);
     }
   }

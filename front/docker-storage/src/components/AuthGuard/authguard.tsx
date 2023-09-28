@@ -15,10 +15,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
   const [error2fa, setError2fa] = React.useState<string>('');
   const [is2fa, setIs2fa] = React.useState<boolean>(!!intraToken);
 
-  console.log('window.location.search', window.location.search);
-  console.log('ft_token', ft_token);
-  console.log('intraToken', intraToken);
-
   if (ft_token !== '' && ft_token){
     Cookies.set('jwtToken', ft_token, {
       expires: 7, // 7 jours
@@ -26,13 +22,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
     window.location.href = '/';
   }
   const jwtToken = Cookies.get('jwtToken')
-  console.log('jwtToken', jwtToken);
   let auth = !!jwtToken;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!auth && !is2fa) {
-      console.log('goToLogin');
       navigate('/login');
     }
   }, [is2fa, auth, navigate]);
@@ -40,7 +34,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
   useEffect(() => {
     // if (!auth) {
     if (!auth && !intraToken) {
-      console.log('goToLogin');
       navigate('/login');
     }
   }, [auth, navigate, intraToken]);
@@ -54,14 +47,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
       ftToken: intraToken,
     };
 
-    console.log('making request');
     const response = await unsecureFetch('auth/2fa/42', 'POST',
       JSON.stringify(credits));
     console.log('response: ', response);
     if (response?.ok) {
-      console.log('ok');
       const json = await response.json();
-      console.log(json['access-token']);
       Cookies.set('jwtToken', json['access-token'], {
         expires: 7, // 7 jours
       });

@@ -49,11 +49,6 @@ export class AuthController {
 
   @Post('2fa/42')
   async twoFa42(@Body() body) {
-    console.log(body);
-    const token = await this.authService.ftLogin2fa(body.ftToken, body.code2fa);
-    console.log('token: ', token);
-    console.log('yes ?');
-    return token;
-    // return this.authService.ftLogin2fa(body.ftToken, body.code2fa);
+    return await this.authService.ftLogin2fa(body.ftToken, body.code2fa);
   }
 }
