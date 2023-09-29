@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Background from './components/Background/Background';
 import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
-import { AuthGuard, Login, MainPage } from './components';
+import { AuthGuard, Game, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 import NotFoundPage from './components/404Page/404Page';
+import { GameScore } from './components/Game/GameScore';
 
 const SIZE: number = 500;
 
@@ -34,17 +35,24 @@ function App() {
       >
         <Background image={backgroundImage} fixed={true}>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <AuthGuard isAuthenticated>
-                  <MainPage panelWidth={SIZE} viewport={viewport}/>
-                </AuthGuard>
-              }
-            />
-            <Route path='/login' element={<Login
-              viewport={viewport}
-            />} />
+            <Route path='/login' element={
+              <Login viewport={viewport}></Login>}>
+            </Route>
+            <Route path='/' element={
+              <AuthGuard isAuthenticated>
+                <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
+              </AuthGuard>}>
+            </Route>
+            <Route path='/game' element={
+              <AuthGuard isAuthenticated>
+                <Game viewport={viewport}></Game>
+              </AuthGuard>}>
+            </Route>
+            <Route path='/game/score' element={
+              <AuthGuard isAuthenticated>
+                <GameScore viewport={viewport}></GameScore>
+              </AuthGuard>}>
+            </Route>
             <Route path='*' element={<NotFoundPage />}/>
           </Routes>
         </Background>

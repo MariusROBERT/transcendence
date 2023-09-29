@@ -3,8 +3,6 @@ import {
   Controller,
   FileTypeValidator,
   Get,
-  HttpException,
-  HttpStatus,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -26,6 +24,7 @@ import {
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
+  UserGameStatus,
 } from './dto/user.dto';
 import { Express, Request } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
@@ -180,11 +179,19 @@ export class UserController {
 
     return await this.userService.blockAUser(id, user);
   }
-  // Sockets ----------------------------------------------------------------------------------------------------//
+  // Sockets -------------------------------------------------------------------------------------------------------- //
 
   @Get('/from_socket_id')
   @UseGuards(JwtAuthGuard)
   async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
     return this.userService.getUserFromSocketId(socketId);
+  }
+
+  // Game ----------------------------------------------------------------------------------------------------------- //
+  @Get('/game_status/:id')
+  @UseGuards(JwtAuthGuard)
+  async GetGameStatusWithId(@Param('id', ParseIntPipe) id: number): Promise<UserGameStatus> {
+    //console.log('fetch user game infos')
+    return await this.userService.getGameStatusWithId(id);
   }
 }

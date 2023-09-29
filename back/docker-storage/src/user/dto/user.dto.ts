@@ -78,21 +78,28 @@ export class PublicProfileDto {
 
 export class UpdatePwdDto {
   @IsString()
-  password: string;
-}
+  newPassword: string;
 
-export class SetSocketIdDto {
-  @IsNotEmpty()
   @IsString()
-  socketId: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserStateEnum)
-  user_status: UserStateEnum;
+  oldPassword: string;
 }
 
 export class GetUserIdFromSocketIdDto {
   @IsNotEmpty()
   @IsString()
   socketId: string;
+}
+
+export class UserGameStatus {
+  @IsNumber()
+  isInGameWith: number;
+
+  @IsNumber()
+  gameInvitationTo: number;
+
+  @IsNumber()
+  gameInvitationFrom: number;
+
+  @IsString()
+  gameInviteType: string;
 }

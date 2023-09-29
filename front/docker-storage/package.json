@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/js-cookie": "^3.0.4"
   }
 }

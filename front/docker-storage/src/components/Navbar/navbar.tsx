@@ -31,6 +31,8 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     }
   };
 
+  //TODO: [Raffi] reuse this in game
+
   // delog the user if he close the navigator without click in logout button
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -40,6 +42,8 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
+
+    // eslint-disable-next-line
   }, [profilVisible]);
 
   return (

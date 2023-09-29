@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
-import { UserAddChanDto, UserChanDto } from 'src/user/dto/user.dto';
+import { UserChanDto } from 'src/user/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import {
   ChannelEntity,
@@ -70,11 +70,10 @@ export class ChannelController {
     @Body() createChannelDto: CreateChannelDto,
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
-    const chan = await this.channelService.createChannel(
+    return await this.channelService.createChannel(
       createChannelDto,
       user,
     );
-    return chan;
   }
 
   @Patch('/:id') // id_chan
