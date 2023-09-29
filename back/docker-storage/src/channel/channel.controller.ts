@@ -54,7 +54,6 @@ export class ChannelController {
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity[]> {
-    console.log('get users ^^');
     return await this.channelService.getChannelUsers(id);
   }
 
@@ -62,7 +61,6 @@ export class ChannelController {
   @Post('/of_user')
   @UseGuards(JwtAuthGuard)
   async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelEntity[]> {
-    console.log('get chans of users ^^');
     return await this.channelService.getChannelOfUser(user.id);
   }
 
@@ -76,8 +74,6 @@ export class ChannelController {
       createChannelDto,
       user,
     );
-    //console.log('chan: ', chan);
-    //console.log('chan.admins: ', chan.admins);
     return chan;
   }
 
@@ -129,18 +125,19 @@ export class ChannelController {
     return this.channelService.KickUserFromChannel(uDto.id, id);
   }
 
-  /*
   //  TODO RECODE MUTE DEMUTE
-  @Patch('mute/:id') // id_chan
+  @Post('mute/:id') // id_chan
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async MuteUserFromChannel(
     @User() user: UserChanDto,
-    @Param('id_chan', ParseIntPipe) id: number,
-    @Param('time_sec', ParseIntPipe) time_sec: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: any,
   ) {
-    return this.channelService.MuteUserFromChannel(user.id, id, time_sec);
+    return this.channelService.MuteUserFromChannel(body.id, id, body.time);
   }
 
+  /*
   @Patch('unmute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
   async UnMuteUserFromChannel(

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -16,6 +17,7 @@ import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserAddChanDto } from 'src/user/dto/user.dto';
+import { MutedService } from 'src/muted/muted.service';
 
 @Injectable()
 export class ChannelService {
@@ -24,6 +26,7 @@ export class ChannelService {
     private ChannelRepository: Repository<ChannelEntity>,
     private userService: UserService,
     private msgService: MessagesService,
+    private mutedService: MutedService,
   ) {}
 
   async createChannel(
@@ -195,7 +198,6 @@ export class ChannelService {
   }
 
   //  Do it at the end
-  /*
   async MuteUserFromChannel(
     uid: number,
     id: number,
@@ -203,26 +205,22 @@ export class ChannelService {
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be muted
-    if (channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
     if (sec <= 0)
-      throw new Error('Time in second cannot be equal or inferior to zero');
-    //  Todo: Check if user is already muted, if it is juste update the Date
-    const date = new Date(); // Get the current date
-    date.setSeconds(date.getSeconds() + sec); // Add time in second to the date
-    let muteEntity: MutedEntity;
-    muteEntity.channel = channel;
-    muteEntity.user = user;
-    muteEntity.endDate = date;
-    channel.mutedUsers = [...channel.mutedUsers, muteEntity];
-    await this.ChannelRepository.save(channel);
+      throw new BadRequestException('Time in second cannot be equal or inferior to zero');
+
+    var muteEntity: MutedEntity = await this.mutedService.createMuted(channel, user, sec);
+
+    //console.log("current muted");
+    //console.log(await this.mutedService.getMutedsInChannel(channel.id));
+    //console.log("========");
+    //console.log(muteEntity);
+    //currentMuted.push(muteEntity);
+    //channel.mutedUsers = currentMuted;
+    ////await this.ChannelRepository.save(channel);
     return channel;
   }
 
+  /*
   async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);

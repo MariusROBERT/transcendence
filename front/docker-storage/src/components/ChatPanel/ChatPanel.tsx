@@ -66,6 +66,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   async function CommandParsing() : Promise<boolean> {
     const command = inputValue;
+    const split = command.split(' ');
 
     if (await execCommand("add_admin", command) == true)
       return true;
@@ -75,6 +76,23 @@ export function ChatPanel({ viewport, width }: Props) {
       return true;
     if (await execCommand("unban", command) == true)
       return true;
+
+    //  Mute
+    if (split.length === 4 && split[0] === "mute") {
+      const id_channel = parseInt(split[1], 10);
+      const id_user = parseInt(split[2], 10);
+      const time = parseInt(split[3], 10);
+      if (!isNaN(id_channel) && !isNaN(id_user)) {
+        console.log('channel:', id_channel);
+        console.log('user:', id_user);
+      }
+      setInputValue("");
+      Fetch("channel/" + "mute" + "/" + id_channel, "POST", JSON.stringify({
+        id: id_user,
+        time: time,
+      }),);
+      return true;
+    }
     return false;
   }
 
