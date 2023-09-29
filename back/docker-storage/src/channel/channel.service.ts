@@ -207,32 +207,18 @@ export class ChannelService {
     const user = await this.userService.getUserById(uid);
     if (sec <= 0)
       throw new BadRequestException('Time in second cannot be equal or inferior to zero');
-
     var muteEntity: MutedEntity = await this.mutedService.createMuted(channel, user, sec);
-
-    //console.log("current muted");
-    //console.log(await this.mutedService.getMutedsInChannel(channel.id));
-    //console.log("========");
-    //console.log(muteEntity);
-    //currentMuted.push(muteEntity);
-    //channel.mutedUsers = currentMuted;
-    ////await this.ChannelRepository.save(channel);
     return channel;
   }
 
-  /*
+
   async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    var idx = await this.isMuted(user, channel);
-    if (idx == -1) throw new Error('The user is not muted');
-    channel.mutedUsers.splice(idx, 1);
-    await this.ChannelRepository.save(channel);
+    await this.mutedService.removeMuted(channel, user);
     return channel;
   }
-  */
+
 
   // tested
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {

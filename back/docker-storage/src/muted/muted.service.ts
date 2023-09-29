@@ -11,14 +11,25 @@ export class MutedService {
     private mutedRepository: Repository<MutedEntity>
     ) {}
 
+    async removeMuted(channel: ChannelEntity, user: UserEntity)
+    {
+        const if_exist = await this.mutedRepository.findOne({
+            where: { user: { id: user.id }, channel: { id: channel.id } },
+        });
+        if (if_exist)
+            await this.mutedRepository.remove(if_exist);
+    }
+
     async createMuted(channel: ChannelEntity, user: UserEntity, time: number)
     {
-        var date = new Date(); // Get the current date
-        date.setSeconds(date.getSeconds() + time); // Add time in second to the date
+        this.removeMuted(channel, user);
+        var date = new Date();
+        date.setSeconds(date.getSeconds() + time);
         var muted = this.mutedRepository.create();
         muted.channel = channel;
         muted.user = user;
         muted.endDate = date;
+        this.mutedRepository.save(muted);
         return muted;
     }
 

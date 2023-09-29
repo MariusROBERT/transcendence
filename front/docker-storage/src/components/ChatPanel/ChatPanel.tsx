@@ -93,6 +93,21 @@ export function ChatPanel({ viewport, width }: Props) {
       }),);
       return true;
     }
+
+    //  Unmute
+    if (split.length === 3 && split[0] === "unmute") {
+      const id_channel = parseInt(split[1], 10);
+      const id_user = parseInt(split[2], 10);
+      if (!isNaN(id_channel) && !isNaN(id_user)) {
+        console.log('channel:', id_channel);
+        console.log('user:', id_user);
+      }
+      setInputValue("");
+      Fetch("channel/" + "unmute" + "/" + id_channel, "POST", JSON.stringify({
+        id: id_user,
+      }),);
+      return true;
+    }
     return false;
   }
 
