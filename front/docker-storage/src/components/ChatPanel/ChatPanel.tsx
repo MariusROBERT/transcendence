@@ -36,7 +36,7 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('message', getMsg);
     };
-  }, [getMsg]);
+  });
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
@@ -64,13 +64,13 @@ export function ChatPanel({ viewport, width }: Props) {
     const command = inputValue;
     const split = command.split(' ');
 
-    if (await execCommand("add_admin", command) == true)
+    if (await execCommand("add_admin", command) === true)
       return true;
-    if (await execCommand("kick", command) == true)
+    if (await execCommand("kick", command) === true)
       return true;
-    if (await execCommand("ban", command) == true)
+    if (await execCommand("ban", command) === true)
       return true;
-    if (await execCommand("unban", command) == true)
+    if (await execCommand("unban", command) === true)
       return true;
 
     //  Mute
@@ -79,7 +79,7 @@ export function ChatPanel({ viewport, width }: Props) {
       const id_user = parseInt(split[2], 10);
       const time = parseInt(split[3], 10);
       setInputValue("");
-      Fetch("channel/" + "mute" + "/" + id_channel, "POST", JSON.stringify({
+      Fetch("channel/mute/" + id_channel, "POST", JSON.stringify({
         id: id_user,
         time: time,
       }),);
@@ -91,7 +91,7 @@ export function ChatPanel({ viewport, width }: Props) {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
       setInputValue("");
-      Fetch("channel/" + "unmute" + "/" + id_channel, "POST", JSON.stringify({
+      Fetch("channel/unmute/" + id_channel, "POST", JSON.stringify({
         id: id_user,
       }),);
       return true;
