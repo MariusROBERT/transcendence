@@ -78,7 +78,10 @@ export class PublicProfileDto {
 
 export class UpdatePwdDto {
   @IsString()
-  password: string;
+  newPassword: string;
+
+  @IsString()
+  oldPassword: string;
 }
 
 export class GetUserIdFromSocketIdDto {
