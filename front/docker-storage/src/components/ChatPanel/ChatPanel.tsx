@@ -68,6 +68,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
+      <div style={{minHeight:'70px'}} />
       <ChatMenu/>
       <ChanUserList/>
       <div style={{
