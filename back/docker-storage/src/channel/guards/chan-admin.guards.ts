@@ -31,7 +31,7 @@ export class AdminGuard implements CanActivate {
   }
 }
 
-//  This one check if the target is already admin or owner
+//  This one check if the target is admin or owner
 @Injectable()
 export class TargetIsAdminGuard implements CanActivate {
     constructor(private channelService: ChannelService,
@@ -49,7 +49,7 @@ export class TargetIsAdminGuard implements CanActivate {
         const has_perm = findPerm(user.username, users_of_chan, ["owner", "admin"]);
         if (has_perm === undefined)
             return true;
-        throw new BadRequestException("User is already Admin or Owner");
+        throw new BadRequestException("User is Admin or Owner");
   }
 }
 

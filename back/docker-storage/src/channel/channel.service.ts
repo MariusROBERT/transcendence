@@ -148,17 +148,21 @@ export class ChannelService {
     return channel;
   }
 
+  removeFrom(users: UserEntity[], id)
+  {
+    const index = users.findIndex(user => user.id === id);
+    if (index !== -1)
+      users.splice(index, 1);
+    return users;
+  }
+
   //  Not tested yet
   async addAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     try {
       var currentUsers = await this.userService.getFullUsersInChannels(id);
-      //  TODO: move this to a function
-      const index = currentUsers.findIndex(user => user.id === id);
-      if (index !== -1)
-        currentUsers.splice(index, 1);
-      channel.users = currentUsers;
+      channel.users = this.removeFrom(currentUsers, userid);
       var currentAdmins = await this.userService.getFullAdminInChannels(id);
       currentAdmins.push(user);
       channel.admins = currentAdmins;
@@ -172,12 +176,9 @@ export class ChannelService {
   async KickUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
     try {
-      if (!channel.users) channel.users = [];
-      channel.users.indexOf(user) !== -1 &&
-        channel.users.splice(channel.users.indexOf(user), 1);
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      channel.users = this.removeFrom(currentUsers, uid);
       await this.ChannelRepository.save(channel);
     } catch (e) {
       console.log('Error: ' + e);

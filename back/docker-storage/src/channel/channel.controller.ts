@@ -116,14 +116,13 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     const chan = await this.channelService.addAdminInChannel(uDto.id, id);
-    console.log("All Guards ok ^^");
     return chan;
   }
 
-  @Patch('kick/:id') // id_chan
+  @Post('/kick/:id') // id_chan
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
-    @User() user: UserEntity,
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
