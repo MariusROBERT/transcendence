@@ -236,7 +236,7 @@ export class ChannelService {
   }
   */
 
-  //  Not tested
+  // tested
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
@@ -255,7 +255,7 @@ export class ChannelService {
     return channel;
   }
 
-  //  Not Tested
+  // Tested
   async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     if (channel.priv_msg == true)

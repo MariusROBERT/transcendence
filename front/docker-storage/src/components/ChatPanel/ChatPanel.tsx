@@ -45,12 +45,10 @@ export function ChatPanel({ viewport, width }: Props) {
     });
   });
 
-  async function CommandParsing() : Promise<boolean> {
-    const command = inputValue;
-    const split = command.split(' ');
-
-    //  Add admin
-    if (split.length === 3 && split[0] === 'add_admin') {
+  async function execCommand(command: string, cmd: string) : Promise<boolean> {
+    const split = cmd.split(' ');
+  
+    if (split.length === 3 && split[0] === command) {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
       if (!isNaN(id_channel) && !isNaN(id_user)) {
@@ -58,52 +56,7 @@ export function ChatPanel({ viewport, width }: Props) {
         console.log('user:', id_user);
       }
       setInputValue("");
-      Fetch("channel/add_admin/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-      }),);
-      return true;
-    }
-
-    // Kick
-    if (split.length === 3 && split[0] === 'kick') {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      if (!isNaN(id_channel) && !isNaN(id_user)) {
-        console.log('channel:', id_channel);
-        console.log('user:', id_user);
-      }
-      setInputValue("");
-      Fetch("channel/kick/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-      }),);
-      return true;
-    }
-
-    // Ban
-    if (split.length === 3 && split[0] === 'ban') {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      if (!isNaN(id_channel) && !isNaN(id_user)) {
-        console.log('channel:', id_channel);
-        console.log('user:', id_user);
-      }
-      setInputValue("");
-      Fetch("channel/ban/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-      }),);
-      return true;
-    }
-
-    // UnBan
-    if (split.length === 3 && split[0] === 'unban') {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      if (!isNaN(id_channel) && !isNaN(id_user)) {
-        console.log('channel:', id_channel);
-        console.log('user:', id_user);
-      }
-      setInputValue("");
-      Fetch("channel/unban/" + id_channel, "POST", JSON.stringify({
+      Fetch("channel/" + command + "/" + id_channel, "POST", JSON.stringify({
         id: id_user,
       }),);
       return true;
@@ -111,10 +64,21 @@ export function ChatPanel({ viewport, width }: Props) {
     return false;
   }
 
+  async function CommandParsing() : Promise<boolean> {
+    const command = inputValue;
+
+    if (await execCommand("add_admin", command) == true)
+      return true;
+    if (await execCommand("kick", command) == true)
+      return true;
+    if (await execCommand("ban", command) == true)
+      return true;
+    if (await execCommand("unban", command) == true)
+      return true;
+    return false;
+  }
+
   async function onEnterPressed() {
-    //Fetch("channel/add_admin/1", "POST", JSON.stringify({
-    //  id: 2, // Replace by user id
-    //}),);
     if (inputValue.length <= 0) return;
     if (await CommandParsing() === true) return; // If its a command do not continue
     const chan = await GetCurrChan();
