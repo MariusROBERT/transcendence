@@ -156,7 +156,7 @@ export class ChannelController {
   }
 
   @Post('unban/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(AdminGuard, PrivateGuard, IsBannedGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async UnBanUserFromChannel(
     @Body() uDto: UserChanDto,

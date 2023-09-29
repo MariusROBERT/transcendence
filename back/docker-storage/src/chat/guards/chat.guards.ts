@@ -2,11 +2,13 @@ import { Injectable, CanActivate, ExecutionContext, BadGatewayException } from '
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChannelService } from 'src/channel/channel.service';
+import { MutedService } from 'src/muted/muted.service';
 
 @Injectable()
 export class ChatCheckGuard implements CanActivate {
     constructor(private userService: UserService,
                 private jwtService: JwtService,
+                private muteService: MutedService,
                 private channelService: ChannelService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Mettez en œuvre votre logique pour vérifier si l'utilisateur est banni
@@ -22,7 +24,11 @@ export class ChatCheckGuard implements CanActivate {
     const users = await this.userService.getUsersInChannels(chanE.id);
     const is_here = users.some(user => user.id === userE.id);
     if (is_here)
+    {
+        if ((await this.muteService.getMutedInChannel(chanE.id, userE.id))?.endDate > new Date())
+            throw new Error("You are muted");
         return true;
-    throw new Error("You cannot write here");
+    }
+    throw new Error("You are not in channel");
   }
 }
