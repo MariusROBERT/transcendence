@@ -23,6 +23,7 @@ export function Search(props: Props) {
         input.value = '';
       props.setSearchTerm('');
     }
+    // eslint-disable-next-line
   }, [searchMode]);
 
   return (

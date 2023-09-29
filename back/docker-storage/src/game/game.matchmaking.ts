@@ -14,56 +14,62 @@ export class GameMatchmaking {
   //returns a Game with 1 given or the 2 given player
   getGame(p1:number, p2:number | undefined = undefined): gameRoom{
     if (p2 == null)
-      return this.controller.games.find(g => g.playerIds[0] == p1 || g.playerIds[1] == p1);
-    return this.controller.games.find(g =>
-      (g.playerIds[0] == p1 && g.playerIds[1] == p2)
-      || (g.playerIds[0] == p2 && g.playerIds[1] == p1))
+      return this.controller.games.find(g => g.playerIds.includes(p1));
+    return this.controller.games.find(g => g.playerIds.includes(p1) && g.playerIds.includes(p2));
   }
 
-  async joinQueue(queue: number[], id: number, isSpecial:boolean = false){
-    // console.log('user:', id, ' is joined the queue');
-    queue.push(id);
-    await this.tryLaunchGames(queue, isSpecial);
+  async joinQueue(id: number, isSpecial:boolean = false){
+    this.controller.queue = this.controller.queue.filter(id => this.getGame(id) === undefined);
+    this.controller.queueSpecial = this.controller.queueSpecial.filter(id => this.getGame(id) === undefined);
+
+    if (!isSpecial && !this.controller.queue.includes(id))
+      this.controller.queue.push(id);
+
+    else if (isSpecial && !this.controller.queueSpecial.includes(id))
+      this.controller.queueSpecial.push(id);
+
+    // console.log(isSpecial ? 'Special \n' + this.controller.queueSpecial : 'Normal \n', this.controller.queue);
+    await this.tryLaunchGames();
   }
 
   // try launch games as long as there is more than 2 players in the queue
-  async tryLaunchGames(queue: number[], isSpecial: boolean){
-    while (queue.length >= 2){
-      // console.log('try lanch game with:',queue[0] ,' and ', queue[1]);
-      queue = queue.filter(id => this.getGame(id) === undefined);
-      await this.createGame(queue[0], queue[1], isSpecial);
-      queue.slice(2);
+  async tryLaunchGames(){
+    while (this.controller.queue.length >= 2){
+      this.controller.queue = this.controller.queue.filter(id => this.getGame(id) === undefined);
+      await this.createGame(this.controller.queue[0], this.controller.queue[1], false);
+      this.controller.queue.slice(2);
+    }
+
+    while (this.controller.queueSpecial.length >= 2){
+      this.controller.queueSpecial = this.controller.queueSpecial.filter(id => this.getGame(id) === undefined);
+      await this.createGame(this.controller.queueSpecial[0], this.controller.queueSpecial[1], true);
+      this.controller.queueSpecial.slice(2);
     }
   }
 
   // add a new game in the games lists
   async createGame(p1: number, p2:number, isSpecial){
-    const room = await this.controller.gateway.createRoom(p1, p2);
-    if (room === undefined)
-      return;
     let game = {
-      room: room,
       playerIds: [p1, p2],
       state: {
         running: true,
         isSpecial: isSpecial,
         ball: {x:size.width / 2, y:size.height / 2},
         dir: this.controller.service.normalize({x:Math.random() * 2 - 1, y:Math.random() * 2 - 1}),
-        p1: {x:size.ball / 2, y:size.height / 2},
-        p2: {x:size.width - size.ball / 2, y:size.height / 2},
+        p1: size.height / 2,
+        p2: size.height / 2,
         score: {p1: 0, p2: 0},
-        speed: 1,
+        speed: 1.5,
         moveP1: {isMoving: false, up: false},
         moveP2: {isMoving: false, up: false}
       },
       ready:false
     };
     this.controller.games.push(game);
-    // console.log('game was created:', room);
-    this.controller.gateway.openGame(room);
+    this.controller.gateway.openGame(game.playerIds);
   }
 
-  async quitGame(id: number){
+  async leaveGame(id: number){
     const game = this.getGame(id);
     if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
@@ -102,14 +108,10 @@ export class GameMatchmaking {
 
     //TODO: Save game score and update dataBase here
 
-    //TODO: Send front event to show the GameOverPanel
-
-    // leave the room
-    (await this.controller.gateway.getSocketFromUser(game.playerIds[0]))?.leave(game.room);
-    (await this.controller.gateway.getSocketFromUser(game.playerIds[1]))?.leave(game.room);
+    await this.controller.gateway.endGame(game.playerIds);
 
     // remove the game from the controller's games
-    this.controller.games = this.controller.games.filter(g => g.playerIds[0] != id || g.playerIds[1] != id);
+    this.controller.games = this.controller.games.filter(g => !g.playerIds.includes(id));
     // dev msg
     return 'game end';
   }
