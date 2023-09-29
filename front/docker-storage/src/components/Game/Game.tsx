@@ -22,7 +22,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
   useEffect(() => {
     if (!isInGameWith)
       return navigate('/');
-    console.log('[', id, '] emit start_game', { id: id });
+    // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
     // eslint-disable-next-line
   }, []);
@@ -70,7 +70,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
       });
     }
 
-    console.log('[', id, '] subscribed to update_game_state');
+    // console.log('[', id, '] subscribed to update_game_state');
     socket?.on('update_game_state', onGameStateUpdate);
     return () => {
       socket?.off('update_game_state', onGameStateUpdate);
