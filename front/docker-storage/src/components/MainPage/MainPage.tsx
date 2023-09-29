@@ -71,8 +71,10 @@ export function MainPage({ panelWidth, viewport }: Props) {
             placeHolder={'Leader Board...'}
             user={user}
           />
+          <div style={Btn}>
           <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
                        onClick={onPlayClicked} />
+                       </div>
           <div style={{ height: '60px' }} />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
@@ -85,11 +87,17 @@ export function MainPage({ panelWidth, viewport }: Props) {
   );
 }
 
+const Btn: React.CSSProperties = {
+  left: '50%',
+  top: '50%',
+  transform: 'translate(0%, -12%)'
+}
+
 const MainPageStyle: React.CSSProperties = {
   border: '4px solid red',
   position: 'relative',
   width: '100%',
-  height: '100%',
+  height: '100%'
 
 };
 
