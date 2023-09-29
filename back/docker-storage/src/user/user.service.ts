@@ -239,19 +239,19 @@ export class UserService {
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      .addSelect('true AS data')
+      //.addSelect('true AS data')
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      .addSelect('true AS data')
+      //.addSelect('true AS data')
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      .addSelect('true AS data')
+      //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
       var data = { ...d };
@@ -270,6 +270,22 @@ export class UserService {
     });
     const all = fusers.concat(fadmin, fowner);
     return all;
+  }
+
+  async getFullAdminInChannels(channelId: number) {
+    const admin = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.admin', 'admin')
+      .where('admin.id = :channelId', { channelId })
+      .getMany();
+    return admin;
+  }
+
+  async getBannedInChannels(channelId: number) {
+    const users = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.baned', 'baned')
+      .where('baned.id = :channelId', { channelId })
+      .getMany();
+    return users;
   }
 
   //  The diff here is that full data are sent

@@ -18,6 +18,8 @@ import {
 } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
+import { AdminGuard, TargetIsAdminGuard } from './guards/chan-admin.guards';
+import { InChannelGuard, IsBannedGuard, PrivateGuard, SelfCommand } from './guards/chan-basic.guards';
 
 @Controller('channel')
 export class ChannelController {
@@ -95,12 +97,11 @@ export class ChannelController {
 
   //todo check why old users are removed
   @Post('/add_user/:id')
+  @UseGuards(PrivateGuard, IsBannedGuard)
   @UseGuards(JwtAuthGuard)
   async addUserInChannel(
     @User() user: UserEntity,
-    @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
-    //@User() user: UserChanDto,
   ) {
     const chat = this.channelService.addUserInChannel(user.id, id);
     console.log('Add user ' + user.username + ' in channel id: ', id);
@@ -108,14 +109,14 @@ export class ChannelController {
   }
 
   @Post('/add_admin/:id')
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
-    @User() user: UserEntity,
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     const chan = await this.channelService.addAdminInChannel(uDto.id, id);
-    //console.log(chan.users);
+    console.log("All Guards ok ^^");
     return chan;
   }
 

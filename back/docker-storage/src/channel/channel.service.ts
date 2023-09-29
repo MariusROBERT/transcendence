@@ -133,9 +133,8 @@ export class ChannelService {
   async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
     try {
+      //  TODO ADD THIS TO GUARD
       var allusers = await this.userService.getUsersInChannels(id);
       if (allusers.some((u) => u.id === userid))
         throw new Error('User already in channel');
@@ -149,17 +148,23 @@ export class ChannelService {
     return channel;
   }
 
+  //  Not tested yet
   async addAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
     try {
-      if (!channel.admins) channel.admins = [];
-      channel.admins = [...channel.admins, user];
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      //  TODO: move this to a function
+      const index = currentUsers.findIndex(user => user.id === id);
+      if (index !== -1)
+        currentUsers.splice(index, 1);
+      channel.users = currentUsers;
+      var currentAdmins = await this.userService.getFullAdminInChannels(id);
+      currentAdmins.push(user);
+      channel.admins = currentAdmins;
       await this.ChannelRepository.save(channel);
     } catch (e) {
-      console.log('Error: ' + e);
+      console.log(e);
     }
     return channel;
   }

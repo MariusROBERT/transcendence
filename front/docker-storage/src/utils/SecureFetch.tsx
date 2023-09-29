@@ -16,12 +16,13 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
       return { response: response, json: rep_json };
     } else {
       console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-      window.location.href = '/login';
+      //window.location.href = '/login';
+      console.log(await response.json());
     }
   } catch (e) {
     console.log(e);
     console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-    window.location.href = '/login';
+    //window.location.href = '/login';  TODO: remove before pull request its only for test
   }
 }
 
