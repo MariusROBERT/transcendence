@@ -180,51 +180,54 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-            <form onSubmit={handleSubmit}>
-              <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-                {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
-                <input
-                  style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
-                  type='text'
-                  name='username'
-                  id={'username'}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder='login..'
-                  required
-                />
-                <PasswordInput
-                  hidePassword={hidePassword}
-                  setHidePassword={setHidePassword}
-                  password={password}
-                  setPassword={setPassword}
-                  required
-                  style={{ minWidth: '100px', minHeight: '30px' }}
-                />
-                {!signIn &&
+            <div style={{ padding: '0 35px 0 0' }}>
+              <form onSubmit={handleSubmit}>
+                <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px 30px 10px 10px'} forceStyle={{overflow:''}}>
+                  {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
+                  <input
+                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                    type='text'
+                    name='username'
+                    id={'username'}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder='login..'
+                    required
+                  />
                   <PasswordInput
                     hidePassword={hidePassword}
                     setHidePassword={setHidePassword}
-                    password={confirmPassword}
-                    setPassword={setConfirmPassword}
-                    placeholder={'confirm password'}
+                    password={password}
+                    setPassword={setPassword}
+                    required
+                    noVerify={signIn}
                     style={{ minWidth: '100px', minHeight: '30px' }}
                   />
-                }
-                <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
-                  <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
-                    <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
-                  </button>
-                </Flex>
-                <br />
-              </Background>
-            </form>
-            <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-              <p>or sign in with Intra42</p>
-              <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-                window.location.replace('http://localhost:3001/api/auth/login/42');
-              }} />
-            </Flex>
+                  {!signIn &&
+                    <PasswordInput
+                      hidePassword={hidePassword}
+                      setHidePassword={setHidePassword}
+                      password={confirmPassword}
+                      setPassword={setConfirmPassword}
+                      placeholder={'confirm password'}
+                      style={{ minWidth: '100px', minHeight: '30px' }}
+                    />
+                  }
+                  <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
+                    <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
+                      <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
+                    </button>
+                  </Flex>
+                  <br />
+                </Background>
+              </form>
+              <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
+                <p>or sign in with Intra42</p>
+                <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
+                  window.location.replace('http://localhost:3001/api/auth/login/42');
+                }} />
+              </Flex>
+            </div>
           </Background>
         </Border>
       </Background>
