@@ -17,9 +17,7 @@ export function ChatMenu() {
     const path = 'channel/name/' + inputValue;
     const res = await unsecureFetch(path, 'GET');
     if (res?.ok) {
-      console.log('Channel Found, connecting to channel...');
       var data = await res.json();
-      console.log(data.id);
       current_id = data.id;
       //  Adding user to channel if not in it
       await Fetch(
@@ -30,7 +28,6 @@ export function ChatMenu() {
         }),
       );
     } else {
-      console.log('not found... Creating channel');
       const r = await Fetch(
         'channel',
         'POST',

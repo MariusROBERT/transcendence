@@ -44,7 +44,7 @@ export class ChannelController {
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MessageEntity[]> {
-    console.log('get message ^^');
+    //console.log('get message ^^');
     return await this.channelService.getChannelMessages(id);
   }
 
@@ -100,7 +100,6 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     const chat = this.channelService.addUserInChannel(user.id, id);
-    console.log('Add user ' + user.username + ' in channel id: ', id);
     return chat;
   }
 
@@ -162,7 +161,6 @@ export class ChannelController {
     @Body() uDto: UserChanDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    console.log('here');
     return this.channelService.UnBanUserFromChannel(uDto.id, id);
   }
 }

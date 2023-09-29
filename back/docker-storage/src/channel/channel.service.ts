@@ -104,7 +104,6 @@ export class ChannelService {
       ownchans['type'] = 'owner';
     });
     const all = chans.concat(admchans, ownchans);
-    console.log(all);
     return all;
   }
 
@@ -249,7 +248,7 @@ export class ChannelService {
       channel.baned = this.removeFrom(currentBan, uid);
       await this.ChannelRepository.save(channel);
     } catch (e) {
-      console.log('Error: ' + e);
+      console.log(e);
     }
     return channel;
   }
