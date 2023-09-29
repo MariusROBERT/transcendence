@@ -192,7 +192,7 @@ export class UserController {
   @Get('/game_status/:id')
   @UseGuards(JwtAuthGuard)
   async GetGameStatusWithId(@Param('id', ParseIntPipe) id: number): Promise<UserGameStatus> {
-    console.log('fetch user game infos')
+    //console.log('fetch user game infos')
     return await this.userService.getGameStatusWithId(id);
   }
 }
