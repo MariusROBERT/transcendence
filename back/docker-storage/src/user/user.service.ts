@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { GetUserIdFromSocketIdDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/user.dto';
+import {
+  GetUserIdFromSocketIdDto,
+  PublicProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+  UserGameStatus,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -85,9 +91,12 @@ export class UserService {
       user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
     user.socketId = '';
+    user.isInGameWith = -1;
+    user.gameInvitationTo = -1;
+    user.gameInvitationFrom = -1;
     await this.UserRepository.save(user);
   }
-  
+
   //  USE FOR ADMIN BAN MUTE ..
   async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
     try
@@ -318,7 +327,7 @@ export class UserService {
       const result = await isHeInBlocked.getOne();
       console.log("user.blocked : ", user.blocked);
       console.log("idToBlock : ", id);
-      
+
       if (!result)
       {
         user.blocked = [...user.blocked, userToBlock.id];
@@ -349,7 +358,6 @@ export class UserService {
     );
   }
 
-  // SOCKETS :
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
@@ -413,5 +421,36 @@ export class UserService {
     user.secret2fa = secret;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
+  }
+
+  // Game Invites Management ---------------------------------------------------------------------------------------- //
+  async setUserSendInvitationTo(user: UserEntity, otherUserId: number | undefined) {
+    user.gameInvitationTo = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserReceivedInvitationFrom(user: UserEntity, otherUserId: number | undefined) {
+    user.gameInvitationFrom = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserInGameStatus(user: UserEntity, otherUserId: number | undefined) {
+    user.isInGameWith = otherUserId ? otherUserId : -1;
+    return await this.UserRepository.save(user);
+  }
+
+  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
+    user.gameInvitationType = gameType;
+    return await this.UserRepository.save(user);
+  }
+
+  async getGameStatusWithId(id: number): Promise<UserGameStatus> {
+    const user = await this.getUserById(id);
+    return {
+      gameInvitationFrom: user.gameInvitationFrom,
+      gameInvitationTo: user.gameInvitationTo,
+      isInGameWith: user.isInGameWith,
+      gameInviteType: user.gameInvitationType
+    }
   }
 }

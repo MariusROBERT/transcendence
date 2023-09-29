@@ -10,7 +10,6 @@ type UserContextType = {
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
   user?: IUserComplete,
-  setUser: Function,
 }
 
 const UserContext = createContext<UserContextType>({
@@ -19,7 +18,6 @@ const UserContext = createContext<UserContextType>({
   socket: undefined,
   fetchContext: async () => {},
   user: undefined,
-  setUser: () => {}
 });
 
 export function useUserContext() {
@@ -39,7 +37,6 @@ export function UserContextProvider({ children }: Props) {
 
   async function fetchContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
-
     if (!user) {
       setIsOnline(false);
     } else {
@@ -48,7 +45,7 @@ export function UserContextProvider({ children }: Props) {
       setId(user.id);
       setIsOnline(true);
       if (!socket)
-        await initSocket();
+        initSocket();
     }
   }
 
@@ -62,7 +59,7 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      console.log('Connected, Socket ID: ', socket?.id, ' UserName: `', username, '` ID: ', id);
+      console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
     });
     socket?.connect();
 
@@ -73,7 +70,7 @@ export function UserContextProvider({ children }: Props) {
     };
   }, [socket, id, username]);
 
-  async function initSocket() {
+  function initSocket() {
     if (!socket) {
       const token = Cookies.get('jwtToken');
       setSocket(
@@ -92,7 +89,7 @@ export function UserContextProvider({ children }: Props) {
 
   return (
     <>
-      <UserContext.Provider value={{ id, isOnline, socket, fetchContext, user, setUser }}>
+      <UserContext.Provider value={{ id, isOnline, socket, fetchContext, user }}>
         {children}
       </UserContext.Provider>
     </>

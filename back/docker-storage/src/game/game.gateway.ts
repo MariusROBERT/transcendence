@@ -8,36 +8,37 @@ import { State } from './game.interfaces';
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
   // Socket in the back side
   @WebSocketServer() server;
-
+  // game Controller
   controller: GameController;
-
   // list of all the clients Sockets, the socket_id can be found in database
   clients: Socket[] = [];
 
-  constructor(
-    private UserService: UserService
-  ) {}
+  constructor(private UserService: UserService) {}
 
   setController(controller: GameController) {
     this.controller = controller;
   }
 
+  // Socket Refresh ------------------------------------------------------------------------------------------------- //
   async handleConnection(client: Socket) {
     this.clients.push(client);
   }
 
   async handleDisconnect(client: Socket) {
-    const user = await this.UserService.getUserFromSocketId({ socketId: client.id })
-    // console.log('DISCONNECTION: socket: ', client.id, ' username: ', user?.username, ' index: ', this.clients.indexOf(client));
+    const room = 'user' + (await this.UserService.getUserFromSocketId({ socketId:client.id }));
+    client.leave(room);
     this.clients = this.clients.filter(s => s !== client);
+  }
+
+  async getSocketFromUser(id: number){
+    const socketId:string = await this.UserService.getSocketIdFromUser(id);
+    return this.clients.find(s => s.id == socketId);
   }
 
   @SubscribeMessage('update_user_socket_id')
   async handleUpdateUserSocket(@MessageBody() message: {id:number, socketId:string}): Promise<void>{
     await this.UserService.setUserSocketId(message.id, message.socketId);
-
-    const user = await this.UserService.getUserFromSocketId({ socketId: message.socketId })
-    // console.log('CONNECTION: socket: ', message.socketId, ' username: ', user?.username, ' index: ', this.clients.indexOf(this.clients.find(s => s.id == message.socketId)), ' total_clients: ', this.clients.length);
+    this.clients.find(s => s.id == message.socketId)?.join('user'+ message.id);
   }
 
   @SubscribeMessage('reset_user_socket_id')
@@ -45,36 +46,118 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     await this.UserService.setUserSocketId(message.id, '');
   }
 
+  // Invites Management --------------------------------------------------------------------------------------------- //
+  @SubscribeMessage('send_invite')
+  async sendInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
+    // console.log('send_invite', msg);
+
+    // Update Database
+    const sender = (await this.UserService.getUserById(msg.sender));
+    await this.UserService.setUserSendInvitationTo(sender, msg.receiver);
+    await this.UserService.setUserInvitationType(sender, msg.gameType);
+
+    // Transfer the message
+    this.server.to('user' + msg.receiver).emit('send_invite', { sender: msg.sender, receiver: msg.receiver, gameType: msg.gameType });
+  }
+
+  @SubscribeMessage('accept_invite')
+  async acceptInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
+    // console.log('accept_invite', msg);
+    // Update Database
+    //TODO: group the call to call only 1 time save
+    const sender = (await this.UserService.getUserById(msg.sender));
+    await this.UserService.setUserSendInvitationTo(sender, undefined);
+    await this.UserService.setUserReceivedInvitationFrom(sender, undefined);
+    await this.UserService.setUserInvitationType(sender, 'none');
+    await this.UserService.setUserInGameStatus(sender, undefined);
+
+    const receiver = (await this.UserService.getUserById(msg.receiver));
+    await this.UserService.setUserSendInvitationTo(receiver, undefined);
+    await this.UserService.setUserReceivedInvitationFrom(receiver, undefined);
+    await this.UserService.setUserInvitationType(receiver, 'none');
+    await this.UserService.setUserInGameStatus(receiver, undefined);
+
+    // Transfer the message
+    this.server.to('user' + msg.receiver).emit('accept_invite', { sender: msg.sender, receiver: msg.receiver });
+
+    if (!this.controller.matchmaking.getGame(msg.sender, msg.receiver))
+      await this.controller.matchmaking.createGame(msg.sender, msg.receiver, msg.gameType === 'special');
+  }
+
+  @SubscribeMessage('decline_invite')
+  async declineInvite(@MessageBody() msg: { sender: number, receiver: number }) {
+    // console.log('decline_invite', msg);
+    // Update Database
+    const sender = (await this.UserService.getUserById(msg.sender));
+    const receiver = (await this.UserService.getUserById(msg.receiver));
+    await this.UserService.setUserSendInvitationTo(receiver, undefined);
+    await this.UserService.setUserReceivedInvitationFrom(sender, undefined);
+
+    // Transfer the message
+    this.server.to('user' + msg.receiver).emit('decline_invite', { sender: msg.sender, receiver: msg.receiver });
+  }
+
+  @SubscribeMessage('cancel_invite')
+  async cancelInvite(@MessageBody() msg: { sender: number, receiver: number }) {
+    // console.log('cancel_invite', msg);
+    // Update Database
+    const sender = (await this.UserService.getUserById(msg.sender));
+    const receiver = (await this.UserService.getUserById(msg.receiver));
+    await this.UserService.setUserSendInvitationTo(sender, undefined);
+    await this.UserService.setUserReceivedInvitationFrom(receiver, undefined);
+
+    // Transfer the message
+    this.server.to('user' + msg.receiver).emit('cancel_invite', { sender: msg.sender, receiver: msg.receiver });
+  }
+
+  // Queue Management ----------------------------------------------------------------------------------------------- //
   @SubscribeMessage('join_queue')
-  async joinQueue(@MessageBody() msg: { id: number }) {
-    return this.controller.matchmaking.joinQueue(this.controller.queue, msg.id);
+  async joinQueue(@MessageBody() msg: { sender: number, gameType: 'normal' | 'special' }) {
+    // console.log('join_queue', msg);
+    if (msg.gameType === 'normal')
+      return this.controller.matchmaking.joinQueue(msg.sender, false);
+    if (msg.gameType === 'special')
+      return this.controller.matchmaking.joinQueue(msg.sender, true);
   }
 
-  @SubscribeMessage('join_queue_special')
-  async joinQueueSpecial(@MessageBody() msg: { id: number }) {
-    return this.controller.matchmaking.joinQueue(this.controller.queueSpecial, msg.id, true);
+  @SubscribeMessage('leave_queue')
+  leaveQueue(@MessageBody() msg: { sender: number, gameType: 'normal' | 'special' }) {
+    // console.log('leave_queue', msg);
+    if (msg.gameType === 'normal')
+      this.controller.queue = this.controller.queue.filter(i => i != msg.sender);
+    if (msg.gameType === 'special')
+      this.controller.queue = this.controller.queueSpecial.filter(i => i != msg.sender);
   }
 
-  @SubscribeMessage('quit_queue')
-  quitQueue(@MessageBody() msg: { id: number }) {
-    this.controller.queue = this.controller.queue.filter(i => i != msg.id);
+  // Game Start / End Management ------------------------------------------------------------------------------------ //
+  openGame(playerIds: number[]) {
+    this.server.to('user'+playerIds[0]).to('user'+playerIds[1]).emit('open_game', { p1: playerIds[0], p2: playerIds[1] });
   }
 
-  @SubscribeMessage('quit_queue_special')
-  quitQueueSpecial(@MessageBody() msg: { id: number }) {
-    this.controller.queueSpecial = this.controller.queueSpecial.filter(i => i != msg.id);
-  }
-
-  @SubscribeMessage('quit_game')
-  async quitGame(@MessageBody() msg: { id: number }) {
-    return this.controller.matchmaking.quitGame(msg.id);
+  async endGame(playerIds: number[]) {
+    for (let i = 0; i < 2; i++) {
+      const user = await this.UserService.getUserById(playerIds[i]);
+      await this.UserService.setUserInGameStatus(user, undefined);
+    }
+    this.server.to('user' + playerIds[0]).to('user' + playerIds[1]).emit('end_game');
   }
 
   @SubscribeMessage('start_game')
   async starts(@MessageBody() msg: { id: number }) {
+    // console.log('start_game', msg);
+    const user = await this.UserService.getUserById(msg.id);
+    const otherId = this.controller.matchmaking.getGame(msg.id)?.playerIds.find(i => i !== msg.id);
+    await this.UserService.setUserInGameStatus(user, otherId);
     return this.controller.matchmaking.startGame(msg.id);
   }
 
+  @SubscribeMessage('leave_game')
+  async quitGame(@MessageBody() msg: { id: number }) {
+    // console.log('leave_game', msg);
+    return this.controller.matchmaking.leaveGame(msg.id);
+  }
+
+  // InGame Events -------------------------------------------------------------------------------------------------- //
   @SubscribeMessage('move_player')
   movePlayer(@MessageBody() msg: { id: number, isMoving: boolean, moveUp: boolean }) {
     let game = this.controller.matchmaking.getGame(msg.id);
@@ -83,26 +166,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
   }
 
   sendState(game: { playerIds: number[], state: State, ready:boolean }) {
-    this.server.emit('sendState', game);
+    this.server
+      .to('user'+game.playerIds[0])
+      .to('user'+game.playerIds[1])
+      .emit('update_game_state',
+        {
+          ball: game.state.ball,
+          p1: game.state.p1,
+          p2: game.state.p2,
+          score: game.state.score
+        });
   }
 
-  async getSocketFromUser(id: number){
-    const socketId:string = await this.UserService.getSocketIdFromUser(id);
-    return this.clients.find(s => s.id == socketId);
-  }
-
-  async createRoom(p1: number, p2: number): Promise<string | undefined> {
-    const socketP1:Socket = await this.getSocketFromUser(p1);
-    const socketP2:Socket = await this.getSocketFromUser(p2);
-    if (socketP1 === undefined || socketP2 === undefined)
-      return undefined;
-    const room_name = 'room' + p1 + 'vs' + p2;
-    socketP1.join(room_name);
-    socketP2.join(room_name);
-    return room_name;
-  }
-
-  openGame(room: string) {
-    this.server.to(room).emit('open_game');
-  }
 }

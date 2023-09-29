@@ -81,18 +81,22 @@ export class UpdatePwdDto {
   password: string;
 }
 
-export class SetSocketIdDto {
-  @IsNotEmpty()
-  @IsString()
-  socketId: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserStateEnum)
-  user_status: UserStateEnum;
-}
-
 export class GetUserIdFromSocketIdDto {
   @IsNotEmpty()
   @IsString()
   socketId: string;
+}
+
+export class UserGameStatus {
+  @IsNumber()
+  isInGameWith: number;
+
+  @IsNumber()
+  gameInvitationTo: number;
+
+  @IsNumber()
+  gameInvitationFrom: number;
+
+  @IsString()
+  gameInviteType: string;
 }
