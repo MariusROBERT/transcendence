@@ -47,7 +47,27 @@ export class InChannelGuard implements CanActivate {
   }
 }
 
-//  Check if target user is banned
+//  Check if target user is not banned
+@Injectable()
+export class IsNotBannedGuard implements CanActivate {
+    constructor(private channelService: ChannelService,
+                private readonly userService: UserService) {}
+    async canActivate(
+      context: ExecutionContext,
+    ): Promise<boolean> {
+        const request = context.switchToHttp().getRequest();
+        const body: UserChanDto = request.body;
+        const params = request.params;
+
+        const users = await this.userService.getBannedInChannels(params.id);
+        const is_here = users.some(user => user.id === body.id);
+        if (is_here)
+            throw new BadRequestException("User is banned from Channel");
+        return true;
+  }
+}
+
+//  Check if target user is not banned
 @Injectable()
 export class IsBannedGuard implements CanActivate {
     constructor(private channelService: ChannelService,
@@ -62,7 +82,28 @@ export class IsBannedGuard implements CanActivate {
         const users = await this.userService.getBannedInChannels(params.id);
         const is_here = users.some(user => user.id === body.id);
         if (is_here)
-            throw new BadRequestException("User is banned from Channel");
+            return true;
+        throw new BadRequestException("User is not banned from Channel");
+  }
+}
+
+//  Check if user is banned
+//  TODO: try to use only one function
+@Injectable()
+export class SelfBannedGuard implements CanActivate {
+    constructor(private channelService: ChannelService,
+                private readonly userService: UserService) {}
+    async canActivate(
+      context: ExecutionContext,
+    ): Promise<boolean> {
+        const request = context.switchToHttp().getRequest();
+        const body: UserChanDto = request.user;
+        const params = request.params;
+
+        const users = await this.userService.getBannedInChannels(params.id);
+        const is_here = users.some(user => user.id === body.id);
+        if (is_here)
+            throw new BadRequestException("You are banned from this channel");
         return true;
   }
 }

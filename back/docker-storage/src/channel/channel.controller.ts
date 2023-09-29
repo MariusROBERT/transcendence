@@ -19,7 +19,7 @@ import {
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
 import { AdminGuard, TargetIsAdminGuard } from './guards/chan-admin.guards';
-import { InChannelGuard, IsBannedGuard, PrivateGuard, SelfCommand } from './guards/chan-basic.guards';
+import { InChannelGuard, IsBannedGuard, IsNotBannedGuard, PrivateGuard, SelfBannedGuard, SelfCommand } from './guards/chan-basic.guards';
 
 @Controller('channel')
 export class ChannelController {
@@ -97,7 +97,7 @@ export class ChannelController {
 
   //todo check why old users are removed
   @Post('/add_user/:id')
-  @UseGuards(PrivateGuard, IsBannedGuard)
+  @UseGuards(PrivateGuard, SelfBannedGuard)
   @UseGuards(JwtAuthGuard)
   async addUserInChannel(
     @User() user: UserEntity,
@@ -109,7 +109,7 @@ export class ChannelController {
   }
 
   @Post('/add_admin/:id')
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
     @Body() uDto: UserChanDto,
@@ -120,7 +120,7 @@ export class ChannelController {
   }
 
   @Post('/kick/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
     @Body() uDto: UserChanDto,
@@ -129,6 +129,7 @@ export class ChannelController {
     return this.channelService.KickUserFromChannel(uDto.id, id);
   }
 
+  /*
   //  TODO RECODE MUTE DEMUTE
   @Patch('mute/:id') // id_chan
   @UseGuards(JwtAuthGuard)
@@ -148,8 +149,10 @@ export class ChannelController {
   ) {
     return this.channelService.UnMuteUserFromChannel(user.id, id);
   }
+  */
 
-  @Patch('ban/:id') // id_chan
+  @Post('ban/:id') // id_chan
+  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
     @Body() uDto: UserChanDto,
@@ -158,7 +161,8 @@ export class ChannelController {
     return this.channelService.BanUserFromChannel(uDto.id, id);
   }
 
-  @Patch('unban/:id') // id_chan
+  @Post('unban/:id') // id_chan
+  @UseGuards(AdminGuard, PrivateGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
   @UseGuards(JwtAuthGuard)
   async UnBanUserFromChannel(
     @Body() uDto: UserChanDto,
