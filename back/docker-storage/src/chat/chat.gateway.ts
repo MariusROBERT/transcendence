@@ -6,11 +6,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { SelfBannedGuard } from 'src/channel/guards/chan-basic.guards';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
+import { ChatCheckGuard } from './guards/chat.guards';
 
 @Injectable()
 @WebSocketGateway({
@@ -71,6 +74,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //    this.server.emit('leaveChat');
   //  }
 
+  @UseGuards(ChatCheckGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
