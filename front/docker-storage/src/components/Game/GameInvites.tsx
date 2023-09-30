@@ -22,7 +22,7 @@ export function GameInvites(){
     top: '0px',
     right: inviteFrom === inviteTo ? '-600px' : '150px',
     minWidth: (inviteTo ? 400 :  550) + 'px',
-    position: 'absolute',
+    position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
     zIndex: '9999',

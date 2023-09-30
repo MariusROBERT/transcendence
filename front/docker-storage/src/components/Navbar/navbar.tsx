@@ -85,7 +85,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
 const navbarStyle: CSSProperties = {
   top: '-25px',
   right:'-25px',
-  position: 'absolute',
+  position: 'fixed',
   display: 'flex',
   flexDirection: 'row-reverse',
   zIndex: '10000'
