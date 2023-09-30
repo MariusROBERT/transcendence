@@ -179,18 +179,22 @@ export default function Settings(props: Props) {
                            password={oldPassword}
                            setPassword={setOldPassword}
                            placeholder={'Current password'}
+                           noVerify
             />
             <br />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
+              // noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={confirmPassword}
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
+                           confirmPassword={password}
+              // noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>

@@ -16,6 +16,7 @@ interface Props {
   style?: React.CSSProperties;
   required?: boolean;
   noVerify?: boolean;
+  confirmPassword?: string;
 }
 
 export function PasswordInput(props: Props) {
@@ -59,6 +60,13 @@ export function PasswordInput(props: Props) {
   const spaceAround = /(^\s)|(\s$)|(^\s.+\s$)/;
 
   function errorsInfo() {
+    if (props.confirmPassword) {
+      if (props.password !== props.confirmPassword)
+        return (
+          <p style={popUpStyle}>Passwords don't match</p>
+        );
+      return;
+    }
     let errors: string[] = [];
     if (!minMin.test(props.password))
       errors.push('min');
@@ -79,22 +87,27 @@ export function PasswordInput(props: Props) {
     );
   }
 
+  const ok =
+    <div style={{ position: 'relative' }}>
+      <img src={check} alt='valid' style={{ ...validationStyle, backgroundColor: 'chartreuse' }} />
+    </div>;
+
+  const notOk =
+    <div style={{ position: 'relative' }}
+         onMouseEnter={() => setIsHover(true)}
+         onMouseLeave={() => setIsHover(false)}
+    >
+      <img src={cross} alt='invalid' style={{ ...validationStyle, backgroundColor: errorColor }} />
+      {isHover && errorsInfo()}
+    </div>;
+
   function verification() {
-    if (!props.noVerify && props.password)
-      return (
-        props.password.match(mainRegex) ?
-          <div style={{ position: 'relative' }}>
-            <img src={check} alt='valid' style={{ ...validationStyle, backgroundColor: 'chartreuse' }} />
-          </div>
-          :
-          <div style={{ position: 'relative' }}
-               onMouseEnter={() => setIsHover(true)}
-               onMouseLeave={() => setIsHover(false)}
-          >
-            <img src={cross} alt='invalid' style={{ ...validationStyle, backgroundColor: errorColor }} />
-            {isHover && errorsInfo()}
-          </div>
-      );
+    if (!props.noVerify && props.password) {
+      if (props.confirmPassword) {
+        return (props.password === props.confirmPassword ? ok : notOk);
+      }
+      return (props.password.match(mainRegex) ? ok : notOk);
+    }
   }
 
   return (
@@ -108,7 +121,7 @@ export function PasswordInput(props: Props) {
         onChange={(e) => props.setPassword(e.target.value)}
         style={{ ...props.style, width: '100%' }}
         required={props.required}
-        pattern={props.noVerify ? undefined : mainRegex.source}
+        pattern={props.noVerify ? undefined : (props.confirmPassword || mainRegex.source)}
         onInvalid={async (e) => {
           e.preventDefault();
           for (let i = 0; i < 3; i++) {
