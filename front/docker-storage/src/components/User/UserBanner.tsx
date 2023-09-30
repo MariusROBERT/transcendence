@@ -27,7 +27,9 @@ const UserBanner = ({ otherUser, meUser }: Props) => {
                        onClick={() => setProfilVisible(true)} />
           <p onClick={() => setProfilVisible(true)}>{(isMe ? meUser: otherUser).username}</p>
         </Flex>
-        <UserButton otherUser={otherUser} meUser={meUser} />
+        {!isMe &&
+          <UserButton otherUser={otherUser} meUser={meUser} />
+        }
       </div>
       {profilVisible && (
         <AuthGuard isAuthenticated>

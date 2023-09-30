@@ -4,6 +4,8 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { IUser, IUserComplete } from "../../utils/interfaces";
 import { lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
+import { useFriendsRequestContext } from "../../contexts/FriendsRequestContext/FriendsRequestContext";
+import { useUserContext } from "../../contexts";
 
 // TODO : Add Object User insteed of user_name and user icon
 interface Props {
@@ -13,11 +15,10 @@ interface Props {
 
 export function UserButton({ otherUser, meUser }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
-	const [sendButton, setSendButton] = useState(false);
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
-	const [requestReceived, setRequestReceived] = useState<boolean>(false);
-	const [isFriend, setIsFriend] = useState<boolean>(false);
-	//const { setUser } = useUserContext();
+	// const [requestReceived, setRequestReceived] = useState<boolean>(false);
+	const { fetchFriendsRequestContext, sendFriendRequest, sendInvitesTo, recvInvitesFrom, acceptFriendRequest, declineFriendRequest, friends } = useFriendsRequestContext();
+	const { socket, id, fetchContext, user } = useUserContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');
@@ -44,33 +45,44 @@ export function UserButton({ otherUser, meUser }: Props) {
 		}
 	}
 
-	const askFriend = () => {
-		if (!meUser)
-			return
-		if (meUser && meUser.blocked?.includes(otherUser.id as number)) {
-			const indexToRemove = meUser.blocked.indexOf(otherUser.id);
-			if (indexToRemove !== -1) {
-				console.log("user remove from blocked list"); // todo : to test
-				meUser.blocked.splice(indexToRemove, 1);
-			}
-		}
-		sendFriendInvite(otherUser.id, jwtToken);
-		//let usercpy = [...meUser.invited, otherUser.id];
-		//setUser({ ...meUser, invited: usercpy });
-	}
+	// const askFriend = () => {
+	// 	if (!meUser)
+	// 		return
+	// 	if (meUser && meUser.blocked?.includes(otherUser.id as number)) {
+	// 		const indexToRemove = meUser.blocked.indexOf(otherUser.id);
+	// 		if (indexToRemove !== -1) {
+	// 			console.log("user remove from blocked list"); // todo : to test
+	// 			meUser.blocked.splice(indexToRemove, 1);
+	// 		}
+	// 	}
+	// 	sendFriendInvite(otherUser.id, jwtToken);
+	// 	//let usercpy = [...meUser.invited, otherUser.id];
+	// 	//setUser({ ...meUser, invited: usercpy });
+	// }
 	
-	useEffect(() => {
-		if (meUser && meUser.invited.includes(otherUser.id as number))
-			setSendButton(true);
-		if (meUser && meUser.invites.includes(otherUser.id as number))
-			setRequestReceived(true);
-		if (meUser && meUser.friends.includes(otherUser.id as number))
-			setIsFriend(true);
-	}, [meUser, otherUser]);
+	// useEffect(() => {
+	// 	if (meUser && meUser.invited.includes(otherUser.id as number))
+	// 		setSendButton(true);
+	// 	if (meUser && meUser.invites.includes(otherUser.id as number))
+	// 		setRequestReceived(true);
+	// 	if (meUser && meUser.friends.includes(otherUser.id as number))
+	// 		setIsFriend(true);
+	// }, [meUser, otherUser]);
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);
 	}
+
+  useEffect(() => {
+    fetchContext();
+    // eslint-disable-next-line
+  }, []);
+
+	useEffect(() => {
+		if (id !== 0)
+			fetchFriendsRequestContext();
+		// eslint-disable-next-line
+	  }, [socket, id]);
 
 	// const handleRequestsFriend = async (bool: boolean) => {
 	// 	setRequestReceived(false);
@@ -86,11 +98,11 @@ export function UserButton({ otherUser, meUser }: Props) {
 		<div style={UserbUttonContainer}>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}/>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}/>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}/>}
-					{!isFriend && !sendButton &&
-						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}/>
+					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}/>}
+					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}/>}
+					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}/>}
+					{!friends?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
+					<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={() => sendFriendRequest(otherUser.id)}/>
 					}
 					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()}/>
 					{isOpen && (
@@ -98,14 +110,10 @@ export function UserButton({ otherUser, meUser }: Props) {
 							<button onClick={() => blockAUser(otherUser.id)}>block</button>
 						</div>
 					)}
-					{requestReceived && !isFriend &&
+					{recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) &&
 						<div style={askStyle}>
-							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => {
-								// handleRequestsFriend(true);
-							}}/>
-							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => {
-								// handleRequestsFriend(false);
-							}}/>
+							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => acceptFriendRequest(id, otherUser.id)}/>
+							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => declineFriendRequest(id, otherUser.id)}/>
 						</div>
 					}
 				</Flex>

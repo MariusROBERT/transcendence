@@ -24,6 +24,7 @@ import * as fs from 'fs';
 import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { Socket } from "socket.io-client"
 
 @Injectable()
 export class UserService {
@@ -164,26 +165,41 @@ export class UserService {
   // FRIEND'S DEMAND :
 
   async askFriend(user: UserEntity, id: number): Promise<UserEntity> {
+    console.log("USER SERVICE");
+    
     const userAsked = await this.UserRepository.findOne({ where: { id } });
     if (!userAsked)
-      throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-    const isAlreadyFriend = user.friends.indexOf(id);
-    if (isAlreadyFriend !== -1) {
-      throw new ConflictException(
-        `le user d'id ${id} est fait déjà de vos friends`,
+    throw new NotFoundException(`le user d'id ${id} n'existe pas`);
+  const isAlreadyFriend = user.friends.indexOf(id);
+  if (isAlreadyFriend !== -1) {
+    throw new ConflictException(
+      `le user d'id ${id} est fait déjà de vos friends`,
       );
-    }
+    }    
+    
     // if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
-    //   const invitedExist = user.invited.indexOf(userAsked.id);
-    //   const invitesExist = userAsked.invites.indexOf(user.id);
-    //   if (invitesExist != -1 || invitedExist != -1)
-    //     throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
+      //   const invitedExist = user.invited.indexOf(userAsked.id);
+      //   const invitesExist = userAsked.invites.indexOf(user.id);
+      //   if (invitesExist != -1 || invitedExist != -1)
+      //     throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
       user.invited.push(userAsked.id);
       userAsked.invites.push(user.id);
-    // }
-    // }
-    await this.UserRepository.save(user);
-    await this.UserRepository.save(userAsked);
+      console.log("user.invited :", user.invited);
+      console.log(" userAsked.invites : ", userAsked.invites);
+      
+      // user.invited = [...user.invited as number[], userAsked.id];
+      // userAsked.invites = [...userAsked.invites as number[], id];
+      // }
+      // }
+      await this.UserRepository.save(user);
+      await this.UserRepository.save(userAsked);
+
+      // si les deux user se sont invit = auto accept
+      // if (userAsked.invited.includes(user.id))
+      // {
+      //   await this.handleAsk(user, id, true);
+      //   await this.handleAsk(userAsked, user.id, true);
+      // }
     return userAsked;
   }
 
@@ -192,24 +208,30 @@ export class UserService {
     id: number, // sender
     bool: boolean,
   ) {
+    console.log("USER Service handle ask");
     const sender = await this.UserRepository.findOne({ where: { id } });
     if (!sender) {
       throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
     }
-    const indexSenderInInvites = user.invites.indexOf(sender.id); // get l'index du sender dans la liste d'invites de usr1
-    if (indexSenderInInvites !== -1) {
+    console.log("user ", user.id, " user.invited :", user.invited);
+    console.log("sender ", id ," sender.invites : ", sender.invited);
+
+    const indexSenderInInvites = user.invited.indexOf(id); // get l'index du sender dans la liste d'invites de usr1
+    if (indexSenderInInvites === -1) {
       throw new NotFoundException(
         `le sender d'id ${id} ne fait parti de la liste d'invites du user (receiver) d'id ${user.id}`,
       );
     }
-    const indexReceiverInInvited = sender.invited.indexOf(user.id); // get l'index du user (receiver) dans la liste d'invited du sender
-    if (indexReceiverInInvited !== -1) {
+    const indexReceiverInInvited = sender.invites.indexOf(user.id); // get l'index du user (receiver) dans la liste d'invited du sender
+    if (indexReceiverInInvited === -1) {
       throw new NotFoundException(
         `Vous ne ne faite pas parti de la liste d'invited du sender d'id ${id}`,
       );
     }
-    user.invites.splice(indexSenderInInvites, 1); // remove sender dans liste d'invites du receiver
-    sender.invited.splice(indexReceiverInInvited, 1); // remove receiver dans liste d'invited du sender
+    user.invited.splice(indexSenderInInvites, 1); // remove sender dans liste d'invites du receiver
+    sender.invites.splice(indexReceiverInInvited, 1); // remove receiver dans liste d'invited du sender
+    console.log("user ", user.id, " user.invited :", user.invited);
+    console.log("sender ", id ," sender.invites : ", sender.invites);
     if (bool == true) {
       if (!user.friends) user.friends = [];
       user.friends = [...user.friends, sender.id]; // ajout sender dans list friends de usr1
