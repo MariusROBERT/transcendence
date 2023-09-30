@@ -1,6 +1,6 @@
 
 import { color, Fetch } from '../../utils';
-import { Background, Button } from '..';
+import { Background, Button, RoundButton } from '..';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useGameContext } from '../../contexts';
 
@@ -42,14 +42,26 @@ export function GameInvites(){
         </>)}
         {inviteFrom && (<>
           <p style={{marginLeft:10}}>{username + ' invited you to Play: '}</p>
-          <Button onClick={() => {
-            if (inviteFrom)
-              acceptGameInvite(inviteFrom);
-          }}>Accept</Button>
-          <Button onClick={() => {
-            if (inviteFrom)
-              declineGameInvite(inviteFrom);
-          }}>Decline</Button>
+          <RoundButton
+            icon={require('../../assets/imgs/icon_accept_invite.png')}
+            onClick={() => {
+              if (inviteFrom)
+                acceptGameInvite(inviteFrom);
+          }} />
+          <RoundButton
+            icon={require('../../assets/imgs/icon_refuse_invite.png')}
+            onClick={() => {
+              if (inviteFrom)
+                declineGameInvite(inviteFrom);
+            }} />
+          {/*<Button onClick={() => {*/}
+          {/*  if (inviteFrom)*/}
+          {/*    acceptGameInvite(inviteFrom);*/}
+          {/*}}>Accept</Button>*/}
+          {/*<Button onClick={() => {*/}
+          {/*  if (inviteFrom)*/}
+          {/*    declineGameInvite(inviteFrom);*/}
+          {/*}}>Decline</Button>*/}
         </>)}
         <p style={{minWidth:'30px'}}></p>
       </Background>
