@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Fetch, unsecureFetch } from '../../utils';
 import {
   UpdateChannelMessage,
@@ -9,6 +9,7 @@ import { color } from '../../utils';
 import Popup from '../ComponentBase/Popup';
 import Settings from '../Settings/settings';
 import CreateChat from './CreateChat';
+import { subscribe } from '../../utils/event';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -20,7 +21,7 @@ import CreateChat from './CreateChat';
 */
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
-  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
+  const [chatVisible, setChatVisible] = useState<boolean>(false);
   var current_id = -1;
 
   //  TODO: clean here
@@ -43,7 +44,7 @@ export function ChatMenu() {
       UpdateChannelMessage(current_id);
       UpdateChannelUsers(current_id);
     } else {
-      setSettingsVisible(true);
+      setChatVisible(true);
       //const r = await Fetch(
       //  'channel',
       //  'POST',
@@ -56,6 +57,13 @@ export function ChatMenu() {
     }
     setInputValue('');
   }
+
+  useEffect(() => {
+    subscribe('chat_created', async () => {
+      console.log("here");
+      setChatVisible(false);
+    });
+  });
 
   return (
     <div style={{
@@ -91,8 +99,8 @@ export function ChatMenu() {
           }}
         />
       </label>
-      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-        <CreateChat name={inputValue}></CreateChat>
+      <Popup isVisible={chatVisible} setIsVisible={setChatVisible}>
+        <CreateChat name={inputValue} visible={chatVisible}></CreateChat>
       </Popup>
     </div>
   );

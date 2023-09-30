@@ -1,18 +1,29 @@
 import { useEffect, useState } from 'react';
-import { color } from '../../utils';
+import { Fetch, color } from '../../utils';
 import { Btn } from '../Settings/settings';
 import { RoundButton } from '../RoundButton/RoundButton';
+import { publish } from '../../utils/event';
 
 interface Props {
-  name: string;
+  name: string; //  Pass the user name in ChatMenu
+  visible: boolean;
 }
 
-export default function CreateChat({name}: Props) {
-  const [channelName, setChannelName] = useState<string>(name);
+export default function CreateChat({ name, visible }: Props) {
+  const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
   async function OnButtonClick() {
-    console.log('creating channel');
+    if (channelName === '') return;
+    await Fetch(
+      'channel',
+      'POST',
+      JSON.stringify({
+        channel_name: channelName,
+        priv_msg: false,
+      }),
+    );
+    publish('chat_created', undefined);
   }
 
   return (
