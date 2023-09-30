@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SwitchToggle from './switchToggle';
-import { Modifications, UserInfosForSetting } from '../../utils/interfaces';
+import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput } from '../Input/PasswordInput';
 
@@ -10,7 +10,7 @@ interface Props {
   isVisible: boolean;
 }
 
-export function Settings(props: Props) {
+export default function Settings(props: Props) {
   const navigate = useNavigate();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
@@ -18,26 +18,17 @@ export function Settings(props: Props) {
     alert('Vous avez été déconnecté');
   }
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordType, setPasswordType] = useState('password');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
-  const [modifData, setModifData] = useState<Modifications>({
-    img: '',
-    password: '',
-    confirmpwd: '',
-    is2fa_active: false, // TODO : set en fonction UserInfosForSetting.is2fa_active (psa la le bug c'est que si c'est tru chez le user et que je save sans rien faire, ca le save en false)
-  });
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
   const [pictureError, setPictureError] = useState<string>('');
-  const [newImage, setNewImage] = useState<string>('');
+  const [newImageUrl, setNewImageUrl] = useState<string>('');
+  const [newImage, setNewImage] = useState<Blob>();
   const [code2fa, setCode2fa] = useState<string>('');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [oldPassword, setOldPassword] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-
-  const togglePasswordVisibility = () => {
-    setPasswordType(passwordType === 'password' ? 'text' : 'password');
-  };
+  const [is2fa, setIs2fa] = useState<boolean>(false);
 
   useEffect(() => {
     if (props.isVisible) {
@@ -51,8 +42,11 @@ export function Settings(props: Props) {
         }
       };
       getUserInfos();
+    } else {
+      setErrorMessage('');
+      setPictureError('');
     }
-  }, [props.isVisible, navigate]);
+  }, [props.isVisible]);
 
   // MODIFICATIONS
 
@@ -64,37 +58,44 @@ export function Settings(props: Props) {
       alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
     }
     if (
-      modifData.confirmpwd === '' &&
-      modifData.password === '' &&
-      modifData.img === '' &&
-      modifData.is2fa_active === userInfosSettings?.is2fa_active
+      confirmPassword === '' &&
+      password === '' &&
+      newImageUrl === '' &&
+      is2fa === userInfosSettings?.is2fa_active
     )
       // nothing changed
       return;
-    // PASSWORD :
-    if (modifData.password === '' || modifData.confirmpwd === '')
-      return setErrorMessage('passwords doesn\'t match !');
-    if (modifData.password !== undefined && modifData.password !== modifData.confirmpwd)
-      return setErrorMessage('passwords doesn\'t match !');
-    else {
-      const user = (await Fetch('user/update_password', 'PATCH',
-        JSON.stringify({ password: modifData.password })))?.json;
-      if (user) {
-        setUserInfosSettings(user);
-      }
-      setErrorMessage('');
-    }
 
-    if (modifData.is2fa_active === userInfosSettings?.is2fa_active &&
-      modifData.img === userInfosSettings?.urlImg) {
-      setShowConfirmPassword(false);
-      return;
+    // PASSWORD :
+    if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
+      if (password !== confirmPassword)
+        return setErrorMessage('passwords doesn\'t match !');
+      else {
+        const user = await (fetch('http://localhost:3001/api/user/update_password', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ newPassword: password, oldPassword: oldPassword }),
+        }))
+          .then(r => r.json());
+
+        if (user.message === 'Wrong password')
+          return setErrorMessage(user.message);
+        if (user.error)
+          return setErrorMessage('Error while updating password');
+        setUserInfosSettings(user);
+        setOldPassword('');
+        setPassword('');
+        setConfirmPassword('');
+      }
     }
 
     // IMG :
-    if (modifData.img !== '') {
+    if (newImageUrl !== '') {
       const formData = new FormData();
-      formData.append('file', modifData.img);
+      formData.append('file', newImage || '');
 
       const user = await fetch('http://localhost:3001/api/user/update_picture', {
         method: 'POST',
@@ -111,16 +112,16 @@ export function Settings(props: Props) {
         return null;
       });
       if (user) {
-        modifData.img = '';
+        setNewImageUrl('');
         setUserInfosSettings(user);
       }
     }
 
     // 2FA :
-    if (modifData.is2fa_active !== userInfosSettings?.is2fa_active) {
+    if (is2fa !== userInfosSettings?.is2fa_active) {
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
-          is2fa_active: modifData.is2fa_active,
+          is2fa_active: is2fa,
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
@@ -141,9 +142,9 @@ export function Settings(props: Props) {
           <div style={modifContainerImage}>
             <img style={{
               ...imgStyle,
-              borderColor: modifData.img === '' ? 'green' : 'orange',
+              borderColor: newImageUrl === '' ? 'green' : 'orange',
             }} // green = synced with back, orange = not uploaded yet
-                 src={newImage || userInfosSettings?.urlImg}
+                 src={newImageUrl || userInfosSettings?.urlImg}
                  alt='user profile pic'
             />
             <input
@@ -155,66 +156,54 @@ export function Settings(props: Props) {
                 if (files && files.length !== 0) {
                   if (files[0].size > 1024 * 1024 * 5) {
                     setPictureError('File is too big!');
+                    setNewImage(undefined);
                   } else {
-                    setNewImage(URL.createObjectURL(files[0]));
+                    setNewImageUrl(URL.createObjectURL(files[0]));
                     setPictureError('');
-                    setModifData({
-                      ...modifData,
-                      img: files[0],
-                    });
-                  }
+                    setNewImage(files[0]);
+                  } //TODO: when too big file is upload, then settings are closed and you re-open the same file, it doesn't show the error
                 }
               }
               }
               style={{ display: 'none' }}
             />
-            <label style={Btn} htmlFor='image'><p
-              style={{ height: '10px', textAlign: 'center', width: '150px', margin: '0', padding: '0' }}>Upload
-              Image</p></label>
+            <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
           </div>
-          <p style={{ color: 'red' }}>{pictureError}</p>
+          <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
         </div>
-        <div style={modifContainerPwd}>
-          <PasswordInput hidePassword={hidePassword}
-                         setHidePassword={setHidePassword}
-                         password={password}
-                         setPassword={setPassword}
-          />
-          <PasswordInput hidePassword={hidePassword}
-                         setHidePassword={setHidePassword}
-                         password={confirmPassword}
-                         setPassword={setConfirmPassword}
-                         placeholder={'Confirm password'}
-          />
-          {showConfirmPassword && (
-            <button style={Btn} type='button' onClick={togglePasswordVisibility}>
-              {passwordType === 'password' ? 'Afficher' : 'Masquer'}
-            </button>
-          )}
-          <button style={Btn} type='button' onClick={() => {
-            setModifData({
-              ...modifData,
-              password: password,
-              confirmpwd: confirmPassword,
-            });
-            console.log(modifData);
-          }}
-                  disabled={(password != confirmPassword) || password == ''}
-          >
-            Confirm
-          </button>
-        </div>
+        {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
+          //hide password change for 42 users
+          <div style={modifContainerPwd}>
+            <PasswordInput hidePassword={hidePassword}
+                           setHidePassword={setHidePassword}
+                           password={oldPassword}
+                           setPassword={setOldPassword}
+                           placeholder={'Current password'}
+            />
+            <br />
+            <PasswordInput hidePassword={hidePassword}
+                           setHidePassword={setHidePassword}
+                           password={password}
+                           setPassword={setPassword}
+            />
+            <PasswordInput hidePassword={hidePassword}
+                           setHidePassword={setHidePassword}
+                           password={confirmPassword}
+                           setPassword={setConfirmPassword}
+                           placeholder={'Confirm password'}
+            />
+            <br />
+          </div>
+        }
         <div style={modifContainer2FA}>
           <p>2FA</p>
           <SwitchToggle
-            onChange={(change) =>
-              setModifData({ ...modifData, is2fa_active: change })
-            }
-            checked={userInfosSettings?.is2fa_active || false} // Obliger de mettre "ou false" psq : Type 'boolean | undefined' is not assignable to type 'boolean'...
+            onChange={(change) => setIs2fa(change)}
+            checked={!!userInfosSettings?.is2fa_active}
           />
         </div>
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
-        <button style={Btn} type='submit'>Enregistrer</button>
+        <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
       </form>
       {qrCode2fa &&
         <div style={{
@@ -267,7 +256,7 @@ const settingsStyle: React.CSSProperties = {
   color: 'white',
   margin: '10px',
   cursor: 'pointer',
-  width: '300px',
+  minWidth: '300px',
 
 };
 
@@ -304,6 +293,5 @@ const Btn: React.CSSProperties = {
   backgroundColor: 'darkgrey',
   padding: '5px',
   marginTop: '5px',
+  color: 'white',
 };
-
-export default Settings;

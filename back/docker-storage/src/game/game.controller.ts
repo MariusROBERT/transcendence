@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { GameService } from "./game.service";
 import { GameGateway } from './game.gateway';
 import { GameMatchmaking } from './game.matchmaking';
@@ -10,9 +10,25 @@ export class GameController {
   queue: number[] = [];
   queueSpecial: number[] = [];
 
-  constructor(public service: GameService, public gateway: GameGateway, public matchmaking: GameMatchmaking) {
+  constructor(
+    public service: GameService,
+    public gateway: GameGateway,
+    public matchmaking: GameMatchmaking)
+  {
     this.service.setController(this);
     this.gateway.setController(this);
     this.matchmaking.setController(this);
+  }
+
+  @Get('/in_queue/:id')
+  async isInQueue(@Param('id', ParseIntPipe) id: number): Promise<{ isInQueue: undefined | 'normal' | 'special' }> {
+    await this.matchmaking.tryLaunchGames();
+    if (this.queue.includes(id)) {
+      return { isInQueue: 'normal' };
+    }
+    if (this.queueSpecial.includes(id)) {
+      return { isInQueue: 'special' };
+    }
+    return { isInQueue: undefined };
   }
 }

@@ -33,8 +33,10 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   };
 
   useEffect(() => {
-    fetchContext()
+    fetchContext();
+    // eslint-disable-next-line
   }, [])
+
 
   useEffect(() => {
     const getUserInfos = async () => {
@@ -42,36 +44,36 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
       const user = (await Fetch('user', 'GET'))?.json;
       if (!user) return;
     };
-    getUserInfos();
+    getUserInfos(); // appel de la fonction si le jwt est good
   }, [jwtToken]);
 
   useEffect(() => {
-    console.log('meUser in Leaderboard', meUser);
+    //console.log('meUser in Leaderboard', meUser);
   }, [meUser]);
 
-  // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-  const displayAllProfil = () => {
-    if (!allUsers)
-      return (<p>No user</p>)
-    const filteredUsers = allUsers
-      .filter((user: IUser) =>
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-      .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-    let count = 1;
-    const elements = filteredUsers.map((user: IUser) => (
-      <div key={user.id} style={userElementStyle}>
-        <p>{count++}</p> {/* TO CHANGE */}
-        {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
-        <>
-          <p>SCORE %</p>
-        </>
-      </div>
-    ));
-    setUserElements(elements);
-  };
-
   useEffect(() => {
+    // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
+    const displayAllProfil = () => {
+      if (!allUsers)
+        return (<p>No user</p>)
+      const filteredUsers = allUsers
+        .filter((user: IUser) =>
+          user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+        )
+        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
+      let count = 1;
+      const elements = filteredUsers.map((user: IUser) => (
+        <div key={user.id} style={userElementStyle}>
+          <p>{count++}</p> {/* TO CHANGE */}
+          {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
+          <>
+            <p>SCORE %</p>
+          </>
+        </div>
+      ));
+      setUserElements(elements);
+    };
+
     displayAllProfil();
   }, [searchTerm, allUsers, jwtToken, meUser]);
 
@@ -80,7 +82,7 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className="container">{userElements}</div>
+      <div className='container'>{userElements}</div>
     </div>
   );
 }
