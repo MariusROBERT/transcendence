@@ -12,7 +12,7 @@ export class GameMatchmaking {
   }
 
   //returns a Game with 1 given or the 2 given player
-  getGame(p1:number, p2:number | undefined = undefined): gameRoom{
+  getGame(p1: number, p2: number | undefined = undefined): gameRoom {
     if (p2 == null)
       return this.controller.games.find(g => g.playerIds.includes(p1));
     return this.controller.games.find(g => g.playerIds.includes(p1) && g.playerIds.includes(p2));
@@ -71,17 +71,12 @@ export class GameMatchmaking {
 
   leaveGame(id: number){
     const game = this.getGame(id);
-
-    if (game === undefined) {
-      return;
-    }
-
+    if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
     if (playerNumber === 0)
       game.state.score.p1 = 0;
     else
       game.state.score.p2 = 0;
-
     return this.endGame(id);
   }
 
@@ -122,5 +117,4 @@ export class GameMatchmaking {
     // dev msg
     return 'game end';
   }
-
 }

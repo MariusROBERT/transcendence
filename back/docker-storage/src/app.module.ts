@@ -9,7 +9,6 @@ import { ChannelModule } from './channel/channel.module';
 import { MessagesModule } from './messages/messages.module';
 import { GameModule } from './game/game.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,5 +26,4 @@ import { GameModule } from './game/game.module';
   providers: [AppService], // on mettra les gateway ici
   exports: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -11,7 +11,9 @@ const SIZE: number = 500;
 
 function App() {
   const view: Viewport = {
-    isLandscape: window.innerWidth >= SIZE * 2 && window.innerWidth / window.innerHeight > 0.9,
+    isLandscape:
+      window.innerWidth >= SIZE * 2 &&
+      window.innerWidth / window.innerHeight > 0.9,
     width: window.innerWidth,
     height: window.innerHeight,
   };
@@ -20,13 +22,17 @@ function App() {
 
   return (
     <Contexts>
-      <div className={'cursor_perso'}
-           style={{
-             height: viewport.isLandscape ? Math.max(viewport.height, SIZE) : Math.max(viewport.height, SIZE * 2) + 'px',
-             width: '100%',
-             color: color.white,
-             overflow: 'hidden',
-           }}>
+      <div
+        className={'cursor_perso'}
+        style={{
+          height: viewport.isLandscape
+            ? Math.max(viewport.height, SIZE)
+            : Math.max(viewport.height, SIZE * 2) + 'px',
+          width: '100%',
+          color: color.white,
+          overflow: 'hidden',
+        }}
+      >
         <Background image={backgroundImage} fixed={true}>
           <Routes>
             <Route path='/login' element={

@@ -24,8 +24,7 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
     } else {
       if (users && Array.isArray(users) && users.length === 0)
         setErrorMessage('Aucun utilisateur trouvé.');
-      else
-        setAllUsers(users);
+      else setAllUsers(users);
     }
     return () => {
       cancelled = true;

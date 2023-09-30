@@ -28,5 +28,7 @@ export interface gameRoom{
   ready: number[],
 }
 
-export const delay = (ms: number | undefined) => new Promise(res => ms ? setTimeout(res, ms) : setTimeout(res, 0));
-export const clamp = (val, valmin, valmax) => Math.min(Math.max(val, valmin), valmax);
+export const delay = (ms: number | undefined) =>
+  new Promise((res) => (ms ? setTimeout(res, ms) : setTimeout(res, 0)));
+export const clamp = (val, valmin, valmax) =>
+  Math.min(Math.max(val, valmin), valmax);

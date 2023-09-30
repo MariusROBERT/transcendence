@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -15,6 +16,8 @@ import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
+import { UserAddChanDto } from 'src/user/dto/user.dto';
+import { MutedService } from 'src/muted/muted.service';
 
 @Injectable()
 export class ChannelService {
@@ -23,20 +26,18 @@ export class ChannelService {
     private ChannelRepository: Repository<ChannelEntity>,
     private userService: UserService,
     private msgService: MessagesService,
+    private mutedService: MutedService,
   ) {}
 
   async createChannel(
     channel: CreateChannelDto,
-    user: UserEntity
+    user: UserEntity,
   ): Promise<ChannelEntity> {
     const chan = this.ChannelRepository.create({
       ...channel,
     });
     chan.owner = user;
     chan.admins = [];
-    chan.admins.push(user);
-    chan.users = [];
-    chan.users.push(user);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -66,7 +67,7 @@ export class ChannelService {
   }
 
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    const channel = await this.msgService.getMsg(id)
+    const channel = await this.msgService.getMsg(id);
     //console.log(channel);
     //console.log(await this.userService.getUsersInChannels(id));
     return channel;
@@ -75,6 +76,35 @@ export class ChannelService {
   async getChannelUsers(id: number): Promise<UserEntity[]> {
     const users = await this.userService.getUsersInChannels(id);
     return users;
+  }
+
+  async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
+    var chans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.users', 'users')
+      .where('users.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    var admchans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.admins', 'admins')
+      .where('admins.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    var ownchans = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.owner', 'owner')
+      .where('owner.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .getRawMany();
+    chans.forEach((chan) => {
+      chan['type'] = 'member';
+    });
+    admchans.forEach((admchans) => {
+      admchans['type'] = 'admin';
+    });
+    ownchans.forEach((ownchans) => {
+      ownchans['type'] = 'owner';
+    });
+    const all = chans.concat(admchans, ownchans);
+    return all;
   }
 
   async updateChannel(
@@ -102,59 +132,60 @@ export class ChannelService {
       );
   }
 
-  async addUserInChannel(
-    userid: number,
-    id: number,
-  ): Promise<ChannelEntity> {
+  async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    try
-    {
-      //if (!channel.users) channel.users = [];
-      //channel.users = [...channel.users, user];
-      const currentUsers = channel.users || [];
-      console.log("Curr " + channel.users + ".");
+    try {
+      //  TODO ADD THIS TO GUARD
+      var allusers = await this.userService.getUsersInChannels(id);
+      if (allusers.some((u) => u.id === userid))
+        throw new Error('User already in channel');
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
       currentUsers.push(user);
       channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log(e);
     }
     return channel;
   }
 
+  removeFrom(users: UserEntity[], id)
+  {
+    const index = users.findIndex(user => user.id === id);
+    if (index !== -1)
+      users.splice(index, 1);
+    return users;
+  }
+
+  //  Tested
   async addAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    try
-    {
-      if (!channel.admins) channel.admins = [];
-      channel.admins = [...channel.admins, user];
+    try {
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      channel.users = this.removeFrom(currentUsers, userid);
+      var currentAdmins = await this.userService.getFullAdminInChannels(id);
+      currentAdmins.push(user);
+      channel.admins = currentAdmins;
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log(e);
     }
     return channel;
   }
 
+  //  Tested
   async KickUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-      try
-      {
-        if (!channel.users) channel.users = [];
-        channel.users.indexOf(user) !== -1 &&
-          channel.users.splice(channel.users.indexOf(user), 1);
-        await this.ChannelRepository.save(channel);
-      } catch(e) {
-        console.log("Error: " + e);
-      }
+    try {
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      channel.users = this.removeFrom(currentUsers, uid);
+      await this.ChannelRepository.save(channel);
+    } catch (e) {
+      console.log(e);
+    }
     return channel;
   }
 
@@ -165,6 +196,7 @@ export class ChannelService {
     return -1;
   }
 
+  //  Do it at the end
   async MuteUserFromChannel(
     uid: number,
     id: number,
@@ -172,78 +204,60 @@ export class ChannelService {
   ): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    //  Todo: Check if admin can be muted
-    if (channel.admins.includes(user) || channel.owner == user)
-      throw new Error('The user is admin or owner');
-    if (channel.baned.includes(user)) throw new Error('The user is banned');
     if (sec <= 0)
-      throw new Error('Time in second cannot be equal or inferior to zero');
-    //  Todo: Check if user is already muted, if it is juste update the Date
-    const date = new Date(); // Get the current date
-    date.setSeconds(date.getSeconds() + sec); // Add time in second to the date
-    let muteEntity: MutedEntity;
-    muteEntity.channel = channel;
-    muteEntity.user = user;
-    muteEntity.endDate = date;
-    channel.mutedUsers = [...channel.mutedUsers, muteEntity];
-    await this.ChannelRepository.save(channel);
+      throw new BadRequestException('Time in second cannot be equal or inferior to zero');
+    var muteEntity: MutedEntity = await this.mutedService.createMuted(channel, user, sec);
     return channel;
   }
+
 
   async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
-      throw new Error('This channel is a private message channel');
-    var idx = await this.isMuted(user, channel);
-    if (idx == -1) throw new Error('The user is not muted');
-    channel.mutedUsers.splice(idx, 1);
-    await this.ChannelRepository.save(channel);
+    await this.mutedService.removeMuted(channel, user);
     return channel;
   }
 
+
+  // tested
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
-      if (!channel.users) channel.users = [];
-      if (!channel.baned) channel.baned = [];
-      channel.users.indexOf(user) !== -1 &&
-        channel.users.splice(channel.users.indexOf(user), 1);
-      channel.baned = [...channel.baned, user];
+    try {
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      channel.users = this.removeFrom(currentUsers, uid);
+      var currentBan = await this.userService.getBannedInChannels(id);
+      currentBan.push(user);
+      channel.baned = currentBan;
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log(e);
     }
-    await this.ChannelRepository.save(channel);
     return channel;
   }
 
-  //  Todo: check why isnt working
+  // Tested
   async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(uid);
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
-    try
-    {
-      if (!channel.baned) channel.baned = [];
-      channel.baned.indexOf(user) !== -1 &&
-        channel.baned.splice(channel.baned.indexOf(user), 1);
+    try {
+      var currentBan = await this.userService.getBannedInChannels(id);
+      channel.baned = this.removeFrom(currentBan, uid);
       await this.ChannelRepository.save(channel);
-    } catch(e) {
-      console.log("Error: " + e);
+    } catch (e) {
+      console.log(e);
     }
-    console.log("hes unbanned");
     return channel;
   }
 
-  async AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
+  async AddMessageToChannel(
+    message: string,
+    user: UserEntity,
+    chan: ChannelEntity,
+  ) {
     //if (!msg.channel.users.includes(msg.sender))
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)

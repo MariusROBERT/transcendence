@@ -1,11 +1,18 @@
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
+import {
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { GameController } from './game.controller';
 import { Socket } from 'socket.io';
-import { UserService } from '../user/user.service'
+import { UserService } from '../user/user.service';
 import { State } from './game.interfaces';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000'] }})
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
+@WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Socket in the back side
   @WebSocketServer() server;
   // game Controller
@@ -36,13 +43,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
   }
 
   @SubscribeMessage('update_user_socket_id')
-  async handleUpdateUserSocket(@MessageBody() message: {id:number, socketId:string}): Promise<void>{
+  async handleUpdateUserSocket(
+    @MessageBody() message: { id: number; socketId: string },
+  ): Promise<void> {
     await this.UserService.setUserSocketId(message.id, message.socketId);
     this.clients.find(s => s.id == message.socketId)?.join('user'+ message.id);
   }
 
   @SubscribeMessage('reset_user_socket_id')
-  async handleResetUserSocket(@MessageBody() message: {id:number}): Promise<void>{
+  async handleResetUserSocket(
+    @MessageBody() message: { id: number },
+  ): Promise<void> {
     await this.UserService.setUserSocketId(message.id, '');
   }
 
@@ -159,10 +170,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
   // InGame Events -------------------------------------------------------------------------------------------------- //
   @SubscribeMessage('move_player')
-  movePlayer(@MessageBody() msg: { id: number, isMoving: boolean, moveUp: boolean }) {
+  movePlayer(
+    @MessageBody() msg: { id: number; isMoving: boolean; moveUp: boolean },
+  ) {
     let game = this.controller.matchmaking.getGame(msg.id);
     if (game === undefined || !game.state.running) return;
-    return this.controller.service.movePlayer(game.state, game.playerIds.indexOf(msg.id), msg.isMoving, msg.moveUp)
+    return this.controller.service.movePlayer(
+      game.state,
+      game.playerIds.indexOf(msg.id),
+      msg.isMoving,
+      msg.moveUp,
+    );
   }
 
   sendState(game: { playerIds: number[], state: State, ready:number[] }) {

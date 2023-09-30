@@ -42,9 +42,5 @@ export function Flex({
     gap: flex_gap,
     zIndex: zIndex,
   };
-  return (
-    <div style={style}>
-      {children}
-    </div>
-  );
+  return <div style={style}>{children}</div>;
 }

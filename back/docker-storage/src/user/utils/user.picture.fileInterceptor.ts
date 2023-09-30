@@ -14,10 +14,7 @@ export class userPictureFileInterception extends FileInterceptor('file', {
   fileFilter: (req, file, cb) => {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
       return cb(
-        new HttpException(
-          'Wrong file format!',
-          HttpStatus.BAD_REQUEST,
-        ),
+        new HttpException('Wrong file format!', HttpStatus.BAD_REQUEST),
         false,
       );
     }
