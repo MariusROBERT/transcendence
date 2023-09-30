@@ -25,7 +25,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
     // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
     // eslint-disable-next-line
-  }, []);
+  }, [id, socket, isInGameWith, navigate]);
 
   // In Game Management --------------------------------------------------------------------------------------------- //
   // In Game -- Key Hook -------------------------------------------------------------------------------------------- //
@@ -100,19 +100,32 @@ export function Game({ viewport }:{ viewport: Viewport }) {
 
   // Display Game Management ---------------------------------------------------------------------------------------- //
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    const game = p5.createCanvas(size.width, size.height);
-    game.parent('container')
+    const canvas = p5.createCanvas(size.width, size.height);
+    try{
+      canvas.parent(canvasParentRef);
+    } catch (e) {
+      canvas.parent('container');
+    }
+    p5.strokeWeight(0);
     p5.background(0);
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.textSize(32);
   };
 
   const draw = (p5: p5Types) => {
     updateDimension();
     p5.resizeCanvas(size.width, size.height);
-    p5.background(0);
-    p5.textSize(32);
-    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
-    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.background(15);
+
+    p5.fill(60);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3);
+    p5.fill(15);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
+    p5.fill(60);
+    p5.rect(size.width/2 - 5, 0, 10, size.height);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
     p5.fill(255);
+    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
     p5.ellipse(state.ball.x, state.ball.y, size.ball);
     p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
     p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
@@ -125,7 +138,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
 
   return(
     <div id={'container'} style={containerStyle}>
-      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize} style={{position:'relative', top:'0'}}></Sketch>
+      {id && socket && isInGameWith && <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize} style={{position:'relative', top:'0'}}></Sketch>}
       <div style={{position:'absolute', left:0, top:0}}>
         <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
       </div>
