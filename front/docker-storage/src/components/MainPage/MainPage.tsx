@@ -39,12 +39,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   return (
     <div style={MainPageStyle}>
-      {
-        notifs && (
-        <div style={notificationBadgeStyle}>
-          <span style={notificationCountStyle}>1</span>
-        </div>)
-      }
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
@@ -52,7 +46,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-          <Navbar meUser={user} />
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <div style={Btn}>
             <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
@@ -65,6 +58,12 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
       </Background>
+      <div style={NavPosition}>
+        <Navbar meUser={user} />
+      </div>
+      <div style={notificationBadgeStyle}>
+        {notifs && <span style={notificationCountStyle}> 1 </span>}
+      </div>
     </div>
   );
 }
@@ -86,7 +85,7 @@ const MainPageStyle: React.CSSProperties = {
 const notificationBadgeStyle: React.CSSProperties = {
   position: 'absolute',
   top: '20px',
-  right: '20px',
+  left: '20px',
   backgroundColor: 'red',
   borderRadius: '50%',
   width: '24px',
@@ -102,3 +101,10 @@ const notificationCountStyle: React.CSSProperties = {
   fontSize: '14px',
   fontWeight: 'bold',
 };
+
+const NavPosition: React.CSSProperties = {
+  position: 'absolute',
+  top: '0px',
+  right: '200px',
+  zIndex: '10000'
+}
