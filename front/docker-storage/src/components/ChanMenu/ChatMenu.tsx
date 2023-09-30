@@ -6,15 +6,26 @@ import {
   SetCurrChan,
 } from '../../utils/channel_functions';
 import { color } from '../../utils';
+import Popup from '../ComponentBase/Popup';
+import Settings from '../Settings/settings';
+import CreateChat from './CreateChat';
 
+/*
+  //  If channel exist just join it and open right pannel
+  //  If channel is private just send an error
+  //  If channel protected by password, open ask for password pannel
+        //  If right ^ go to first option, if not ^ go to second option
+  //  If channel not exist open channel creation
+    //  In channel creation you can set name, password, type, and directly add users/admin
+*/
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
+  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   var current_id = -1;
 
   //  TODO: clean here
   async function OnJoinChannel() {
     if (inputValue === '') return;
-    setInputValue('');
     const path = 'channel/name/' + inputValue;
     const res = await unsecureFetch(path, 'GET');
     if (res?.ok) {
@@ -28,20 +39,22 @@ export function ChatMenu() {
           id: -1, //current user id
         }),
       );
+      SetCurrChan(inputValue);
+      UpdateChannelMessage(current_id);
+      UpdateChannelUsers(current_id);
     } else {
-      const r = await Fetch(
-        'channel',
-        'POST',
-        JSON.stringify({
-          channel_name: inputValue,
-          priv_msg: false,
-        }),
-      );
-      current_id = r?.json.id;
+      setSettingsVisible(true);
+      //const r = await Fetch(
+      //  'channel',
+      //  'POST',
+      //  JSON.stringify({
+      //    channel_name: inputValue,
+      //    priv_msg: false,
+      //  }),
+      //);
+      //current_id = r?.json.id;
     }
-    SetCurrChan(inputValue);
-    UpdateChannelMessage(current_id);
-    UpdateChannelUsers(current_id);
+    setInputValue('');
   }
 
   return (
@@ -78,6 +91,9 @@ export function ChatMenu() {
           }}
         />
       </label>
+      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
+        <CreateChat name={inputValue}></CreateChat>
+      </Popup>
     </div>
   );
 }
