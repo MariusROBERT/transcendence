@@ -25,7 +25,7 @@ export const size = {
 export interface gameRoom{
   playerIds: number[],
   state: State,
-  ready: boolean,
+  ready: number[],
 }
 
 export const delay = (ms: number | undefined) => new Promise(res => ms ? setTimeout(res, ms) : setTimeout(res, 0));

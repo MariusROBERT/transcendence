@@ -63,20 +63,25 @@ export class GameMatchmaking {
         moveP1: {isMoving: false, up: false},
         moveP2: {isMoving: false, up: false}
       },
-      ready:false
+      ready:[]
     };
     this.controller.games.push(game);
     this.controller.gateway.openGame(game.playerIds);
   }
 
-  async leaveGame(id: number){
+  leaveGame(id: number){
     const game = this.getGame(id);
-    if (game === undefined) return;
+
+    if (game === undefined) {
+      return;
+    }
+
     const playerNumber = game.playerIds.indexOf(id);
     if (playerNumber === 0)
       game.state.score.p1 = 0;
     else
       game.state.score.p2 = 0;
+
     return this.endGame(id);
   }
 
@@ -86,10 +91,12 @@ export class GameMatchmaking {
     let game = this.getGame(id);
     if (game === undefined) return;
 
-    //first call set ready to true and second start the update function
-    if (!game.ready)
-      game.ready = true;
-    else
+    //add players to the ready array
+    if (game.ready.includes(id)) return;
+    game.ready.push(id);
+
+    // if all there launch the game
+    if (game.ready.length == 2)
       this.controller.service.update(game);
   }
 
