@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import { GameContextProvider, UserContextProvider } from '..';
 
-interface Props{
-  children:ReactNode
+interface Props {
+  children: ReactNode;
 }
 
-export function Contexts({ children }: Props){
+export function Contexts({ children }: Props) {
   return (
     <>
       <UserContextProvider>
@@ -14,5 +14,5 @@ export function Contexts({ children }: Props){
         </GameContextProvider>
       </UserContextProvider>
     </>
-  )
+  );
 }

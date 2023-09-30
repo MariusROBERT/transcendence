@@ -6,11 +6,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { SelfBannedGuard } from 'src/channel/guards/chan-basic.guards';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
+import { ChatCheckGuard } from './guards/chat.guards';
 
 @Injectable()
 @WebSocketGateway({
@@ -24,7 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private chanService: ChannelService,
     private messService: MessagesService,
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   @WebSocketServer()
@@ -71,6 +74,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //    this.server.emit('leaveChat');
   //  }
 
+  @UseGuards(ChatCheckGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
@@ -78,23 +82,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     var userE;
 
     if (channel < 0) {
-      console.log("error chan < 0");
-      return ;
+      console.log('error chan < 0');
+      return;
     }
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {
       console.log(error);
-      return ;
+      return;
     }
     const token = String(client.handshake.query.token);
-    const payload = this.jwtService.verify(
-      token,
-      {secret: process.env.JWT_SECRET}
-    );
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
     userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
-    this.server.emit('message', this.messages[this.messages.length - 1]);
+    const data = { id: chanE.id, name: chanE.channel_name };
+    this.server.emit('message', data);
   }
 }
