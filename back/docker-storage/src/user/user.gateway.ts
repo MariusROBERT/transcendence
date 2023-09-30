@@ -2,8 +2,6 @@ import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 import { Socket } from 'socket.io';
-import { User } from "dist/utils/decorators/user.decorator";
-import { UserEntity } from "dist/database/entities/channel.entity";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000'] }})
 export class UserGateway {

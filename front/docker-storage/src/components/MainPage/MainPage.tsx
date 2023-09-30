@@ -72,7 +72,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
 const Btn: React.CSSProperties = {
   left: '50%',
   top: '50%',
-  transform: 'translate(0%, -12%)'
+  transform: 'translate(0%, -20%)'
 }
 
 const MainPageStyle: React.CSSProperties = {
