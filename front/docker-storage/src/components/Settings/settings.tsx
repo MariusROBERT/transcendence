@@ -83,8 +83,8 @@ export default function Settings(props: Props) {
 
         if (user.message === 'Wrong password')
           return setErrorMessage(user.message);
-        if (user.error)
-          return setErrorMessage('Error while updating password');
+        if (user.message)
+          return setErrorMessage(user.message);
         setUserInfosSettings(user);
         setOldPassword('');
         setPassword('');
@@ -186,7 +186,7 @@ export default function Settings(props: Props) {
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
-              // noVerify /* DEV: uncomment this line for dev */
+              noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
@@ -194,7 +194,7 @@ export default function Settings(props: Props) {
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
                            confirmPassword={password}
-              // noVerify /* DEV: uncomment this line for dev */
+              noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>
@@ -206,7 +206,7 @@ export default function Settings(props: Props) {
             checked={!!userInfosSettings?.is2fa_active}
           />
         </div>
-        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+        <div style={{ color: 'red', marginTop: '5px' }}>ici {errorMessage}</div>
         <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
       </form>
       {qrCode2fa &&
