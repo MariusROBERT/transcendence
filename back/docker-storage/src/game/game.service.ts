@@ -78,7 +78,7 @@ export class GameService {
       // Start the new Round
       state.ball = { x: size.width / 2, y: size.height / 2 };
       state.dir.x *= -1;
-      state.speed = Math.max(state.speed - 1.5, 2);
+      state.speed = Math.max(state.speed - 1.5, 3);
     }
 
     //manage the 'physics' of the game

@@ -59,7 +59,7 @@ export class GameMatchmaking {
         p1: size.height / 2,
         p2: size.height / 2,
         score: {p1: 0, p2: 0},
-        speed: 1.5,
+        speed: 3,
         moveP1: {isMoving: false, up: false},
         moveP2: {isMoving: false, up: false}
       },
