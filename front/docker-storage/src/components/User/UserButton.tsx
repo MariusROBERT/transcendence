@@ -4,7 +4,6 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { IUser, IUserComplete } from "../../utils/interfaces";
 import { lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
-import { useUserContext } from "../../contexts";
 
 // TODO : Add Object User insteed of user_name and user icon
 interface Props {
@@ -18,7 +17,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 	const [requestReceived, setRequestReceived] = useState<boolean>(false);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const { setUser } = useUserContext();
+	//const { setUser } = useUserContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');
@@ -35,8 +34,8 @@ export function UserButton({ otherUser, meUser }: Props) {
 				console.log(`user ${id} blocked`);
 				if (!meUser)
 					return
-				let blockedCpy = [...meUser.blocked, otherUser.id];
-				setUser({ ...meUser, blocked: blockedCpy });
+				//let blockedCpy = [...meUser.blocked, otherUser.id];
+				//setUser({ ...meUser, blocked: blockedCpy });
 			}
 			else
 				console.log(`user ${id} already blocked`);
@@ -56,8 +55,8 @@ export function UserButton({ otherUser, meUser }: Props) {
 			}
 		}
 		sendFriendInvite(otherUser.id, jwtToken);
-		let usercpy = [...meUser.invited, otherUser.id];
-		setUser({ ...meUser, invited: usercpy });
+		//let usercpy = [...meUser.invited, otherUser.id];
+		//setUser({ ...meUser, invited: usercpy });
 	}
 	
 	useEffect(() => {
@@ -67,7 +66,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 			setRequestReceived(true);
 		if (meUser && meUser.friends.includes(otherUser.id as number))
 			setIsFriend(true);
-	}, [meUser, otherUser.id]);
+	}, [meUser, otherUser]);
 
 	const openOptions = () => {
 		setIsOptionOpen(!isOpen);
