@@ -5,23 +5,23 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { useGameContext } from '../../contexts';
 
 export function GameInvites(){
-  const { hasReceivedInvitationFrom, hasSendInvitationTo, cancelGameInvite, acceptGameInvite, declineGameInvite } = useGameContext();
+  const { inviteFrom, inviteTo, cancelGameInvite, acceptGameInvite, declineGameInvite } = useGameContext();
   const [ username, setUsername ] = useState<string | undefined>();
 
   useEffect(() => {
     async function getUsername(){
-      if (hasReceivedInvitationFrom === hasSendInvitationTo)
+      if (inviteFrom === inviteTo)
         return setUsername(undefined);
-      const id = hasSendInvitationTo ? hasSendInvitationTo : hasReceivedInvitationFrom;
+      const id = inviteTo ? inviteTo : inviteFrom;
       setUsername(((await Fetch('user/get_public_profile_by_id/' + id, 'GET'))?.json)?.username);
     }
     getUsername();
-  }, [hasReceivedInvitationFrom, hasSendInvitationTo]);
+  }, [inviteFrom, inviteTo]);
 
   const inviteStyle: CSSProperties = {
     top: '0px',
-    right: hasReceivedInvitationFrom === hasSendInvitationTo ? '-600px' : '150px',
-    minWidth: (hasSendInvitationTo ? 400 :  550) + 'px',
+    right: inviteFrom === inviteTo ? '-600px' : '150px',
+    minWidth: (inviteTo ? 400 :  550) + 'px',
     position: 'absolute',
     display: 'flex',
     flexDirection: 'row',
@@ -36,19 +36,19 @@ export function GameInvites(){
   return (
     <div style={inviteStyle}>
       <Background flex_direction={'row'} flex_alignItems={'center'} flex_justifyContent={'space-evenly'} bg_color={color.grey}>
-        {hasSendInvitationTo && (<>
+        {inviteTo && (<>
           <p style={{marginLeft:10}}>{'You invited ' + username + ' to Play'}</p>
           <Button onClick={cancelGameInvite}>Cancel</Button>
         </>)}
-        {hasReceivedInvitationFrom && (<>
+        {inviteFrom && (<>
           <p style={{marginLeft:10}}>{username + ' invited you to Play: '}</p>
           <Button onClick={() => {
-            if (hasReceivedInvitationFrom)
-              acceptGameInvite(hasReceivedInvitationFrom);
+            if (inviteFrom)
+              acceptGameInvite(inviteFrom);
           }}>Accept</Button>
           <Button onClick={() => {
-            if (hasReceivedInvitationFrom)
-              declineGameInvite(hasReceivedInvitationFrom);
+            if (inviteFrom)
+              declineGameInvite(inviteFrom);
           }}>Decline</Button>
         </>)}
         <p style={{minWidth:'30px'}}></p>
