@@ -51,7 +51,7 @@ export function PasswordInput(props: Props) {
     right: -25,
   };
 
-  const mainRegex = /^((?=.*?[a-z]+)(?=.*?[A-Z]+)(?=.*?[0-9]+)(?=.*?[!@#\-+=[\]\\/`'";:?.,<>~]+).{6,})$/;
+  const mainRegex = /^\S((?=.*?[a-z]+)(?=.*?[A-Z]+)(?=.*?[0-9]+)(?=.*?[!@#\-+=[\]\\/`'";:?.,<>~]+).{6,})\S$/;
   const minMaj = /[A-Z]/;
   const minMin = /[a-z]/;
   const minDigit = /[0-9]/;
