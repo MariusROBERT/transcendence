@@ -3,7 +3,8 @@ import { RoundButton, Flex } from "..";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { IUser, IUserComplete } from "../../utils/interfaces";
-import { lookGame, openChat, sendFriendInvite, sendGameInvite } from "../../utils/user_functions";
+import { lookGame, openChat, sendFriendInvite } from "../../utils/user_functions";
+import { useGameContext } from '../../contexts';
 
 // TODO : Add Object User insteed of user_name and user icon
 interface Props {
@@ -17,7 +18,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
 	const [requestReceived, setRequestReceived] = useState<boolean>(false);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
-	//const { setUser } = useUserContext();
+	const { sendGameInvite } = useGameContext();
 
 	const blockAUser = async (id: number) => {
 		const jwtToken = Cookies.get('jwtToken');
@@ -87,7 +88,7 @@ export function UserButton({ otherUser, meUser }: Props) {
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}/>}
-					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()}/>}
+					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite(otherUser?.id, 'normal')}/>}
 					{isFriend && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}/>}
 					{!isFriend && !sendButton &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={askFriend}/>

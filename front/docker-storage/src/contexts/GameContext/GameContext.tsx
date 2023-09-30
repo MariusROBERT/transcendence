@@ -8,7 +8,7 @@ type GameContextType = {
   hasSendInvitationTo: number | undefined,
   isInGameWith: number | undefined,
 
-  sendGameInvite: (to: number, gameType: 'normal' | 'special') => void,
+  sendGameInvite: (to: number | undefined, gameType: 'normal' | 'special') => void,
   acceptGameInvite: (from: number) => void,
   declineGameInvite: (from:number) => void,
   cancelGameInvite: () => void,
@@ -27,7 +27,7 @@ const GameContext = createContext<GameContextType>({
   hasSendInvitationTo: undefined,
   isInGameWith: undefined,
 
-  sendGameInvite: (to: number, gameType: 'normal' | 'special') => {},
+  sendGameInvite: (to: number | undefined, gameType: 'normal' | 'special') => {},
   acceptGameInvite: (from: number) => {},
   declineGameInvite: (from:number) => {},
   cancelGameInvite: () => {},
@@ -86,8 +86,8 @@ export function GameContextProvider({ children }: Props) {
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   // Invites -- Event emission -------------------------------------------------------------------------------------- //
-  function sendGameInvite(to: number, gameType:'normal' | 'special'){
-    if (isInGameWith) return;
+  function sendGameInvite(to: number | undefined, gameType:'normal' | 'special'){
+    if (isInGameWith || !to) return;
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
     if (hasReceivedInvitationFrom === to && gameType === gameTypeInvitation)
