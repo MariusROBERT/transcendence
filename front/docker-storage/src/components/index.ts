@@ -7,6 +7,7 @@ export { ChatMessage } from './ChatMessage/ChatMessage';
 export { ContactPanel } from './ContactPanel/ContactPanel';
 export { Flex } from './Flex/FlexBox';
 export { Game } from './Game/Game';
+export { GameInvites } from './Game/GameInvites';
 export { GroupItems } from './GroupItems/GroupItems';
 export { Input } from './Input/Input';
 export { Leaderboard } from './Leaderboard/leaderboard';
