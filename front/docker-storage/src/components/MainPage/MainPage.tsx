@@ -58,9 +58,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
       </Background>
-      <div style={NavPosition}>
-        <Navbar meUser={user} />
-      </div>
+      <Navbar meUser={user} />
       <div style={notificationBadgeStyle}>
         {notifs && <span style={notificationCountStyle}> 1 </span>}
       </div>
@@ -101,10 +99,3 @@ const notificationCountStyle: React.CSSProperties = {
   fontSize: '14px',
   fontWeight: 'bold',
 };
-
-const NavPosition: React.CSSProperties = {
-  position: 'absolute',
-  top: '0px',
-  right: '200px',
-  zIndex: '10000'
-}

@@ -1,12 +1,11 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background } from '..';
+import { RoundButton, Border, Background, GameInvites } from '..';
 import Settings from '../Settings/settings';
 import { IUserComplete } from '../../utils/interfaces';
 import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
 import Popup from '../ComponentBase/Popup';
 import { color } from '../../utils';
-
 interface Props {
   meUser: IUserComplete | undefined;
 }
@@ -52,7 +51,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
   return (
     <>
       <div style={navbarStyle}>
-      <Border borderRadius={30} height={100} width={300} borderColor={color.black}>
+      <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
         <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'} bg_color={color.black}>
           <RoundButton
             icon={meUser?.urlImg ? meUser.urlImg : require('../../assets/imgs/icon_user.png')}
@@ -70,23 +69,26 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
             onClick={() => logout()}
           />
         </Background>
-        <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-          <Settings isVisible={settingsVisible}/>
-        </Popup>
-        <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-          <Profil otherUser={meUser} meUser={meUser} />
-        </Popup>
       </Border>
       </div>
+      <GameInvites></GameInvites>
+      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
+        <Settings isVisible={settingsVisible}/>
+      </Popup>
+      <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+        <Profil otherUser={meUser} meUser={meUser} />
+      </Popup>
     </>
   );
 };
 
 const navbarStyle: CSSProperties = {
-  top: '-40px',
+  top: '-25px',
+  right:'-25px',
   position: 'absolute',
   display: 'flex',
-  justifyContent: 'space-around',
+  flexDirection: 'row-reverse',
+  zIndex: '10000'
 };
 
 export default Navbar;
