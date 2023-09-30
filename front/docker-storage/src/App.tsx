@@ -25,9 +25,10 @@ function App() {
       <div
         className={'cursor_perso'}
         style={{
-          height: viewport.isLandscape
-            ? Math.max(viewport.height, SIZE)
-            : Math.max(viewport.height, SIZE * 2) + 'px',
+          // height: viewport.isLandscape
+          //   ? Math.max(viewport.height, SIZE)
+          //   : Math.max(viewport.height, SIZE * 2) + 'px',
+          height: '100%',
           width: '100%',
           color: color.white,
           overflow: 'hidden',
