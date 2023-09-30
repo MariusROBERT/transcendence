@@ -8,8 +8,8 @@ import { PasswordInput } from '../Input/PasswordInput';
 const SIZE: number = 350;
 
 interface Props {
-  duration_ms?: number,
-  viewport: Viewport,
+  duration_ms?: number;
+  viewport: Viewport;
 }
 
 export function Login({ duration_ms = 900, viewport }: Props) {
@@ -33,10 +33,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (signIn)
-      return OnConnect();
-    else
-      return OnRegister();
+    if (signIn) return OnConnect();
+    else return OnRegister();
   }
 
   async function OnRegister() {
@@ -137,7 +135,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   };
 
   const animStyle: React.CSSProperties = {
-    height: viewport.isLandscape ? (Math.max(SIZE, viewport.height) - 50) + 'px' : (Math.max(2 * SIZE, viewport.height) - 50) + 'px',
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) - 50 + 'px'
+      : Math.max(2 * SIZE, viewport.height) - 50 + 'px',
     width: '100%',
     position: 'absolute',
     top: '50px',
@@ -145,7 +145,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   };
 
   const connectingStyle: React.CSSProperties = {
-    height: viewport.isLandscape ? Math.max(SIZE, viewport.height) + 'px' : Math.max(2 * SIZE, viewport.height) + 'px',
+    height: viewport.isLandscape
+      ? Math.max(SIZE, viewport.height) + 'px'
+      : Math.max(2 * SIZE, viewport.height) + 'px',
     width: '100%',
     position: 'absolute',
     top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',

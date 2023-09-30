@@ -97,13 +97,16 @@ export default function Settings(props: Props) {
       const formData = new FormData();
       formData.append('file', newImage || '');
 
-      const user = await fetch('http://localhost:3001/api/user/update_picture', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
+      const user = await fetch(
+        'http://localhost:3001/api/user/update_picture',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: formData,
         },
-        body: formData,
-      }).then(r => {
+      ).then((r) => {
         if (r.ok) {
           setPictureError('');
           return r.json();
@@ -149,7 +152,7 @@ export default function Settings(props: Props) {
             />
             <input
               id={'image'}
-              type='file'
+              type="file"
               accept={'image/png, image/jpeg, image/jpg'}
               onChange={(event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;
