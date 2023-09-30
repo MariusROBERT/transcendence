@@ -47,7 +47,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     // eslint-disable-next-line
   }, [profilVisible]);
 
-  console.log(meUser)
+  // console.log(meUser)
 
   return (
     <>
