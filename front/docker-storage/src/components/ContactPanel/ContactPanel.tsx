@@ -1,6 +1,7 @@
 import { Background, Border, GroupItems } from '..';
 import { color, Viewport } from '../../utils';
 import { IUserComplete } from '../../utils/interfaces';
+import { ChatMenu } from '../ChanMenu/ChatMenu';
 
 interface Props {
   viewport: Viewport;
@@ -36,7 +37,9 @@ export function ContactPanel({ meUser, viewport }: Props) {
           </Border>
         </Background>
       </div>
-      {/* <SearchBar>Search for friend or group here..</SearchBar> */}
+      <div>
+        {<ChatMenu/>}
+      </div>
     </>
   );
 }
