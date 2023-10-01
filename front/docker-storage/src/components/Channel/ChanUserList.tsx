@@ -1,6 +1,6 @@
 import { subscribe } from '../../utils/event';
 import { ChannelUsers } from '../../utils/interfaces';
-import { ChanUser } from '../ChanUser/ChanUser';
+import { ChanUser } from './ChanUser';
 import { useEffect, useState } from 'react';
 
 export function ChanUserList() {

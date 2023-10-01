@@ -1,10 +1,9 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SwitchToggle from './switchToggle';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput } from '../Input/PasswordInput';
+import { PasswordInput, SwitchToggle } from '..';
 
 interface Props {
   isVisible: boolean;
@@ -152,7 +151,7 @@ export default function Settings(props: Props) {
             />
             <input
               id={'image'}
-              type="file"
+              type='file'
               accept={'image/png, image/jpeg, image/jpg'}
               onChange={(event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;

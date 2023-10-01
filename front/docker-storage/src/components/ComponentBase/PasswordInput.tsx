@@ -1,6 +1,4 @@
-// import eye_hide from '../../assets/imgs/eye_hide.svg';
 import eye_show from '../../assets/imgs/eye_hide.svg';
-// import eye_show from '../../assets/imgs/eye_show.svg';
 import eye_hide from '../../assets/imgs/eye_show.svg';
 import React from 'react';
 
@@ -27,7 +25,7 @@ export function PasswordInput(props: Props) {
       style={{ ...props.divStyle, display: 'flex', alignItems: 'center' }}
     >
       <input
-        type={props.hidePassword ? 'password': 'text'}
+        type={props.hidePassword ? 'password' : 'text'}
         placeholder={props.placeholder || 'password'}
         value={props.password}
         onChange={(e) => props.setPassword(e.target.value)}
