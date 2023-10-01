@@ -1,11 +1,10 @@
-import { color, Viewport } from '../../utils';
+import { color, Viewport, useIsWindowFocused } from '../../utils';
 import { Background, ChatPanel, ContactPanel, Navbar, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext } from '../../contexts';
 import { PlayButton } from '../Game/PlayButton';
-import { useIsWindowFocused } from '../../utils/UseIsWindowFocused';
 
 interface Props {
   panelWidth: number;
