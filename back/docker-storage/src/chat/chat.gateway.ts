@@ -13,6 +13,14 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChatCheckGuard } from './guards/chat.guards';
 
+export interface ChannelMessage {
+  sender_id: number;
+  sender_urlImg: string;
+  sender_username: string;
+  message_content: string;
+  channel_id: number;
+}
+
 @Injectable()
 @WebSocketGateway({
   cors: {
@@ -46,8 +54,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join')
   async handleJoin(client: Socket, body: any) {
-    const { channel } = body; //  channel is the room
-    console.log('YOU HAVE JOINED THIS CHANNEL: ' + channel);
+    const { channel } = body;
+    client.rooms.forEach((room) => {
+      if (room !== client.id) {
+        client.leave(room);
+      }
+    });
     client.join(channel);
   }
 
@@ -75,7 +87,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
-    const data = { id: chanE.id, name: chanE.channel_name };
+    const data: ChannelMessage = {
+      sender_id: userE.id,
+      sender_urlImg: userE.urlImg,
+      sender_username: userE.user_name,
+      message_content: message,
+      channel_id: chanE.id,
+    };
     this.server.to(channel).emit('message', data);
   }
 }

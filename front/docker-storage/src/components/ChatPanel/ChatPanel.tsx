@@ -8,12 +8,10 @@ import { ChanUserList } from '../ChanUserList/ChanUserList';
 import { subscribe } from '../../utils/event';
 import {
   GetCurrChan,
-  UpdateChannelMessage,
 } from '../../utils/channel_functions';
 import {
   ChannelMessage,
   IChatUser,
-  SocketMessage,
 } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import Popup from '../ComponentBase/Popup';
@@ -32,9 +30,8 @@ export function ChatPanel({ viewport, width }: Props) {
   let [msg, setMessage] = useState<ChannelMessage[]>([]);
 
   //  See if there is a better way to do this
-  const getMsg = async (message: SocketMessage) => {
-    if ((await GetCurrChan()) === message.name)
-      UpdateChannelMessage(message.id);
+  const getMsg = async (message: ChannelMessage) => {
+    setMessage([...msg, message]);
     setInputValue('');
   };
 
@@ -47,7 +44,6 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
-      //  TODO: add check for owner
       setMessage(event.detail.value);
     });
   });
@@ -116,7 +112,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   async function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    if ((await CommandParsing()) === true) return; // If its a command do not continue
+    if ((await CommandParsing()) === true) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
   }
