@@ -208,7 +208,7 @@ export default function Settings(props: Props) {
             checked={!!userInfosSettings?.is2fa_active}
           />
         </div>
-        <div style={{ color: 'red', marginTop: '5px' }}>ici {errorMessage}</div>
+        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
         <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
       </form>
       {qrCode2fa &&
