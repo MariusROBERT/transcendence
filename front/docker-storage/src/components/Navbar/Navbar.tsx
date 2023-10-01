@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background, Settings, Profil, Popup } from '..';
+import { RoundButton, Border, Background, Settings, Profil, Popup, GameInvites } from '..';
 import { IUserComplete } from '../../utils/interfaces';
 import Cookies from 'js-cookie';
 import { color } from '../../utils';
@@ -28,8 +28,6 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
       console.log(res.status);
     }
   };
-
-  //TODO: [Raffi] reuse this in game
 
   // delog the user if he close the navigator without click in logout button
   useEffect(() => {

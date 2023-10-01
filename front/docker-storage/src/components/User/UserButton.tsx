@@ -3,7 +3,7 @@ import { RoundButton, Flex } from '..';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { IUser, IUserComplete } from '../../utils/interfaces';
-import { lookGame, openChat, sendFriendInvite, sendGameInvite } from '../../utils/user_functions';
+import { lookGame, openChat, sendFriendInvite } from '../../utils/user_functions';
 import { useGameContext } from '../../contexts';
 
 interface Props {
