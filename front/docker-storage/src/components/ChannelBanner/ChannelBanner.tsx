@@ -6,12 +6,16 @@ import {
   UpdateChannelUsers,
   SetCurrChan,
 } from '../../utils/channel_functions';
+import { useUserContext } from '../../contexts';
 
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
+  const { socket } = useUserContext();
+
   async function OnJoinChannel() {
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
+    socket?.emit('join', { channel: name });
   }
 
   return (
