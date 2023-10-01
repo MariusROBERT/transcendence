@@ -50,7 +50,7 @@ function App() {
                 <GameScore viewport={viewport}></GameScore>
               </AuthGuard>}>
             </Route>
-            <Route path='*' element={<NotFoundPage />}/>
+            <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </Background>
       </div>

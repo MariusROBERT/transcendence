@@ -103,7 +103,6 @@ export interface LeaderboardProps {
 }
 
 
-
 export interface UserButtonsProps {
   id: number | undefined;
 }

@@ -25,15 +25,15 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           type === 'owner'
             ? color.green
             : type === 'admin'
-            ? color.red
-            : color.grey, // ^^ Sorry, i'll find another way to do it later
+              ? color.red
+              : color.grey, // ^^ Sorry, i'll find another way to do it later
         minWidth: '410px',
         height: '25px',
       }}
     >
       <Flex
         zIndex={'10'}
-        flex_direction="row"
+        flex_direction='row'
         flex_justifyContent={'space-evenly'}
       >
         <RoundButton

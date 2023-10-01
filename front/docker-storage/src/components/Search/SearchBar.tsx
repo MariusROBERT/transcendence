@@ -23,7 +23,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id }: P
       width: '400px',
     }} className={'text cursor_pointer'}>
       <img style={{ height: '80px', width: '80px', position: 'relative', top: '-10px', left: '-15px' }}
-           src={require('../../assets/imgs/icon_search.png')} alt={'search'}/>
+           src={require('../../assets/imgs/icon_search.png')} alt={'search'} />
       <input
         id={id}
         style={{
@@ -39,7 +39,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id }: P
         }}
         placeholder={children}
         onChange={handleInputChange}
-        onClick={onClick || undefined }
+        onClick={onClick || undefined}
       />
     </div>
   );

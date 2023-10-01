@@ -151,7 +151,7 @@ export default function Settings(props: Props) {
             />
             <input
               id={'image'}
-              type="file"
+              type='file'
               accept={'image/png, image/jpeg, image/jpg'}
               onChange={(event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;

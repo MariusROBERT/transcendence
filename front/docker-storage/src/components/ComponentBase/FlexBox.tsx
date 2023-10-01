@@ -32,7 +32,7 @@ export function Flex({
                        flex_alignItems = 'center',
                        flex_gap = '5px 5px',
                      }: Props) {
-  const style : CSSProperties = {
+  const style: CSSProperties = {
     position: 'relative',
     display: 'flex',
     flexDirection: flex_direction,

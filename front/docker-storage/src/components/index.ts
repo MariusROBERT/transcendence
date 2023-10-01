@@ -1,5 +1,5 @@
 // 404 Page
-export { default as NotFoundPage } from './404Page/404Page'
+export { default as NotFoundPage } from './404Page/404Page';
 
 // Auth Guard
 export { default as AuthGuard } from './AuthGuard/Authguard';

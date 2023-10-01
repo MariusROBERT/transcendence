@@ -18,12 +18,12 @@ const UserBanner = ({ otherUser, meUser }: Props) => {
     <div>
       <div style={UserBannerContainer}>
         <Flex flex_direction='row'>
-          {isMe  || <img style={statusStyle}
-                src={(isMe ? meUser : otherUser)?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
-                alt={(isMe ? meUser : otherUser)?.user_status ? 'connected' : 'disconnected'} />}
-          <RoundButton icon={(isMe ? meUser: otherUser).urlImg} icon_size={50}
+          {isMe || <img style={statusStyle}
+                        src={(isMe ? meUser : otherUser)?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
+                        alt={(isMe ? meUser : otherUser)?.user_status ? 'connected' : 'disconnected'} />}
+          <RoundButton icon={(isMe ? meUser : otherUser).urlImg} icon_size={50}
                        onClick={() => setProfilVisible(true)} />
-          <p onClick={() => setProfilVisible(true)}>{(isMe ? meUser: otherUser).username}</p>
+          <p onClick={() => setProfilVisible(true)}>{(isMe ? meUser : otherUser).username}</p>
         </Flex>
         <UserButton otherUser={otherUser} meUser={meUser} />
       </div>
