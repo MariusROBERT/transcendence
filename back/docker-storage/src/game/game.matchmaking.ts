@@ -28,7 +28,7 @@ export class GameMatchmaking {
     else if (isSpecial && !this.controller.queueSpecial.includes(id))
       this.controller.queueSpecial.push(id);
 
-    // console.log(isSpecial ? 'Special \n' + this.controller.queueSpecial : 'Normal \n', this.controller.queue);
+    console.log('after join: \nSpecial  ', this.controller.queueSpecial, '\nNormal  ', this.controller.queue);
     await this.tryLaunchGames();
   }
 

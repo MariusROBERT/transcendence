@@ -132,12 +132,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('leave_queue')
-  leaveQueue(@MessageBody() msg: { sender: number, gameType: 'normal' | 'special' }) {
+  leaveQueue(@MessageBody() msg: { sender: number }) {
     // console.log('leave_queue', msg);
-    if (msg.gameType === 'normal')
-      this.controller.queue = this.controller.queue.filter(i => i != msg.sender);
-    if (msg.gameType === 'special')
-      this.controller.queue = this.controller.queueSpecial.filter(i => i != msg.sender);
+    this.controller.queue = this.controller.queue.filter(id => id != msg.sender);
+    this.controller.queueSpecial = this.controller.queueSpecial.filter(id => id != msg.sender);
+
+    console.log('after leave: \nSpecial  ', this.controller.queueSpecial, '\nNormal  ', this.controller.queue);
   }
 
   // Game Start / End Management ------------------------------------------------------------------------------------ //

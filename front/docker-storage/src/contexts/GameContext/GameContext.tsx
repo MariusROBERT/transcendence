@@ -243,19 +243,16 @@ export function GameContextProvider({ children }: Props) {
       declineGameInvite(inviteFrom);
     if (inviteTo)
       cancelGameInvite();
-    if (isInQueue && isInQueue === gameType)
-      return leaveQueue();
-    else if (isInQueue)
+    if (isInQueue)
       leaveQueue();
 
     socket?.emit('join_queue', { sender: id, gameType: gameType });
     setIsInQueue(gameType);
-
   }
 
   function leaveQueue() {
     if (!isInQueue) return;
-    socket?.emit('leave_queue', { sender: id, gameType: isInQueue });
+    socket?.emit('leave_queue', { sender: id });
     setIsInQueue(undefined);
   }
 
