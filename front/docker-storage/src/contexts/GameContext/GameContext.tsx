@@ -7,6 +7,8 @@ type GameContextType = {
   inviteFrom: number | undefined,
   inviteTo: number | undefined,
   isInGameWith: number | undefined,
+  isInQueue: undefined | 'normal' | 'special',
+  gameType: undefined | 'normal' | 'special',
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => void,
   acceptGameInvite: (from: number) => void,
@@ -26,6 +28,8 @@ const GameContext = createContext<GameContextType>({
   inviteFrom: undefined,
   inviteTo: undefined,
   isInGameWith: undefined,
+  isInQueue: undefined,
+  gameType: undefined,
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => {},
   acceptGameInvite: (from: number) => {},
@@ -57,15 +61,15 @@ export function GameContextProvider({ children }: Props) {
   const [isInQueue, setIsInQueue] = useState<'normal' | 'special' | undefined>();
   const [inviteFrom, setInviteFrom] = useState<number | undefined>();
   const [inviteTo, setInviteTo] = useState<number | undefined>();
-  const [gameTypeInvitation, setGameTypeInvitation] = useState<'normal' | 'special' | undefined>();
+  const [gameType, setGameType] = useState<'normal' | 'special' | undefined>();
 
 
   // useEffect(() => {
   // function printState(){
-  //   // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:inviteFrom, inviteTo:inviteTo, inviteType:gameTypeInvitation});
+  //   // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:inviteFrom, inviteTo:inviteTo, inviteType:gameType});
   // }
   //   printState();
-  // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameTypeInvitation]);
+  // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
 
   useEffect(() => {
     if (id !== 0 && socket)
@@ -83,7 +87,7 @@ export function GameContextProvider({ children }: Props) {
     setInviteFrom((inviteStatus.gameInvitationFrom < 0 ? undefined : inviteStatus.gameInvitationFrom));
     setInviteTo((inviteStatus.gameInvitationTo < 0 ? undefined : inviteStatus.gameInvitationTo));
     setIsInGameWith((inviteStatus.isInGameWith < 0 ? undefined : inviteStatus.isInGameWith));
-    setGameTypeInvitation((inviteStatus.gameInviteType === 'none' ? undefined : inviteStatus.gameInviteType));
+    setGameType((inviteStatus.gameInviteType === 'none' ? undefined : inviteStatus.gameInviteType));
 
     // check if player is in Queue
     const inQueue: { isInQueue: 'normal' | 'special' | undefined }
@@ -109,7 +113,7 @@ export function GameContextProvider({ children }: Props) {
     if (isInGameWith) return;
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
-    if (inviteFrom === to && gameType === gameTypeInvitation)
+    if (inviteFrom === to && gameType === gameType)
       return acceptGameInvite(inviteFrom);
 
     // Auto cancel and decline other invites and leave queue
@@ -122,7 +126,7 @@ export function GameContextProvider({ children }: Props) {
 
     // Set invite and Send it
     setInviteTo(to);
-    setGameTypeInvitation(gameType);
+    setGameType(gameType);
     socket?.emit('send_invite', { sender: id, receiver: to, gameType:gameType });
   }
 
@@ -134,7 +138,7 @@ export function GameContextProvider({ children }: Props) {
       declineGameInvite(inviteFrom)
 
     setInviteFrom(undefined);
-    socket?.emit('accept_invite', { sender: id, receiver:from ? from : inviteFrom, gameType:gameTypeInvitation });
+    socket?.emit('accept_invite', { sender: id, receiver:from ? from : inviteFrom, gameType:gameType });
   }
 
   function declineGameInvite(from: number){
@@ -159,7 +163,7 @@ export function GameContextProvider({ children }: Props) {
       return declineGameInvite(body.sender);
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
-    if (inviteTo === body.sender && gameTypeInvitation === body.gameType)
+    if (inviteTo === body.sender && gameType === body.gameType)
       return acceptGameInvite(body.sender);
 
     // Auto Decline invite (if already in invite)
@@ -168,7 +172,7 @@ export function GameContextProvider({ children }: Props) {
 
     // Update Invitation
     setInviteFrom(body.sender);
-    setGameTypeInvitation(body.gameType)
+    setGameType(body.gameType)
   }
 
   function onGameInviteAccepted(body: { sender: number, receiver: number }){
@@ -222,7 +226,7 @@ export function GameContextProvider({ children }: Props) {
       socket?.off('cancel_invite', onGameInviteCanceled);
     };
     // eslint-disable-next-line
-  }, [socket, inviteTo, inviteFrom, gameTypeInvitation, isInGameWith, isInQueue, id]);
+  }, [socket, inviteTo, inviteFrom, gameType, isInGameWith, isInQueue, id]);
 
   // Queue Management ----------------------------------------------------------------------------------------------- //
   // Queue -- Event emission ---------------------------------------------------------------------------------------- //
@@ -300,6 +304,8 @@ export function GameContextProvider({ children }: Props) {
         inviteFrom: inviteFrom,
         inviteTo: inviteTo,
         isInGameWith,
+        isInQueue,
+        gameType,
 
         sendGameInvite,
         acceptGameInvite,
