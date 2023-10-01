@@ -9,7 +9,7 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
+const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
   const ft_token = new URLSearchParams(window.location.search).get('access-token');
   const intraToken = new URLSearchParams(window.location.search).get('ftToken');
   const [error2fa, setError2fa] = React.useState<string>('');
@@ -77,4 +77,4 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
 
   return null;
 };
-export default AuthGuard;
+export default Authguard;
