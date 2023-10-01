@@ -1,23 +1,17 @@
-import { RoundButton } from '../RoundButton/RoundButton';
-import React from 'react';
+import { Flex, RoundButton, SwitchToggle } from '..';
 import { useGameContext } from '../../contexts';
 
 export function PlayButton(){
-  const [gameType, setGameType] = React.useState<'normal' | 'special'>('normal');
-  const { joinQueue } = useGameContext();
+  const { gameType, joinQueue } = useGameContext();
+  let isSpecial = gameType === 'special';
 
   return (
     <>
-      <div style={Btn}>
-        <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
-      </div>
-      <div style={{ height: '60px' }} />
+      <Flex>
+        <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue(isSpecial ? 'special' : 'normal')}></RoundButton>
+        <SwitchToggle onChange={() => {isSpecial = !isSpecial}} checked={isSpecial}></SwitchToggle>
+      </Flex>
+      <div style={{ height: '83px' }} />
     </>
   );
-}
-
-const Btn: React.CSSProperties = {
-  left: '50%',
-  top: '50%',
-  transform: 'translate(0%, -12%)'
 }
