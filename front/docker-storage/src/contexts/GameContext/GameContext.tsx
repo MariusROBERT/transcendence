@@ -72,7 +72,6 @@ export function GameContextProvider({ children }: Props) {
   // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
 
   useEffect(() => {
-    console.log(id, socket);
     if (id !== 0 && socket)
       fetchGameContext();
 
