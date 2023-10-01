@@ -3,6 +3,7 @@ import { Fetch, color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { IChatUser } from '../../utils/interfaces';
+import { ErrorPanel } from '../Error/ErrorPanel';
 
 interface Props {
   data: IChatUser | undefined;
@@ -10,17 +11,23 @@ interface Props {
 
 export default function ChatUser({ data }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
+  const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const [errorMessage, seterrorMessage] = useState<string>('Error');
 
   async function OnProfilClick() {}
 
   async function execCommand(command: string) {
-    Fetch(
+    const rep = await Fetch(
       'channel/' + command + '/' + data?.channel_id,
       'POST',
       JSON.stringify({
         id: data?.sender_id,
       }),
     );
+    if (rep?.json.statusCode === 400) {
+      seterrorMessage(rep?.json.message);
+      setErrorVisible(true);
+    }
   }
 
   async function OnKick() {
@@ -38,8 +45,7 @@ export default function ChatUser({ data }: Props) {
   async function OnMute() {
     if (muteTime === '') return;
     let isnum = /^\d+$/.test(muteTime);
-    if (isnum)
-    {
+    if (isnum) {
       const number = Number(muteTime);
       Fetch(
         'channel/mute/' + data?.channel_id,
@@ -63,11 +69,14 @@ export default function ChatUser({ data }: Props) {
 
   async function OnRemAdmin() {
     execCommand('rem_admin');
-    console.log("salut");
+    console.log('salut');
   }
 
   return (
     <div style={createChatStyle}>
+      <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+        <ErrorPanel text={errorMessage}></ErrorPanel>
+      </div>
       <h2>
         {data?.sender_username}#{data?.sender_id}
       </h2>
@@ -76,15 +85,9 @@ export default function ChatUser({ data }: Props) {
         icon={String(data?.sender_urlImg)}
         onClick={OnProfilClick}
       ></RoundButton>
-      <p>
         <Button onClick={OnKick}> Kick </Button>
-      </p>
-      <p>
-        <Button onClick={OnBan}> Ban </Button>
-      </p>
-      <p>
-        <Button onClick={OnUnBan}> UnBan </Button>
-      </p>
+      <Button onClick={OnBan}> Ban </Button>
+      <Button onClick={OnUnBan}> UnBan </Button>
       <p>
         <input
           placeholder="Time in second"
@@ -96,15 +99,9 @@ export default function ChatUser({ data }: Props) {
         ></input>
         <Button onClick={OnMute}> Mute </Button>
       </p>
-      <p>
-        <Button onClick={OnUnMute}> UnMute </Button>
-      </p>
-      <p>
-        <Button onClick={OnAddAdmin}> Add as Admin </Button>
-      </p>
-      <p>
-        <Button onClick={OnRemAdmin}> Rem as Admin </Button>
-      </p>
+      <Button onClick={OnUnMute}> UnMute </Button>
+      <Button onClick={OnAddAdmin}> Add as Admin </Button>
+      <Button onClick={OnRemAdmin}> Rem as Admin </Button>
     </div>
   );
 }
