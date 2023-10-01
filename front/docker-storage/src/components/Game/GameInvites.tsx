@@ -5,7 +5,7 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { useGameContext } from '../../contexts';
 
 export function GameInvites(){
-  const { inviteFrom, inviteTo, cancelGameInvite, acceptGameInvite, declineGameInvite } = useGameContext();
+  const { isInQueue, inviteFrom, inviteTo, cancelGameInvite, acceptGameInvite, declineGameInvite, leaveQueue } = useGameContext();
   const [ username, setUsername ] = useState<string | undefined>();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function GameInvites(){
 
   const inviteStyle: CSSProperties = {
     top: '0px',
-    right: inviteFrom === inviteTo ? '-600px' : '150px',
+    right: isInQueue || inviteFrom !== inviteTo ? '150px' : '-600px',
     minWidth: (inviteTo ? 400 :  550) + 'px',
     position: 'fixed',
     display: 'flex',
@@ -62,6 +62,10 @@ export function GameInvites(){
           {/*  if (inviteFrom)*/}
           {/*    declineGameInvite(inviteFrom);*/}
           {/*}}>Decline</Button>*/}
+        </>)}
+        {isInQueue && (<>
+          <p style={{marginLeft:10}}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
+          <Button onClick={leaveQueue}>Cancel</Button>
         </>)}
         <p style={{minWidth:'30px'}}></p>
       </Background>

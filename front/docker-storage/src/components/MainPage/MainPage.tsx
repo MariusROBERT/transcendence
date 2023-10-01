@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext, useGameContext } from '../../contexts';
+import { PlayButton } from '../Game/PlayButton';
 
 interface Props {
   panelWidth: number;
@@ -17,18 +18,11 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, socket, id, user } = useUserContext();
-  const { fetchGameContext, joinQueue } = useGameContext();
 
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
   }, []);
-
-  useEffect(() => {
-    if (id !== 0)
-      fetchGameContext();
-    // eslint-disable-next-line
-  }, [socket, id]);
 
   useEffect(() => {
     if (!user)
@@ -47,10 +41,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
-          <div style={Btn}>
-            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
-          </div>
-          <div style={{ height: '60px' }} />
+          <PlayButton />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
           <Background>
@@ -64,12 +55,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
       </div>
     </div>
   );
-}
-
-const Btn: React.CSSProperties = {
-  left: '50%',
-  top: '50%',
-  transform: 'translate(0%, -12%)'
 }
 
 const MainPageStyle: React.CSSProperties = {
