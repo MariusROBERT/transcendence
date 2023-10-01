@@ -1,47 +1,62 @@
-import { useEffect, useState } from 'react';
-import { Fetch, color } from '../../utils';
-import { Btn } from '../Settings/settings';
+import { useState } from 'react';
+import { color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
-import { publish } from '../../utils/event';
 import { Button } from '../Button/Button';
+import { IChatUser } from '../../utils/interfaces';
 
 interface Props {
-  user_icon: string;
-  user_name: string;
+  data: IChatUser | undefined;
 }
 
-export default function ChatUser({ user_icon, user_name }: Props) {
+export default function ChatUser({ data }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
 
-  async function OnButtonClick() {
-  }
+  async function OnButtonClick() {}
+
+  async function OnKick() {}
+
+  async function OnBan() {}
+
+  async function OnUnBan() {}
+
+  async function OnMute() {}
+
+  async function OnAddAdmin() {}
+
+  async function OnRemAdmin() {}
 
   return (
     <div style={createChatStyle}>
-      <h2>{user_name}</h2>
-      <RoundButton icon_size={100} icon={user_icon} onClick={() => console.log("click")}></RoundButton>
+      <h2>
+        {data?.sender_username}#{data?.sender_id}
+      </h2>
+      <RoundButton
+        icon_size={100}
+        icon={String(data?.sender_urlImg)}
+        onClick={() => console.log('click')}
+      ></RoundButton>
       <p>
-      <Button onClick={OnButtonClick}> Kick </Button>
+        <Button onClick={OnButtonClick}> Kick </Button>
       </p>
       <p>
-      <Button onClick={OnButtonClick}> Ban </Button>
+        <Button onClick={OnButtonClick}> Ban </Button>
       </p>
       <p>
-      <input
+        <input
           placeholder="Time in second"
           style={inputStyle}
           value={muteTime}
           onChange={(evt) => {
             setmuteTime(evt.target.value);
           }}
-      ></input>
-      <Button onClick={OnButtonClick}> Mute </Button>
+        ></input>
+        <Button onClick={OnButtonClick}> Mute </Button>
       </p>
       <p>
-      <Button onClick={OnButtonClick}> Add as Admin </Button>
+        <Button onClick={OnButtonClick}> Add as Admin </Button>
       </p>
       <p>
-      <Button onClick={OnButtonClick}> Rem as Admin </Button>
+        <Button onClick={OnButtonClick}> Rem as Admin </Button>
       </p>
     </div>
   );

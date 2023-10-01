@@ -33,6 +33,7 @@ export class MessagesService {
       .leftJoinAndSelect('message.sender', 'sender')
       .where('channel.id = :channelId', { channelId })
       .select([
+        'channel.id',
         'message.content',
         'message.createdAt',
         'sender.username',

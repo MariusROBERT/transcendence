@@ -45,17 +45,12 @@ export function ChatMenu() {
       UpdateChannelUsers(current_id);
     } else {
       setChatVisible(true);
-      //const r = await Fetch(
-      //  'channel',
-      //  'POST',
-      //  JSON.stringify({
-      //    channel_name: inputValue,
-      //    priv_msg: false,
-      //  }),
-      //);
-      //current_id = r?.json.id;
     }
     setInputValue('');
+  }
+
+  const OnEnterUser = () => {
+    //console.log(event.detail.value.uid);
   }
 
   useEffect(() => {
@@ -63,6 +58,10 @@ export function ChatMenu() {
       console.log("here");
       setChatVisible(false);
     });
+  });
+
+  useEffect(() => {
+    subscribe('enter_users', OnEnterUser);
   });
 
   return (

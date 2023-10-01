@@ -10,8 +10,14 @@ import {
   GetCurrChan,
   UpdateChannelMessage,
 } from '../../utils/channel_functions';
-import { ChannelMessage, SocketMessage } from '../../utils/interfaces';
+import {
+  ChannelMessage,
+  IChatUser,
+  SocketMessage,
+} from '../../utils/interfaces';
 import { Fetch } from '../../utils';
+import Popup from '../ComponentBase/Popup';
+import ChatUser from '../ChanMenu/ChatUser';
 
 interface Props {
   viewport: Viewport;
@@ -20,6 +26,8 @@ interface Props {
 
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
+  const [userVisible, setUserVisible] = useState<boolean>(false);
+  const [currUser, setCurrUser] = useState<IChatUser>();
   const { socket } = useUserContext();
   let [msg, setMessage] = useState<ChannelMessage[]>([]);
 
@@ -44,55 +52,63 @@ export function ChatPanel({ viewport, width }: Props) {
     });
   });
 
-  async function execCommand(command: string, cmd: string) : Promise<boolean> {
+  async function execCommand(command: string, cmd: string): Promise<boolean> {
     const split = cmd.split(' ');
-  
+
     if (split.length === 3 && split[0] === command) {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
-      setInputValue("");
-      Fetch("channel/" + command + "/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-      }),);
+      setInputValue('');
+      Fetch(
+        'channel/' + command + '/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+        }),
+      );
       return true;
     }
     return false;
   }
 
-  async function CommandParsing() : Promise<boolean> {
+  async function CommandParsing(): Promise<boolean> {
     const command = inputValue;
     const split = command.split(' ');
 
-    if (await execCommand("add_admin", command) === true)
-      return true;
-    if (await execCommand("kick", command) === true)
-      return true;
-    if (await execCommand("ban", command) === true)
-      return true;
-    if (await execCommand("unban", command) === true)
-      return true;
+    if ((await execCommand('add_admin', command)) === true) return true;
+    if ((await execCommand('kick', command)) === true) return true;
+    if ((await execCommand('ban', command)) === true) return true;
+    if ((await execCommand('unban', command)) === true) return true;
 
     //  Mute
-    if (split.length === 4 && split[0] === "mute") {
+    if (split.length === 4 && split[0] === 'mute') {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
       const time = parseInt(split[3], 10);
-      setInputValue("");
-      Fetch("channel/mute/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-        time: time,
-      }),);
+      setInputValue('');
+      Fetch(
+        'channel/mute/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+          time: time,
+        }),
+      );
       return true;
     }
 
     //  Unmute
-    if (split.length === 3 && split[0] === "unmute") {
+    if (split.length === 3 && split[0] === 'unmute') {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
-      setInputValue("");
-      Fetch("channel/unmute/" + id_channel, "POST", JSON.stringify({
-        id: id_user,
-      }),);
+      setInputValue('');
+      Fetch(
+        'channel/unmute/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+        }),
+      );
       return true;
     }
     return false;
@@ -100,22 +116,22 @@ export function ChatPanel({ viewport, width }: Props) {
 
   async function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    if (await CommandParsing() === true) return; // If its a command do not continue
+    if ((await CommandParsing()) === true) return; // If its a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
+  }
+
+  async function OnUserClick(msgs: ChannelMessage) {
+    console.log(msgs);
+    setCurrUser(msgs);
+    setUserVisible(true);
   }
 
   function chat() {
     return (
       <>
         {msg.map((data, idx) => (
-          <ChatMessage
-            key={idx}
-            user_icon={data.sender_urlImg}
-            user_name={data.sender_username}
-            date={new Date()} //  TODO Change by real dates
-            uid={data.sender_id}
-          >
+          <ChatMessage key={idx} data={data} onClick={OnUserClick}>
             {data.message_content}
           </ChatMessage>
         ))}
@@ -125,19 +141,21 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <div style={{minHeight:'70px'}} />
-      <ChanUserList/>
-      <div style={{
-        height: viewport.height - 125 + 'px',
-        width: width - 50 + 'px',
-        backgroundColor: color.grey,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '5px 5px',
-        padding: '10px',
-        borderRadius: '15px',
-        overflow: 'scroll',
-      }}>
+      <div style={{ minHeight: '70px' }} />
+      <ChanUserList />
+      <div
+        style={{
+          height: viewport.height - 125 + 'px',
+          width: width - 50 + 'px',
+          backgroundColor: color.grey,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px 5px',
+          padding: '10px',
+          borderRadius: '15px',
+          overflow: 'scroll',
+        }}
+      >
         {chat()}
       </div>
       <div
@@ -171,6 +189,9 @@ export function ChatPanel({ viewport, width }: Props) {
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={onEnterPressed}
         ></RoundButton>
+        <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
+          <ChatUser data={currUser}></ChatUser>
+        </Popup>
       </div>
     </Background>
   );

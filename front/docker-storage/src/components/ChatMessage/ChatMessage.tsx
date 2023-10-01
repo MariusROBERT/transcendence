@@ -1,40 +1,29 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
 import { useUserContext } from '../../contexts';
-import { useState } from 'react';
-import ChatUser from '../ChanMenu/ChatUser';
-import Popup from '../ComponentBase/Popup';
+import { ChannelMessage } from '../../utils/interfaces';
 
 interface Props {
   children: string;
-  user_icon: string;
-  user_name: string;
-  date: Date;
-  uid: number;
+  data: ChannelMessage;
+  onClick: (name: ChannelMessage) => void;
 }
 
 export function ChatMessage({
   children,
-  user_icon,
-  user_name,
-  date,
-  uid,
+  data,
+  onClick,
 }: Props) {
-  const [visible, setVisible] = useState<boolean>(false);
   const { id } = useUserContext();
-
-  function viewProfile() {
-    setVisible(true);
-  }
 
   return (
     <div
       style={{
         display: 'flex',
-        flexDirection: uid === id ? 'row' : 'row-reverse',
+        flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
       }}
     >
-      <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
+      <RoundButton icon={data.sender_urlImg} onClick={() => onClick(data)}></RoundButton>
       <div
         style={{
           flex: 'auto',
@@ -64,12 +53,9 @@ export function ChatMessage({
             fontSize: '12px',
           }}
         >
-          {date.toUTCString()}
+          {new Date().toUTCString()}
         </p>
       </div>
-      <Popup isVisible={visible} setIsVisible={setVisible}>
-        <ChatUser user_icon={user_icon} user_name={user_name}></ChatUser>
-      </Popup>
     </div>
   );
 }
