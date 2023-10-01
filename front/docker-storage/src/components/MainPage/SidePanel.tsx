@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from 'react';
 import { delay, Viewport } from '../../utils';
-import { RoundButton } from '..';
+import { RoundButton } from '../index';
 
 interface Props {
   children: ReactNode;

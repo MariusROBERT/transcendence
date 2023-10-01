@@ -1,4 +1,4 @@
-import { RoundButton } from '../RoundButton/RoundButton';
+import { RoundButton } from '../ComponentBase/RoundButton';
 import { useNavigate } from 'react-router-dom';
 import { Viewport } from '../../utils';
 import { Background } from '..';

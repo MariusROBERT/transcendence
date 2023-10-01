@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Viewport } from '../../utils/Viewport';
 import { color } from '../../utils/Global';
-import { Background, RoundButton } from '..';
-import { ChatMessage } from '../ChatMessage/ChatMessage';
-import { ChatMenu } from '../ChanMenu/ChatMenu';
+import { Background, RoundButton } from '../index';
+import { ChatMessage } from './ChatMessage';
+import { ChatMenu } from './ChatMenu';
 import { useUserContext } from '../../contexts';
-import { ChanUserList } from '../ChanUserList/ChanUserList';
+import { ChanUserList } from '../Channel/ChanUserList';
 import { subscribe } from '../../utils/event';
 import {
   GetCurrChan,

@@ -4,7 +4,7 @@ import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from "react-p5";
 import p5Types from "p5";
-import { RoundButton } from '../RoundButton/RoundButton';
+import { RoundButton } from '../ComponentBase/RoundButton';
 import { useNavigate } from 'react-router-dom';
 
 export function Game({ viewport }:{ viewport: Viewport }) {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex } from '..';
 import TwoFA from './TwoFA';
-import { PasswordInput } from '../Input/PasswordInput';
+import { PasswordInput } from '../ComponentBase/PasswordInput';
 
 const SIZE: number = 350;
 

@@ -1,8 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Background, Border, RoundButton, UserBanner } from '..';
+import { Background, Border, RoundButton, UserBanner } from '../index';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser, IUserComplete } from '../../utils/interfaces';
-import { ChannelPannel } from '../ChannelBanner/ChannelBanner';
+import { ChannelPannel } from '../Channel/ChannelBanner';
 
 interface Props {
   children?: ReactNode;

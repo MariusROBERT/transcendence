@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Background from './components/Background/Background';
+import Background from './components/ComponentBase/Background';
 import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
 import { AuthGuard, Game, Login, MainPage } from './components';
 import { Route, Routes } from 'react-router-dom';
