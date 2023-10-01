@@ -176,6 +176,23 @@ export class ChannelService {
   }
 
   //  Tested
+  async remAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(userid);
+    try {
+      var currentAdmins = await this.userService.getFullAdminInChannels(id);
+      channel.admins = this.removeFrom(currentAdmins, userid);
+      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      currentUsers.push(user);
+      channel.users = currentUsers;
+      await this.ChannelRepository.save(channel);
+    } catch (e) {
+      console.log(e);
+    }
+    return channel;
+  }
+
+  //  Tested
   async KickUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);

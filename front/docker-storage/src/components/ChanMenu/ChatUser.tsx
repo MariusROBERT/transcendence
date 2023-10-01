@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { color } from '../../utils';
+import { Fetch, color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { IChatUser } from '../../utils/interfaces';
@@ -11,19 +11,60 @@ interface Props {
 export default function ChatUser({ data }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
 
-  async function OnButtonClick() {}
+  async function OnProfilClick() {}
 
-  async function OnKick() {}
+  async function execCommand(command: string) {
+    Fetch(
+      'channel/' + command + '/' + data?.channel_id,
+      'POST',
+      JSON.stringify({
+        id: data?.sender_id,
+      }),
+    );
+  }
 
-  async function OnBan() {}
+  async function OnKick() {
+    execCommand('kick');
+  }
 
-  async function OnUnBan() {}
+  async function OnBan() {
+    execCommand('ban');
+  }
 
-  async function OnMute() {}
+  async function OnUnBan() {
+    execCommand('unban');
+  }
 
-  async function OnAddAdmin() {}
+  async function OnMute() {
+    if (muteTime === '') return;
+    let isnum = /^\d+$/.test(muteTime);
+    if (isnum)
+    {
+      const number = Number(muteTime);
+      Fetch(
+        'channel/mute/' + data?.channel_id,
+        'POST',
+        JSON.stringify({
+          id: data?.sender_id,
+          time: number,
+        }),
+      );
+      setmuteTime('');
+    }
+  }
 
-  async function OnRemAdmin() {}
+  async function OnUnMute() {
+    execCommand('unmute');
+  }
+
+  async function OnAddAdmin() {
+    execCommand('add_admin');
+  }
+
+  async function OnRemAdmin() {
+    execCommand('rem_admin');
+    console.log("salut");
+  }
 
   return (
     <div style={createChatStyle}>
@@ -33,13 +74,16 @@ export default function ChatUser({ data }: Props) {
       <RoundButton
         icon_size={100}
         icon={String(data?.sender_urlImg)}
-        onClick={() => console.log('click')}
+        onClick={OnProfilClick}
       ></RoundButton>
       <p>
-        <Button onClick={OnButtonClick}> Kick </Button>
+        <Button onClick={OnKick}> Kick </Button>
       </p>
       <p>
-        <Button onClick={OnButtonClick}> Ban </Button>
+        <Button onClick={OnBan}> Ban </Button>
+      </p>
+      <p>
+        <Button onClick={OnUnBan}> UnBan </Button>
       </p>
       <p>
         <input
@@ -50,13 +94,16 @@ export default function ChatUser({ data }: Props) {
             setmuteTime(evt.target.value);
           }}
         ></input>
-        <Button onClick={OnButtonClick}> Mute </Button>
+        <Button onClick={OnMute}> Mute </Button>
       </p>
       <p>
-        <Button onClick={OnButtonClick}> Add as Admin </Button>
+        <Button onClick={OnUnMute}> UnMute </Button>
       </p>
       <p>
-        <Button onClick={OnButtonClick}> Rem as Admin </Button>
+        <Button onClick={OnAddAdmin}> Add as Admin </Button>
+      </p>
+      <p>
+        <Button onClick={OnRemAdmin}> Rem as Admin </Button>
       </p>
     </div>
   );

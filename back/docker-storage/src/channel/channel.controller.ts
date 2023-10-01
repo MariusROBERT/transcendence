@@ -18,7 +18,7 @@ import {
 } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
-import { AdminGuard, TargetIsAdminGuard } from './guards/chan-admin.guards';
+import { AdminGuard, OwnerGuard, TargetIsAdminGuard } from './guards/chan-admin.guards';
 import { InChannelGuard, IsBannedGuard, IsNotBannedGuard, PrivateGuard, SelfBannedGuard, SelfCommand } from './guards/chan-basic.guards';
 
 @Controller('channel')
@@ -110,6 +110,17 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     const chan = await this.channelService.addAdminInChannel(uDto.id, id);
+    return chan;
+  }
+
+  @Post('/rem_admin/:id')
+  @UseGuards(OwnerGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand)
+  @UseGuards(JwtAuthGuard)
+  async RemAdminInChannel(
+    @Body() uDto: UserChanDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const chan = await this.channelService.remAdminInChannel(uDto.id, id);
     return chan;
   }
 
