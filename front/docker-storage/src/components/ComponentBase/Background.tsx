@@ -29,6 +29,8 @@ interface Props {
   margin?: string;
 
   fixed?: boolean;
+
+  forceStyle?: React.CSSProperties;
 }
 
 function Background({
@@ -43,8 +45,10 @@ function Background({
                       padding = '0',
                       margin = '0',
                       fixed = false,
+                      forceStyle = {},
                     }: Props) {
   const style = {
+    overflow: 'hidden',
     backgroundImage: 'url(' + image + ')',
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
@@ -59,8 +63,8 @@ function Background({
     justifyContent: flex_justifyContent,
     alignItems: flex_alignItems,
     gap: flex_gap,
-    overflow: 'hidden',
     backgroundAttachment: fixed ? 'fixed' : 'scroll',
+    ...forceStyle,
   };
 
   return <div style={style}>{children}</div>;

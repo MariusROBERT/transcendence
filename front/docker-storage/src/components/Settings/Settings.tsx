@@ -82,8 +82,8 @@ export default function Settings(props: Props) {
 
         if (user.message === 'Wrong password')
           return setErrorMessage(user.message);
-        if (user.error)
-          return setErrorMessage('Error while updating password');
+        if (user.message)
+          return setErrorMessage(user.message);
         setUserInfosSettings(user);
         setOldPassword('');
         setPassword('');
@@ -181,18 +181,22 @@ export default function Settings(props: Props) {
                            password={oldPassword}
                            setPassword={setOldPassword}
                            placeholder={'Current password'}
+                           noVerify
             />
             <br />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
+              noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={confirmPassword}
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
+                           confirmPassword={password}
+              noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>
