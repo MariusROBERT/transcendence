@@ -145,7 +145,7 @@ export class ChannelService {
       channel.users = currentUsers;
       await this.ChannelRepository.save(channel);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
     return channel;
   }

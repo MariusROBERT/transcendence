@@ -7,9 +7,9 @@ import {
 } from '../../utils/channel_functions';
 import { color } from '../../utils';
 import Popup from '../ComponentBase/Popup';
-import Settings from '../Settings/settings';
 import CreateChat from './CreateChat';
 import { subscribe } from '../../utils/event';
+import { useUserContext } from '../../contexts';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -22,6 +22,7 @@ import { subscribe } from '../../utils/event';
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
   const [chatVisible, setChatVisible] = useState<boolean>(false);
+  const { socket } = useUserContext();
   var current_id = -1;
 
   //  TODO: clean here
@@ -30,7 +31,7 @@ export function ChatMenu() {
     const path = 'channel/name/' + inputValue;
     const res = await unsecureFetch(path, 'GET');
     if (res?.ok) {
-      var data = await res.json();
+      var data = await res?.json();
       current_id = data.id;
       //  Adding user to channel if not in it
       await Fetch(
@@ -43,6 +44,7 @@ export function ChatMenu() {
       SetCurrChan(inputValue);
       UpdateChannelMessage(current_id);
       UpdateChannelUsers(current_id);
+      socket?.emit('join', { channel: inputValue });
     } else {
       setChatVisible(true);
     }
@@ -51,11 +53,11 @@ export function ChatMenu() {
 
   const OnEnterUser = () => {
     //console.log(event.detail.value.uid);
-  }
+  };
 
   useEffect(() => {
     subscribe('chat_created', async () => {
-      console.log("here");
+      console.log('here');
       setChatVisible(false);
     });
   });
@@ -65,15 +67,27 @@ export function ChatMenu() {
   });
 
   return (
-    <div style={{
-      margin: '30px',
-      borderRadius: '10px',
-      backgroundColor: color.white,
-      height: '60px',
-      width: '400px',
-    }} className={'text cursor_pointer'}>
-      <img style={{ height: '80px', width: '80px', position: 'relative', top: '-10px', left: '-15px' }}
-            src={require('../../assets/imgs/icon_search.png')} alt={'search'}/>
+    <div
+      style={{
+        margin: '30px',
+        borderRadius: '10px',
+        backgroundColor: color.white,
+        height: '60px',
+        width: '400px',
+      }}
+      className={'text cursor_pointer'}
+    >
+      <img
+        style={{
+          height: '80px',
+          width: '80px',
+          position: 'relative',
+          top: '-10px',
+          left: '-15px',
+        }}
+        src={require('../../assets/imgs/icon_search.png')}
+        alt={'search'}
+      />
       <label>
         <input
           style={{
@@ -87,7 +101,7 @@ export function ChatMenu() {
             width: '315px',
             backgroundColor: color.white,
           }}
-          placeholder='Search Channel'
+          placeholder="Search Channel"
           value={inputValue}
           onChange={(evt) => {
             setInputValue(evt.target.value);
