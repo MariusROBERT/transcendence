@@ -80,6 +80,15 @@ export class UserService {
       .getOne();
     if (currentUser.id42 > 0)
       throw new UnauthorizedException('Oauth42 user can\'t change password')
+    const oldHash = await bcrypt.hash(updatePwdDto.oldPassword, currentUser.salt);
+    if (oldHash !== currentUser.password) {
+      throw new UnauthorizedException(`Wrong password`);
+    }
+
+    //DEV: comment these 2 lines for dev
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\-+=[\]\\\/`'";:?.,<>~]).{8,})$/.test(updatePwdDto.newPassword))
+      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+
     const newPassword = await bcrypt.hash(
       updatePwdDto.newPassword,
       currentUser.salt,
@@ -88,11 +97,6 @@ export class UserService {
       id, // search user == id
       password: newPassword, // modif seulement password
     });
-    const oldHash = await bcrypt.hash(updatePwdDto.oldPassword, currentUser.salt);
-    if (oldHash !== currentUser.password) {
-      throw new UnauthorizedException(`Wrong password`);
-    }
-
     return await this.UserRepository.save(newProfil);
   }
 

@@ -11,13 +11,14 @@ interface Props {
 }
 
 export function ChatMessage({
-  children,
-  user_icon,
-  user_name,
-  date,
-  uid,
-}: Props) {
+                              children,
+                              user_icon,
+                              user_name,
+                              date,
+                              uid,
+                            }: Props) {
   const { id } = useUserContext();
+
   function viewProfile() {
     // TODO: link the profile to the icon btn
     // to do so in the Props, get the User ID

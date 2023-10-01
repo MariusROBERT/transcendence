@@ -22,7 +22,8 @@ const UserContext = createContext<UserContextType>({
   id: 0,
   isOnline: false,
   socket: undefined,
-  fetchContext: async () => {},
+  fetchContext: async () => {
+  },
   user: undefined,
 });
 

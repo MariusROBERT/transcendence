@@ -1,10 +1,9 @@
 import { color, Viewport, useIsWindowFocused } from '../../utils';
-import { Background, ChatPanel, ContactPanel, Navbar, SidePanel } from '..';
+import { Background, ChatPanel, ContactPanel, Navbar, RoundButton, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext } from '../../contexts';
-import { PlayButton } from '../Game/PlayButton';
 
 interface Props {
   panelWidth: number;
@@ -36,7 +35,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   return (
     <div style={MainPageStyle}>
-      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
+      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
+                  flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel meUser={user} viewport={viewport} />
@@ -64,8 +64,7 @@ const MainPageStyle: React.CSSProperties = {
   //border: '4px solid red',
   position: 'relative',
   width: '100%',
-  height: '100%'
-
+  height: '100%',
 };
 
 const notificationBadgeStyle: React.CSSProperties = {

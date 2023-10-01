@@ -1,6 +1,4 @@
-import { SearchBar } from './SearchBar';
-import { Leaderboard } from '../Leaderboard/leaderboard';
-import Popup from '../ComponentBase/Popup';
+import { SearchBar, Leaderboard, Popup } from '..';
 import React, { useEffect, useState } from 'react';
 import { IUserComplete } from '../../utils/interfaces';
 

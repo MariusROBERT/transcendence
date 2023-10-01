@@ -1,11 +1,9 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background, GameInvites } from '..';
-import Settings from '../Settings/settings';
+import { RoundButton, Border, Background, Settings, Profil, Popup } from '..';
 import { IUserComplete } from '../../utils/interfaces';
-import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
-import Popup from '../ComponentBase/Popup';
 import { color } from '../../utils';
+
 interface Props {
   meUser: IUserComplete | undefined;
 }
@@ -51,29 +49,30 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
   return (
     <>
       <div style={navbarStyle}>
-      <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
-        <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'} bg_color={color.black}>
-          <RoundButton
-            icon={meUser?.urlImg ? meUser.urlImg : require('../../assets/imgs/icon_user.png')}
-            icon_size={50}
-            onClick={() => setProfilVisible(!profilVisible)}
-          />
-          <RoundButton
-            icon={require('../../assets/imgs/icon_setting.png')}
-            icon_size={50}
-            onClick={() => setSettingsVisible(!settingsVisible)}
-          />
-          <RoundButton
-            icon={require('../../assets/imgs/icon_logout.png')}
-            icon_size={50}
-            onClick={() => logout()}
-          />
-        </Background>
-      </Border>
+        <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
+          <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'}
+                      bg_color={color.black}>
+            <RoundButton
+              icon={meUser?.urlImg ? meUser.urlImg : require('../../assets/imgs/icon_user.png')}
+              icon_size={50}
+              onClick={() => setProfilVisible(!profilVisible)}
+            />
+            <RoundButton
+              icon={require('../../assets/imgs/icon_setting.png')}
+              icon_size={50}
+              onClick={() => setSettingsVisible(!settingsVisible)}
+            />
+            <RoundButton
+              icon={require('../../assets/imgs/icon_logout.png')}
+              icon_size={50}
+              onClick={() => logout()}
+            />
+          </Background>
+        </Border>
       </div>
       <GameInvites></GameInvites>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-        <Settings isVisible={settingsVisible}/>
+        <Settings isVisible={settingsVisible} />
       </Popup>
       <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
         <Profil otherUser={meUser} meUser={meUser} />

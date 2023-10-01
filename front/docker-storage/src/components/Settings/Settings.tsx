@@ -1,10 +1,9 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SwitchToggle from './switchToggle';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput } from '../Input/PasswordInput';
+import { PasswordInput, SwitchToggle } from '..';
 
 interface Props {
   isVisible: boolean;
@@ -83,8 +82,8 @@ export default function Settings(props: Props) {
 
         if (user.message === 'Wrong password')
           return setErrorMessage(user.message);
-        if (user.error)
-          return setErrorMessage('Error while updating password');
+        if (user.message)
+          return setErrorMessage(user.message);
         setUserInfosSettings(user);
         setOldPassword('');
         setPassword('');
@@ -152,7 +151,7 @@ export default function Settings(props: Props) {
             />
             <input
               id={'image'}
-              type="file"
+              type='file'
               accept={'image/png, image/jpeg, image/jpg'}
               onChange={(event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;
@@ -182,18 +181,22 @@ export default function Settings(props: Props) {
                            password={oldPassword}
                            setPassword={setOldPassword}
                            placeholder={'Current password'}
+                           noVerify
             />
             <br />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
+              noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
                            password={confirmPassword}
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
+                           confirmPassword={password}
+              noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>

@@ -29,22 +29,26 @@ interface Props {
   margin?: string;
 
   fixed?: boolean;
+
+  forceStyle?: React.CSSProperties;
 }
 
 function Background({
-  children,
-  image,
-  bg_color = color.black,
-  flex_direction = 'column',
-  flex_wrap = 'nowrap',
-  flex_justifyContent = 'center',
-  flex_alignItems = 'center',
-  flex_gap = '5px 5px',
-  padding = '0',
-  margin = '0',
-  fixed = false,
-}: Props) {
+                      children,
+                      image,
+                      bg_color = color.black,
+                      flex_direction = 'column',
+                      flex_wrap = 'nowrap',
+                      flex_justifyContent = 'center',
+                      flex_alignItems = 'center',
+                      flex_gap = '5px 5px',
+                      padding = '0',
+                      margin = '0',
+                      fixed = false,
+                      forceStyle = {},
+                    }: Props) {
   const style = {
+    overflow: 'hidden',
     backgroundImage: 'url(' + image + ')',
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
@@ -59,8 +63,8 @@ function Background({
     justifyContent: flex_justifyContent,
     alignItems: flex_alignItems,
     gap: flex_gap,
-    overflow: 'hidden',
     backgroundAttachment: fixed ? 'fixed' : 'scroll',
+    ...forceStyle,
   };
 
   return <div style={style}>{children}</div>;

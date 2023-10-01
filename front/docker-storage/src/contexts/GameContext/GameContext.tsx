@@ -12,7 +12,7 @@ type GameContextType = {
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => void,
   acceptGameInvite: (from: number) => void,
-  declineGameInvite: (from:number) => void,
+  declineGameInvite: (from: number) => void,
   cancelGameInvite: () => void,
 
   joinQueue: (gameType: 'normal' | 'special') => void,
@@ -31,18 +31,27 @@ const GameContext = createContext<GameContextType>({
   isInQueue: undefined,
   gameType: undefined,
 
-  sendGameInvite: (to: number, gameType: 'normal' | 'special') => {},
-  acceptGameInvite: (from: number) => {},
-  declineGameInvite: (from:number) => {},
-  cancelGameInvite: () => {},
+  sendGameInvite: (to: number, gameType: 'normal' | 'special') => {
+  },
+  acceptGameInvite: (from: number) => {
+  },
+  declineGameInvite: (from: number) => {
+  },
+  cancelGameInvite: () => {
+  },
 
-  joinQueue: (gameType: 'normal' | 'special') => {},
-  leaveQueue: () => {},
+  joinQueue: (gameType: 'normal' | 'special') => {
+  },
+  leaveQueue: () => {
+  },
 
-  startGame: () => {},
-  leaveGame: () => {},
+  startGame: () => {
+  },
+  leaveGame: () => {
+  },
 
-  fetchGameContext: () => {}
+  fetchGameContext: () => {
+  },
 });
 
 export function useGameContext() {
@@ -63,6 +72,11 @@ export function GameContextProvider({ children }: Props) {
   const [inviteTo, setInviteTo] = useState<number | undefined>();
   const [gameType, setGameType] = useState<'normal' | 'special' | undefined>();
 
+  useEffect(() => {
+    if (id !== 0 && socket)
+      fetchGameContext();
+    // eslint-disable-next-line
+  }, [id, socket]);
 
   // useEffect(() => {
   // function printState(){
@@ -71,17 +85,14 @@ export function GameContextProvider({ children }: Props) {
   //   printState();
   // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
 
-  useEffect(() => {
-    if (id !== 0 && socket)
-      fetchGameContext();
-
-    // eslint-disable-next-line
-  }, [id, socket]);
-
   async function fetchGameContext(): Promise<void> {
-
     // fetch invite status
-    const inviteStatus: {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number, gameInviteType:'none' | 'normal' | 'special'} | undefined
+    const inviteStatus: {
+      gameInvitationFrom: number,
+      gameInvitationTo: number,
+      isInGameWith: number,
+      gameInviteType: 'none' | 'normal' | 'special'
+    } | undefined
       = await (await Fetch('user/game_status/' + id, 'GET'))?.json;
     if (!inviteStatus) return;
     setInviteFrom((inviteStatus.gameInvitationFrom < 0 ? undefined : inviteStatus.gameInvitationFrom));
@@ -109,7 +120,7 @@ export function GameContextProvider({ children }: Props) {
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   // Invites -- Event emission -------------------------------------------------------------------------------------- //
-  function sendGameInvite(to: number, inviteGameType:'normal' | 'special'){
+  function sendGameInvite(to: number, inviteGameType: 'normal' | 'special') {
     if (isInGameWith) return;
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
@@ -130,7 +141,7 @@ export function GameContextProvider({ children }: Props) {
     socket?.emit('send_invite', { sender: id, receiver: to, gameType:gameType });
   }
 
-  function acceptGameInvite(from: number){
+  function acceptGameInvite(from: number) {
     // Auto cancel and decline send invites
     if (inviteTo && inviteTo !== from)
       cancelGameInvite();
@@ -184,20 +195,16 @@ export function GameContextProvider({ children }: Props) {
 
     setInviteFrom(undefined);
     setInviteTo(undefined);
-
   }
 
-  function onGameInviteDeclined(body: { sender: number, receiver: number }){
-    // console.log('[', id, '] received \'decline_invite\'', body);
+  function onGameInviteDeclined(body: { sender: number, receiver: number }) {
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'decline_invite\'');
-    // console.log(inviteTo?.valueOf(), body.sender, inviteTo, body.sender === inviteTo);
 
     if (body.sender !== inviteTo)
       return console.warn('user [' + id + '] RECEIVED: \'decline_invite\' form a player not invited');
 
     setInviteTo(undefined);
-
   }
 
   function onGameInviteCanceled(body: { sender: number, receiver: number }){
@@ -208,7 +215,6 @@ export function GameContextProvider({ children }: Props) {
       return console.warn('user [' + id + '] RECEIVED: \'cancel_invite\' form a player who didn\'t invited him');
 
     setInviteFrom(undefined);
-
   }
 
   useEffect(() => {
@@ -247,7 +253,7 @@ export function GameContextProvider({ children }: Props) {
 
   }
 
-  function leaveQueue(){
+  function leaveQueue() {
     if (!isInQueue) return;
     socket?.emit('leave_queue', { sender: id, gameType: isInQueue });
     setIsInQueue(undefined);
@@ -255,11 +261,11 @@ export function GameContextProvider({ children }: Props) {
 
   // Game Start / End Management ------------------------------------------------------------------------------------ //
   // Game Start / End -- Event emission ----------------------------------------------------------------------------- //
-  function startGame(){
+  function startGame() {
     socket?.emit('start_game', { sender: id });
   }
 
-  function leaveGame(){
+  function leaveGame() {
     if (!isInGameWith) return;
     socket?.emit('leave_game', { sender: id });
     setInviteFrom(undefined);
@@ -318,7 +324,7 @@ export function GameContextProvider({ children }: Props) {
         startGame,
         leaveGame,
 
-        fetchGameContext
+        fetchGameContext,
       }}>
         {children}
       </GameContext.Provider>
