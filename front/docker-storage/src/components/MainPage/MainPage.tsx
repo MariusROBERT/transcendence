@@ -39,7 +39,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   return (
     <div style={MainPageStyle}>
-      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
+      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
+                  flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel meUser={user} viewport={viewport} />
@@ -48,7 +49,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <div style={Btn}>
-            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
+            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')}
+                         onClick={() => joinQueue('normal')}></RoundButton>
           </div>
           <div style={{ height: '60px' }} />
         </Background>
@@ -71,14 +73,14 @@ export function MainPage({ panelWidth, viewport }: Props) {
 const Btn: React.CSSProperties = {
   left: '50%',
   top: '50%',
-  transform: 'translate(0%, -12%)'
-}
+  transform: 'translate(0%, -12%)',
+};
 
 const MainPageStyle: React.CSSProperties = {
   //border: '4px solid red',
   position: 'relative',
   width: '100%',
-  height: '100%'
+  height: '100%',
 
 };
 
@@ -106,5 +108,5 @@ const NavPosition: React.CSSProperties = {
   position: 'absolute',
   top: '0px',
   right: '200px',
-  zIndex: '10000'
-}
+  zIndex: '10000',
+};

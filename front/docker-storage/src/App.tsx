@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import Background from './components/Background/Background';
 import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
-import { AuthGuard, Game, Login, MainPage } from './components';
+import { AuthGuard, Game, Login, MainPage, GameScore, Background, NotFoundPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
-import NotFoundPage from './components/404Page/404Page';
-import { GameScore } from './components/Game/GameScore';
 
 const SIZE: number = 500;
 
@@ -53,7 +50,7 @@ function App() {
                 <GameScore viewport={viewport}></GameScore>
               </AuthGuard>}>
             </Route>
-            <Route path='*' element={<NotFoundPage />}/>
+            <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </Background>
       </div>

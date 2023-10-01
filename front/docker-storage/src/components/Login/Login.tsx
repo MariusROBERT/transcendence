@@ -1,9 +1,7 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Background, Border, Button, Flex } from '..';
-import TwoFA from './TwoFA';
-import { PasswordInput } from '../Input/PasswordInput';
+import { Background, Border, Button, Flex, TwoFA, PasswordInput } from '..';
 
 const SIZE: number = 350;
 

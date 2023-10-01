@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { basesize, Size, start, State } from './game.utils';
 import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
-import Sketch from "react-p5";
-import p5Types from "p5";
-import { RoundButton } from '../RoundButton/RoundButton';
+import Sketch from 'react-p5';
+import p5Types from 'p5';
+import { RoundButton } from '..';
 import { useNavigate } from 'react-router-dom';
 
-export function Game({ viewport }:{ viewport: Viewport }) {
+export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
@@ -29,18 +29,26 @@ export function Game({ viewport }:{ viewport: Viewport }) {
 
   // In Game Management --------------------------------------------------------------------------------------------- //
   // In Game -- Key Hook -------------------------------------------------------------------------------------------- //
-  function keyPressed(p5: p5Types){
+  function keyPressed(p5: p5Types) {
     switch (p5.keyCode) {
-      case 38: upPressed = true; break;
-      case 40: downPressed = true; break;
+      case 38:
+        upPressed = true;
+        break;
+      case 40:
+        downPressed = true;
+        break;
     }
     move();
   }
 
-  function keyReleased(p5: p5Types){
+  function keyReleased(p5: p5Types) {
     switch (p5.keyCode) {
-      case 38: upPressed = false; break;
-      case 40: downPressed = false; break;
+      case 38:
+        upPressed = false;
+        break;
+      case 40:
+        downPressed = false;
+        break;
     }
     move();
   }
@@ -48,7 +56,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
   // In Game -- Event emission -------------------------------------------------------------------------------------- //
   function move() {
     const isMoving = (upPressed && !downPressed) || (!upPressed && downPressed);
-    const moveUp = upPressed
+    const moveUp = upPressed;
 
     socket?.emit('move_player', { id: id, isMoving: isMoving, moveUp: moveUp });
   }
@@ -57,16 +65,16 @@ export function Game({ viewport }:{ viewport: Viewport }) {
   // In Game -- Connection Socket ----------------------------------------------------------------------------------- //
   useEffect(() => {
     function onGameStateUpdate(updatedState: {
-      ball: { x:number, y:number },
+      ball: { x: number, y: number },
       p1: number,
       p2: number,
-      score: { p1:number, p2:number }
-    }){
+      score: { p1: number, p2: number }
+    }) {
       setState({
         ball: { x: updatedState.ball.x * factor, y: updatedState.ball.y * factor },
         p1: updatedState.p1 * factor,
         p2: updatedState.p2 * factor,
-        score: { p1:updatedState.score.p1, p2:updatedState.score.p2 }
+        score: { p1: updatedState.score.p1, p2: updatedState.score.p2 },
       });
     }
 
@@ -85,13 +93,13 @@ export function Game({ viewport }:{ viewport: Viewport }) {
       height: basesize.height * factor,
       width: basesize.width * factor,
       ball: basesize.ball * factor,
-      bar: {x:basesize.bar.x * factor, y:basesize.bar.y * factor},
+      bar: { x: basesize.bar.x * factor, y: basesize.bar.y * factor },
       halfBar: basesize.halfBar * factor,
       halfBall: basesize.halfBall * factor,
       p1X: basesize.p1X * factor,
       p2X: basesize.p2X * factor,
     });
-  }
+  };
 
   useEffect(() => {
     updateDimension();
@@ -101,7 +109,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
   // Display Game Management ---------------------------------------------------------------------------------------- //
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     const game = p5.createCanvas(size.width, size.height);
-    game.parent('container')
+    game.parent('container');
     p5.background(0);
   };
 
@@ -110,7 +118,7 @@ export function Game({ viewport }:{ viewport: Viewport }) {
     p5.resizeCanvas(size.width, size.height);
     p5.background(0);
     p5.textSize(32);
-    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
+    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.fill(255);
     p5.ellipse(state.ball.x, state.ball.y, size.ball);
@@ -123,11 +131,14 @@ export function Game({ viewport }:{ viewport: Viewport }) {
     p5.resizeCanvas(size.width, size.height);
   }
 
-  return(
+  return (
     <div id={'container'} style={containerStyle}>
-      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize} style={{position:'relative', top:'0'}}></Sketch>
-      <div style={{position:'absolute', left:0, top:0}}>
-        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
+      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize}
+              style={{ position: 'relative', top: '0' }}></Sketch>
+      <div style={{ position: 'absolute', left: 0, top: 0 }}>
+        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
+          leaveGame();
+        }}></RoundButton>
       </div>
     </div>
   );
@@ -139,5 +150,5 @@ const containerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  position: 'absolute'
-}
+  position: 'absolute',
+};
