@@ -1,10 +1,11 @@
 import { color, Viewport } from '../../utils';
-import { Background, ChatPanel, ContactPanel, Navbar, RoundButton, SidePanel } from '..';
+import { Background, ChatPanel, ContactPanel, Navbar, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
-import { useUserContext, useGameContext } from '../../contexts';
+import { useUserContext } from '../../contexts';
 import { PlayButton } from '../Game/PlayButton';
+import { useIsWindowFocused } from '../../utils/UseIsWindowFocused';
 
 interface Props {
   panelWidth: number;
@@ -12,17 +13,20 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const focused = useIsWindowFocused();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken)
     window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
-  const { fetchContext, socket, id, user } = useUserContext();
+  const { fetchContext, user } = useUserContext();
 
   useEffect(() => {
-    fetchContext();
+    if (focused) {
+      fetchContext();
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [focused]);
 
   useEffect(() => {
     if (!user)

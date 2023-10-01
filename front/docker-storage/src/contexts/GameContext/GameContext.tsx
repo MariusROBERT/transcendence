@@ -72,6 +72,7 @@ export function GameContextProvider({ children }: Props) {
   // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
 
   useEffect(() => {
+    console.log(id, socket);
     if (id !== 0 && socket)
       fetchGameContext();
 
@@ -109,11 +110,11 @@ export function GameContextProvider({ children }: Props) {
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   // Invites -- Event emission -------------------------------------------------------------------------------------- //
-  function sendGameInvite(to: number, gameType:'normal' | 'special'){
+  function sendGameInvite(to: number, inviteGameType:'normal' | 'special'){
     if (isInGameWith) return;
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
-    if (inviteFrom === to && gameType === gameType)
+    if (inviteFrom === to && gameType === inviteGameType)
       return acceptGameInvite(inviteFrom);
 
     // Auto cancel and decline other invites and leave queue
@@ -126,7 +127,7 @@ export function GameContextProvider({ children }: Props) {
 
     // Set invite and Send it
     setInviteTo(to);
-    setGameType(gameType);
+    setGameType(inviteGameType);
     socket?.emit('send_invite', { sender: id, receiver: to, gameType:gameType });
   }
 
