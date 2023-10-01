@@ -1,6 +1,9 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
 import { useUserContext } from '../../contexts';
+import { useState } from 'react';
+import ChatUser from '../ChanMenu/ChatUser';
+import Popup from '../ComponentBase/Popup';
 
 interface Props {
   children: string;
@@ -17,10 +20,11 @@ export function ChatMessage({
   date,
   uid,
 }: Props) {
+  const [visible, setVisible] = useState<boolean>(false);
   const { id } = useUserContext();
+
   function viewProfile() {
-    // TODO: link the profile to the icon btn
-    // to do so in the Props, get the User ID
+    setVisible(true);
   }
 
   return (
@@ -63,6 +67,9 @@ export function ChatMessage({
           {date.toUTCString()}
         </p>
       </div>
+      <Popup isVisible={visible} setIsVisible={setVisible}>
+        <ChatUser user_icon={user_icon} user_name={user_name}></ChatUser>
+      </Popup>
     </div>
   );
 }
