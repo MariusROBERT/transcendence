@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Popup from '../ComponentBase/Popup';
+import { Popup } from '..';
 
 interface Props {
   setIsVisible: (isVisible: boolean) => void;

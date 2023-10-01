@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import TwoFA from '../Login/TwoFA';
+import { TwoFA } from '..';
 import { unsecureFetch } from '../../utils';
 
 interface AuthGuardProps {

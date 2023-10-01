@@ -1,4 +1,4 @@
-import { RoundButton } from '../index';
+import { RoundButton } from '..';
 
 interface Props {
   children: string;

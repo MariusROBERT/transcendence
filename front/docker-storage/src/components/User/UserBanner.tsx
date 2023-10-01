@@ -1,9 +1,7 @@
-import { AuthGuard, Flex, RoundButton } from '..';
+import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
 import { UserButton } from './UserButton';
 import { IUser, IUserComplete } from '../../utils/interfaces';
 import React, { CSSProperties, useState } from 'react';
-import Profil from '../Profil/profil';
-import Popup from '../ComponentBase/Popup';
 
 interface Props {
   otherUser: IUser;

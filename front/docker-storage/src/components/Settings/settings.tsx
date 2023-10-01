@@ -1,10 +1,9 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SwitchToggle from '../ComponentBase/switchToggle';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput } from '../ComponentBase/PasswordInput';
+import { PasswordInput, SwitchToggle } from '..';
 
 interface Props {
   isVisible: boolean;

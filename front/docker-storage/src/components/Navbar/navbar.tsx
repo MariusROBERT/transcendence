@@ -1,10 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background } from '..';
-import Settings from '../Settings/settings';
+import { RoundButton, Border, Background, Settings, Profil, Popup } from '..';
 import { IUserComplete } from '../../utils/interfaces';
-import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
-import Popup from '../ComponentBase/Popup';
 import { color } from '../../utils';
 
 interface Props {

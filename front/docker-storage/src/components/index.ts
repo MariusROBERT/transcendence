@@ -19,11 +19,10 @@ export { default as Background } from './ComponentBase/Background';
 export { Border } from './ComponentBase/Border';
 export { Button } from './ComponentBase/Button';
 export { Flex } from './ComponentBase/FlexBox';
-export { Input } from './ComponentBase/Input';
 export { PasswordInput } from './ComponentBase/PasswordInput';
 export { default as Popup } from './ComponentBase/Popup';
 export { RoundButton } from './ComponentBase/RoundButton';
-export { default as switchToggle } from './Settings/settings';
+export { default as SwitchToggle } from './ComponentBase/switchToggle';
 
 // Contact Panel
 export { ContactPanel } from './ContactPanel/ContactPanel';
@@ -48,7 +47,7 @@ export { SidePanel } from './MainPage/SidePanel';
 export { default as Navbar } from './Navbar/navbar';
 
 // Profil
-export { default as profil } from './Profil/profil';
+export { default as Profil } from './Profil/profil';
 
 // Search
 export { SearchBar } from './Search/SearchBar';

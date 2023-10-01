@@ -1,5 +1,5 @@
 import { color } from '../../utils';
-import { Background, RoundButton } from '../index';
+import { Background, RoundButton } from '..';
 import { useUserContext } from '../../contexts';
 
 interface Props {
