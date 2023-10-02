@@ -134,7 +134,6 @@ export function PasswordInput(props: Props) {
            onClick={() => props.setHidePassword(!props.hidePassword)}
       />
       {verification()}
-      <button onClick={() => console.log(props.noVerify ? undefined : (props.confirmPassword || mainRegex.source))}>Verify</button>
     </div>
   );
 }
