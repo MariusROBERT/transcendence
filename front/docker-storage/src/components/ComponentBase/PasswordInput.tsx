@@ -49,7 +49,7 @@ export function PasswordInput(props: Props) {
     right: -25,
   };
 
-  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\-+=[\]\\/`'";:?.,<>~]).{8,})$/;
+  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/;
   const minMaj = /[A-Z]/;
   const minMin = /[a-z]/;
   const minDigit = /[0-9]/;
@@ -134,6 +134,7 @@ export function PasswordInput(props: Props) {
            onClick={() => props.setHidePassword(!props.hidePassword)}
       />
       {verification()}
+      <button onClick={() => console.log(props.noVerify ? undefined : (props.confirmPassword || mainRegex.source))}>Verify</button>
     </div>
   );
 }

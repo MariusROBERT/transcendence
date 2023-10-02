@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -22,6 +28,9 @@ export class AuthService {
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
     // Create User
+    //DEV: comment these 2 lines for dev
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/.test(userData.password))
+      throw new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
     const user = this.userRepository.create({
       ...userData,
     });
@@ -36,7 +45,7 @@ export class AuthService {
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
-      throw new ConflictException(`username or password already used`);
+      throw new ConflictException('Username already used');
     }
     return {
       id: user.id,
