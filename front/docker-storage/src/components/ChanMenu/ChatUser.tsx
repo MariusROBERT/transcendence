@@ -4,6 +4,7 @@ import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { IChatUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
+import { UpdateChannelUsers } from '../../utils/channel_functions';
 
 interface Props {
   data: IChatUser | undefined;
@@ -33,6 +34,11 @@ export default function ChatUser({ data, visibility }: Props) {
     if (rep?.json.statusCode === 400) {
       seterrorMessage(rep?.json.message);
       setErrorVisible(true);
+    }
+    else
+    {
+      if (data?.channel_id)
+        UpdateChannelUsers(data?.channel_id);
     }
   }
 

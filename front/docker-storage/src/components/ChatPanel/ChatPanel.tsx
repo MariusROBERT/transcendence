@@ -6,13 +6,8 @@ import { ChatMessage } from '../ChatMessage/ChatMessage';
 import { useUserContext } from '../../contexts';
 import { ChanUserList } from '../ChanUserList/ChanUserList';
 import { subscribe } from '../../utils/event';
-import {
-  GetCurrChan,
-} from '../../utils/channel_functions';
-import {
-  ChannelMessage,
-  IChatUser,
-} from '../../utils/interfaces';
+import { GetCurrChan, UpdateChannelUsers } from '../../utils/channel_functions';
+import { ChannelMessage, IChatUser } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import Popup from '../ComponentBase/Popup';
 import ChatUser from '../ChanMenu/ChatUser';
@@ -40,6 +35,17 @@ export function ChatPanel({ viewport, width }: Props) {
     socket?.on('message', getMsg);
     return () => {
       socket?.off('message', getMsg);
+    };
+  });
+
+  const updateUsers = async (id: number) => {
+    UpdateChannelUsers(id);
+  };
+
+  useEffect(() => {
+    socket?.on('join', updateUsers);
+    return () => {
+      socket?.off('join', updateUsers);
     };
   });
 
@@ -124,7 +130,6 @@ export function ChatPanel({ viewport, width }: Props) {
     setUserVisible(true);
   }
 
-
   useEffect(() => {
     // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
     if (msgsRef.current) {
@@ -160,7 +165,7 @@ export function ChatPanel({ viewport, width }: Props) {
           borderRadius: '15px',
           overflow: 'scroll',
         }}
-        ref={msgsRef as React.RefObject<HTMLDivElement>} 
+        ref={msgsRef as React.RefObject<HTMLDivElement>}
       >
         {chat()}
       </div>

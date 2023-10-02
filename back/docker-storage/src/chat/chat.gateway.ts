@@ -55,12 +55,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('join')
   async handleJoin(client: Socket, body: any) {
     const { channel } = body;
+    const chan = await this.chanService.getChannelByName(channel);
+
     client.rooms.forEach((room) => {
       if (room !== client.id) {
         client.leave(room);
       }
     });
     client.join(channel);
+    console.log('here join');
+    this.server.to(channel).emit('join', chan.id);
   }
 
   @UseGuards(ChatCheckGuard)
