@@ -4,7 +4,7 @@ import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { IChatUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannelUsers } from '../../utils/channel_functions';
+import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
 
 interface Props {
   data: IChatUser | undefined;

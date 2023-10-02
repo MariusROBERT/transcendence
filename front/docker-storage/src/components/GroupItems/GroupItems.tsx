@@ -3,6 +3,9 @@ import { Background, Border, RoundButton, SearchBar, UserBanner } from '..';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser, IUserComplete } from '../../utils/interfaces';
 import { ChannelPannel } from '../ChannelBanner/ChannelBanner';
+import { useUserContext } from '../../contexts';
+import { subscribe } from '../../utils/event';
+import { unsubscribe } from 'diagnostics_channel';
 
 interface Props {
   children?: ReactNode;
@@ -14,8 +17,8 @@ interface Props {
 export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
-
   let [chans, setChannels] = useState<ChannelInfos[]>([]);
+  const { socket } = useUserContext();
 
   useEffect(() => {
     async function getAllUsers() {
@@ -26,8 +29,7 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   }, [isOpen]);
 
   const displayFriends = () => {
-    if (!meUser)
-      return ;
+    if (!meUser) return;
     console.log('friends list');
     const friends: IUser[] = allUsers.filter(
       (u) => meUser?.friends.includes(u.id),
@@ -41,9 +43,8 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
   };
 
   const displayUsers = () => {
-    if (!meUser)
-      return ;
-    const others: IUser[] = allUsers.filter(u => u.id !== meUser?.id);
+    if (!meUser) return;
+    const others: IUser[] = allUsers.filter((u) => u.id !== meUser?.id);
 
     return others.map((other: IUser) => (
       <div key={other.id}>
@@ -51,6 +52,12 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
       </div>
     ));
   };
+
+  useEffect(() => {
+    subscribe('update_chan', async (event: any) => {
+      setChannels(event.detail.value);
+    });
+  });
 
   const displayChannels = () => {
     return (
@@ -90,6 +97,13 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
     setChannels(channels);
   }
 
+  useEffect(() => {
+    socket?.on('join', FetchChannels);
+    return () => {
+      socket?.off('join', FetchChannels);
+    };
+  });
+
   function openGroup() {
     setIsOpen(!isOpen);
     //  Check if you open the right Group
@@ -111,7 +125,14 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
         >
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {openGroup()}}/></div>
+            <RoundButton
+              icon={require('../../assets/imgs/side_panel_button.png')}
+              icon_size={40}
+              onClick={() => {
+                openGroup();
+              }}
+            />
+          </div>
         </Background>
       </Border>
       <div style={groupStyle}>

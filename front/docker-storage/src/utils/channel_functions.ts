@@ -25,6 +25,16 @@ export async function UpdateChannelUsers(id: number) {
   });
 }
 
+export async function UpdateChannels() {
+  const res = await Fetch('channel/of_user', 'POST');
+  const channels = res?.json;
+  publish('update_chan', {
+    detail: {
+      value: channels,
+    },
+  });
+}
+
 export async function SetCurrChan(chan: string) {
   current_chan = chan;
 }
