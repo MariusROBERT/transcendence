@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
+import { ChannelPublic } from '../../utils/interfaces';
 
-export default function EditChat() {
+interface Props
+{
+  data: ChannelPublic | undefined
+}
+
+export default function EditChat({data}: Props) {
   const [password, setPassword] = useState<string>('');
 
   return (

@@ -26,11 +26,22 @@ export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
   @Get('/:id')
+  @UseGuards(JwtAuthGuard)
   async GetChannelById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ChannelEntity> {
     // ==> renvoi toutes les infos channels
     return await this.channelService.getChannelById(id);
+  }
+
+  //  Only get the public data
+  @Get('/public/:id')
+  @UseGuards(JwtAuthGuard)
+  async GetPublicChannelById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ChannelEntity> {
+    // ==> Send all public info
+    return await this.channelService.getPublicChannelById(id);
   }
 
   @Get('/name/:id')

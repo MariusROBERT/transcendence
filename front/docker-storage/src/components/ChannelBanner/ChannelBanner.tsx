@@ -1,6 +1,6 @@
-import { ChannelInfos } from '../../utils/interfaces';
+import { ChannelInfos, ChannelPublic } from '../../utils/interfaces';
 import { Flex, RoundButton } from '..';
-import { color } from '../../utils';
+import { Fetch, color } from '../../utils';
 import {
   UpdateChannelMessage,
   UpdateChannelUsers,
@@ -14,12 +14,19 @@ import { useState } from 'react';
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
   const { socket } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
+  const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined)
 
   async function OnJoinChannel() {
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
     socket?.emit('join', { channel: name });
+  }
+
+  async function OnSetting() {
+    setEditVisible(true);
+    const res = await Fetch('channel/public/' + id, 'GET');
+    setPublicData(res?.json);
   }
 
   return (
@@ -34,7 +41,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
             ? color.green
             : type === 'admin'
             ? color.red
-            : color.grey, // ^^ Sorry, i'll find another way to do it later
+            : color.grey,
         minWidth: '410px',
         height: '25px',
       }}
@@ -54,7 +61,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
-          onClick={() => setEditVisible(true)}
+          onClick={() => {OnSetting()}}
         ></RoundButton>
         <p style={{ fontSize: '20px' }}>
           {name.slice(0, 25)}
@@ -62,7 +69,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         </p>
       </Flex>
     <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-      <EditChat></EditChat>
+      <EditChat data={publicData}></EditChat>
     </Popup>
     </div>
   );

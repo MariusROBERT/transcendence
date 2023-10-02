@@ -68,6 +68,14 @@ export interface SocketMessage {
   id: number;
 }
 
+export interface ChannelPublic {
+  channel_id: number,
+  channel_name: string,
+  channel_status: string,
+  channel_priv_msg: boolean,
+  owner_id: number
+}
+
 // --------------------------- LeaderBoard & Profil :
 
 export interface UserInfos {

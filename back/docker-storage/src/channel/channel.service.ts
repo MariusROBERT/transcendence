@@ -48,10 +48,27 @@ export class ChannelService {
   async getChannelById(id: number): Promise<ChannelEntity> {
     var channel = await this.ChannelRepository.findOne({
       where: { id },
-      //relations: ['admins'],
     });
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+    return channel;
+  }
+
+  async getPublicChannelById(id: number): Promise<ChannelEntity> {
+    var channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoin("channel.owner", "owner")
+      .select([
+        'channel.id',
+        'channel.channel_name as channel_name',
+        'channel.chan_status as channel_status',
+        'channel.priv_msg',
+        'owner.id as owner_id',
+      ])
+      .where('channel.id = :id', { id })
+      .getRawOne();
+    if (!channel)
+      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+    console.log(channel);
     return channel;
   }
 
@@ -149,11 +166,9 @@ export class ChannelService {
     return channel;
   }
 
-  removeFrom(users: UserEntity[], id)
-  {
-    const index = users.findIndex(user => user.id === id);
-    if (index !== -1)
-      users.splice(index, 1);
+  removeFrom(users: UserEntity[], id) {
+    const index = users.findIndex((user) => user.id === id);
+    if (index !== -1) users.splice(index, 1);
     return users;
   }
 
@@ -221,11 +236,16 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (sec <= 0)
-      throw new BadRequestException('Time in second cannot be equal or inferior to zero');
-    var muteEntity: MutedEntity = await this.mutedService.createMuted(channel, user, sec);
+      throw new BadRequestException(
+        'Time in second cannot be equal or inferior to zero',
+      );
+    var muteEntity: MutedEntity = await this.mutedService.createMuted(
+      channel,
+      user,
+      sec,
+    );
     return channel;
   }
-
 
   async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
@@ -233,7 +253,6 @@ export class ChannelService {
     await this.mutedService.removeMuted(channel, user);
     return channel;
   }
-
 
   // tested
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
