@@ -17,13 +17,14 @@ export function ChatMessage({
   const { id } = useUserContext();
 
   return (
-    <div
-      style={{
+    <div>
+      <div style={{
         display: 'flex',
         flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
-      }}
-    >
-      <RoundButton icon={data.sender_urlImg} onClick={() => onClick(data)}></RoundButton>
+      }}>
+        <RoundButton icon={data.sender_urlImg} onClick={() => onClick(data)}></RoundButton>
+        <p style={{fontSize:'15px'}}> {data.sender_username} </p>
+      </div>
       <div
         style={{
           flex: 'auto',
@@ -45,16 +46,6 @@ export function ChatMessage({
             {children}
           </p>
         </Background>
-        <p
-          style={{
-            margin: '10px',
-            color: color.black,
-            textShadow: 'none',
-            fontSize: '12px',
-          }}
-        >
-          {new Date().toUTCString()}
-        </p>
       </div>
     </div>
   );
