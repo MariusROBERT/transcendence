@@ -46,22 +46,23 @@ export class ChannelController {
 
   @Get('/name/:id')
   //@UseGuards(JwtAuthGuard)
-  async GetChannelByName(@Param('id') id: string) {
-    // ==> renvoi toutes les infos channels
-    return await this.channelService.getChannelByName(id);
+  async GetChannelIdByName(@Param('id') id: string) {
+    return await this.channelService.getChannelIdByName(id);
   }
 
   @Get('/msg/:id')
+  //@UseGuards(InChannelGuard)  Todo: Check why not working
+  @UseGuards(JwtAuthGuard)
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MessageEntity[]> {
-    //console.log('get message ^^');
     return await this.channelService.getChannelMessages(id);
   }
 
   //  Add get channel
   //          User Admin Ban Muted
   @Get('/users/:id')
+  @UseGuards(JwtAuthGuard)
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity[]> {

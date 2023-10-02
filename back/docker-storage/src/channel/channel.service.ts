@@ -82,6 +82,19 @@ export class ChannelService {
     return channel;
   }
 
+  async getChannelIdByName(channel_name: string) {
+    var channel = await this.ChannelRepository.createQueryBuilder('channel')
+    .leftJoin("channel.owner", "owner")
+    .select([
+      'channel.id',
+    ])
+    .where('channel.channel_name = :channel_name', { channel_name })
+    .getOne();
+    if (!channel)
+      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+    return channel;
+  }
+
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
     const channel = await this.msgService.getMsg(id);
     //console.log(channel);

@@ -4,12 +4,11 @@ import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { ChannelPublic } from '../../utils/interfaces';
 
-interface Props
-{
-  data: ChannelPublic | undefined
+interface Props {
+  data: ChannelPublic | undefined;
 }
 
-export default function EditChat({data}: Props) {
+export default function EditChat({ data }: Props) {
   const [password, setPassword] = useState<string>('');
 
   return (
@@ -25,7 +24,7 @@ export default function EditChat({data}: Props) {
             setPassword(evt.target.value);
           }}
         ></input>
-        <br></br>
+        <br />
         leave empty to remove password
       </p>
 

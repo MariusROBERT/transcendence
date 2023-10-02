@@ -25,6 +25,12 @@ export function ChatMenu() {
   const { socket } = useUserContext();
   var current_id = -1;
 
+  async function AddUserInChannel() {
+    await Fetch('channel/add_user/' + current_id, 'POST');
+    UpdateChannelMessage(current_id);
+    UpdateChannelUsers(current_id);
+  }
+
   //  TODO: clean here
   async function OnJoinChannel() {
     if (inputValue === '') return;
@@ -33,27 +39,14 @@ export function ChatMenu() {
     if (res?.ok) {
       var data = await res?.json();
       current_id = data.id;
-      //  Adding user to channel if not in it
-      await Fetch(
-        'channel/add_user/' + data.id,
-        'POST',
-        JSON.stringify({
-          id: -1, //current user id
-        }),
-      );
+      AddUserInChannel();
       SetCurrChan(inputValue);
-      UpdateChannelMessage(current_id);
-      UpdateChannelUsers(current_id);
       socket?.emit('join', { channel: inputValue });
     } else {
       setChatVisible(true);
     }
     setInputValue('');
   }
-
-  const OnEnterUser = () => {
-    //console.log(event.detail.value.uid);
-  };
 
   useEffect(() => {
     subscribe('chat_created', async () => {
@@ -62,9 +55,13 @@ export function ChatMenu() {
     });
   });
 
-  useEffect(() => {
-    subscribe('enter_users', OnEnterUser);
-  });
+  //const OnEnterUser = () => {
+  //  //console.log(event.detail.value.uid);
+  //};
+
+  //useEffect(() => {
+  //  subscribe('enter_users', OnEnterUser);
+  //});
 
   return (
     <div
