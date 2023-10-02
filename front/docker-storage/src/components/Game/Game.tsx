@@ -16,7 +16,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   const [size, setSize] = useState<Size>(basesize);
   let upPressed: boolean = false;
   let downPressed: boolean = false;
-  let factor: number = 1;
+  const [factor, setFactor] = useState<number>(1);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
@@ -25,7 +25,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
     // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
     // eslint-disable-next-line
-  }, []);
+  }, [id, socket, isInGameWith, navigate]);
 
   // In Game Management --------------------------------------------------------------------------------------------- //
   // In Game -- Key Hook -------------------------------------------------------------------------------------------- //
@@ -56,9 +56,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   // In Game -- Event emission -------------------------------------------------------------------------------------- //
   function move() {
     const isMoving = (upPressed && !downPressed) || (!upPressed && downPressed);
-    const moveUp = upPressed;
-
-    socket?.emit('move_player', { id: id, isMoving: isMoving, moveUp: moveUp });
+    socket?.emit('move_player', { id: id, isMoving: isMoving, moveUp: upPressed });
   }
 
   // In Game -- Event reception ------------------------------------------------------------------------------------- //
@@ -84,61 +82,62 @@ export function Game({ viewport }: { viewport: Viewport }) {
       socket?.off('update_game_state', onGameStateUpdate);
     };
     // eslint-disable-next-line
-  }, [socket]);
+  }, [socket, factor]);
 
   // Resize Window Management --------------------------------------------------------------------------------------- //
-  const updateDimension = () => {
-    factor = Math.min(viewport.width / basesize.width, viewport.height / basesize.height);
-    setSize({
-      height: basesize.height * factor,
-      width: basesize.width * factor,
-      ball: basesize.ball * factor,
-      bar: { x: basesize.bar.x * factor, y: basesize.bar.y * factor },
-      halfBar: basesize.halfBar * factor,
-      halfBall: basesize.halfBall * factor,
-      p1X: basesize.p1X * factor,
-      p2X: basesize.p2X * factor,
-    });
-  };
 
   useEffect(() => {
-    updateDimension();
-    // eslint-disable-next-line
-  }, [viewport, factor]);
+    const newFactor = Math.min(viewport.width / basesize.width, viewport.height / basesize.height);
+    setFactor(newFactor);
+    setSize({
+      height: basesize.height * newFactor,
+      width: basesize.width * newFactor,
+      ball: basesize.ball * newFactor,
+      bar: {x:basesize.bar.x * newFactor, y:basesize.bar.y * newFactor},
+      halfBar: basesize.halfBar * newFactor,
+      halfBall: basesize.halfBall * newFactor,
+      p1X: basesize.p1X * newFactor,
+      p2X: basesize.p2X * newFactor,
+    });
+  }, [viewport.width, viewport.height]);
 
   // Display Game Management ---------------------------------------------------------------------------------------- //
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    const game = p5.createCanvas(size.width, size.height);
-    game.parent('container');
+    const canvas = p5.createCanvas(size.width, size.height);
+    try{
+      canvas.parent(canvasParentRef);
+    } catch (e) {
+      canvas.parent('container');
+    }
+    p5.strokeWeight(0);
     p5.background(0);
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.textSize(32);
   };
 
   const draw = (p5: p5Types) => {
-    updateDimension();
     p5.resizeCanvas(size.width, size.height);
-    p5.background(0);
-    p5.textSize(32);
-    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
-    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.background(15);
+
+    p5.fill(60);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3);
+    p5.fill(15);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
+    p5.fill(60);
+    p5.rect(size.width/2 - 5, 0, 10, size.height);
+    p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
     p5.fill(255);
+    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
     p5.ellipse(state.ball.x, state.ball.y, size.ball);
     p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
     p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
   };
 
-  function windowResize(p5: p5Types) {
-    updateDimension();
-    p5.resizeCanvas(size.width, size.height);
-  }
-
   return (
     <div id={'container'} style={containerStyle}>
-      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} windowResized={windowResize}
-              style={{ position: 'relative', top: '0' }}></Sketch>
-      <div style={{ position: 'absolute', left: 0, top: 0 }}>
-        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
-          leaveGame();
-        }}></RoundButton>
+      {id && socket && isInGameWith && <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} style={{position:'relative', top:'0'}}></Sketch>}
+      <div style={{position:'absolute', left:0, top:0}}>
+        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
       </div>
     </div>
   );

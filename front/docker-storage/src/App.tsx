@@ -7,28 +7,14 @@ import { Contexts } from './contexts';
 const SIZE: number = 500;
 
 function App() {
-  const view: Viewport = {
-    isLandscape:
-      window.innerWidth >= SIZE * 2 &&
-      window.innerWidth / window.innerHeight > 0.9,
-    width: window.innerWidth,
-    height: window.innerHeight,
-  };
-  const [viewport, setViewport] = useState<Viewport>(view);
+  const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
 
   return (
     <Contexts>
       <div
         className={'cursor_perso'}
-        style={{
-          height: viewport.isLandscape
-            ? Math.max(viewport.height, SIZE)
-            : Math.max(viewport.height, SIZE * 2) + 'px',
-          width: '100%',
-          color: color.white,
-          overflow: 'hidden',
-        }}
+        style={appStyle}
       >
         <Background image={backgroundImage} fixed={true}>
           <Routes>
@@ -57,5 +43,20 @@ function App() {
     </Contexts>
   );
 }
+
+const appStyle: React.CSSProperties = {
+  height: '100%',
+  width: '100%',
+  color: color.white,
+  overflow: 'hidden',
+}
+
+const start: Viewport = {
+  isLandscape:
+    window.innerWidth >= SIZE * 2 &&
+    window.innerWidth / window.innerHeight > 0.9,
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
 
 export default App;

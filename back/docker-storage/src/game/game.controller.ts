@@ -31,4 +31,14 @@ export class GameController {
     }
     return { isInQueue: undefined };
   }
+
+  @Get('/is_in_game/:id')
+  async isInGame(@Param('id', ParseIntPipe) id: number): Promise<{ isInGameWith: number | undefined }>{
+    const game = await this.matchmaking.getGame(id);
+    if (!game)
+      return { isInGameWith: undefined };
+
+    const inGameWith = game.playerIds[0] !== id ? game.playerIds[0] : game.playerIds[1];
+    return { isInGameWith: inGameWith };
+  }
 }

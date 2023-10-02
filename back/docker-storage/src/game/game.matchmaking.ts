@@ -28,7 +28,7 @@ export class GameMatchmaking {
     else if (isSpecial && !this.controller.queueSpecial.includes(id))
       this.controller.queueSpecial.push(id);
 
-    // console.log(isSpecial ? 'Special \n' + this.controller.queueSpecial : 'Normal \n', this.controller.queue);
+    // console.log('after join: \nSpecial  ', this.controller.queueSpecial, '\nNormal  ', this.controller.queue);
     await this.tryLaunchGames();
   }
 
@@ -59,22 +59,24 @@ export class GameMatchmaking {
         p1: size.height / 2,
         p2: size.height / 2,
         score: {p1: 0, p2: 0},
-        speed: 1.5,
+        speed: 1,
         moveP1: {isMoving: false, up: false},
         moveP2: {isMoving: false, up: false}
       },
-      ready: false,
+      ready:[]
     };
     this.controller.games.push(game);
     this.controller.gateway.openGame(game.playerIds);
   }
 
-  async leaveGame(id: number){
+  leaveGame(id: number){
     const game = this.getGame(id);
     if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
-    if (playerNumber === 0) game.state.score.p1 = 0;
-    else game.state.score.p2 = 0;
+    if (playerNumber === 0)
+      game.state.score.p1 = 0;
+    else
+      game.state.score.p2 = 0;
     return this.endGame(id);
   }
 
@@ -84,15 +86,20 @@ export class GameMatchmaking {
     let game = this.getGame(id);
     if (game === undefined) return;
 
-    //first call set ready to true and second start the update function
-    if (!game.ready) game.ready = true;
-    else this.controller.service.update(game);
+    //add players to the ready array
+    if (game.ready.includes(id)) return;
+    game.ready.push(id);
+
+    // if all there launch the game
+    if (game.ready.length == 2)
+      this.controller.service.update(game);
   }
 
-  async endGame(id: number) {
+  async endGame(id: number){
     //find game
     let game = this.getGame(id);
-    if (game === undefined) return 'game not found';
+    if (game === undefined)
+      return 'game not found';
 
     //stop the game
     if (game.state.running) {

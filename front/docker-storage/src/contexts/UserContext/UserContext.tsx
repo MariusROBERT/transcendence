@@ -51,8 +51,7 @@ export function UserContextProvider({ children }: Props) {
       setUsername(user.username);
       setId(user.id);
       setIsOnline(true);
-      if (!socket)
-        initSocket();
+      initSocket();
     }
   }
 
@@ -78,18 +77,16 @@ export function UserContextProvider({ children }: Props) {
   }, [socket, id, username]);
 
   function initSocket() {
-    if (!socket) {
-      const token = Cookies.get('jwtToken');
-      setSocket(
-        io('http://localhost:3001', {
-          withCredentials: true,
-          reconnectionAttempts: 1,
-          transports: ['websocket'],
-          autoConnect: false,
-          query: { token },
-        }),
-      );
-    }
+    const token = Cookies.get('jwtToken');
+    setSocket(
+      io('http://localhost:3001', {
+        withCredentials: true,
+        reconnectionAttempts: 1,
+        transports: ['websocket'],
+        autoConnect: false,
+        query: { token },
+      }),
+    );
     return () => {
       socket?.close();
     };

@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background, Settings, Profil, Popup } from '..';
+import { RoundButton, Border, Background, Settings, Profil, Popup, GameInvites } from '..';
 import { IUserComplete } from '../../utils/interfaces';
 import Cookies from 'js-cookie';
 import { color } from '../../utils';
@@ -29,8 +29,6 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     }
   };
 
-  //TODO: [Raffi] reuse this in game
-
   // delog the user if he close the navigator without click in logout button
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -49,7 +47,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
   return (
     <>
       <div style={navbarStyle}>
-        <Border borderRadius={30} height={100} width={300} borderColor={color.black}>
+        <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
           <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'}
                       bg_color={color.black}>
             <RoundButton
@@ -68,23 +66,26 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
               onClick={() => logout()}
             />
           </Background>
-          <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-            <Settings isVisible={settingsVisible} />
-          </Popup>
-          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={meUser} meUser={meUser} />
-          </Popup>
         </Border>
       </div>
+      <GameInvites></GameInvites>
+      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
+        <Settings isVisible={settingsVisible} />
+      </Popup>
+      <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+        <Profil otherUser={meUser} meUser={meUser} />
+      </Popup>
     </>
   );
 };
 
 const navbarStyle: CSSProperties = {
-  top: '-40px',
-  position: 'absolute',
+  top: '-25px',
+  right:'-25px',
+  position: 'fixed',
   display: 'flex',
-  justifyContent: 'space-around',
+  flexDirection: 'row-reverse',
+  zIndex: '10000'
 };
 
 export default Navbar;
