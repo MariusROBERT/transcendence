@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Viewport } from '../../utils/Viewport';
 import { color } from '../../utils/Global';
 import { Background, RoundButton } from '..';
@@ -28,6 +28,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const [currUser, setCurrUser] = useState<IChatUser>();
   const { socket } = useUserContext();
   let [msg, setMessage] = useState<ChannelMessage[]>([]);
+  const msgsRef = useRef<HTMLDivElement | null>(null);
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
@@ -123,6 +124,14 @@ export function ChatPanel({ viewport, width }: Props) {
     setUserVisible(true);
   }
 
+
+  useEffect(() => {
+    // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
+    if (msgsRef.current) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    }
+  }, [msg]);
+
   function chat() {
     return (
       <>
@@ -151,6 +160,7 @@ export function ChatPanel({ viewport, width }: Props) {
           borderRadius: '15px',
           overflow: 'scroll',
         }}
+        ref={msgsRef as React.RefObject<HTMLDivElement>} 
       >
         {chat()}
       </div>

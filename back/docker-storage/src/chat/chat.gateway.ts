@@ -90,7 +90,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const data: ChannelMessage = {
       sender_id: userE.id,
       sender_urlImg: userE.urlImg,
-      sender_username: userE.user_name,
+      sender_username: userE.username,
       message_content: message,
       channel_id: chanE.id,
     };

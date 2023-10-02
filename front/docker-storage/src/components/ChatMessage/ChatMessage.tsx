@@ -9,21 +9,22 @@ interface Props {
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChatMessage({
-  children,
-  data,
-  onClick,
-}: Props) {
+export function ChatMessage({ children, data, onClick }: Props) {
   const { id } = useUserContext();
 
   return (
     <div>
-      <div style={{
-        display: 'flex',
-        flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
-      }}>
-        <RoundButton icon={data.sender_urlImg} onClick={() => onClick(data)}></RoundButton>
-        <p style={{fontSize:'15px'}}> {data.sender_username} </p>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
+        }}
+      >
+        <RoundButton
+          icon={data.sender_urlImg}
+          onClick={() => onClick(data)}
+        ></RoundButton>
+        <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
       </div>
       <div
         style={{
