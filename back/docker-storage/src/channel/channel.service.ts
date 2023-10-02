@@ -16,7 +16,6 @@ import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
-import { UserAddChanDto } from 'src/user/dto/user.dto';
 import { MutedService } from 'src/muted/muted.service';
 
 @Injectable()

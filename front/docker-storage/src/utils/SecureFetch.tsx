@@ -16,12 +16,12 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
       return { response: response, json: rep_json };
     } else {
       const rep_json = await response.json();
-      if(rep_json.statusCode === 401) // Basically if token is wrong
+      if(rep_json.statusCode === 400)
       {
-        console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-        window.location.href = '/login';
+        return { response: response, json: rep_json };
       }
-      return { response: response, json: rep_json };
+      console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+      window.location.href = '/login';
     }
   } catch (e) {
     console.log(e);
