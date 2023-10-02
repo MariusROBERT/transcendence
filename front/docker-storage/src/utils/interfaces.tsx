@@ -25,7 +25,7 @@ export interface UserAndInvites {
   user_status: string;
   winrate: number;
   is_friend: boolean;
-  invites: number;
+  recvInvitesFrom: number;
 }
 
 // --------------------------- LeaderBoard & Profil :
@@ -35,7 +35,7 @@ export interface UserInfos {
   urlImg: string;
   is2fa_active: boolean;
   username: string;
-  invited: number[];
+  sentInvitesTo: number[];
 }
 
 export interface IUser {
@@ -45,8 +45,8 @@ export interface IUser {
   user_status: string;
   winrate: number;
   is_friend: boolean;
-  invited: number[];
-  invites: number[];
+  sentInvitesTo: number[];
+  recvInvitesFrom: number[];
 }
 
 export interface IUserComplete {
@@ -57,15 +57,14 @@ export interface IUserComplete {
   role: string
   winrate: number;
   is_friend: boolean;
-  invited: number[];
-  invites: number[];
+  sentInvitesTo: number[];
+  recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
 }
 
 export interface LeaderboardProps {
   searchTerm: string;
-  meUser?: IUserComplete;
 }
 
 

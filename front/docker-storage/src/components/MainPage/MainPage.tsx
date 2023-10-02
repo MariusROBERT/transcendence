@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext, useGameContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 interface Props {
   panelWidth: number;
@@ -33,8 +34,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   useEffect(() => {
     if (!user)
       return;
-    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-      setNotifs(user.invites.length);
+    if (user.recvInvitesFrom && Array.isArray(user.recvInvitesFrom) && user.recvInvitesFrom.length > 0)
+      setNotifs(user.recvInvitesFrom.length);
   }, [user]);
 
   return (
@@ -48,11 +49,11 @@ export function MainPage({ panelWidth, viewport }: Props) {
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport} />
+            <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
-          <Navbar meUser={user} />
+          <Navbar />
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <div style={Btn}>
             <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>

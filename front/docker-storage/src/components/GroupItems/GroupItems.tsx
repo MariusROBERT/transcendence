@@ -2,18 +2,18 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Background, Border, RoundButton, UserBanner } from '..';
 import { color, Fetch } from '../../utils';
 import { IUser, IUserComplete } from '../../utils/interfaces';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   children?: ReactNode,
   heading: string,
   duration_ms: number
-  meUser: IUserComplete | undefined;
 }
 
-export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
+export function GroupItems({ children, heading, duration_ms }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
-
+  const { user } = useUserContext();
   useEffect(() => {
     async function getAllUsers() {
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
@@ -26,26 +26,26 @@ export function GroupItems({ children, heading, duration_ms, meUser }: Props) {
 
 
   const displayFriends = () => {
-    if (!meUser)
+    if (!user)
       return ;
     // console.log('friends list');
-    const friends: IUser[] = allUsers.filter(u => meUser?.friends.includes(u.id));
+    const friends: IUser[] = allUsers.filter(u => user?.friends.includes(u.id));
 
     return friends.map((friend: IUser) => (
         <div key={friend.id}>
-          <UserBanner otherUser={friend} meUser={meUser} />
+          <UserBanner otherUser={friend} />
         </div>
       ));
   };
 
   const displayUsers = () => {
-    if (!meUser)
+    if (!user)
       return ;
-    const others: IUser[] = allUsers.filter(u => u.id !== meUser?.id);
+    const others: IUser[] = allUsers.filter(u => u.id !== user?.id);
 
     return others.map((other: IUser) => (
       <div key={other.id}>
-        <UserBanner otherUser={other} meUser={meUser} />
+        <UserBanner otherUser={other} />
       </div>
     ));
   };

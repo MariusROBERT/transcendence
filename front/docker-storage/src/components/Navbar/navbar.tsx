@@ -1,20 +1,16 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import Settings from '../Settings/settings';
 import { RoundButton } from '../RoundButton/RoundButton';
-import { IUserComplete } from '../../utils/interfaces';
 import Profil from '../Profil/profil';
 import Cookies from 'js-cookie';
 import Popup from '../ComponentBase/Popup';
+import { useUserContext } from '../../contexts';
 
-interface Props {
-  meUser: IUserComplete | undefined;
-}
-
-const Navbar: React.FC<Props> = ({ meUser }) => {
+const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-
+  const { user } = useUserContext()
   const logout = async () => {
     const res = await fetch('http://localhost:3001/api/user/logout', {
       method: 'PATCH',
@@ -42,7 +38,6 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-
     // eslint-disable-next-line
   }, [profilVisible]);
 
@@ -63,7 +58,7 @@ const Navbar: React.FC<Props> = ({ meUser }) => {
           onClick={() => setProfilVisible(!profilVisible)}
         />
         <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-          <Profil otherUser={meUser} meUser={meUser} />
+          <Profil otherUser={user} />
         </Popup>
         <RoundButton
           icon={require('../../assets/imgs/icon_logout.png')}

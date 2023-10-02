@@ -93,7 +93,7 @@ export function GameContextProvider({ children }: Props) {
     if (hasReceivedInvitationFrom === to && gameType === gameTypeInvitation)
       return acceptGameInvite(hasReceivedInvitationFrom);
 
-    // Auto cancel and decline other invites and leave queue
+    // Auto cancel and decline other recvInvitesFrom and leave queue
     if (hasReceivedInvitationFrom)
       declineGameInvite(hasReceivedInvitationFrom);
     if (hasSendInvitationTo)

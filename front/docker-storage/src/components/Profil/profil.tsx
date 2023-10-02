@@ -1,10 +1,11 @@
 import Cookies from 'js-cookie';
 import { IUser, IUserComplete } from '../../utils/interfaces';
 import React from 'react';
+import { UserButton } from '../User/UserButton';
+import { useUserContext } from '../../contexts';
 
 export interface ProfilProps {
   otherUser: IUser | undefined | null;
-  meUser: IUserComplete | undefined;
   onClose?: () => void;
 }
 
@@ -14,13 +15,13 @@ export default function Profil(props: ProfilProps) {
     window.location.replace('/login');
     alert('Vous avez été déconnecté');
   }
-
+  const { user } = useUserContext()
   if (!props.otherUser)
     return (<div style={profilContainer}>
       <p>Utilisateur introuvable.</p>
     </div>);
 
-  const isMe = props.otherUser?.id === props.meUser?.id;
+  const isMe = props.otherUser?.id === user?.id;
 
   return (
     <div style={profilContainer}>
@@ -38,6 +39,7 @@ export default function Profil(props: ProfilProps) {
         <p>--------------</p>
         <p>LAST MATCHS</p>
         <p>Winrate : {props.otherUser?.winrate}</p>
+        {!isMe && <UserButton otherUser={props.otherUser} /> }
       </>
     </div>
   );

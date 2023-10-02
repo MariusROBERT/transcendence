@@ -49,7 +49,6 @@ export function Search(props: Props) {
             {props.placeHolder || ''}
           </SearchBar>
           <Leaderboard
-            meUser={props.user}
             searchTerm={props.searchTerm}
           />
         </div>

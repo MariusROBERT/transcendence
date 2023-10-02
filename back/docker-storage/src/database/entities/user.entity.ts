@@ -87,10 +87,10 @@ export class UserEntity {
   friends: number[];
 
   @Column('integer', { array: true, nullable: true })
-  invites: number[];
+  recvInvitesFrom: number[];
 
   @Column('integer', { array: true, nullable: true })
-  invited: number[];
+  sentInvitesTo: number[];
 
   @Column('integer', { array: true, nullable: true })
   blocked: number[];
