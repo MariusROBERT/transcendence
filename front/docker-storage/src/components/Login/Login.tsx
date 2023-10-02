@@ -192,7 +192,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     id={'username'}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder='login..'
+                    placeholder='login...'
+                    pattern={!signIn ? /[a-zA-Z0-9\-_+.]{1,10}/.source : undefined}
                     required
                   />
                   <PasswordInput
