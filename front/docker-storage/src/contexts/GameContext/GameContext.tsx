@@ -76,7 +76,7 @@ export function GameContextProvider({ children }: Props) {
     if (id !== 0 && socket)
       fetchGameContext();
     // eslint-disable-next-line
-  }, [id, socket]);
+  }, [id, socket, navigate]);
 
   // useEffect(() => {
   // function printState(){
@@ -304,8 +304,8 @@ export function GameContextProvider({ children }: Props) {
   return (
     <>
       <GameContext.Provider value={{
-        inviteFrom: inviteFrom,
-        inviteTo: inviteTo,
+        inviteFrom,
+        inviteTo,
         isInGameWith,
         isInQueue,
         gameType,

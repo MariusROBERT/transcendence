@@ -43,6 +43,7 @@ export function UserContextProvider({ children }: Props) {
   const [user, setUser] = useState<IUserComplete>();
 
   async function fetchContext(): Promise<void> {
+    setId(0);
     const user = (await Fetch('user', 'GET'))?.json;
     if (!user) {
       setIsOnline(false);
@@ -51,7 +52,8 @@ export function UserContextProvider({ children }: Props) {
       setUsername(user.username);
       setId(user.id);
       setIsOnline(true);
-      initSocket();
+      if (!socket)
+        initSocket();
     }
   }
 
@@ -61,11 +63,12 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('disconnect', (reason) => {
       socket?.emit('reset_user_socket_id', { id: id });
-      console.log('Disconnected from socket.io server', reason);
+      //console.log('Disconnected from socket.io server', reason);
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
+      console.log('go');
+      // console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
     });
     socket?.connect();
 
