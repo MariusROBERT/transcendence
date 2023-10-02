@@ -5,7 +5,6 @@ import { ChannelInfos, IUser, IUserComplete } from '../../utils/interfaces';
 import { ChannelPannel } from '../ChannelBanner/ChannelBanner';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
-import { unsubscribe } from 'diagnostics_channel';
 
 interface Props {
   children?: ReactNode;

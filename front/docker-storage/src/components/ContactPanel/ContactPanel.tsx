@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Background, Border, GroupItems } from '..';
 import { color, Viewport } from '../../utils';
 import { IUserComplete } from '../../utils/interfaces';
@@ -37,9 +38,7 @@ export function ContactPanel({ meUser, viewport }: Props) {
           </Border>
         </Background>
       </div>
-      <div>
-        {<ChatMenu/>}
-      </div>
+      <div>{<ChatMenu />}</div>
     </>
   );
 }

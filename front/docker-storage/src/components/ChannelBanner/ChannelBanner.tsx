@@ -7,9 +7,13 @@ import {
   SetCurrChan,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
+import Popup from '../ComponentBase/Popup';
+import EditChat from '../ChanMenu/EditChat';
+import { useState } from 'react';
 
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
   const { socket } = useUserContext();
+  const [editVisible, setEditVisible] = useState<boolean>(false);
 
   async function OnJoinChannel() {
     UpdateChannelMessage(id);
@@ -50,13 +54,16 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
-          onClick={() => console.log('settings')}
+          onClick={() => setEditVisible(true)}
         ></RoundButton>
         <p style={{ fontSize: '20px' }}>
           {name.slice(0, 25)}
           {name.length > 25 ? '...' : ''}
         </p>
       </Flex>
+    <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
+      <EditChat></EditChat>
+    </Popup>
     </div>
   );
 }
