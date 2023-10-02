@@ -196,7 +196,7 @@ export function ChatPanel({ viewport, width }: Props) {
           onClick={onEnterPressed}
         ></RoundButton>
         <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
-          <ChatUser data={currUser}></ChatUser>
+          <ChatUser data={currUser} visibility={userVisible}></ChatUser>
         </Popup>
       </div>
     </Background>

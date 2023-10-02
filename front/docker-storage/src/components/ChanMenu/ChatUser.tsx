@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Fetch, color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
@@ -7,12 +7,18 @@ import { ErrorPanel } from '../Error/ErrorPanel';
 
 interface Props {
   data: IChatUser | undefined;
+  visibility: boolean
 }
 
-export default function ChatUser({ data }: Props) {
+export default function ChatUser({ data, visibility }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
+
+  useEffect(() => {
+    if (visibility === false)
+      setErrorVisible(false);
+  })
 
   async function OnProfilClick() {}
 
@@ -56,7 +62,10 @@ export default function ChatUser({ data }: Props) {
         }),
       );
       setmuteTime('');
+      return;
     }
+    setErrorVisible(true);
+    seterrorMessage('mute time is number only')
   }
 
   async function OnUnMute() {
@@ -85,7 +94,7 @@ export default function ChatUser({ data }: Props) {
         icon={String(data?.sender_urlImg)}
         onClick={OnProfilClick}
       ></RoundButton>
-        <Button onClick={OnKick}> Kick </Button>
+      <Button onClick={OnKick}> Kick </Button>
       <Button onClick={OnBan}> Ban </Button>
       <Button onClick={OnUnBan}> UnBan </Button>
       <p>
