@@ -38,19 +38,22 @@ export default function Popup(props: Props) {
         }
       }}
     >
-      <div style={{ position: 'relative', ...props.style }}>
-        <p onClick={() => props.setIsVisible(false)}
-           style={{
-             position: 'absolute',
-             top: '15px',
-             left: '15px',
-             fontSize: '1.5em',
-             padding: '5px',
-             margin: 0,
-           }}>X
-        </p>
-        {props.children}
-      </div>
+      {
+        props.isVisible &&
+        (<div style={{ position: 'relative', ...props.style }}>
+          <p onClick={() => props.setIsVisible(false)}
+             style={{
+               position: 'absolute',
+               top: '15px',
+               left: '15px',
+               fontSize: '1.5em',
+               padding: '5px',
+               margin: 0,
+             }}>X
+          </p>
+          {props.children}
+        </div>)
+      }
     </div>
   );
 }
