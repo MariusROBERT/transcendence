@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Background, Border, GroupItems } from '..';
 import { color, Viewport } from '../../utils';
 import { IUserComplete } from '../../utils/interfaces';

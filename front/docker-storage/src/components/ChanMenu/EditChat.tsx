@@ -1,14 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Fetch, color } from '../../utils';
-import { Btn } from '../Settings/settings';
+import { useState } from 'react';
+import { color } from '../../utils';
 import { RoundButton } from '../RoundButton/RoundButton';
-import { publish } from '../../utils/event';
 import { Button } from '../Button/Button';
-
-interface Props {
-  name: string; //  Pass the user name in ChatMenu
-  visible: boolean;
-}
 
 export default function EditChat() {
   const [password, setPassword] = useState<string>('');
@@ -17,9 +10,7 @@ export default function EditChat() {
     <div style={createChatStyle}>
       <h2>Edit Channel</h2>
 
-      <p></p>
-
-      <p style={{textAlign: 'center', fontSize: '14px'}}>
+      <p style={{ textAlign: 'center', fontSize: '14px' }}>
         <input
           placeholder="New password"
           style={inputStyle}
@@ -59,9 +50,7 @@ export default function EditChat() {
       ></RoundButton>
       <br></br>
 
-      <Button onClick={() => console.log("click")}>
-        Save
-      </Button>
+      <Button onClick={() => console.log('click')}>Save</Button>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { RoundButton } from '../RoundButton/RoundButton';
 import { Button } from '../Button/Button';
 import { IChatUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
+import { UpdateChannelUsers } from '../../utils/channel_functions';
 
 interface Props {
   data: IChatUser | undefined;
@@ -19,7 +19,7 @@ export default function ChatUser({ data, visibility }: Props) {
   useEffect(() => {
     if (visibility === false)
       setErrorVisible(false);
-  })
+  }, [visibility])
 
   async function OnProfilClick() {}
 
