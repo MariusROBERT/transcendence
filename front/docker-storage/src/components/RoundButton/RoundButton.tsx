@@ -6,6 +6,7 @@ interface Props {
   icon_size?: number;
   transition_duration_ms?: number;
   onClick: () => void;
+  isDisabled?: boolean;
 }
 
 export function RoundButton(
@@ -14,6 +15,7 @@ export function RoundButton(
     icon_size = 35,
     transition_duration_ms = 200,
     onClick,
+    isDisabled
   }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -44,7 +46,12 @@ export function RoundButton(
         ? color.beige
         : color.grey;
 
+    let opacity:number;
+    isDisabled ? opacity=0.2 : opacity=1;
+
+
     return {
+      opacity: opacity,
       backgroundImage: 'url(' + icon + ')',
       backgroundPosition: 'center center',
       backgroundSize: 'cover',
@@ -66,7 +73,7 @@ export function RoundButton(
         alignItems: 'center',
       }}
     >
-      <button
+      <button disabled={isDisabled}
         style={getIconStyle()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

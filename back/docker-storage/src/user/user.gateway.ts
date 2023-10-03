@@ -1,9 +1,6 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
-import { Socket } from 'socket.io';
-import { UserEntity } from "src/database/entities/channel.entity";
-import { User } from "src/utils/decorators/user.decorator";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
 export class UserGateway {
@@ -36,18 +33,15 @@ export class UserGateway {
 	) {
 		const receiver = await this.userService.getUserById(msg.receiver);
 		const sender = await this.userService.getUserById(msg.sender);
-		return await this.userService.handleAsk(receiver, sender.id, false);
+		await this.userService.handleAsk(receiver, sender.id, false);
 	}
 
 	@SubscribeMessage('block_user')
 	async blockAUser(
-		@MessageBody() msg: { to: number, from: number },
+		@MessageBody() msg: { receiver: number, sender: number },
 	) {
-		console.log("GATEWAY BLOCK USER");
-		console.log("TO : ", msg.to);
-
-		const sender = await this.userService.getUserById(msg.from);
-		return await this.userService.blockAUser(msg.to, sender);
+		const sender = await this.userService.getUserById(msg.sender);
+		await this.userService.blockAUser(msg.receiver, sender);
 	}
 	
 }

@@ -1,7 +1,7 @@
 import { color } from "../../utils";
 import { RoundButton, Flex } from "..";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IUser } from "../../utils/interfaces";
 import { lookGame, openChat, sendGameInvite } from "../../utils/user_functions";
 import { useFriendsRequestContext } from "../../contexts/FriendsRequestContext/FriendsRequestContext";
@@ -15,15 +15,16 @@ interface Props {
 export function UserButton({ otherUser }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	if (!jwtToken)
-	    window.location.replace('/login');
-	const [isOpen, setIsOptionOpen] = useState<boolean>(false);
+		window.location.replace('/login');
+
 	const { sendFriendRequest, acceptFriendRequest, declineFriendRequest, blockUser, sendInvitesTo, recvInvitesFrom, friends, blocked } = useFriendsRequestContext();
-	const { id, user } = useUserContext();
+	const { id, user, socket } = useUserContext();
+	const [isBlocked, setIsBlocked] = useState(user?.blocked.includes(otherUser.id));
 
-	const openOptions = () => {
-		setIsOptionOpen(!isOpen);
-	}
-
+	useEffect(() => {
+		user?.blocked.includes(otherUser.id) ? setIsBlocked(true) : setIsBlocked(false);
+	}, [user])
+	
 	return (
 		<div style={UserbUttonContainer}>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
@@ -34,12 +35,10 @@ export function UserButton({ otherUser }: Props) {
 					{!friends?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={() => sendFriendRequest(otherUser.id)} />
 					}
-					<RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => openOptions()} />
-					{isOpen && !user?.blocked.includes(otherUser.id) && (
-						<div style={optionStyle}>
-							{ user && <button onClick={() => {blockUser(otherUser.id, user.id); openOptions()}}>block</button>}
-						</div>
-					)}
+					{user && <RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => {
+						setIsBlocked(true);
+						blockUser(otherUser.id, user.id);
+					}} isDisabled={isBlocked} />}
 					{recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => acceptFriendRequest(id, otherUser.id)} />
@@ -53,7 +52,6 @@ export function UserButton({ otherUser }: Props) {
 }
 
 const UserbUttonContainer: React.CSSProperties = {
-	// border: '4px solid red',
 	width: '60%'
 }
 

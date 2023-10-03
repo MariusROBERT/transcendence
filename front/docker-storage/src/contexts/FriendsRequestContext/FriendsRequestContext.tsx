@@ -49,6 +49,7 @@ export function FriendsRequestProvider({ children }: Props) {
 		console.log("friends : ", friends);
 		console.log("recvInvitesFrom : ", recvInvitesFrom);
 		console.log("sendInvitesTo: ", sendInvitesTo);
+		console.log("BLOCKED : ", blocked);
 	}, [friends, recvInvitesFrom, sendInvitesTo])
 
 	async function fetchFriendsRequestContext(): Promise<void> {
@@ -62,12 +63,11 @@ export function FriendsRequestProvider({ children }: Props) {
 
 	// Invites -- Event emission -----------------------------------------------------------
 	function sendFriendRequest(to: number) {
-		// let tmp2 = blocked as number[];
-		// const index = tmp2.indexOf(to)
-		// if (index !== -1) {
-		// 	tmp2.splice(index, 1);
-		// 	setBlocked(tmp2);
-		// }
+		let index = blocked.indexOf(to)
+		if (index !== -1) {
+			blocked.splice(index, 1);
+			setBlocked(blocked);
+		}
 
 		socket?.emit('send_friend_request', { sender: id, receiver: to });
 		setSendInvitesTo([...sendInvitesTo, to]);
@@ -95,16 +95,23 @@ export function FriendsRequestProvider({ children }: Props) {
 	}
 
 	function blockUser( to: number, from: number ) {
-		console.log("wesh c quoi le bail");
-		console.log("in Context : TO : ", to);
 		socket?.emit('block_user', { receiver: to, sender: from });
+		setBlocked([...blocked, to]);
 	}
 
 	// Invites -- Event reception ------------------------------------------------
 	function onSendFriendRequest(body: { sender: number, receiver: number }) {
+		if (blocked.includes(body.sender))
+			return ;
 		let tmp = recvInvitesFrom;
 		tmp = [...recvInvitesFrom as number[], body.sender];
 		setRecvInvitesFrom(tmp);
+
+		let index = blocked.indexOf(body.sender)
+		if (index !== -1) {
+			blocked.splice(index, 1);
+			setBlocked(blocked);
+		}
 	}
 	
 	function onAcceptFriendRequest(body: { receiver: number, sender: number }) {
@@ -118,8 +125,11 @@ export function FriendsRequestProvider({ children }: Props) {
 	}
 
 	function onDeclineFriendRequest(body: { sender: number, receiver: number }) {
-		console.log("sender: ", body.sender);
-		console.log("receiver: ", body.receiver);
+		let tmp2 = sendInvitesTo as number[];
+		const index = tmp2.indexOf(body.receiver)
+		if (index !== -1)
+			tmp2.splice(index, 1);
+		setSendInvitesTo(tmp2);
 	}
 
 	function onBlockUser(body: { to: number }) {

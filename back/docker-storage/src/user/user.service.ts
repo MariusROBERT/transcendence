@@ -164,11 +164,13 @@ export class UserService {
   // FRIEND'S DEMAND :
 
   async askFriend(user: UserEntity, id: number) {
-
     const userAsked = await this.UserRepository.findOne({ where: { id } });
     if (!userAsked) {
       throw new NotFoundException(`le user d'id ${id} n'existe pas`);
     }
+
+    if (userAsked.blocked.includes(user.id))
+      return ;
 
     if (!user.sentInvitesTo.includes(id))
       user.sentInvitesTo.push(id);
@@ -188,32 +190,47 @@ export class UserService {
     if (!sender) {
       throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
     }
-    const indexSenderInInvites = user.recvInvitesFrom.indexOf(id); 
+    const indexSenderInInvites = user.recvInvitesFrom.indexOf(id);
     if (indexSenderInInvites === -1) {
       throw new NotFoundException(
         `le sender d'id ${id} ne fait parti de la liste d'recvInvitesFrom du user (receiver) d'id ${user.id}`,
       );
     }
-    const indexReceiverInInvited = sender.sentInvitesTo.indexOf(user.id); 
+    const indexReceiverInInvited = sender.sentInvitesTo.indexOf(user.id);
     if (indexReceiverInInvited === -1) {
       throw new NotFoundException(
         `Vous ne ne faite pas parti de la liste d'sentInvitesTo du sender d'id ${id}`,
       );
     }
 
+    if (user.blocked.includes(id) && bool === false)
+      return;
+    if (user.blocked.includes(id) && bool === true) {
+      let index = user.blocked.indexOf(id);
+      if (index !== -1) {
+        user.blocked.splice(index, 1);
+        await this.UserRepository.save(user);
+      }
+    }
+
     sender.sentInvitesTo.splice(indexSenderInInvites, 1);
     user.recvInvitesFrom.splice(indexReceiverInInvited, 1);
 
     if (bool == true) {
-      user.friends = [...user.friends, sender.id]; 
+      user.friends = [...user.friends, sender.id];
       sender.friends = [...sender.friends, user.id];
+    }
+
+    if (sender.blocked.includes(user.id)) {
+      let index = sender.blocked.indexOf(user.id);
+      if (index !== -1) {
+        sender.blocked.splice(index, 1);
+      }
     }
 
     this.UserRepository.save(user);
     this.UserRepository.save(sender);
-    console.log("user friends : ", user.friends);
-    console.log("sender frien : ", sender.friends);
-    
+
   }
 
   // CHANNEL & MESSAGE :
@@ -237,7 +254,6 @@ export class UserService {
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
       .getMany();
-    //console.log("USER: " + users);
     return users;
   }
 
@@ -309,29 +325,8 @@ export class UserService {
     id: number,
     user: UserEntity
   ) {
-		console.log("USERSERVICE BLOCK USER");
-    try {
-      const userToBlock = await this.UserRepository.findOne({ where: { id } });
-      if (!userToBlock)
-        throw new ConflictException(`user ${id} does not exist`);
-      const isHeInBlocked = this.UserRepository.createQueryBuilder('user');
-      let userId = user.id;
-      isHeInBlocked
-        .where('user.id = :userId', { userId })
-        .andWhere(':id = ANY(user.blocked)', { id });
-      const result = await isHeInBlocked.getOne();
-      console.log("user.blocked : ", user.blocked);
-      console.log("idToBlock : ", id);
-
-      if (!result) {
-        user.blocked = [...user.blocked, userToBlock.id];
-        await this.UserRepository.save(user);
-      } else {
-        throw new ConflictException(`user ${id} already in blocked`);
-      }
-    } catch (e) {
-      throw new ConflictException(`user ${id} already in blocked`);
-    }
+    user.blocked = [...user.blocked, id];
+    await this.UserRepository.save(user);
   }
 
   // UTILS :
