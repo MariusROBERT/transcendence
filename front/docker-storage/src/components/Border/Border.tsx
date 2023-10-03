@@ -11,13 +11,13 @@ interface Props {
 }
 
 export function Border({
-                         children,
-                         borderRadius = 5,
-                         borderSize = 2,
-                         borderColor = color.white,
-                         width = 0,
-                         height = 0,
-                       }: Props) {
+  children,
+  borderRadius = 5,
+  borderSize = 2,
+  borderColor = color.white,
+  width = 0,
+  height = 0,
+}: Props) {
   const style = {
     minWidth: width === 0 ? '' : width + 'px',
     minHeight: height === 0 ? '' : height + 'px',

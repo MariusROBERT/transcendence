@@ -1,5 +1,11 @@
 import { Fetch } from '../../utils';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { IUserComplete } from '../../utils/interfaces';
@@ -81,7 +87,8 @@ export function UserContextProvider({ children }: Props) {
           transports: ['websocket'],
           autoConnect: false,
           query: { token },
-        }));
+        }),
+      );
     }
     return () => {
       socket?.close();

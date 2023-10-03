@@ -12,7 +12,7 @@ export class GameMatchmaking {
   }
 
   //returns a Game with 1 given or the 2 given player
-  getGame(p1:number, p2:number | undefined = undefined): gameRoom{
+  getGame(p1: number, p2: number | undefined = undefined): gameRoom {
     if (p2 == null)
       return this.controller.games.find(g => g.playerIds.includes(p1));
     return this.controller.games.find(g => g.playerIds.includes(p1) && g.playerIds.includes(p2));
@@ -63,7 +63,7 @@ export class GameMatchmaking {
         moveP1: {isMoving: false, up: false},
         moveP2: {isMoving: false, up: false}
       },
-      ready:false
+      ready: false,
     };
     this.controller.games.push(game);
     this.controller.gateway.openGame(game.playerIds);
@@ -73,10 +73,8 @@ export class GameMatchmaking {
     const game = this.getGame(id);
     if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
-    if (playerNumber === 0)
-      game.state.score.p1 = 0;
-    else
-      game.state.score.p2 = 0;
+    if (playerNumber === 0) game.state.score.p1 = 0;
+    else game.state.score.p2 = 0;
     return this.endGame(id);
   }
 
@@ -87,17 +85,14 @@ export class GameMatchmaking {
     if (game === undefined) return;
 
     //first call set ready to true and second start the update function
-    if (!game.ready)
-      game.ready = true;
-    else
-      this.controller.service.update(game);
+    if (!game.ready) game.ready = true;
+    else this.controller.service.update(game);
   }
 
-  async endGame(id: number){
+  async endGame(id: number) {
     //find game
     let game = this.getGame(id);
-    if (game === undefined)
-      return 'game not found';
+    if (game === undefined) return 'game not found';
 
     //stop the game
     if (game.state.running) {
@@ -115,5 +110,4 @@ export class GameMatchmaking {
     // dev msg
     return 'game end';
   }
-
 }

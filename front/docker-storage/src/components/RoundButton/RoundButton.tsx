@@ -38,13 +38,13 @@ export function RoundButton(
     const size = isClicked
       ? icon_size * 0.9
       : isHovered
-        ? icon_size * 1.2
-        : icon_size;
+      ? icon_size * 1.2
+      : icon_size;
     const borderColor = isClicked
       ? color.white
       : isHovered
-        ? color.beige
-        : color.grey;
+      ? color.beige
+      : color.grey;
 
     let opacity:number;
     isDisabled ? opacity=0.2 : opacity=1;

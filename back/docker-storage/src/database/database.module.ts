@@ -10,6 +10,8 @@ import { UserService } from '../user/user.service';
 import { MessagesService } from '../messages/messages.service';
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { MutedService } from 'src/muted/muted.service';
+import { MutedEntity } from './entities/muted.entity';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { JwtService } from '@nestjs/jwt';
       entities: ['dist/**/*.entity{.ts,.js}'], // a chaque modif des fichiers entity, mettre a jour la DB
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([ChannelEntity, MessageEntity, UserEntity]),
+    TypeOrmModule.forFeature([ChannelEntity, MessageEntity, UserEntity, MutedEntity]),
   ],
   controllers: [],
   providers: [
@@ -32,6 +34,7 @@ import { JwtService } from '@nestjs/jwt';
     UserService,
     MessagesService,
     AuthService,
+    MutedService,
     JwtService,
   ],
   exports: [],

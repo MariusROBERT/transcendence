@@ -10,7 +10,6 @@ import { MessagesModule } from './messages/messages.module';
 import { GameModule } from './game/game.module';
 import { UserGateway } from './user/user.gateway';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,5 +27,4 @@ import { UserGateway } from './user/user.gateway';
   providers: [AppService, UserGateway], // on mettra les gateway ici
   exports: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

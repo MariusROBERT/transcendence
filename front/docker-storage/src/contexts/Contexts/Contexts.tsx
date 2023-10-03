@@ -3,7 +3,7 @@ import { GameContextProvider, UserContextProvider } from '..';
 import { FriendsRequestProvider } from '../FriendsRequestContext/FriendsRequestContext';
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function Contexts({ children }: Props) {
@@ -17,5 +17,5 @@ export function Contexts({ children }: Props) {
         </FriendsRequestProvider>
       </UserContextProvider>
     </>
-  )
+  );
 }

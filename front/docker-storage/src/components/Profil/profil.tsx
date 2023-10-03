@@ -67,7 +67,6 @@ const imgStyle = {
   border: '2px solid',
 };
 
-
 const statusStyle = {
   width: '10px',
   height: '10px',

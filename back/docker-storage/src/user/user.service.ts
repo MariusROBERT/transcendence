@@ -35,8 +35,7 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {
-  }
+  ) {}
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -114,13 +113,12 @@ export class UserService {
   //  USE FOR ADMIN BAN MUTE ..
   async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
     try {
-      if (!user.channels)
-        user.baned = [];
+      if (!user.channels) user.baned = [];
       //user.channels.push(channel);
       user.baned = [...user.baned, channel];
       await this.UserRepository.save(user);
     } catch (e) {
-      console.log("Error: " + e);
+      console.log('Error: ' + e);
     }
   }
 
@@ -245,14 +243,68 @@ export class UserService {
   async isInChannel(id: number, channel: ChannelEntity) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
-
   }
 
   async getUsersInChannels(channelId: number) {
-    const users = this.UserRepository.createQueryBuilder('user')
+    const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
+      //.addSelect('true AS data')
+      .getMany();
+    const admin = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.admin', 'admin')
+      .where('admin.id = :channelId', { channelId })
+      .select(['user.id', 'user.username', 'user.urlImg'])
+      //.addSelect('true AS data')
+      .getMany();
+    const owner = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.own', 'own')
+      .where('own.id = :channelId', { channelId })
+      .select(['user.id', 'user.username', 'user.urlImg'])
+      //.addSelect('true AS data')
+      .getMany();
+    const fusers = users.map((d) => {
+      var data = { ...d };
+      data['type'] = 'member';
+      return data;
+    });
+    const fadmin = admin.map((d) => {
+      var data = { ...d };
+      data['type'] = 'admin';
+      return data;
+    });
+    const fowner = owner.map((d) => {
+      var data = { ...d };
+      data['type'] = 'owner';
+      return data;
+    });
+    const all = fusers.concat(fadmin, fowner);
+    return all;
+  }
+
+  async getFullAdminInChannels(channelId: number) {
+    const admin = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.admin', 'admin')
+      .where('admin.id = :channelId', { channelId })
+      .getMany();
+    return admin;
+  }
+
+  async getBannedInChannels(channelId: number) {
+    const users = await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.baned', 'baned')
+      .where('baned.id = :channelId', { channelId })
+      .getMany();
+    return users;
+  }
+
+  //  The diff here is that full data are sent
+  async getFullUsersInChannels(channelId: number) {
+    const users = this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.channels', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      // .select(['user.id', 'user.username', 'user.urlImg'])
       .getMany();
     return users;
   }
@@ -342,9 +394,7 @@ export class UserService {
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    return channel.admins.some(
-      (adminUser) => adminUser.id === user.id,
-    );
+    return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 
 
@@ -364,7 +414,9 @@ export class UserService {
   }
 
   async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    return await this.UserRepository.findOne({ where: { socketId: socketId.socketId } });
+    return await this.UserRepository.findOne({
+      where: { socketId: socketId.socketId },
+    });
   }
 
   async setUserSocketId(id: number, socketId: string) {
@@ -400,7 +452,8 @@ export class UserService {
     const user = await this.UserRepository.findOne({
       where: { username },
     });
-    if (!user) throw new NotFoundException(`No User found for username ${username}`);
+    if (!user)
+      throw new NotFoundException(`No User found for username ${username}`);
     return user;
   }
 

@@ -97,7 +97,7 @@ export class UserEntity {
 
   // GAME :
 
-  @Column({default: ''})
+  @Column({ default: '' })
   socketId: string;
 
   @Column({ default: 0 })
