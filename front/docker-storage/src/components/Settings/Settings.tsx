@@ -47,6 +47,55 @@ export default function Settings(props: Props) {
     }
   }, [props.isVisible]);
 
+  // IMG
+
+  function setImage(isValid: boolean, files: FileList) {
+    if (!isValid) {
+      setPictureError('File is not an image!');
+    } else {
+      setPictureError('');
+      if (files && files.length !== 0) {
+        setNewImage(files[0]);
+        setNewImageUrl(URL.createObjectURL(files[0]));
+      }
+    }
+  }
+
+  function isImage(e: ChangeEvent<HTMLInputElement>, files: FileList) {
+    const file = e.target.files?.[0] || null;
+    const reader = new FileReader();
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      const bytes = new Uint8Array(arrayBuffer);
+      const jpgMagic = [0xFF, 0xD8, 0xFF];
+      const pngMagic = [0x89, 0x50, 0x4E, 0x47];
+      let isValid = true;
+
+      for (let i = 0; i < jpgMagic.length; i++) {
+        if (bytes[i] !== jpgMagic[i]) {
+          isValid = false;
+          break;
+        }
+      }
+
+      // console.log(isValid ? 'jpg' : 'not jpg');
+      if (isValid)
+        return setImage(isValid, files);
+      isValid = true;
+
+      for (let i = 0; i < pngMagic.length; i++) {
+        if (bytes[i] !== pngMagic[i]) {
+          isValid = false;
+          break;
+        }
+      }
+      // console.log(isValid ? 'png' : 'not png');
+
+      setImage(isValid, files);
+    };
+    reader.readAsArrayBuffer(file as Blob);
+  }
+
   // MODIFICATIONS
 
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
@@ -153,17 +202,15 @@ export default function Settings(props: Props) {
               id={'image'}
               type='file'
               accept={'image/png, image/jpeg, image/jpg'}
-              onChange={(event: ChangeEvent) => {
+              onChange={async (event: ChangeEvent) => {
                 const { files } = event.target as HTMLInputElement;
                 if (files && files.length !== 0) {
                   if (files[0].size > 1024 * 1024 * 5) {
                     setPictureError('File is too big!');
                     setNewImage(undefined);
                   } else {
-                    setNewImageUrl(URL.createObjectURL(files[0]));
-                    setPictureError('');
-                    setNewImage(files[0]);
-                  } //TODO: when too big file is upload, then settings are closed and you re-open the same file, it doesn't show the error
+                    isImage(event as ChangeEvent<HTMLInputElement>, files);
+                  }
                 }
               }
               }
@@ -188,7 +235,7 @@ export default function Settings(props: Props) {
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
-              noVerify /* DEV: uncomment this line for dev */
+              // noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
@@ -196,7 +243,7 @@ export default function Settings(props: Props) {
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
                            confirmPassword={password}
-              noVerify /* DEV: uncomment this line for dev */
+              // noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>
