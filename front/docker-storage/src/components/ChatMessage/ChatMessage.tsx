@@ -6,14 +6,16 @@ import { ChannelMessage } from '../../utils/interfaces';
 interface Props {
   children: string;
   data: ChannelMessage;
+  last: number | undefined;
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChatMessage({ children, data, onClick }: Props) {
+export function ChatMessage({ children, data, last, onClick }: Props) {
   const { id } = useUserContext();
 
-  return (
-    <div>
+  function User() {
+    if (last === id) return;
+    return (
       <div
         style={{
           display: 'flex',
@@ -26,6 +28,12 @@ export function ChatMessage({ children, data, onClick }: Props) {
         ></RoundButton>
         <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
       </div>
+    );
+  }
+
+  return (
+    <div>
+      {User()}
       <div
         style={{
           flex: 'auto',

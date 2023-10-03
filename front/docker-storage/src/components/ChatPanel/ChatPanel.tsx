@@ -141,7 +141,12 @@ export function ChatPanel({ viewport, width }: Props) {
     return (
       <>
         {msg.map((data, idx) => (
-          <ChatMessage key={idx} data={data} onClick={OnUserClick}>
+          <ChatMessage
+            key={idx}
+            data={data}
+            onClick={OnUserClick}
+            last={idx > 0 ? msg[idx - 1].sender_id : undefined}
+          >
             {data.message_content}
           </ChatMessage>
         ))}
