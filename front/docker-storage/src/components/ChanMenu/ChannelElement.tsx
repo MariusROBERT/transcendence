@@ -2,7 +2,11 @@ import { CSSProperties } from 'react';
 import { Flex } from '../Flex/FlexBox';
 import { RoundButton } from '../RoundButton/RoundButton';
 
-export default function ChannelElement() {
+interface Props {
+  name: string;
+}
+
+export default function ChannelElement({ name }: Props) {
   return (
     <div style={ChannelElementStyle}>
       <div>
@@ -13,9 +17,15 @@ export default function ChannelElement() {
               icon_size={50}
               onClick={() => {}}
             ></RoundButton>
-            <p style={{ fontSize: '25px' }}> Channel Name </p>
+            <p style={{ fontSize: '25px' }}> {name} </p>
           </Flex>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginLeft: '50px'}}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginLeft: '50px',
+            }}
+          >
             <RoundButton
               icon={require('../../assets/imgs/icon_chat.png')}
               icon_size={50}

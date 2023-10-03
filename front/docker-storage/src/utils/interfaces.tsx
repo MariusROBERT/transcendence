@@ -76,6 +76,14 @@ export interface ChannelPublic {
   owner_id: number
 }
 
+export interface ChannelPublicPass {
+  id: number,
+  channel_name: string,
+  chan_status: string,
+  priv_msg: boolean,
+  has_password: boolean
+}
+
 // --------------------------- LeaderBoard & Profil :
 
 export interface UserInfos {

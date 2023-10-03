@@ -17,6 +17,7 @@ import { UserService } from 'src/user/user.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
 import { MutedService } from 'src/muted/muted.service';
+import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 
 @Injectable()
 export class ChannelService {
@@ -56,7 +57,7 @@ export class ChannelService {
 
   async getPublicChannelById(id: number): Promise<ChannelEntity> {
     var channel = await this.ChannelRepository.createQueryBuilder('channel')
-      .leftJoin("channel.owner", "owner")
+      .leftJoin('channel.owner', 'owner')
       .select([
         'channel.id',
         'channel.channel_name as channel_name',
@@ -68,8 +69,25 @@ export class ChannelService {
       .getRawOne();
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
-    console.log(channel);
     return channel;
+  }
+
+  async getPublicChannelsData() {
+    var channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .where('channel.chan_status = :status', { status: ChanStateEnum.PUBLIC })
+      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+      .getMany();
+    if (!channel)
+      throw new NotFoundException(
+        'No Channels found, but you can create one ;)',
+      );
+    return channel.map((channel) => ({
+      id: channel.id,
+      channel_name: channel.channel_name,
+      chan_status: channel.chan_status,
+      priv_msg: channel.priv_msg,
+      has_password: !!channel.password,
+    }));
   }
 
   async getChannelByName(channel_name: string) {
@@ -84,12 +102,10 @@ export class ChannelService {
 
   async getChannelIdByName(channel_name: string) {
     var channel = await this.ChannelRepository.createQueryBuilder('channel')
-    .leftJoin("channel.owner", "owner")
-    .select([
-      'channel.id',
-    ])
-    .where('channel.channel_name = :channel_name', { channel_name })
-    .getOne();
+      .leftJoin('channel.owner', 'owner')
+      .select(['channel.id'])
+      .where('channel.channel_name = :channel_name', { channel_name })
+      .getOne();
     if (!channel)
       throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
     return channel;

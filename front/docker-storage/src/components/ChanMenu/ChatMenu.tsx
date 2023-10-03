@@ -12,6 +12,8 @@ import { subscribe } from '../../utils/event';
 import { useUserContext } from '../../contexts';
 import JoinChat from './JoinChat';
 import ChatInput from './ChatInput';
+import { Console } from 'console';
+import { ChannelPublicPass } from '../../utils/interfaces';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -24,7 +26,8 @@ import ChatInput from './ChatInput';
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
   const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
-  const [joinChatVisible, setJoinChatVisible] = useState<boolean>(true);
+  const [joinChatVisible, setJoinChatVisible] = useState<boolean>(false);
+  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined)
   const { socket } = useUserContext();
   var current_id = -1;
 
@@ -36,19 +39,23 @@ export function ChatMenu() {
 
   //  TODO: clean here
   async function OnJoinChannel() {
-    if (inputValue === '') return;
-    const path = 'channel/name/' + inputValue;
-    const res = await unsecureFetch(path, 'GET');
-    if (res?.ok) {
-      var data = await res?.json();
-      current_id = data.id;
-      AddUserInChannel();
-      SetCurrChan(inputValue);
-      socket?.emit('join', { channel: inputValue });
-    } else {
-      setCreChatVisible(true);
-    }
-    setInputValue('');
+    const res = await Fetch('channel/public_all', 'POST');
+    console.log(res?.json);
+    setChannels(res?.json);
+    setJoinChatVisible(true);
+    //if (inputValue === '') return;
+    //const path = 'channel/name/' + inputValue;
+    //const res = await unsecureFetch(path, 'GET');
+    //if (res?.ok) {
+    //  var data = await res?.json();
+    //  current_id = data.id;
+    //  AddUserInChannel();
+    //  SetCurrChan(inputValue);
+    //  socket?.emit('join', { channel: inputValue });
+    //} else {
+    //  setCreChatVisible(true);
+    //}
+    //setInputValue('');
   }
 
   useEffect(() => {
@@ -73,7 +80,7 @@ export function ChatMenu() {
         <CreateChat name={inputValue} visible={createChatVisible}></CreateChat>
       </Popup>
       <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
-        <JoinChat input={inputValue} setInput={setInputValue}></JoinChat>
+        <JoinChat input={inputValue} setInput={setInputValue} channels={channels}></JoinChat>
       </Popup>
     </div>
   );

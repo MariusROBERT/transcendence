@@ -56,6 +56,14 @@ export class ChannelController {
     return await this.channelService.getPublicChannelById(id);
   }
 
+  //  Only get the public data for all public channels
+  //  WTF Get not working here ???????????????????????
+  @Post('/public_all')
+  @UseGuards(JwtAuthGuard)
+  async GetPublicChannelsData() {
+    return await this.channelService.getPublicChannelsData();
+  }
+
   @Get('/name/:id')
   //@UseGuards(JwtAuthGuard)
   async GetChannelIdByName(@Param('id') id: string) {
