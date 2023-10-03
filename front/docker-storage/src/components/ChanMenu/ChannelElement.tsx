@@ -1,12 +1,13 @@
 import { CSSProperties } from 'react';
 import { Flex } from '../Flex/FlexBox';
 import { RoundButton } from '../RoundButton/RoundButton';
+import { ChannelPublicPass } from '../../utils/interfaces';
 
 interface Props {
-  name: string;
+  data: ChannelPublicPass;
 }
 
-export default function ChannelElement({ name }: Props) {
+export default function ChannelElement({ data }: Props) {
   return (
     <div style={ChannelElementStyle}>
       <div>
@@ -17,21 +18,24 @@ export default function ChannelElement({ name }: Props) {
               icon_size={50}
               onClick={() => {}}
             ></RoundButton>
-            <p style={{ fontSize: '25px' }}> {name} </p>
+            <p> {data.channel_name} </p>
           </Flex>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginLeft: '50px',
-            }}
-          >
-            <RoundButton
-              icon={require('../../assets/imgs/icon_chat.png')}
-              icon_size={50}
-              onClick={() => {}}
-            ></RoundButton>
-            <p style={{ marginLeft: '20px', fontSize: '20px' }}>42</p>
+          <div style={{ right: '0', overflow: 'hidden' }}>
+            <Flex
+              zIndex={'10'}
+              flex_direction="row"
+              flex_justifyContent={'space-evenly'}
+            >
+              <RoundButton
+                icon={require(
+                  data.has_password
+                    ? '../../assets/imgs/icon_lock.png'
+                    : '../../assets/imgs/icon_chat.png',
+                )}
+                onClick={() => {}}
+              ></RoundButton>
+              <p>42</p>
+            </Flex>
           </div>
         </div>
       </div>
