@@ -10,6 +10,8 @@ import Popup from '../ComponentBase/Popup';
 import CreateChat from './CreateChat';
 import { subscribe } from '../../utils/event';
 import { useUserContext } from '../../contexts';
+import JoinChat from './JoinChat';
+import ChatInput from './ChatInput';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -21,7 +23,8 @@ import { useUserContext } from '../../contexts';
 */
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
-  const [chatVisible, setChatVisible] = useState<boolean>(false);
+  const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
+  const [joinChatVisible, setJoinChatVisible] = useState<boolean>(true);
   const { socket } = useUserContext();
   var current_id = -1;
 
@@ -43,7 +46,7 @@ export function ChatMenu() {
       SetCurrChan(inputValue);
       socket?.emit('join', { channel: inputValue });
     } else {
-      setChatVisible(true);
+      setCreChatVisible(true);
     }
     setInputValue('');
   }
@@ -51,7 +54,7 @@ export function ChatMenu() {
   useEffect(() => {
     subscribe('chat_created', async () => {
       console.log('here');
-      setChatVisible(false);
+      setCreChatVisible(false);
     });
   });
 
@@ -64,53 +67,13 @@ export function ChatMenu() {
   //});
 
   return (
-    <div
-      style={{
-        margin: '30px',
-        borderRadius: '10px',
-        backgroundColor: color.white,
-        height: '60px',
-        width: '400px',
-      }}
-      className={'text cursor_pointer'}
-    >
-      <img
-        style={{
-          height: '80px',
-          width: '80px',
-          position: 'relative',
-          top: '-10px',
-          left: '-15px',
-        }}
-        src={require('../../assets/imgs/icon_search.png')}
-        alt={'search'}
-      />
-      <label>
-        <input
-          style={{
-            outline: 'none',
-            borderRadius: '10px',
-            border: '0',
-            position: 'relative',
-            left: '0px',
-            top: '-45px',
-            height: '55px',
-            width: '315px',
-            backgroundColor: color.white,
-          }}
-          placeholder="Search Channel"
-          value={inputValue}
-          onChange={(evt) => {
-            setInputValue(evt.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.keyCode !== 13) return;
-            OnJoinChannel();
-          }}
-        />
-      </label>
-      <Popup isVisible={chatVisible} setIsVisible={setChatVisible}>
-        <CreateChat name={inputValue} visible={chatVisible}></CreateChat>
+    <div>
+      <ChatInput input={inputValue} setInput={setInputValue} OnClick={OnJoinChannel}></ChatInput>
+      <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
+        <CreateChat name={inputValue} visible={createChatVisible}></CreateChat>
+      </Popup>
+      <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
+        <JoinChat input={inputValue} setInput={setInputValue}></JoinChat>
       </Popup>
     </div>
   );

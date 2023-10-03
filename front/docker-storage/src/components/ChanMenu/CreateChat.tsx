@@ -83,7 +83,7 @@ export default function CreateChat({ name, visible }: Props) {
   );
 }
 
-const createChatStyle: React.CSSProperties = {
+export const createChatStyle: React.CSSProperties = {
   borderRadius: '10px',
   padding: '42px',
   alignItems: 'center',
