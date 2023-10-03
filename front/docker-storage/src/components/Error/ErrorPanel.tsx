@@ -4,13 +4,14 @@ interface Props {
 
 export function ErrorPanel({ text }: Props) {
   return (
-    <div>
-      <p style={TextStyle}>{text}</p>
-    </div>
+    <p style={TextStyle}>
+      {text}
+    </p>
   );
 }
 
 const TextStyle: React.CSSProperties = {
   color: 'red',
   fontSize: 22,
+  margin: 0,
 };

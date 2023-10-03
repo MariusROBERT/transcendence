@@ -40,7 +40,7 @@ export class ChannelService {
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
-      throw new ConflictException('alreday used');
+      throw new ConflictException('Channel already exist');
     }
     return chan;
   }

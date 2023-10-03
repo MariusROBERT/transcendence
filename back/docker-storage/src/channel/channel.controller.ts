@@ -18,8 +18,20 @@ import {
 } from '../database/entities/channel.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserEntity } from '../database/entities/channel.entity';
-import { AdminGuard, OwnerGuard, TargetIsAdminGuard } from './guards/chan-admin.guards';
-import { InChannelGuard, IsBannedGuard, IsNotBannedGuard, PrivateGuard, SelfBannedGuard, SelfCommand } from './guards/chan-basic.guards';
+import {
+  AdminGuard,
+  OwnerGuard,
+  TargetIsAdminGuard,
+} from './guards/chan-admin.guards';
+import {
+  IsValidChannel,
+  InChannelGuard,
+  IsBannedGuard,
+  IsNotBannedGuard,
+  PrivateGuard,
+  SelfBannedGuard,
+  SelfCommand,
+} from './guards/chan-basic.guards';
 
 @Controller('channel')
 export class ChannelController {
@@ -77,15 +89,13 @@ export class ChannelController {
   }
 
   @Post()
+  @UseGuards(IsValidChannel)
   @UseGuards(JwtAuthGuard)
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
-    return await this.channelService.createChannel(
-      createChannelDto,
-      user,
-    );
+    return await this.channelService.createChannel(createChannelDto, user);
   }
 
   @Patch('/:id') // id_chan
@@ -115,7 +125,14 @@ export class ChannelController {
   }
 
   @Post('/add_admin/:id')
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(
+    AdminGuard,
+    PrivateGuard,
+    InChannelGuard,
+    IsNotBannedGuard,
+    SelfCommand,
+    TargetIsAdminGuard,
+  )
   @UseGuards(JwtAuthGuard)
   async AddAdminInChannel(
     @Body() uDto: UserChanDto,
@@ -126,7 +143,13 @@ export class ChannelController {
   }
 
   @Post('/rem_admin/:id')
-  @UseGuards(OwnerGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand)
+  @UseGuards(
+    OwnerGuard,
+    PrivateGuard,
+    InChannelGuard,
+    IsNotBannedGuard,
+    SelfCommand,
+  )
   @UseGuards(JwtAuthGuard)
   async RemAdminInChannel(
     @Body() uDto: UserChanDto,
@@ -137,7 +160,13 @@ export class ChannelController {
   }
 
   @Post('/kick/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(
+    AdminGuard,
+    PrivateGuard,
+    InChannelGuard,
+    SelfCommand,
+    TargetIsAdminGuard,
+  )
   @UseGuards(JwtAuthGuard)
   async KickUserFromChannel(
     @Body() uDto: UserChanDto,
@@ -148,7 +177,14 @@ export class ChannelController {
 
   //  TODO: Add dto
   @Post('mute/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(
+    AdminGuard,
+    PrivateGuard,
+    InChannelGuard,
+    IsNotBannedGuard,
+    SelfCommand,
+    TargetIsAdminGuard,
+  )
   @UseGuards(JwtAuthGuard)
   async MuteUserFromChannel(
     @Param('id', ParseIntPipe) id: number,
@@ -167,7 +203,14 @@ export class ChannelController {
   }
 
   @Post('ban/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, InChannelGuard, IsNotBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(
+    AdminGuard,
+    PrivateGuard,
+    InChannelGuard,
+    IsNotBannedGuard,
+    SelfCommand,
+    TargetIsAdminGuard,
+  )
   @UseGuards(JwtAuthGuard)
   async BanUserFromChannel(
     @Body() uDto: UserChanDto,
@@ -177,7 +220,13 @@ export class ChannelController {
   }
 
   @Post('unban/:id') // id_chan
-  @UseGuards(AdminGuard, PrivateGuard, IsBannedGuard, SelfCommand, TargetIsAdminGuard)
+  @UseGuards(
+    AdminGuard,
+    PrivateGuard,
+    IsBannedGuard,
+    SelfCommand,
+    TargetIsAdminGuard,
+  )
   @UseGuards(JwtAuthGuard)
   async UnBanUserFromChannel(
     @Body() uDto: UserChanDto,

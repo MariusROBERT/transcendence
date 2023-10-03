@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Fetch, color } from '../../utils';
-import { Btn } from '../Settings/settings';
-import { RoundButton } from '../RoundButton/RoundButton';
 import { publish } from '../../utils/event';
+import { Button } from '../Button/Button';
+import { ErrorPanel } from '../Error/ErrorPanel';
 
 interface Props {
   name: string; //  Pass the user name in ChatMenu
@@ -12,10 +12,20 @@ interface Props {
 export default function CreateChat({ name, visible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const [errorMessage, seterrorMessage] = useState<string>('Error');
+
+  useEffect(() => {
+    if (visible === false) {
+      setChannelName('');
+      setPassword('');
+      setErrorVisible(false);
+    }
+  }, [visible]);
 
   async function OnButtonClick() {
     if (channelName === '') return;
-    await Fetch(
+    const rep = await Fetch(
       'channel',
       'POST',
       JSON.stringify({
@@ -23,11 +33,20 @@ export default function CreateChat({ name, visible }: Props) {
         priv_msg: false,
       }),
     );
+    if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
+      seterrorMessage(rep?.json.message);
+      setErrorVisible(true);
+      return;
+    }
     publish('chat_created', undefined);
   }
 
   return (
     <div style={createChatStyle}>
+      <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+        <ErrorPanel text={errorMessage}></ErrorPanel>
+      </div>
+
       <h2>Create Channel</h2>
 
       <p>
@@ -56,25 +75,9 @@ export default function CreateChat({ name, visible }: Props) {
         <input type="radio" value="Public" name="type" /> Public
         <input type="radio" value="Private" name="type" /> Private
       </div>
-
-      <h4>Add admins</h4>
-      <RoundButton
-        icon={require('../../assets/imgs/icon_add_friend.png')}
-        icon_size={42}
-        onClick={() => console.log('add admin')}
-      ></RoundButton>
-
-      <h4>Add users</h4>
-      <RoundButton
-        icon={require('../../assets/imgs/icon_add_friend.png')}
-        icon_size={42}
-        onClick={() => console.log('add user')}
-      ></RoundButton>
-      <br></br>
-
-      <button style={Btn} onClick={OnButtonClick}>
-        <p style={{ margin: 'auto' }}>Save</p>
-      </button>
+      <p>
+        <Button onClick={OnButtonClick}>Save</Button>
+      </p>
     </div>
   );
 }
