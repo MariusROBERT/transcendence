@@ -14,7 +14,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
   const { id } = useUserContext();
 
   function User() {
-    if (last === id) return;
+    if (last === data.sender_id) return;
     return (
       <div
         style={{
@@ -46,7 +46,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         }}
       >
         <Background
-          bg_color={color.white}
+          bg_color={data.sender_id === id ? color.white2 : color.white}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
           flex_justifyContent={true ? 'flex-start' : 'flex-end'}
