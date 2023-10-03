@@ -147,7 +147,6 @@ export class IsValidChannel implements CanActivate {
     const body: CreateChannelDto = request.body;
     const regex = /^[a-zA-Z]+$/;
 
-    console.log("here");
     if (body.channel_name.length > 20)
       throw new BadRequestException('Channel name is too large');
     if (!regex.test(body.channel_name))

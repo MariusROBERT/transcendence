@@ -31,6 +31,7 @@ export default function CreateChat({ name, visible }: Props) {
       JSON.stringify({
         channel_name: channelName,
         priv_msg: false,
+        password: password === '' ? undefined : password,
       }),
     );
     if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
