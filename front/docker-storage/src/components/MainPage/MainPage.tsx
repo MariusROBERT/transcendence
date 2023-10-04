@@ -29,8 +29,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   useEffect(() => {
     if (!user)
       return;
-    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-      setNotifs(user.invites.length);
+    if (user.recvInvitesFrom && Array.isArray(user.recvInvitesFrom) && user.recvInvitesFrom.length > 0)
+      setNotifs(user.recvInvitesFrom.length);
   }, [user]);
 
   return (
@@ -39,7 +39,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
                   flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport} />
+            <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
@@ -52,7 +52,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
       </Background>
-      <Navbar meUser={user} />
+      <Navbar />
       <div style={notificationBadgeStyle}>
         {notifs && <span style={notificationCountStyle}> 1 </span>}
       </div>

@@ -8,14 +8,14 @@ import {
 } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 
 type UserContextType = {
   id: number;
   isOnline: boolean;
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
-  user?: IUserComplete,
+  user?: IUser,
 }
 
 const UserContext = createContext<UserContextType>({
@@ -40,7 +40,7 @@ export function UserContextProvider({ children }: Props) {
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
-  const [user, setUser] = useState<IUserComplete>();
+  const [user, setUser] = useState<IUser>();
 
   async function fetchContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;

@@ -21,7 +21,6 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 
@@ -64,7 +63,7 @@ export class UserService {
       return {
         ...await this.UserRepository.save(newProfil),
         qrCode: await toDataURL(otpauthUrl),
-        code2fa: secret ? secret[1]: '',
+        code2fa: secret ? secret[1] : '',
       };
     }
     return await this.UserRepository.save(newProfil);
@@ -164,76 +163,93 @@ export class UserService {
 
   // FRIEND'S DEMAND :
 
-  async askFriend(user: UserEntity, id: number): Promise<UserEntity> {
-    // check si le user demandé est connecté
+  async askFriend(user: UserEntity, id: number) {
     const userAsked = await this.UserRepository.findOne({ where: { id } });
-    if (!userAsked)
+    if (!userAsked) {
       throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-    // if (userAsked.user_status == UserStateEnum.ON)
-    //     // passer par les socket
-    // else {
-    if (!user.invited) user.invited = [];
-    if (!userAsked.invited) userAsked.invites = [];
-    if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
-      // secu en + :
-      const invitedExist = user.invited.indexOf(userAsked.id);
-      const invitesExist = userAsked.invites.indexOf(user.id);
-      if (invitesExist != -1 || invitedExist != -1)
-        throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
-      user.invited.push(userAsked.id);
-      userAsked.invites.push(user.id);
     }
-    // }
+
+    if (userAsked.blocked.includes(user.id))
+      return ;
+
+    if (!user.sentInvitesTo.includes(id))
+      user.sentInvitesTo.push(id);
+    if (!userAsked.recvInvitesFrom.includes(user.id))
+      userAsked.recvInvitesFrom.push(user.id);
+
     await this.UserRepository.save(user);
     await this.UserRepository.save(userAsked);
-    return userAsked;
   }
 
   async handleAsk(
-    user: UserEntity, // usr1
-    id: number, // usr2
+    user: UserEntity, // receiver
+    id: number, // sender
     bool: boolean,
   ) {
-    const userInvites = await this.UserRepository.findOne({
-      where: { id },
-    }); // search le user d'id :id
-    if (!userInvites)
+    const sender = await this.UserRepository.findOne({ where: { id } });
+    if (!sender) {
       throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
-    if (!user.invites) {
+    }
+    const indexSenderInInvites = user.recvInvitesFrom.indexOf(id);
+    if (indexSenderInInvites === -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites`,
+        `le sender d'id ${id} ne fait parti de la liste d'recvInvitesFrom du user (receiver) d'id ${user.id}`,
       );
     }
-    const friendsExist = user.friends.indexOf(userInvites.id);
-    if (friendsExist != -1) {
-      throw new ConflictException(
-        `le user d'id ${id} est fait déjà de vos friends`,
-      );
-    }
-    const indexToRemove = user.invites.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemove !== -1) {
+    const indexReceiverInInvited = sender.sentInvitesTo.indexOf(user.id);
+    if (indexReceiverInInvited === -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites du user d'id ${user.id}`,
+        `Vous ne ne faite pas parti de la liste d'sentInvitesTo du sender d'id ${id}`,
       );
     }
-    const indexToRemoveusr = userInvites.invited.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemoveusr !== -1) {
-      throw new NotFoundException(
-        `le user d'id ${user.id} ne fait partit de la liste d'invited du user d'id ${id}`,
-      );
+
+    if (user.blocked.includes(id) && bool === false)
+      return;
+    if (user.blocked.includes(id) && bool === true) {
+      let index = user.blocked.indexOf(id);
+      if (index !== -1) {
+        user.blocked.splice(index, 1);
+        await this.UserRepository.save(user);
+      }
     }
-    user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
-    userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
+
+    sender.sentInvitesTo.splice(indexSenderInInvites, 1);
+    user.recvInvitesFrom.splice(indexReceiverInInvited, 1);
+
     if (bool == true) {
-      // si il a été accepter, on ajoute dans la liste friends des deux cotés
-      if (!user.friends) user.friends = [];
-      user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
-      if (!userInvites.friends) userInvites.friends = [];
-      userInvites.friends = [...userInvites.friends, user.id]; // ajout usr1 dans list friends de usr2
+      user.friends = [...user.friends, sender.id];
+      sender.friends = [...sender.friends, user.id];
     }
+
+    if (sender.blocked.includes(user.id)) {
+      let index = sender.blocked.indexOf(user.id);
+      if (index !== -1) {
+        sender.blocked.splice(index, 1);
+      }
+    }
+
     this.UserRepository.save(user);
-    this.UserRepository.save(userInvites);
-    return user
+    this.UserRepository.save(sender);
+
+  }
+
+  async blockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    user.blocked = [...user.blocked, id];
+    await this.UserRepository.save(user);
+  }
+
+  async unblockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    let index = user.blocked.indexOf(id)
+		if (index !== -1) {
+			user.blocked.splice(index, 1);
+		}    
+    await this.UserRepository.save(user);
   }
 
   // CHANNEL & MESSAGE :
@@ -309,8 +325,8 @@ export class UserService {
     const users = this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
+      // .select(['user.id', 'user.username', 'user.urlImg'])
       .getMany();
-    //console.log("USER: " + users);
     return users;
   }
 
@@ -376,35 +392,6 @@ export class UserService {
       throw new NotFoundException(
         `le user ${id} n'appartient pas a ce channel`,
       );
-  }
-
-  async blockAUser(
-    id: number,
-    user: UserEntity
-  ) {
-    try {
-      const userToBlock = await this.UserRepository.findOne({ where: {id} });
-      if (!userToBlock)
-        throw new ConflictException(`user ${id} does not exist`);
-      const isHeInBlocked = this.UserRepository.createQueryBuilder('user');
-      let userId = user.id;
-      isHeInBlocked
-        .where('user.id = :userId', { userId })
-        .andWhere(':id = ANY(user.blocked)', { id });
-      const result = await isHeInBlocked.getOne();
-      console.log("user.blocked : ", user.blocked);
-      console.log("idToBlock : ", id);
-
-      if (!result)
-      {
-        user.blocked = [...user.blocked, userToBlock.id];
-        await this.UserRepository.save(user);
-      } else {
-        throw new ConflictException(`user ${id} already in blocked`);
-      }
-    } catch (e) {
-      throw new ConflictException(`user ${id} already in blocked`);
-    }
   }
 
   // UTILS :

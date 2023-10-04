@@ -4,8 +4,9 @@ import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import Cookies from 'js-cookie';
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
-export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
+export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken) {
     window.location.replace('/login');
@@ -14,7 +15,8 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { fetchContext } = useUserContext();
+  const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext } = useFriendsRequestContext();
 
   const getAllProfil = async () => {
     let cancelled = false;
@@ -36,6 +38,10 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    fetchFriendsRequestContext();
+    // eslint-disable-next-line
+  }, [])
 
   useEffect(() => {
     const getUserInfos = async () => {
@@ -45,10 +51,6 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
     };
     getUserInfos(); // appel de la fonction si le jwt est good
   }, [jwtToken]);
-
-  useEffect(() => {
-    //console.log('meUser in Leaderboard', meUser);
-  }, [meUser]);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
@@ -64,7 +66,7 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
           <p>{count++}</p> {/* TO CHANGE */}
-          {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
+          {<UserBanner otherUser={user} />}
           <>
             <p>SCORE %</p>
           </>
@@ -74,7 +76,7 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
     };
 
     displayAllProfil();
-  }, [searchTerm, allUsers, jwtToken, meUser]);
+  }, [searchTerm, allUsers, jwtToken, user]);
 
   return (
     <div style={container}>
@@ -85,7 +87,6 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
     </div>
   );
 }
-
 
 const container: CSSProperties = {
   minWidth: '500px',
