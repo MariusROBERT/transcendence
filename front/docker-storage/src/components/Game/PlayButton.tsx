@@ -21,13 +21,13 @@ export function PlayButton() {
             joinQueue(isSpecial ? 'special' : 'normal');
           }}></RoundButton>
         <Flex flex_direction={'row'}>
-          <p>Special Mod: </p>
+          <p>Special Mode: </p>
           <SwitchToggle onChange={() => {
             setIsSpecial(!isSpecial);
           }} checked={isSpecial}></SwitchToggle>
         </Flex>
       </Flex>
-      <div style={{ height: '83px' }} />
+      <div style={{ height: '56px' }} />
     </>
   );
 }
