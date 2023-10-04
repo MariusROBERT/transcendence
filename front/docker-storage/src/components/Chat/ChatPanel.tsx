@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Viewport, color, Fetch } from '../../utils';
-import { Background, RoundButton, ChatMessage, ChatMenu, ChanUserList, Popup } from '..';
+import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
-import { GetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
-import { ChannelMessage, IChatUser, SocketMessage } from '../../utils/interfaces';
+import { GetCurrChan, UpdateChannelUsers } from '../../utils/channel_functions';
+import { ChannelMessage, IChatUser } from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
