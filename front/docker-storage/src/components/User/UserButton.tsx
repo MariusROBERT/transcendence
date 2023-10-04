@@ -1,13 +1,12 @@
-import { color } from "../../utils";
-import { RoundButton, Flex } from "..";
-import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { IUser } from "../../utils/interfaces";
-import { lookGame, openChat, sendGameInvite } from "../../utils/user_functions";
-import { useFriendsRequestContext } from "../../contexts/FriendsRequestContext/FriendsRequestContext";
-import { useUserContext } from "../../contexts";
+import { color } from '../../utils';
+import { RoundButton, Flex } from '..';
+import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+import { IUser } from '../../utils/interfaces';
+import { lookGame, openChat } from '../../utils/user_functions';
+import { useGameContext, useUserContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
-// TODO : Add Object User insteed of user_name and user icon
 interface Props {
 	otherUser: IUser;
 }
@@ -16,21 +15,21 @@ export function UserButton({ otherUser }: Props) {
 	const jwtToken = Cookies.get('jwtToken');
 	if (!jwtToken)
 		window.location.replace('/login');
-
+	const { sendGameInvite } = useGameContext();
 	const { sendFriendRequest, acceptFriendRequest, declineFriendRequest, blockUser, sendInvitesTo, recvInvitesFrom, friends, blocked } = useFriendsRequestContext();
 	const { id, user } = useUserContext();
-	const [isBlocked, setIsBlocked] = useState(user?.blocked.includes(otherUser.id));
+	const [isBlocked, setIsBlocked] = useState(blocked?.includes(otherUser.id));
 
 	useEffect(() => {
-		user?.blocked.includes(otherUser.id) ? setIsBlocked(true) : setIsBlocked(false);
-	}, [user])
+		blocked?.includes(otherUser.id) ? setIsBlocked(true) : setIsBlocked(false);
+	}, [blocked, otherUser.id])
 	
 	return (
 		<div style={UserbUttonContainer}>
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: '12.5px', backgroundColor: color.grey, minWidth: '100px', height: '25px' }}>
 				<Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
 					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()} />}
-					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite()} />}
+					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')} onClick={() => sendGameInvite(otherUser.id, 'normal')} />}
 					{friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()} />}
 					{!friends?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={() => sendFriendRequest(otherUser.id)} />
@@ -65,15 +64,3 @@ const askStyle = {
 	height: '40px',
 	border: '4px solid green',
 };
-
-const optionStyle: React.CSSProperties = {
-	position: 'relative',
-	top: '-50px',
-	left: '20%',
-	transform: 'translateX(-50%)',
-	backgroundColor: 'white',
-	color: 'black',
-	borderRadius: '6px',
-	padding: '10px',
-	boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
-}

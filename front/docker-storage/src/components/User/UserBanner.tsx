@@ -1,11 +1,8 @@
-import { AuthGuard, Flex, RoundButton } from '..';
+import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
 import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
-import React, { CSSProperties, useEffect, useState } from 'react';
-import Profil from '../Profil/profil';
-import Popup from '../ComponentBase/Popup';
+import React, { CSSProperties, useState } from 'react';
 import { useUserContext } from '../../contexts';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 interface Props {
   otherUser: IUser;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Popup from '../ComponentBase/Popup';
+import { Popup } from '..';
 
 interface Props {
   setIsVisible: (isVisible: boolean) => void;
@@ -60,7 +60,7 @@ export default function TwoFA(props: Props) {
       <button
         id='2faValidate'
         style={{ display: 'none' }}
-        onClick={() => props.submit(code2fa)        } />
+        onClick={() => props.submit(code2fa)} />
       <label htmlFor='2faValidate' style={{ margin: '1em' }}>
         <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>
           Confirm

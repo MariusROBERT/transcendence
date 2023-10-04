@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import TwoFA from '../Login/TwoFA';
+import { TwoFA } from '..';
 import { unsecureFetch } from '../../utils';
 
 interface AuthGuardProps {
@@ -9,19 +9,19 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
+const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
   const ft_token = new URLSearchParams(window.location.search).get('access-token');
   const intraToken = new URLSearchParams(window.location.search).get('ftToken');
   const [error2fa, setError2fa] = React.useState<string>('');
   const [is2fa, setIs2fa] = React.useState<boolean>(!!intraToken);
 
-  if (ft_token !== '' && ft_token){
+  if (ft_token !== '' && ft_token) {
     Cookies.set('jwtToken', ft_token, {
       expires: 7, // 7 jours
     });
     window.location.href = '/';
   }
-  const jwtToken = Cookies.get('jwtToken')
+  const jwtToken = Cookies.get('jwtToken');
   let auth = !!jwtToken;
   const navigate = useNavigate();
 
@@ -77,4 +77,4 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }): any => {
 
   return null;
 };
-export default AuthGuard;
+export default Authguard;

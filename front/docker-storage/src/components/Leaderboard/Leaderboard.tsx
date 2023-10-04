@@ -36,7 +36,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
-  }, [])
+  }, []);
 
   useEffect(() => {
     fetchFriendsRequestContext();
@@ -55,7 +55,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
     const displayAllProfil = () => {
       if (!allUsers)
-        return (<p>No user</p>)
+        return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase()),

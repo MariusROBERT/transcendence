@@ -1,10 +1,6 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background } from '..';
-import Settings from '../Settings/settings';
-import { IUserComplete } from '../../utils/interfaces';
-import Profil from '../Profil/profil';
+import { RoundButton, Border, Background, Settings, Profil, Popup, GameInvites } from '..';
 import Cookies from 'js-cookie';
-import Popup from '../ComponentBase/Popup';
 import { color } from '../../utils';
 import { useUserContext } from '../../contexts';
 
@@ -28,8 +24,6 @@ const Navbar: React.FC = () => {
       console.log(res.status);
     }
   };
-
-  //TODO: [Raffi] reuse this in game
 
   // delog the user if he close the navigator without click in logout button
   useEffect(() => {
@@ -74,15 +68,24 @@ const Navbar: React.FC = () => {
         </Popup>
       </Border>
       </div>
+      <GameInvites></GameInvites>
+      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
+        <Settings isVisible={settingsVisible} />
+      </Popup>
+      <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+        <Profil otherUser={user} />
+      </Popup>
     </>
   );
 };
 
 const navbarStyle: CSSProperties = {
-  top: '-40px',
-  position: 'absolute',
+  top: '-25px',
+  right:'-25px',
+  position: 'fixed',
   display: 'flex',
-  justifyContent: 'space-around',
+  flexDirection: 'row-reverse',
+  zIndex: '10000'
 };
 
 export default Navbar;
