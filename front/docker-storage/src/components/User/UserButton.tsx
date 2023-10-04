@@ -18,7 +18,7 @@ export function UserButton({ otherUser }: Props) {
 		window.location.replace('/login');
 
 	const { sendFriendRequest, acceptFriendRequest, declineFriendRequest, blockUser, sendInvitesTo, recvInvitesFrom, friends, blocked } = useFriendsRequestContext();
-	const { id, user, socket } = useUserContext();
+	const { id, user } = useUserContext();
 	const [isBlocked, setIsBlocked] = useState(user?.blocked.includes(otherUser.id));
 
 	useEffect(() => {
@@ -35,11 +35,11 @@ export function UserButton({ otherUser }: Props) {
 					{!friends?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
 						<RoundButton icon={require('../../assets/imgs/icon_add_friend.png')} onClick={() => sendFriendRequest(otherUser.id)} />
 					}
-					{user && <RoundButton icon={require('../../assets/imgs/icon_options.png')} onClick={() => {
+					{user && <RoundButton icon={require('../../assets/imgs/icon_block.png')} onClick={() => {
 						setIsBlocked(true);
 						blockUser(otherUser.id, user.id);
 					}} isDisabled={isBlocked} />}
-					{recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) &&
+					{recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) && !isBlocked &&
 						<div style={askStyle}>
 							<RoundButton icon={require('../../assets/imgs/icon_accept.png')} onClick={() => acceptFriendRequest(id, otherUser.id)} />
 							<RoundButton icon={require('../../assets/imgs/icon_denied.png')} onClick={() => declineFriendRequest(id, otherUser.id)} />

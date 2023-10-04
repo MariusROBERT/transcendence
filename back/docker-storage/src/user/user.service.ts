@@ -21,10 +21,8 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { Socket } from "socket.io-client"
 
 @Injectable()
 export class UserService {
@@ -231,6 +229,25 @@ export class UserService {
 
   }
 
+  async blockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    user.blocked = [...user.blocked, id];
+    await this.UserRepository.save(user);
+  }
+
+  async unblockAUser(
+    id: number,
+    user: UserEntity
+  ) {
+    let index = user.blocked.indexOf(id)
+		if (index !== -1) {
+			user.blocked.splice(index, 1);
+		}    
+    await this.UserRepository.save(user);
+  }
+
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
@@ -371,14 +388,6 @@ export class UserService {
       throw new NotFoundException(
         `le user ${id} n'appartient pas a ce channel`,
       );
-  }
-
-  async blockAUser(
-    id: number,
-    user: UserEntity
-  ) {
-    user.blocked = [...user.blocked, id];
-    await this.UserRepository.save(user);
   }
 
   // UTILS :

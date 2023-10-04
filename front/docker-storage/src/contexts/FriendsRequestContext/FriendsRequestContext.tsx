@@ -46,10 +46,6 @@ export function FriendsRequestProvider({ children }: Props) {
 	const [blocked, setBlocked] = useState<number[]>([]);
 
 	useEffect(() => {
-		console.log("friends : ", friends);
-		console.log("recvInvitesFrom : ", recvInvitesFrom);
-		console.log("sendInvitesTo: ", sendInvitesTo);
-		console.log("BLOCKED : ", blocked);
 	}, [friends, recvInvitesFrom, sendInvitesTo])
 
 	async function fetchFriendsRequestContext(): Promise<void> {
@@ -67,6 +63,7 @@ export function FriendsRequestProvider({ children }: Props) {
 		if (index !== -1) {
 			blocked.splice(index, 1);
 			setBlocked(blocked);
+			socket?.emit('unblock_user', { sender: id, receiver: to });
 		}
 
 		socket?.emit('send_friend_request', { sender: id, receiver: to });
@@ -76,6 +73,7 @@ export function FriendsRequestProvider({ children }: Props) {
 	function acceptFriendRequest( to: number, from: number ) {
 		socket?.emit('accept_friend_request', { sender: from, receiver: id });
 		setFriends([...friends, from]);
+
 		let tmp2 = recvInvitesFrom as number[];
 		const index = tmp2.indexOf(from)
 		if (index !== -1)
@@ -88,6 +86,7 @@ export function FriendsRequestProvider({ children }: Props) {
 		let tmp2 = recvInvitesFrom as number[];
 		let patch: number[] = [...friends as number[]]
 		setFriends(patch)
+
 		const index = tmp2.indexOf(from)
 		if (index !== -1)
 			tmp2.splice(index, 1);
@@ -106,15 +105,11 @@ export function FriendsRequestProvider({ children }: Props) {
 		let tmp = recvInvitesFrom;
 		tmp = [...recvInvitesFrom as number[], body.sender];
 		setRecvInvitesFrom(tmp);
-
-		let index = blocked.indexOf(body.sender)
-		if (index !== -1) {
-			blocked.splice(index, 1);
-			setBlocked(blocked);
-		}
 	}
 	
 	function onAcceptFriendRequest(body: { receiver: number, sender: number }) {
+		if (blocked.includes(body.sender))
+			return ;
 		setFriends([...friends, body.receiver]);
 
 		let tmp2 = sendInvitesTo as number[];
@@ -132,23 +127,22 @@ export function FriendsRequestProvider({ children }: Props) {
 		setSendInvitesTo(tmp2);
 	}
 
-	function onBlockUser(body: { to: number }) {
-		
+	function onBlockUser(body: { to: number, from: number }) {
+
 	}
 
 	useEffect(() => {
-		console.log("SOCKET:", socket);
 		
 		socket?.on('send_friend_request', onSendFriendRequest);
 		socket?.on('accept_friend_request', onAcceptFriendRequest);
 		socket?.on('decline_friend_request', onDeclineFriendRequest); 
-		socket?.on('block_user', onBlockUser); 
+		socket?.on('block_user', onBlockUser);
 
 		return () => {
 			socket?.off('send_friend_request', onSendFriendRequest);
 			socket?.off('accept_friend_request', onAcceptFriendRequest);
 			socket?.off('decline_friend_request', onDeclineFriendRequest);
-			socket?.off('block_user', onBlockUser); 
+			socket?.off('block_user', onBlockUser);
 		};
 
 	}, [socket, friends, recvInvitesFrom, sendInvitesTo, blocked]);

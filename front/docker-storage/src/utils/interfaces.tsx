@@ -79,6 +79,7 @@ export interface IUser {
   is_friend: boolean;
   sentInvitesTo: number[];
   recvInvitesFrom: number[];
+  blocked: number[];
 }
 
 export interface IUserComplete {

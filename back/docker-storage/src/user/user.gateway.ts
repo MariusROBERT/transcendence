@@ -34,6 +34,7 @@ export class UserGateway {
 		const receiver = await this.userService.getUserById(msg.receiver);
 		const sender = await this.userService.getUserById(msg.sender);
 		await this.userService.handleAsk(receiver, sender.id, false);
+		this.server.to('user' + msg.sender).emit('decline_friend_request', { sender: msg.sender, receiver: msg.receiver });
 	}
 
 	@SubscribeMessage('block_user')
@@ -42,6 +43,17 @@ export class UserGateway {
 	) {
 		const sender = await this.userService.getUserById(msg.sender);
 		await this.userService.blockAUser(msg.receiver, sender);
+		this.server.to('user' + msg.sender).emit('block_user', { sender: msg.sender, receiver: msg.receiver });
 	}
-	
+
+	@SubscribeMessage('unblock_user')
+	async unblockAUser(
+		@MessageBody() msg: { receiver: number, sender: number },
+	) {
+		const sender = await this.userService.getUserById(msg.sender);
+		const receiver = await this.userService.getUserById(msg.receiver);
+		await this.userService.unblockAUser(msg.sender, receiver);
+		this.server.to('user' + msg.sender).emit('unblock_user', { sender: msg.sender, receiver: msg.receiver });
+	}
+
 }
