@@ -4,13 +4,15 @@ import { useUserContext } from '../UserContext/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 type GameContextType = {
-  hasReceivedInvitationFrom: number | undefined,
-  hasSendInvitationTo: number | undefined,
+  inviteFrom: number | undefined,
+  inviteTo: number | undefined,
   isInGameWith: number | undefined,
+  isInQueue: undefined | 'normal' | 'special',
+  gameType: undefined | 'normal' | 'special',
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => void,
   acceptGameInvite: (from: number) => void,
-  declineGameInvite: (from:number) => void,
+  declineGameInvite: (from: number) => void,
   cancelGameInvite: () => void,
 
   joinQueue: (gameType: 'normal' | 'special') => void,
@@ -23,22 +25,33 @@ type GameContextType = {
 }
 
 const GameContext = createContext<GameContextType>({
-  hasReceivedInvitationFrom: undefined,
-  hasSendInvitationTo: undefined,
+  inviteFrom: undefined,
+  inviteTo: undefined,
   isInGameWith: undefined,
+  isInQueue: undefined,
+  gameType: undefined,
 
-  sendGameInvite: (to: number, gameType: 'normal' | 'special') => {},
-  acceptGameInvite: (from: number) => {},
-  declineGameInvite: (from:number) => {},
-  cancelGameInvite: () => {},
+  sendGameInvite: (to: number, gameType: 'normal' | 'special') => {
+  },
+  acceptGameInvite: (from: number) => {
+  },
+  declineGameInvite: (from: number) => {
+  },
+  cancelGameInvite: () => {
+  },
 
-  joinQueue: (gameType: 'normal' | 'special') => {},
-  leaveQueue: () => {},
+  joinQueue: (gameType: 'normal' | 'special') => {
+  },
+  leaveQueue: () => {
+  },
 
-  startGame: () => {},
-  leaveGame: () => {},
+  startGame: () => {
+  },
+  leaveGame: () => {
+  },
 
-  fetchGameContext: () => {}
+  fetchGameContext: () => {
+  },
 });
 
 export function useGameContext() {
@@ -55,94 +68,105 @@ export function GameContextProvider({ children }: Props) {
 
   const [isInGameWith, setIsInGameWith] = useState<number | undefined>();
   const [isInQueue, setIsInQueue] = useState<'normal' | 'special' | undefined>();
-  const [hasReceivedInvitationFrom, setHasReceivedInvitationFrom] = useState<number | undefined>();
-  const [hasSendInvitationTo, setHasSendInvitationTo] = useState<number | undefined>();
-  const [gameTypeInvitation, setGameTypeInvitation] = useState<'normal' | 'special' | undefined>();
+  const [inviteFrom, setInviteFrom] = useState<number | undefined>();
+  const [inviteTo, setInviteTo] = useState<number | undefined>();
+  const [gameType, setGameType] = useState<'normal' | 'special' | undefined>();
+
+  useEffect(() => {
+    if (id !== 0 && socket)
+      fetchGameContext();
+    // eslint-disable-next-line
+  }, [id, socket, navigate]);
+
+  // useEffect(() => {
+  // function printState(){
+  //   // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:inviteFrom, inviteTo:inviteTo, inviteType:gameType});
+  // }
+  //   printState();
+  // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
 
   async function fetchGameContext(): Promise<void> {
     // fetch invite status
-    const inviteStatus: {gameInvitationFrom:number, gameInvitationTo:number, isInGameWith:number, gameInviteType:'none' | 'normal' | 'special'} | undefined
+    const inviteStatus: {
+      gameInvitationFrom: number,
+      gameInvitationTo: number,
+      isInGameWith: number,
+      gameInviteType: 'none' | 'normal' | 'special'
+    } | undefined
       = await (await Fetch('user/game_status/' + id, 'GET'))?.json;
     if (!inviteStatus) return;
-    setHasReceivedInvitationFrom((inviteStatus.gameInvitationFrom < 0 ? undefined : inviteStatus.gameInvitationFrom));
-    setHasSendInvitationTo((inviteStatus.gameInvitationTo < 0 ? undefined : inviteStatus.gameInvitationTo));
+    setInviteFrom((inviteStatus.gameInvitationFrom < 0 ? undefined : inviteStatus.gameInvitationFrom));
+    setInviteTo((inviteStatus.gameInvitationTo < 0 ? undefined : inviteStatus.gameInvitationTo));
     setIsInGameWith((inviteStatus.isInGameWith < 0 ? undefined : inviteStatus.isInGameWith));
-    setGameTypeInvitation((inviteStatus.gameInviteType === 'none' ? undefined : inviteStatus.gameInviteType));
+    setGameType((inviteStatus.gameInviteType === 'none' ? undefined : inviteStatus.gameInviteType));
 
     // check if player is in Queue
     const inQueue: { isInQueue: 'normal' | 'special' | undefined }
       = await (await (await Fetch('game/in_queue/' + id, 'GET'))?.json);
     setIsInQueue(inQueue.isInQueue);
 
+    const inGame: { isInGameWith: number | undefined }
+      = await (await (await Fetch('game/is_in_game/' + id, 'GET'))?.json);
+    setIsInGameWith(inGame?.isInGameWith);
+
     // move to the current game
-    if (isInGameWith) {
-      setHasReceivedInvitationFrom(undefined);
-      setHasSendInvitationTo(undefined);
+    if (inGame?.isInGameWith) {
+      setInviteFrom(undefined);
+      setInviteTo(undefined);
       setIsInQueue(undefined);
       navigate('/game');
     }
-    // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:hasReceivedInvitationFrom, inviteTo:hasSendInvitationTo, inviteType:gameTypeInvitation});
   }
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   // Invites -- Event emission -------------------------------------------------------------------------------------- //
-  function sendGameInvite(to: number, gameType:'normal' | 'special'){
+  function sendGameInvite(to: number, inviteGameType: 'normal' | 'special') {
     if (isInGameWith) return;
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
-    if (hasReceivedInvitationFrom === to && gameType === gameTypeInvitation)
-      return acceptGameInvite(hasReceivedInvitationFrom);
+    if (inviteFrom === to && gameType === inviteGameType)
+      return acceptGameInvite(inviteFrom);
 
     // Auto cancel and decline other invites and leave queue
-    if (hasReceivedInvitationFrom)
-      declineGameInvite(hasReceivedInvitationFrom);
-    if (hasSendInvitationTo)
+    if (inviteFrom)
+      declineGameInvite(inviteFrom);
+    if (inviteTo)
       cancelGameInvite();
     if (isInQueue)
       leaveQueue();
 
     // Set invite and Send it
-    // console.log('[', id, '] emit ', 'send_invite', { sender: id, receiver: to, gameType:gameType });
+    setInviteTo(to);
+    setGameType(inviteGameType);
     socket?.emit('send_invite', { sender: id, receiver: to, gameType:gameType });
-    setHasSendInvitationTo(to);
-    setGameTypeInvitation(gameType);
-    // console.log('user [' + id + '] SEND game invite to [' + hasSendInvitationTo + ']');
   }
 
-  function acceptGameInvite(from: number | undefined = undefined){
+  function acceptGameInvite(from: number) {
     // Auto cancel and decline send invites
-    if (hasSendInvitationTo && hasSendInvitationTo !== from)
+    if (inviteTo && inviteTo !== from)
       cancelGameInvite();
-    if (hasReceivedInvitationFrom && hasReceivedInvitationFrom !== from)
-      declineGameInvite(hasReceivedInvitationFrom)
+    if (inviteFrom && inviteFrom !== from)
+      declineGameInvite(inviteFrom)
 
-    // console.log('[', id, '] emit ', 'accept_invite', { sender:id, receiver:from ? from : hasReceivedInvitationFrom, gameType:gameTypeInvitation });
-    socket?.emit('accept_invite', { sender:id, receiver:from ? from : hasReceivedInvitationFrom, gameType:gameTypeInvitation });
-
-    setHasReceivedInvitationFrom(undefined);
-    // console.log('user [' + id + '] ACCEPTED game invite from [' + from ? from : hasReceivedInvitationFrom + ']');
+    setInviteFrom(undefined);
+    socket?.emit('accept_invite', { sender: id, receiver:from ? from : inviteFrom, gameType:gameType });
   }
 
-  function declineGameInvite(from:number){
-    // console.log('[', id, '] emit ', 'decline_invite', { receiver:from, sender:id });
-    socket?.emit('decline_invite', { receiver:from, sender:id });
+  function declineGameInvite(from: number){
+    socket?.emit('decline_invite', { sender: id, receiver:from });
 
     // reset the invite from
-    if (hasReceivedInvitationFrom === from)
-      setHasReceivedInvitationFrom(undefined);
-    // console.log('user [' + id + '] DECLINE game invite from [' + from + ']');
+    if (inviteFrom === from)
+      setInviteFrom(undefined);
   }
 
   function cancelGameInvite(){
-    // console.log('[', id, '] emit ', 'cancel_invite', { receiver: hasSendInvitationTo, sender: id });
-    socket?.emit('cancel_invite', { receiver: hasSendInvitationTo, sender: id });
-    setHasSendInvitationTo(undefined);
-    // console.log('user [' + id + '] CANCEL game invite to [' + hasSendInvitationTo + ']');
+    socket?.emit('cancel_invite', { sender: id, receiver: inviteTo });
+    setInviteTo(undefined);
   }
 
   // Invites -- Event reception ------------------------------------------------------------------------------------- //
   function onGameInviteReceived(body: { sender: number, receiver: number, gameType:'normal' | 'special' }) {
-    // console.log('[', id, '] received \'send_invite\'', body);
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'send_invite\'');
 
@@ -150,69 +174,55 @@ export function GameContextProvider({ children }: Props) {
       return declineGameInvite(body.sender);
 
     // Auto accept invite (if 'a' invite 'b' and 'b' invite 'a')
-    if (hasSendInvitationTo === body.sender && gameTypeInvitation === body.gameType)
+    if (inviteTo === body.sender && gameType === body.gameType)
       return acceptGameInvite(body.sender);
 
     // Auto Decline invite (if already in invite)
-    if (hasSendInvitationTo || hasReceivedInvitationFrom || isInQueue)
+    if (inviteTo || inviteFrom || isInQueue)
       return declineGameInvite(body.sender);
 
     // Update Invitation
-    setHasReceivedInvitationFrom(body.sender);
-    setGameTypeInvitation(body.gameType)
-    // console.log('user [' + id + '] RECEIVED game invite from [' + body.sender + ']');
+    setInviteFrom(body.sender);
+    setGameType(body.gameType)
   }
 
   function onGameInviteAccepted(body: { sender: number, receiver: number }){
-    // console.log('[', id, '] received \'accept_invite\'', body);
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'accept_invite\'');
 
-    if (body.sender !== hasSendInvitationTo)
+    if (body.sender !== inviteTo)
       return console.warn('user [' + id + '] RECEIVED: \'accept_invite\' form a player not invited');
 
-    setHasReceivedInvitationFrom(undefined);
-    setHasSendInvitationTo(undefined);
-
-    // console.log('user [' + body.sender + '] ACCEPTED game invite from [' + id + ']');
+    setInviteFrom(undefined);
+    setInviteTo(undefined);
   }
 
-  function onGameInviteDeclined(body: { sender: number, receiver: number }){
-    // console.log('[', id, '] received \'decline_invite\'', body);
+  function onGameInviteDeclined(body: { sender: number, receiver: number }) {
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'decline_invite\'');
 
-    if (body.sender !== hasSendInvitationTo)
+    if (body.sender !== inviteTo)
       return console.warn('user [' + id + '] RECEIVED: \'decline_invite\' form a player not invited');
 
-    setHasSendInvitationTo(undefined);
-
-    // console.log('user [' + body.sender + '] DECLINED game invite from [' + id + ']');
+    setInviteTo(undefined);
   }
 
   function onGameInviteCanceled(body: { sender: number, receiver: number }){
-    // console.log('[', id, '] received \'cancel_invite\'', body);
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'cancel_invite\'');
 
-    if (body.sender !== hasReceivedInvitationFrom)
+    if (body.sender !== inviteFrom)
       return console.warn('user [' + id + '] RECEIVED: \'cancel_invite\' form a player who didn\'t invited him');
 
-    setHasReceivedInvitationFrom(undefined);
-
-    // console.log('user [' + body.sender + '] CANCELED game invite to [' + id + ']');
+    setInviteFrom(undefined);
   }
 
   useEffect(() => {
     if (id === 0) return;
     // Invites -- Connection Socket --------------------------------------------------------------------------------- //
-    // console.log('[', id, '] subscribed to send_invite');
     socket?.on('send_invite', onGameInviteReceived);
-    // console.log('[', id, '] subscribed to accept_invite');
     socket?.on('accept_invite', onGameInviteAccepted);
-    // console.log('[', id, '] subscribed to decline_invite');
     socket?.on('decline_invite', onGameInviteDeclined);
-    // console.log('[', id, '] subscribed to cancel_invite');
     socket?.on('cancel_invite', onGameInviteCanceled);
 
     return () => {
@@ -222,65 +232,57 @@ export function GameContextProvider({ children }: Props) {
       socket?.off('cancel_invite', onGameInviteCanceled);
     };
     // eslint-disable-next-line
-  }, [socket]);
+  }, [socket, inviteTo, inviteFrom, gameType, isInGameWith, isInQueue, id]);
 
   // Queue Management ----------------------------------------------------------------------------------------------- //
   // Queue -- Event emission ---------------------------------------------------------------------------------------- //
   function joinQueue(gameType: 'normal' | 'special'){
-    // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:hasReceivedInvitationFrom, inviteTo:hasSendInvitationTo, inviteType:gameTypeInvitation});
     if (isInGameWith)
       return;
-    if (hasReceivedInvitationFrom)
-      declineGameInvite(hasReceivedInvitationFrom);
-    if (hasSendInvitationTo)
+    if (inviteFrom)
+      declineGameInvite(inviteFrom);
+    if (inviteTo)
       cancelGameInvite();
-    if (isInQueue && isInQueue !== gameType)
+    if (isInQueue)
       leaveQueue();
 
-    // console.log('[', id, '] emit ', 'join_queue', { sender: id, gameType: gameType });
     socket?.emit('join_queue', { sender: id, gameType: gameType });
     setIsInQueue(gameType);
-
   }
 
-  function leaveQueue(){
+  function leaveQueue() {
     if (!isInQueue) return;
-    // console.log('[', id, '] emit ', 'leave_queue', { sender: id, gameType: isInQueue });
-    socket?.emit('leave_queue', { sender: id, gameType: isInQueue });
+    socket?.emit('leave_queue', { sender: id });
     setIsInQueue(undefined);
   }
 
   // Game Start / End Management ------------------------------------------------------------------------------------ //
   // Game Start / End -- Event emission ----------------------------------------------------------------------------- //
-  function startGame(){
-    // console.log('[', id, '] emit ', 'start_game', { sender: id });
+  function startGame() {
     socket?.emit('start_game', { sender: id });
   }
 
-  function leaveGame(){
+  function leaveGame() {
     if (!isInGameWith) return;
-    // console.log('[', id, '] emit ', 'leave_game', { sender: id });
     socket?.emit('leave_game', { sender: id });
-    setHasReceivedInvitationFrom(undefined);
-    setHasSendInvitationTo(undefined);
+    setInviteFrom(undefined);
+    setInviteTo(undefined);
     setIsInQueue(undefined);
     navigate('/game/score');
   }
 
   // Game Start / End -- Event reception ---------------------------------------------------------------------------- //
   function onOpenGame(body: { p1: number, p2: number}){
-    // console.log('[', id, '] received \'open_game\'', body);
-    setHasReceivedInvitationFrom(undefined);
-    setHasSendInvitationTo(undefined);
+    setInviteFrom(undefined);
+    setInviteTo(undefined);
     setIsInQueue(undefined);
     setIsInGameWith(id === body.p1 ? body.p2 : body.p1);
     navigate('/game');
   }
 
   function onGameEnds(){
-    // console.log('[', id, '] received \'end_game\'');
-    setHasReceivedInvitationFrom(undefined);
-    setHasSendInvitationTo(undefined);
+    setInviteFrom(undefined);
+    setInviteTo(undefined);
     setIsInQueue(undefined);
     setIsInGameWith(undefined);
     navigate('/game/score');
@@ -289,9 +291,7 @@ export function GameContextProvider({ children }: Props) {
   useEffect(() => {
     if (id === 0) return;
     // Game Start / End -- Connection Socket ------------------------------------------------------------------------ //
-    // console.log('[', id, '] subscribed to open_game');
     socket?.on('open_game', onOpenGame);
-    // console.log('[', id, '] subscribed to end_game');
     socket?.on('end_game', onGameEnds);
 
     return () => {
@@ -299,14 +299,16 @@ export function GameContextProvider({ children }: Props) {
       socket?.off('end_game', onGameEnds);
     };
     // eslint-disable-next-line
-  }, [socket]);
+  }, [socket, id, navigate]);
 
   return (
     <>
       <GameContext.Provider value={{
-        hasReceivedInvitationFrom,
-        hasSendInvitationTo,
+        inviteFrom,
+        inviteTo,
         isInGameWith,
+        isInQueue,
+        gameType,
 
         sendGameInvite,
         acceptGameInvite,
@@ -319,7 +321,7 @@ export function GameContextProvider({ children }: Props) {
         startGame,
         leaveGame,
 
-        fetchGameContext
+        fetchGameContext,
       }}>
         {children}
       </GameContext.Provider>

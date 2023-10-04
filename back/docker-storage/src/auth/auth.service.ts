@@ -30,8 +30,8 @@ export class AuthService {
     user.user_status = UserStateEnum.ON;
     user.urlImg = 'http://localhost:3001/public/default.png';
     user.friends = [];
-    user.invited = [];
-    user.invites = [];
+    user.sentInvitesTo = [];
+    user.recvInvitesFrom = [];
     user.blocked = [];
     try {
       await this.userRepository.save(user); // save user in DB
@@ -104,8 +104,8 @@ export class AuthService {
       user2.password = '42'; // = await bcrypt.hash(user.password, user.salt);
       user2.user_status = UserStateEnum.ON;
       user2.friends = [];
-      user2.invited = [];
-      user2.invites = [];
+      user2.sentInvitesTo = [];
+      user2.recvInvitesFrom = [];
       user2.blocked = [];
       user2.urlImg = urlImg;
       user2.id42 = userData.id42;

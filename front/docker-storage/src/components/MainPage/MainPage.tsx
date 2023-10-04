@@ -1,9 +1,9 @@
-import { color, Viewport } from '../../utils';
-import { Background, ChatPanel, ContactPanel, Navbar, RoundButton, SidePanel } from '..';
+import { color, Viewport, useIsWindowFocused } from '../../utils';
+import { Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
-import { useUserContext, useGameContext } from '../../contexts';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   panelWidth: number;
@@ -11,46 +11,40 @@ interface Props {
 }
 
 export function MainPage({ panelWidth, viewport }: Props) {
+  const focused = useIsWindowFocused();
   const jwtToken = Cookies.get('jwtToken');
   if (!jwtToken)
     window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
-  const { fetchContext, socket, id, user } = useUserContext();
-  const { fetchGameContext, joinQueue } = useGameContext();
+  const { fetchContext, user } = useUserContext();
 
   useEffect(() => {
-    fetchContext();
+    if (focused) {
+      fetchContext();
+    }
     // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (id !== 0)
-      fetchGameContext();
-    // eslint-disable-next-line
-  }, [socket, id]);
+  }, [focused]);
 
   useEffect(() => {
     if (!user)
       return;
-    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-      setNotifs(user.invites.length);
+    if (user.recvInvitesFrom && Array.isArray(user.recvInvitesFrom) && user.recvInvitesFrom.length > 0)
+      setNotifs(user.recvInvitesFrom.length);
   }, [user]);
 
   return (
     <div style={MainPageStyle}>
-      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'} flex_alignItems={'stretch'}>
+      <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
+                  flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport} />
+            <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
-          <div style={Btn}>
-            <RoundButton icon_size={200} icon={require('../../assets/imgs/icon_play.png')} onClick={() => joinQueue('normal')}></RoundButton>
-          </div>
-          <div style={{ height: '60px' }} />
+          <PlayButton />
         </Background>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
           <Background>
@@ -58,9 +52,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
       </Background>
-      <div style={NavPosition}>
-        <Navbar meUser={user} />
-      </div>
+      <Navbar />
       <div style={notificationBadgeStyle}>
         {notifs && <span style={notificationCountStyle}> 1 </span>}
       </div>
@@ -68,18 +60,11 @@ export function MainPage({ panelWidth, viewport }: Props) {
   );
 }
 
-const Btn: React.CSSProperties = {
-  left: '50%',
-  top: '50%',
-  transform: 'translate(0%, -12%)'
-}
-
 const MainPageStyle: React.CSSProperties = {
   //border: '4px solid red',
   position: 'relative',
   width: '100%',
-  height: '100%'
-
+  height: '100%',
 };
 
 const notificationBadgeStyle: React.CSSProperties = {
@@ -101,10 +86,3 @@ const notificationCountStyle: React.CSSProperties = {
   fontSize: '14px',
   fontWeight: 'bold',
 };
-
-const NavPosition: React.CSSProperties = {
-  position: 'absolute',
-  top: '0px',
-  right: '200px',
-  zIndex: '10000'
-}

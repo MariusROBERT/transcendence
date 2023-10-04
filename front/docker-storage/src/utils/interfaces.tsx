@@ -24,7 +24,7 @@ export interface UserAndInvites {
   user_status: string;
   winrate: number;
   is_friend: boolean;
-  invites: number;
+  recvInvitesFrom: number;
 }
 
 // --------------------------- Channels :
@@ -91,7 +91,7 @@ export interface UserInfos {
   urlImg: string;
   is2fa_active: boolean;
   username: string;
-  invited: number[];
+  sentInvitesTo: number[];
 }
 
 export interface IUser {
@@ -101,20 +101,8 @@ export interface IUser {
   user_status: string;
   winrate: number;
   is_friend: boolean;
-  invited: number[];
-  invites: number[];
-}
-
-export interface IUserComplete {
-  id: number;
-  username: string;
-  urlImg: string;
-  user_status: string;
-  role: string;
-  winrate: number;
-  is_friend: boolean;
-  invited: number[];
-  invites: number[];
+  sentInvitesTo: number[];
+  recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
 }
@@ -123,9 +111,7 @@ export interface LeaderboardProps {
   //isVisible: boolean;
   //setIsVisible: (b: boolean) => void;
   searchTerm: string;
-  meUser?: IUserComplete;
 }
-
 
 
 export interface UserButtonsProps {

@@ -1,6 +1,9 @@
 import Cookies from 'js-cookie';
 
-export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | { response: Response, json: any }> {
+export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | {
+  response: Response,
+  json: any
+}> {
   const jwtToken = Cookies.get('jwtToken');
   try {
     const response = await fetch('http://localhost:3001/api/' + url_end, {
@@ -9,8 +12,8 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwtToken}`,
       },
-      body: body
-    })
+      body: body,
+    });
     if (response.ok) {
       const rep_json = await response.json();
       return { response: response, json: rep_json };
