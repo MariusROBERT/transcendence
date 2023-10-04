@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { ChannelPublicPass } from '../../utils/interfaces';
 import ChannelElement from './ChannelElement';
 import ChatInput from './ChatInput';
-import { createChatStyle } from './CreateChat';
+import CreateChat, { createChatStyle } from './CreateChat';
+import { Button } from '../Button/Button';
+import Popup from '../ComponentBase/Popup';
 
 interface Props {
   input: string;
@@ -14,6 +16,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
   const [channelStatus, SetChannelStatus] = useState<
     'all' | 'public' | 'protected'
   >('all');
+  const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
 
   function OnClick() {
     console.log('click');
@@ -21,7 +24,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
 
   const filteredChannels = channels
     ? channels.filter((channel) => {
-        const name = channel?.channel_name.startsWith(input);
+        const name = channel?.channel_name.toLowerCase().startsWith(input.toLowerCase());
 
         const status =
           channelStatus === 'all' ||
@@ -55,19 +58,32 @@ export default function JoinChat({ input, setInput, channels }: Props) {
         input={input}
         setInput={setInput}
         OnClick={OnClick}
+        OnEnter={OnClick}
       ></ChatInput>
       <select
         value={channelStatus}
         onChange={(e) =>
           SetChannelStatus(e.target.value as 'all' | 'public' | 'protected')
         }
-        style={{ borderRadius: '5px' }}
+        style={{ borderRadius: '5px', margin: '10px' }}
       >
         <option value="all">Tous</option>
         <option value="public">Public</option>
         <option value="protected">Protected</option>
       </select>
       <div>{List()}</div>
+      <div style={{ margin: '10px' }}>
+        <Button
+          onClick={() => {
+            setCreChatVisible(true);
+          }}
+        >
+          Create Channel
+        </Button>
+      </div>
+      <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
+        <CreateChat name={''} visible={createChatVisible} setVisible={setCreChatVisible}></CreateChat>
+      </Popup>
     </div>
   );
 }

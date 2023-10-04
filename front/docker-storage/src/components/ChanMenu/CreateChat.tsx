@@ -7,9 +7,10 @@ import { ErrorPanel } from '../Error/ErrorPanel';
 interface Props {
   name: string; //  Pass the user name in ChatMenu
   visible: boolean;
+  setVisible: (b: boolean) => void;
 }
 
-export default function CreateChat({ name, visible }: Props) {
+export default function CreateChat({ name, visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
@@ -39,6 +40,7 @@ export default function CreateChat({ name, visible }: Props) {
       setErrorVisible(true);
       return;
     }
+    setVisible(false);
     publish('chat_created', undefined);
   }
 

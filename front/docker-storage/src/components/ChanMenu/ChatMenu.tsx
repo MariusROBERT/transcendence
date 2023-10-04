@@ -27,7 +27,9 @@ export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
   const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
   const [joinChatVisible, setJoinChatVisible] = useState<boolean>(false);
-  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined)
+  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(
+    undefined,
+  );
   const { socket } = useUserContext();
   var current_id = -1;
 
@@ -75,12 +77,18 @@ export function ChatMenu() {
 
   return (
     <div>
-      <ChatInput input={inputValue} setInput={setInputValue} OnClick={OnJoinChannel}></ChatInput>
-      <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
-        <CreateChat name={inputValue} visible={createChatVisible}></CreateChat>
-      </Popup>
+      <ChatInput
+        input={inputValue}
+        setInput={setInputValue}
+        OnClick={OnJoinChannel}
+        OnEnter={() => {}}
+      ></ChatInput>
       <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
-        <JoinChat input={inputValue} setInput={setInputValue} channels={channels}></JoinChat>
+        <JoinChat
+          input={inputValue}
+          setInput={setInputValue}
+          channels={channels}
+        ></JoinChat>
       </Popup>
     </div>
   );

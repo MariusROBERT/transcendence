@@ -3,10 +3,16 @@ import { color } from '../../utils';
 interface Props {
   input: string;
   setInput: (isVisible: string) => void;
+  OnEnter: () => void;
   OnClick: () => void;
 }
 
-export default function ChatInput({ input, setInput, OnClick }: Props) {
+export default function ChatInput({
+  input,
+  setInput,
+  OnEnter,
+  OnClick,
+}: Props) {
   return (
     <div
       style={{
@@ -49,6 +55,9 @@ export default function ChatInput({ input, setInput, OnClick }: Props) {
           }}
           onKeyDown={(e) => {
             if (e.keyCode !== 13) return;
+            OnEnter();
+          }}
+          onClick={() => {
             OnClick();
           }}
         />
