@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { Fetch } from '../../utils';
-import {
-  UpdateChannelMessage,
-  UpdateChannelUsers,
-} from '../../utils/channel_functions';
 import Popup from '../ComponentBase/Popup';
-import { useUserContext } from '../../contexts';
 import JoinChat from './JoinChat';
 import ChatInput from './ChatInput';
 import { ChannelPublicPass } from '../../utils/interfaces';
@@ -24,14 +19,6 @@ export function ChatMenu() {
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(
     undefined,
   );
-  const { socket } = useUserContext();
-  var current_id = -1;
-
-  async function AddUserInChannel() {
-    await Fetch('channel/add_user/' + current_id, 'POST');
-    UpdateChannelMessage(current_id);
-    UpdateChannelUsers(current_id);
-  }
 
   //  TODO: clean here
   async function OnJoinChannel() {
@@ -39,28 +26,7 @@ export function ChatMenu() {
     console.log(res?.json);
     setChannels(res?.json);
     setJoinChatVisible(true);
-    //if (inputValue === '') return;
-    //const path = 'channel/name/' + inputValue;
-    //const res = await unsecureFetch(path, 'GET');
-    //if (res?.ok) {
-    //  var data = await res?.json();
-    //  current_id = data.id;
-    //  AddUserInChannel();
-    //  SetCurrChan(inputValue);
-    //  socket?.emit('join', { channel: inputValue });
-    //} else {
-    //  setCreChatVisible(true);
-    //}
-    //setInputValue('');
   }
-
-  //const OnEnterUser = () => {
-  //  //console.log(event.detail.value.uid);
-  //};
-
-  //useEffect(() => {
-  //  subscribe('enter_users', OnEnterUser);
-  //});
 
   return (
     <div>

@@ -2,7 +2,6 @@ import { subscribe } from '../../utils/event';
 import { ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from '../ChanUser/ChanUser';
 import { useEffect, useState } from 'react';
-import { RoundButton } from '../RoundButton/RoundButton';
 
 export function ChanUserList() {
   let [usrs, setUsers] = useState<ChannelUsers[]>([]);
