@@ -1,12 +1,12 @@
 import { SearchBar, Leaderboard, Popup } from '..';
 import React, { useEffect, useState } from 'react';
-import { IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 
 interface Props {
   searchTerm: string,
   setSearchTerm: (value: string) => void,
   placeHolder?: string,
-  user?: IUserComplete
+  user?: IUser
 }
 
 export function Search(props: Props) {

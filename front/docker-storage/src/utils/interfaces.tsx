@@ -79,19 +79,6 @@ export interface IUser {
   is_friend: boolean;
   sentInvitesTo: number[];
   recvInvitesFrom: number[];
-  blocked: number[];
-}
-
-export interface IUserComplete {
-  id: number;
-  username: string;
-  urlImg: string;
-  user_status: string;
-  role: string;
-  winrate: number;
-  is_friend: boolean;
-  sentInvitesTo: number[];
-  recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
 }

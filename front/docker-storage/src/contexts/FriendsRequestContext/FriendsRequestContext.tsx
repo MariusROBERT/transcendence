@@ -1,12 +1,12 @@
-import { ReactNode, Suspense, createContext, useContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { useUserContext } from "../UserContext/UserContext";
 import { Fetch } from "../../utils";
 
 type FriendsRequestType = {
-	recvInvitesFrom: number[] | undefined,
-	sendInvitesTo: number[] | undefined,
-	friends: number[] | undefined,
-	blocked: number[] | undefined,
+	recvInvitesFrom: number[],
+	sendInvitesTo: number[],
+	friends: number[],
+	blocked: number[],
 
 	sendFriendRequest: (to: number) => void,
 	acceptFriendRequest: (from: number, to: number) => void,
@@ -144,7 +144,7 @@ export function FriendsRequestProvider({ children }: Props) {
 			socket?.off('decline_friend_request', onDeclineFriendRequest);
 			socket?.off('block_user', onBlockUser);
 		};
-
+    // eslint-disable-next-line
 	}, [socket, friends, recvInvitesFrom, sendInvitesTo, blocked]);
 
 	return (

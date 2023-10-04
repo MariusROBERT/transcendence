@@ -40,6 +40,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
 
   useEffect(() => {
     fetchFriendsRequestContext();
+    // eslint-disable-next-line
   }, [])
 
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { Background, Border, GroupItems } from '..';
 import { color, Viewport } from '../../utils';
-import { IUserComplete } from '../../utils/interfaces';
 
 interface Props {
   viewport: Viewport;

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { IUser, IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 import React from 'react';
 import { UserButton } from '../User/UserButton';
 import { useUserContext } from '../../contexts';
