@@ -10,12 +10,6 @@ interface Props {
 }
 
 export default function Settings(props: Props) {
-  const navigate = useNavigate();
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    navigate('/login');
-    alert('Vous avez été déconnecté');
-  }
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
@@ -37,7 +31,6 @@ export default function Settings(props: Props) {
           setUserInfosSettings(user);
         } else {
           window.location.replace('http://localhost:3001/api/auth/login');
-          // alert('Vous avez été déconnecté');
         }
       };
       getUserInfos();
@@ -52,10 +45,6 @@ export default function Settings(props: Props) {
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
-    if (!jwtToken) {
-      window.location.replace('http://localhost:3001/api/auth/login');
-      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-    }
     if (
       confirmPassword === '' &&
       password === '' &&

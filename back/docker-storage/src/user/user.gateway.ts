@@ -1,6 +1,8 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guards";
+import { UseGuards } from "@nestjs/common";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
 export class UserGateway {
@@ -9,6 +11,7 @@ export class UserGateway {
 	constructor(private userService: UserService) { }
 
 	@SubscribeMessage('send_friend_request')
+	@UseGuards(JwtAuthGuard)
 	async handleSendFriendRequest(
 		@MessageBody() msg: { sender: number, receiver: number },
 	) {

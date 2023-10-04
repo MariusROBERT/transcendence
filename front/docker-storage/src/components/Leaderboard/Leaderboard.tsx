@@ -7,31 +7,10 @@ import Cookies from 'js-cookie';
 import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 export function Leaderboard({ searchTerm }: LeaderboardProps) {
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    window.location.replace('/login');
-    alert('Vous avez été déconnecté');
-  }
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { fetchContext, user } = useUserContext();
-  const { fetchFriendsRequestContext } = useFriendsRequestContext();
-
-  const getAllProfil = async () => {
-    let cancelled = false;
-    const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-    if (cancelled) { // todo : voir si cest utile ici
-      return;
-    } else {
-      if (users && Array.isArray(users) && users.length === 0)
-        setErrorMessage('Aucun utilisateur trouvé.');
-      else setAllUsers(users);
-    }
-    return () => {
-      cancelled = true;
-    };
-  };
 
   useEffect(() => {
     fetchContext();
@@ -39,18 +18,22 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   }, []);
 
   useEffect(() => {
-    fetchFriendsRequestContext();
-    // eslint-disable-next-line
-  }, [])
-
-  useEffect(() => {
-    const getUserInfos = async () => {
-      getAllProfil();
-      const user = (await Fetch('user', 'GET'))?.json;
-      if (!user) return;
+    const getAllProfil = async () => {
+      let cancelled = false;
+      const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
+      if (cancelled) { // todo : voir si cest utile ici
+        return;
+      } else {
+        if (users && Array.isArray(users) && users.length === 0)
+          setErrorMessage('Aucun utilisateur trouvé.');
+        else setAllUsers(users);
+      }
+      return () => {
+        cancelled = true;
+      };
     };
-    getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
+    getAllProfil();
+  }, []);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
@@ -76,7 +59,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
     };
 
     displayAllProfil();
-  }, [searchTerm, allUsers, jwtToken, user]);
+  }, [searchTerm, allUsers, user]);
 
   return (
     <div style={container}>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 interface Props {
   panelWidth: number;
@@ -12,12 +13,10 @@ interface Props {
 
 export function MainPage({ panelWidth, viewport }: Props) {
   const focused = useIsWindowFocused();
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken)
-    window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext } = useFriendsRequestContext();
 
   useEffect(() => {
     if (focused) {
@@ -25,6 +24,12 @@ export function MainPage({ panelWidth, viewport }: Props) {
     }
     // eslint-disable-next-line
   }, [focused]);
+
+  useEffect(() => {
+    fetchFriendsRequestContext();
+    // eslint-disable-next-line
+  }, [])
+
 
   useEffect(() => {
     if (!user)

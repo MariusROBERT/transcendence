@@ -10,11 +10,6 @@ export interface ProfilProps {
 }
 
 export default function Profil(props: ProfilProps) {
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    window.location.replace('/login');
-    alert('Vous avez été déconnecté');
-  }
   const { user } = useUserContext()
   if (!props.otherUser)
     return (<div style={profilContainer}>

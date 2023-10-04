@@ -12,9 +12,6 @@ interface Props {
 }
 
 export function UserButton({ otherUser }: Props) {
-	const jwtToken = Cookies.get('jwtToken');
-	if (!jwtToken)
-		window.location.replace('/login');
 	const { sendGameInvite } = useGameContext();
 	const { sendFriendRequest, acceptFriendRequest, declineFriendRequest, blockUser, sendInvitesTo, recvInvitesFrom, friends, blocked } = useFriendsRequestContext();
 	const { id, user } = useUserContext();
