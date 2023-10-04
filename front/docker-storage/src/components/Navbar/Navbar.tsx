@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       <div style={navbarStyle}>
-      <Border borderRadius={30} height={100} width={300} borderColor={color.black}>
+      <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
         <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'} bg_color={color.black}>
           <RoundButton
             icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
