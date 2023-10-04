@@ -45,7 +45,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('update_user_socket_id')
-  @UseGuards(JwtAuthGuard)
   async handleUpdateUserSocket(
     @MessageBody() message: { id: number; socketId: string },
   ): Promise<void> {
