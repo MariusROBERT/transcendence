@@ -71,13 +71,11 @@ const Navbar: React.FC = () => {
               onClick={() => logout()}
             />
           </Background>
-          {notifsVisible && 
-            <ul style={notifs}>
-              <li>beboo</li>
-              <li>beboo</li>
-              <li>beboo</li>
-              <li>beboo</li>
-              <li>beboo</li>
+          {notifsVisible &&
+            <ul>
+              {user?.recvInvitesFrom.map((number, index) => (
+                <li key={index}>{number}</li>
+              ))}
             </ul>}
           <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
             <Settings isVisible={settingsVisible} />
