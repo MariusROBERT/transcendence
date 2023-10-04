@@ -1,18 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Fetch, unsecureFetch } from '../../utils';
+import { useState } from 'react';
+import { Fetch } from '../../utils';
 import {
   UpdateChannelMessage,
   UpdateChannelUsers,
-  SetCurrChan,
 } from '../../utils/channel_functions';
-import { color } from '../../utils';
 import Popup from '../ComponentBase/Popup';
-import CreateChat from './CreateChat';
-import { subscribe } from '../../utils/event';
 import { useUserContext } from '../../contexts';
 import JoinChat from './JoinChat';
 import ChatInput from './ChatInput';
-import { Console } from 'console';
 import { ChannelPublicPass } from '../../utils/interfaces';
 
 /*
@@ -25,7 +20,6 @@ import { ChannelPublicPass } from '../../utils/interfaces';
 */
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
-  const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
   const [joinChatVisible, setJoinChatVisible] = useState<boolean>(false);
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(
     undefined,
@@ -59,13 +53,6 @@ export function ChatMenu() {
     //}
     //setInputValue('');
   }
-
-  useEffect(() => {
-    subscribe('chat_created', async () => {
-      console.log('here');
-      setCreChatVisible(false);
-    });
-  });
 
   //const OnEnterUser = () => {
   //  //console.log(event.detail.value.uid);

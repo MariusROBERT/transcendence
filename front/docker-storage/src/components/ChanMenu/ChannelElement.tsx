@@ -2,12 +2,29 @@ import { CSSProperties } from 'react';
 import { Flex } from '../Flex/FlexBox';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
+import { Fetch, unsecureFetch } from '../../utils';
+import { UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   data: ChannelPublicPass;
 }
 
 export default function ChannelElement({ data }: Props) {
+  const { socket } = useUserContext();
+
+  async function AddUserInChannel() {
+    const res = await Fetch('channel/add_user/' + data.id, 'POST');
+    console.log(res?.json);
+    UpdateChannelMessage(data.id);
+    UpdateChannelUsers(data.id);
+  }
+
+  function joinChannel() {
+    AddUserInChannel();
+    socket?.emit('join', { channel: data.channel_name });
+  }
+
   return (
     <div style={ChannelElementStyle}>
       <div>
@@ -32,7 +49,7 @@ export default function ChannelElement({ data }: Props) {
                     ? '../../assets/imgs/icon_lock.png'
                     : '../../assets/imgs/icon_chat.png',
                 )}
-                onClick={() => {}}
+                onClick={() => {joinChannel()}}
               ></RoundButton>
               <p>42</p>
             </Flex>

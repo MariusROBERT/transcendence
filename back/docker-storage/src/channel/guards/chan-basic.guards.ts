@@ -11,7 +11,7 @@ import {
   UserEntity,
 } from 'src/database/entities/channel.entity';
 import { UserService } from 'src/user/user.service';
-import { CreateChannelDto } from '../dto/channel.dto';
+import { CreateChannelDto, PassChannelDto } from '../dto/channel.dto';
 
 function findPerm(
   usernameToFind: string,
@@ -124,10 +124,7 @@ export class SelfBannedGuard implements CanActivate {
 //  Check if user try to use command on him
 @Injectable()
 export class SelfCommand implements CanActivate {
-  constructor(
-    private channelService: ChannelService,
-    private readonly userService: UserService,
-  ) {}
+  constructor() {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -154,5 +151,32 @@ export class IsValidChannel implements CanActivate {
         'Channel name should only contains [a-zA-Z]',
       );
     return true;
+  }
+}
+
+//  Check if channel is protected by password
+@Injectable()
+export class IsProtected implements CanActivate {
+  constructor(
+    private channelService: ChannelService,
+    private readonly userService: UserService,
+  ) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const params = request.params;
+    const body: PassChannelDto = request.body;
+    const u: UserEntity = request.user;
+
+    //  If user is in channel, skip password checking
+    const users = await this.userService.getUsersInChannels(params.id);
+    const is_here = users.some((user) => user.id === u.id);
+    if (is_here) return true;
+    const channel: ChannelEntity = await this.channelService.getChannelById(
+      params.id,
+    );
+    if (channel?.password === null) return true;
+    if (body?.password == channel?.password)
+      return true;
+    throw new BadRequestException('This channel is protected by a password');
   }
 }

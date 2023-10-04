@@ -31,6 +31,7 @@ import {
   PrivateGuard,
   SelfBannedGuard,
   SelfCommand,
+  IsProtected,
 } from './guards/chan-basic.guards';
 
 @Controller('channel')
@@ -122,7 +123,7 @@ export class ChannelController {
 
   //todo check why old users are removed
   @Post('/add_user/:id')
-  @UseGuards(PrivateGuard, SelfBannedGuard)
+  @UseGuards(PrivateGuard, SelfBannedGuard, IsProtected)
   @UseGuards(JwtAuthGuard)
   async addUserInChannel(
     @User() user: UserEntity,
