@@ -3,8 +3,6 @@ import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
-import Cookies from 'js-cookie';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);

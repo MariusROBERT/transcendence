@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, SwitchToggle } from '..';
@@ -59,16 +58,9 @@ export default function Settings(props: Props) {
       if (password !== confirmPassword)
         return setErrorMessage('passwords doesn\'t match !');
       else {
-        const user = await (fetch('http://localhost:3001/api/user/update_password', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: JSON.stringify({ newPassword: password, oldPassword: oldPassword }),
-        }))
-          .then(r => r.json());
-
+        const user = (await Fetch('user/update_password', 'PATCH',  JSON.stringify({ newPassword: password, oldPassword: oldPassword })))?.json
+        if (!user)
+          return ;
         if (user.message === 'Wrong password')
           return setErrorMessage(user.message);
         if (user.message)

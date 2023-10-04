@@ -1,6 +1,5 @@
 import { color } from '../../utils';
 import { RoundButton, Flex } from '..';
-import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { IUser } from '../../utils/interfaces';
 import { lookGame, openChat } from '../../utils/user_functions';

@@ -1,7 +1,6 @@
 import { color, Viewport, useIsWindowFocused } from '../../utils';
 import { Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext } from '../../contexts';
 import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';

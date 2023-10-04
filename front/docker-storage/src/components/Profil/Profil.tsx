@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { IUser } from '../../utils/interfaces';
 import React from 'react';
 import { UserButton } from '../User/UserButton';
