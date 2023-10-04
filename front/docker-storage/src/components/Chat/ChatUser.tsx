@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Fetch, color } from '../../utils';
+import { Fetch } from '../../utils';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { IChatUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
 import { UpdateChannelUsers } from '../../utils/channel_functions';
+import { createChatStyle, inputStyle } from './CreateChat';
 
 interface Props {
   data: IChatUser | undefined;
@@ -119,29 +120,3 @@ export default function ChatUser({ data, visibility }: Props) {
     </div>
   );
 }
-
-const createChatStyle: React.CSSProperties = {
-  borderRadius: '10px',
-  padding: '42px',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  background: 'grey',
-  height: '100%',
-  color: 'white',
-  margin: '10px',
-  cursor: 'pointer',
-  minWidth: '300px',
-};
-
-const inputStyle: React.CSSProperties = {
-  outline: 'none',
-  borderRadius: '10px',
-  border: 'none',
-  position: 'relative',
-  top: '0px',
-  left: '-10px',
-  height: '32px',
-  width: '200px',
-  backgroundColor: color.white,
-};

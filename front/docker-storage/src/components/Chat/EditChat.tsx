@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { color } from '../../utils';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { ChannelPublic } from '../../utils/interfaces';
+import { createChatStyle, inputStyle } from './CreateChat';
 
 interface Props {
   data: ChannelPublic | undefined;
@@ -59,28 +59,3 @@ export default function EditChat({ data }: Props) {
     </div>
   );
 }
-
-const createChatStyle: React.CSSProperties = {
-  borderRadius: '10px',
-  padding: '42px',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  background: 'grey',
-  height: '100%',
-  color: 'white',
-  margin: '10px',
-  cursor: 'pointer',
-  minWidth: '300px',
-};
-
-const inputStyle: React.CSSProperties = {
-  outline: 'none',
-  borderRadius: '10px',
-  border: 'none',
-  position: 'relative',
-  top: '-12px',
-  height: '32px',
-  width: '315px',
-  backgroundColor: color.white,
-};
