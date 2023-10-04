@@ -53,7 +53,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('reset_user_socket_id')
-  @UseGuards(JwtAuthGuard)
   async handleResetUserSocket(
     @MessageBody() message: { id: number },
   ): Promise<void> {

@@ -1,8 +1,12 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Border, Background, Settings, Profil, Popup, GameInvites } from '..';
+import { RoundButton, Settings, Profil, Popup, GameInvites } from '..';
 import Cookies from 'js-cookie';
-import { color } from '../../utils';
+import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
+import { IUser } from '../../utils/interfaces';
+import NotifCard from './notifCard'
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
+
 
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
@@ -10,6 +14,8 @@ const Navbar: React.FC = () => {
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const { user } = useUserContext();
+  const { recvInvitesFrom } = useFriendsRequestContext();
+  const [notifs, setNotifs] = useState<Array<IUser>>([])
 
   const showNotif = () => {
     setNotifsVisible(!notifsVisible);
@@ -43,13 +49,36 @@ const Navbar: React.FC = () => {
     // eslint-disable-next-line
   }, [profilVisible]);
 
-  // console.log(meUser)
+  // todo: refresh notifbadge quand on handle les notifs
+  // todo2: mettre des notifs badge sur le contacts pannel et sur les categorties approprie (friends, users...)
+  const setNotif = async () => {
+    let tmp = user?.recvInvitesFrom.map(async (from, index) => {
+      return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
+    })
+    try {
+      if (!tmp) {
+        setNotifsVisible(false);
+        return;
+      }
+      let res = await Promise.all(tmp);
+      setNotifs(res as IUser[]);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    setNotif();
+    notifs.length === 0 ? setNotifsVisible(false) : setNotifsVisible(true);
+    // eslint-disable-next-line
+  }, [recvInvitesFrom])
 
   return (
     <>
       <div style={navbarStyle}>
-        <Border borderRadius={30} height={85} width={220} borderColor={color.black} borderSize={0}>
-          <Background flex_direction={'row'} flex_alignItems={'flex-end'} flex_justifyContent={'flex-start'} bg_color={color.black}>
+        <div>
+          <div style={{display: 'flex', background: 'black', borderRadius: '0 0 0 30px'}}>
+            {notifs.length > 0 && <div style={notifbadge}>{notifs.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
               icon_size={50}
@@ -70,20 +99,21 @@ const Navbar: React.FC = () => {
               icon_size={50}
               onClick={() => logout()}
             />
-          </Background>
-          {notifsVisible &&
-            <ul>
-              {user?.recvInvitesFrom.map((number, index) => (
-                <li key={index}>{number}</li>
+          </div>
+          {notifsVisible && notifs.length > 0 &&
+            <div style={notifstyle}>
+              {notifs.map((notif) => (
+                <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
               ))}
-            </ul>}
+            </div>}
           <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
             <Settings isVisible={settingsVisible} />
           </Popup>
           <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
             <Profil otherUser={user} />
           </Popup>
-        </Border>
+        </div>
+
       </div>
       <GameInvites></GameInvites>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
@@ -97,18 +127,36 @@ const Navbar: React.FC = () => {
 };
 
 const navbarStyle: CSSProperties = {
-  top: '-25px',
-  right: '0px',
+  top: '-1px',
+  right: '-1px',
   position: 'fixed',
   display: 'flex',
   flexDirection: 'row-reverse',
+  borderRadius: '30px',
   zIndex: '10000',
 };
 
-const notifs: CSSProperties = {
+const notifbadge: CSSProperties = {
   position: 'absolute',
-  border: '1px solid red',
-  top: '70px'
+  width: '20px',
+  height: '20px',
+  top: '20px',
+  background: 'red',
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  alignContent: 'center'
+}
+
+const notifstyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'absolute',
+  top: '90px',
+  right: '200px',
+  minHeight: '100%',
+  width: '300px',
 }
 
 export default Navbar;

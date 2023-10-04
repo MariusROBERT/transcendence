@@ -11,7 +11,6 @@ export class UserGateway {
 	constructor(private userService: UserService) { }
 
 	@SubscribeMessage('send_friend_request')
-	@UseGuards(JwtAuthGuard)
 	async handleSendFriendRequest(
 		@MessageBody() msg: { sender: number, receiver: number },
 	) {
@@ -21,7 +20,6 @@ export class UserGateway {
 	}
 
 	@SubscribeMessage('accept_friend_request')
-	@UseGuards(JwtAuthGuard)
 	async handleAcceptFriendRequest(
 		@MessageBody() msg: { sender: number, receiver: number },
 	) {
@@ -32,7 +30,6 @@ export class UserGateway {
 	}
 
 	@SubscribeMessage('decline_friend_request')
-	@UseGuards(JwtAuthGuard)
 	async handleDeclineFriendRequest(
 		@MessageBody() msg: { sender: number, receiver: number },
 	) {
@@ -43,7 +40,6 @@ export class UserGateway {
 	}
 
 	@SubscribeMessage('block_user')
-	@UseGuards(JwtAuthGuard)
 	async blockAUser(
 		@MessageBody() msg: { receiver: number, sender: number },
 	) {
@@ -53,7 +49,6 @@ export class UserGateway {
 	}
 
 	@SubscribeMessage('unblock_user')
-	@UseGuards(JwtAuthGuard)
 	async unblockAUser(
 		@MessageBody() msg: { receiver: number, sender: number },
 	) {
