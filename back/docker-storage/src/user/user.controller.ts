@@ -132,25 +132,25 @@ export class UserController {
   }
 
   // ask_friend
-  @Patch('demand/:id') // id of friend
-  @UseGuards(JwtAuthGuard)
-  async FriendsDemand(
-    @User() user: UserEntity,
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserEntity> {
-    return await this.userService.askFriend(user, id);
-  }
+  // @Patch('demand/:id') // id of friend
+  // @UseGuards(JwtAuthGuard)
+  // async FriendsDemand(
+  //   @User() user: UserEntity,
+  //   @Param('id', ParseIntPipe) id: number,
+  // ) {
+  //   await this.userService.askFriend(user, id);
+  // }
 
   // accept_or_denied_aks
-  @Patch('handle_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
-  @UseGuards(JwtAuthGuard)
-  async responseAsks(
-    @User() user: UserEntity,
-    @Param('id', ParseIntPipe) id: number,
-    @Param('bool') bool: boolean,
-  ): Promise<UserEntity> {
-    return await this.userService.handleAsk(user, id, bool);
-  }
+  // @Patch('handle_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
+  // @UseGuards(JwtAuthGuard)
+  // async responseAsks(
+  //   @User() user: UserEntity,
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Param('bool') bool: boolean,
+  // ) {
+  //   await this.userService.handleAsk(user, id, bool);
+  // }
 
   // logout
   @Patch('/logout')
