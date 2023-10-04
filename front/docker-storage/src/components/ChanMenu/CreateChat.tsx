@@ -99,7 +99,7 @@ export const createChatStyle: React.CSSProperties = {
   minWidth: '300px',
 };
 
-const inputStyle: React.CSSProperties = {
+export const inputStyle: React.CSSProperties = {
   outline: 'none',
   borderRadius: '10px',
   border: 'none',

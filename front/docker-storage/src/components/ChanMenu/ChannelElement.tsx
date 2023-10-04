@@ -2,26 +2,40 @@ import { CSSProperties } from 'react';
 import { Flex } from '../Flex/FlexBox';
 import { RoundButton } from '../RoundButton/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
-import { Fetch, unsecureFetch } from '../../utils';
-import { UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
+import { Fetch } from '../../utils';
+import {
+  UpdateChannelMessage,
+  UpdateChannelUsers,
+} from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
 
 interface Props {
   data: ChannelPublicPass;
+  visible: boolean;
+  setVisible: (b: boolean) => void;
+  setCurrent: (c: ChannelPublicPass) => void;
 }
 
-export default function ChannelElement({ data }: Props) {
+export default function ChannelElement({ data, visible, setVisible, setCurrent }: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
     const res = await Fetch('channel/add_user/' + data.id, 'POST');
     console.log(res?.json);
+    if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(data.id);
     UpdateChannelUsers(data.id);
+    return 0;
   }
 
-  function joinChannel() {
-    AddUserInChannel();
+  async function joinChannel() {
+    setCurrent(data);
+    const rep = await AddUserInChannel();
+    if (rep === 400)
+    {
+      setVisible(true);
+      return ;
+    }
     socket?.emit('join', { channel: data.channel_name });
   }
 
@@ -49,7 +63,9 @@ export default function ChannelElement({ data }: Props) {
                     ? '../../assets/imgs/icon_lock.png'
                     : '../../assets/imgs/icon_chat.png',
                 )}
-                onClick={() => {joinChannel()}}
+                onClick={() => {
+                  joinChannel();
+                }}
               ></RoundButton>
               <p>42</p>
             </Flex>

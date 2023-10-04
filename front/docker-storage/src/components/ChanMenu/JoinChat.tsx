@@ -5,6 +5,7 @@ import ChatInput from './ChatInput';
 import CreateChat, { createChatStyle } from './CreateChat';
 import { Button } from '../Button/Button';
 import Popup from '../ComponentBase/Popup';
+import EnterPassword from './EnterPassword';
 
 interface Props {
   input: string;
@@ -17,6 +18,10 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     'all' | 'public' | 'protected'
   >('all');
   const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
+  const [enterPassword, setEnterPassword] = useState<boolean>(false);
+  const [currentChannel, setCurrentChannel] = useState<
+    ChannelPublicPass | undefined
+  >(undefined);
 
   function OnClick() {
     console.log('click');
@@ -24,7 +29,9 @@ export default function JoinChat({ input, setInput, channels }: Props) {
 
   const filteredChannels = channels
     ? channels.filter((channel) => {
-        const name = channel?.channel_name.toLowerCase().startsWith(input.toLowerCase());
+        const name = channel?.channel_name
+          .toLowerCase()
+          .startsWith(input.toLowerCase());
 
         const status =
           channelStatus === 'all' ||
@@ -45,7 +52,13 @@ export default function JoinChat({ input, setInput, channels }: Props) {
           </p>
         ) : (
           filteredChannels?.map((data, idx) => (
-            <ChannelElement key={idx} data={data}></ChannelElement>
+            <ChannelElement
+              key={idx}
+              data={data}
+              visible={enterPassword}
+              setVisible={setEnterPassword}
+              setCurrent={setCurrentChannel}
+            ></ChannelElement>
           ))
         )}
       </div>
@@ -82,7 +95,18 @@ export default function JoinChat({ input, setInput, channels }: Props) {
         </Button>
       </div>
       <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
-        <CreateChat name={''} visible={createChatVisible} setVisible={setCreChatVisible}></CreateChat>
+        <CreateChat
+          name={''}
+          visible={createChatVisible}
+          setVisible={setCreChatVisible}
+        ></CreateChat>
+      </Popup>
+      <Popup isVisible={enterPassword} setIsVisible={setEnterPassword}>
+        <EnterPassword
+          visible={enterPassword}
+          setVisible={setEnterPassword}
+          current={currentChannel}
+        ></EnterPassword>
       </Popup>
     </div>
   );
