@@ -23,7 +23,6 @@ export function ChatMenu() {
   //  TODO: clean here
   async function OnJoinChannel() {
     const res = await Fetch('channel/public_all', 'POST');
-    console.log(res?.json);
     setChannels(res?.json);
     setJoinChatVisible(true);
   }

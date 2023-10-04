@@ -63,7 +63,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     });
     client.join(channel);
-    console.log('here join');
     this.server.to(channel).emit('join', chan.id);
   }
 

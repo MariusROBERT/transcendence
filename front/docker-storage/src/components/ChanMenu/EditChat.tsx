@@ -37,25 +37,25 @@ export default function EditChat({ data }: Props) {
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => console.log('add admin')}
+        onClick={() => {}}
       ></RoundButton>
 
       <h4>Admins Users</h4>
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => console.log('add admin')}
+        onClick={() => {}}
       ></RoundButton>
 
       <h4>Banned users</h4>
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => console.log('add user')}
+        onClick={() => {}}
       ></RoundButton>
       <br></br>
 
-      <Button onClick={() => console.log('click')}>Save</Button>
+      <Button onClick={() => {}}>Save</Button>
     </div>
   );
 }

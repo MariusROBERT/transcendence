@@ -84,7 +84,6 @@ export default function ChatUser({ data, visibility }: Props) {
 
   async function OnRemAdmin() {
     execCommand('rem_admin');
-    console.log('salut');
   }
 
   return (

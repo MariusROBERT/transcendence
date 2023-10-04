@@ -125,7 +125,6 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
-    console.log(msgs);
     setCurrUser(msgs);
     setUserVisible(true);
   }

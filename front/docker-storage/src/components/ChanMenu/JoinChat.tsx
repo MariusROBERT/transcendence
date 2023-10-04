@@ -24,7 +24,6 @@ export default function JoinChat({ input, setInput, channels }: Props) {
   >(undefined);
 
   function OnClick() {
-    console.log('click');
   }
 
   const filteredChannels = channels

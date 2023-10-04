@@ -21,7 +21,6 @@ export default function ChannelElement({ data, visible, setVisible, setCurrent }
 
   async function AddUserInChannel() {
     const res = await Fetch('channel/add_user/' + data.id, 'POST');
-    console.log(res?.json);
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(data.id);
     UpdateChannelUsers(data.id);

@@ -26,7 +26,6 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
     const res = await Fetch('channel/add_user/' + current?.id, 'POST', JSON.stringify({
       password: password,
     }),);
-    console.log(res?.json);
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(Number(current?.id));
     UpdateChannelUsers(Number(current?.id));
@@ -42,8 +41,6 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
 
   async function OnButtonClick() {
     if (current === undefined) return;
-    console.log('current is defined');
-    console.log(current);
     if (await AddUserInChannel() === 400)
     {
       seterrorMessage('Wrong password');

@@ -185,7 +185,6 @@ export class ChannelService {
     var allusers = await this.userService.getUsersInChannels(id);
     if (allusers.some((u) => u.id === userid))
       throw new ConflictException('User already in channel');
-    console.log(channel.password);
     var currentUsers = await this.userService.getFullUsersInChannels(id);
     currentUsers.push(user);
     channel.users = currentUsers;
