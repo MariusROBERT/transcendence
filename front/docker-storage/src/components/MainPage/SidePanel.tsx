@@ -28,7 +28,6 @@ export function SidePanel({
   const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
-    console.log("remove " + uid);
     if (isLeftPanel === false && uid === id) Close();
   };
 
