@@ -10,6 +10,7 @@ import { useUserContext } from '../../contexts';
 import Popup from '../ComponentBase/Popup';
 import EditChat from '../Chat/EditChat';
 import { useState } from 'react';
+import { publish } from '../../utils/event';
 
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
   const { socket } = useUserContext();
@@ -21,6 +22,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
     UpdateChannelUsers(id);
     SetCurrChan(name);
     socket?.emit('join', { channel: name });
+    publish('open_chat', undefined);
   }
 
   async function OnSetting() {

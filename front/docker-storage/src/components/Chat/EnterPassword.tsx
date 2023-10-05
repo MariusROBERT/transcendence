@@ -9,6 +9,7 @@ import {
 } from '../../utils/channel_functions';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
+import { publish } from '../../utils/event';
 
 interface Props {
   visible: boolean;
@@ -29,6 +30,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(Number(current?.id));
     UpdateChannelUsers(Number(current?.id));
+    publish('open_chat', undefined);
     return 0;
   }
 

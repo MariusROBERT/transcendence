@@ -8,6 +8,7 @@ import {
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
+import { publish } from '../../utils/event';
 
 interface Props {
   data: ChannelPublicPass;
@@ -24,6 +25,7 @@ export default function ChannelElement({ data, visible, setVisible, setCurrent }
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(data.id);
     UpdateChannelUsers(data.id);
+    publish('open_chat', undefined);
     return 0;
   }
 

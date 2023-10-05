@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
+import { unsubscribe, subscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -35,6 +36,15 @@ export function SidePanel({
     socket?.on('remove', Remove);
     return () => {
       socket?.off('remove', Remove);
+    };
+  });
+
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (isLeftPanel === false) Open();
+    });
+    return () => {
+      unsubscribe('opne_chat', () => {});
     };
   });
 

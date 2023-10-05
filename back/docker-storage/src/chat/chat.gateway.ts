@@ -78,7 +78,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('remove')
   async handleRemove(client: Socket, body: any) {
     const { user } = body;
-    console.log(user);
     this.server.emit('remove', user);
   }
 
