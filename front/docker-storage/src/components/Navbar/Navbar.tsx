@@ -7,7 +7,6 @@ import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard'
 import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
-
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
@@ -49,10 +48,8 @@ const Navbar: React.FC = () => {
     // eslint-disable-next-line
   }, [profilVisible]);
 
-  // todo: refresh notifbadge quand on handle les notifs
-  // todo2: mettre des notifs badge sur le contacts pannel et sur les categorties approprie (friends, users...)
   const setNotif = async () => {
-    let tmp = user?.recvInvitesFrom.map(async (from, index) => {
+    let tmp = recvInvitesFrom.map(async (from) => {
       return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
     })
     try {
@@ -69,9 +66,10 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     setNotif();
-    notifs.length === 0 ? setNotifsVisible(false) : setNotifsVisible(true);
+    if (notifs.length === 0)
+      setNotifsVisible(false);
     // eslint-disable-next-line
-  }, [recvInvitesFrom])
+  }, [notifs])
 
   return (
     <>
@@ -100,7 +98,7 @@ const Navbar: React.FC = () => {
               onClick={() => logout()}
             />
           </div>
-          {notifsVisible && notifs.length > 0 &&
+          {notifsVisible && 
             <div style={notifstyle}>
               {notifs.map((notif) => (
                 <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
@@ -156,7 +154,7 @@ const notifstyle: CSSProperties = {
   top: '90px',
   right: '200px',
   minHeight: '100%',
-  width: '300px',
+  background: 'black',
 }
 
 export default Navbar;

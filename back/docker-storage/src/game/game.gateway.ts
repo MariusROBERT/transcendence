@@ -61,7 +61,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   @SubscribeMessage('send_invite')
-  @UseGuards(JwtAuthGuard)
   async sendInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
     // console.log('send_invite', msg);
 
@@ -75,7 +74,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('accept_invite')
-  @UseGuards(JwtAuthGuard)
   async acceptInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
     // console.log('accept_invite', msg);
     // Update Database
@@ -100,7 +98,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('decline_invite')
-  @UseGuards(JwtAuthGuard)
   async declineInvite(@MessageBody() msg: { sender: number, receiver: number }) {
     // console.log('decline_invite', msg);
     // Update Database
@@ -114,7 +111,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('cancel_invite')
-  @UseGuards(JwtAuthGuard)
   async cancelInvite(@MessageBody() msg: { sender: number, receiver: number }) {
     // console.log('cancel_invite', msg);
     // Update Database
@@ -129,7 +125,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Queue Management ----------------------------------------------------------------------------------------------- //
   @SubscribeMessage('join_queue')
-  @UseGuards(JwtAuthGuard)
   async joinQueue(@MessageBody() msg: { sender: number, gameType: 'normal' | 'special' }) {
     // console.log('join_queue', msg);
     if (msg.gameType === 'normal')
@@ -139,7 +134,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('leave_queue')
-  @UseGuards(JwtAuthGuard)
   leaveQueue(@MessageBody() msg: { sender: number }) {
     // console.log('leave_queue', msg);
     this.controller.queue = this.controller.queue.filter(id => id != msg.sender);
@@ -162,7 +156,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('start_game')
-  @UseGuards(JwtAuthGuard)
   async starts(@MessageBody() msg: { id: number }) {
     // console.log('start_game', msg);
     const user = await this.UserService.getUserById(msg.id);
@@ -172,7 +165,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('leave_game')
-  @UseGuards(JwtAuthGuard)
   async quitGame(@MessageBody() msg: { sender: number }) {
     // console.log('leave_game', msg);
     return this.controller.matchmaking.leaveGame(msg.sender);
@@ -180,7 +172,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // InGame Events -------------------------------------------------------------------------------------------------- //
   @SubscribeMessage('move_player')
-  @UseGuards(JwtAuthGuard)
   movePlayer(
     @MessageBody() msg: { id: number; isMoving: boolean; moveUp: boolean },
   ) {

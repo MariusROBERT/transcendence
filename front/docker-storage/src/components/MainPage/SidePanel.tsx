@@ -8,6 +8,7 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
+  notifs: number;
 }
 
 export function SidePanel({
@@ -16,6 +17,7 @@ export function SidePanel({
                             width,
                             isLeftPanel,
                             duration_ms = 1000,
+                            notifs
                           }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -85,9 +87,9 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{ position: 'absolute', height: '100%', left: getStyle().left }}
-      >
-        <div style={buttonStyle}>
+        style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
+        >
+      <div style={buttonStyle}>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
@@ -100,6 +102,8 @@ export function SidePanel({
 
   return (
     <div style={getStyle()}>
+        <div>coucou</div>
+
       <div style={buttonStyle}>
         <RoundButton
           icon_size={50}
@@ -113,3 +117,14 @@ export function SidePanel({
     </div>
   );
 }
+
+const notificationCountStyle: React.CSSProperties = {
+  position: 'absolute',
+  width:'100px',
+  color: 'white',
+  fontSize: '14px',
+  fontWeight: 'bold',
+  background: 'red',
+  border: '1px solid red',
+  zIndex: '9999999',
+};

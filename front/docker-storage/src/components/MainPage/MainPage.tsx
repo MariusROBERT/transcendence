@@ -15,7 +15,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, user } = useUserContext();
-  const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const { fetchFriendsRequestContext, recvInvitesFrom } = useFriendsRequestContext();
 
   useEffect(() => {
     if (focused) {
@@ -29,19 +29,19 @@ export function MainPage({ panelWidth, viewport }: Props) {
     // eslint-disable-next-line
   }, [])
 
-
   useEffect(() => {
     if (!user)
       return;
-    if (user.recvInvitesFrom && Array.isArray(user.recvInvitesFrom) && user.recvInvitesFrom.length > 0)
-      setNotifs(user.recvInvitesFrom.length);
+    if (recvInvitesFrom && recvInvitesFrom.length > 0)
+      setNotifs(recvInvitesFrom.length);
+    // eslint-disable-next-line
   }, [user]);
 
   return (
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                   flex_alignItems={'stretch'}>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} notifs={notifs}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel viewport={viewport} />
           </Background>
@@ -50,7 +50,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <PlayButton />
         </Background>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} notifs={notifs}>
           <Background>
             <ChatPanel viewport={viewport} width={panelWidth} />
           </Background>
