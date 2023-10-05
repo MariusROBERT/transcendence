@@ -38,19 +38,21 @@ export default function ChatUser({ data, visibility }: Props) {
       setErrorVisible(true);
     } else {
       if (data?.channel_id) UpdateChannelUsers(data?.channel_id);
+      if (command === "kick" || command === "ban")
+      {
+        const user = data?.sender_id;
+        socket?.emit('remove', { user: user });
+      }
     }
   }
 
   async function OnKick() {
     execCommand('kick');
     const user = data?.sender_id;
-    socket?.emit('remove', { user: user });
   }
 
   async function OnBan() {
     execCommand('ban');
-    const user = data?.sender_id;
-    socket?.emit('remove', { user: user });
   }
 
   async function OnUnBan() {
