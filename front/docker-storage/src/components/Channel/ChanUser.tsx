@@ -1,21 +1,31 @@
 import { RoundButton } from '..';
+import { ChannelMessage, ChannelUsers, IChatUser } from '../../utils/interfaces';
 
 interface Props {
-  children: string;
-  user_icon: string;
-  online: boolean;
+  item: ChannelUsers;
+  chan_id: number;
+  onClick: (name: ChannelMessage) => void;
 }
 
-export function ChanUser({ children, user_icon, online }: Props) {
+export function ChanUser({ item, chan_id, onClick }: Props) {
   function viewProfile() {
-    // TODO: link the profile to the icon btn
-    // to do so in the Props, get the User ID
+    if (chan_id === -1)
+      return ;
+    var data: ChannelMessage;
+    data = {
+      channel_id: chan_id,
+      sender_id: item.id,
+      sender_urlImg: item.urlImg,
+      sender_username: item.username,
+      message_content: "",
+    };
+    onClick(data);
   }
 
   return (
     <div>
       <RoundButton
-        icon={user_icon}
+        icon={item.urlImg}
         icon_size={42}
         onClick={viewProfile}
       ></RoundButton>

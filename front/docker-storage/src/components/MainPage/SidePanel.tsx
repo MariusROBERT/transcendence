@@ -25,7 +25,6 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-
   const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
@@ -46,7 +45,7 @@ export function SidePanel({
     return () => {
       unsubscribe('open_chat', () => {});
     };
-  }, []);
+  }, [isLeftPanel, Open]);
 
   async function Close() {
     if (isMoving) return;

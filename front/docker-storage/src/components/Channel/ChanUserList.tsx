@@ -1,9 +1,14 @@
 import { subscribe } from '../../utils/event';
-import { ChannelUsers } from '../../utils/interfaces';
+import { ChannelMessage, ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from './ChanUser';
 import { useEffect, useState } from 'react';
 
-export function ChanUserList() {
+interface Props {
+  chan_id: number;
+  onClick: (name: ChannelMessage) => void;
+}
+
+export function ChanUserList({ chan_id, onClick }: Props) {
   let [usrs, setUsers] = useState<ChannelUsers[]>([]);
   const [scrollIndex, setScrollIndex] = useState(0);
 
@@ -22,10 +27,8 @@ export function ChanUserList() {
           transform: `translateX(-${scrollIndex * 100}%)`,
         }}
       >
-        {usrs.map((item) => (
-          <ChanUser key={item.id} user_icon={item.urlImg} online={true}>
-            {item.username}
-          </ChanUser>
+        {usrs.map((item, idx) => (
+          <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>
     );
