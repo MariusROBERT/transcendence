@@ -44,9 +44,9 @@ export function SidePanel({
       if (isLeftPanel === false) Open();
     });
     return () => {
-      unsubscribe('opne_chat', () => {});
+      unsubscribe('open_chat', () => {});
     };
-  });
+  }, []);
 
   async function Close() {
     if (isMoving) return;
