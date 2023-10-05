@@ -91,6 +91,15 @@ export class ChannelController {
     return await this.channelService.getChannelUsers(id);
   }
 
+  @Get('/rights/:id')
+  @UseGuards(JwtAuthGuard)
+  async GetChannelUsersRights(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity,
+  ) {
+    return await this.channelService.getChannelUserRights(id, user);
+  }
+
   //  TODO CHANGE TO GET
   @Post('/of_user')
   @UseGuards(JwtAuthGuard)

@@ -123,6 +123,17 @@ export class ChannelService {
     return users;
   }
 
+  async getChannelUserRights(id: number, user: UserEntity) {
+    const usersInChannel = await this.userService.getUsersInChannels(id);
+    for (const currentUser of usersInChannel) {
+      if (currentUser.id === user.id) {
+        // L'utilisateur actuel est le même que l'utilisateur passé en paramètre
+        return {currentUser};
+      }
+    }
+    throw new NotFoundException("User Not Found");
+  }
+
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
     var chans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.users', 'users')

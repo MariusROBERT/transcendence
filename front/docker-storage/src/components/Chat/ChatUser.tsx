@@ -18,9 +18,22 @@ export default function ChatUser({ data, visibility }: Props) {
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
   const { socket } = useUserContext();
+  const [type, setType] = useState<string>("noperm");
 
   useEffect(() => {
-    if (visibility === false) setErrorVisible(false);
+    const fetchData = async () => {
+      if (visibility === false) setErrorVisible(false);
+      if (visibility === true) {
+        const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
+        console.log(rep?.json.currentUser.type);
+        const t = rep?.json?.currentUser?.type;
+        if (t === "owner" || t === "admin")
+          setType("perm")
+        else
+          setType("noperm")
+      }
+    };
+    fetchData();
   }, [visibility]);
 
   async function OnProfilClick() {}
@@ -38,8 +51,7 @@ export default function ChatUser({ data, visibility }: Props) {
       setErrorVisible(true);
     } else {
       if (data?.channel_id) UpdateChannelUsers(data?.channel_id);
-      if (command === "kick" || command === "ban")
-      {
+      if (command === 'kick' || command === 'ban') {
         const user = data?.sender_id;
         socket?.emit('remove', { user: user });
       }
@@ -104,10 +116,10 @@ export default function ChatUser({ data, visibility }: Props) {
         icon={String(data?.sender_urlImg)}
         onClick={OnProfilClick}
       ></RoundButton>
-      <Button onClick={OnKick}> Kick </Button>
-      <Button onClick={OnBan}> Ban </Button>
-      <Button onClick={OnUnBan}> UnBan </Button>
-      <p>
+      {type === "perm" ? <Button onClick={OnKick}> Kick </Button> : <div />}
+      {type === "perm" ? <Button onClick={OnBan}> Ban </Button> : <div />}
+      {type === "perm" ? <Button onClick={OnUnBan}> UnBan </Button> : <div />}
+      {type === "perm" ?  <p>
         <input
           placeholder="Time in second"
           style={inputStyle}
@@ -117,10 +129,11 @@ export default function ChatUser({ data, visibility }: Props) {
           }}
         ></input>
         <Button onClick={OnMute}> Mute </Button>
-      </p>
-      <Button onClick={OnUnMute}> UnMute </Button>
-      <Button onClick={OnAddAdmin}> Add as Admin </Button>
-      <Button onClick={OnRemAdmin}> Rem as Admin </Button>
+      </p> : <div/>}
+      
+      {type === "perm" ? <Button onClick={OnUnMute}> UnMute </Button>: <div />}
+      {type === "perm" ? <Button onClick={OnAddAdmin}> Add as Admin </Button>: <div />}
+      {type === "perm" ? <Button onClick={OnRemAdmin}> Rem as Admin </Button>: <div />}
     </div>
   );
 }
