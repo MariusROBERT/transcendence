@@ -113,14 +113,3 @@ export function SidePanel({
     </div>
   );
 }
-
-const notificationCountStyle: React.CSSProperties = {
-  position: 'absolute',
-  width:'100px',
-  color: 'white',
-  fontSize: '14px',
-  fontWeight: 'bold',
-  background: 'red',
-  border: '1px solid red',
-  zIndex: '9999999',
-};
