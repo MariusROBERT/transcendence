@@ -10,8 +10,6 @@ import { GameController } from './game.controller';
 import { Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { State } from './game.interfaces';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
-import { UseGuards } from "@nestjs/common";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {

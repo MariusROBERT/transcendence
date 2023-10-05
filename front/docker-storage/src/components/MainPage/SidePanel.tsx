@@ -8,7 +8,6 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
-  notifs: number;
 }
 
 export function SidePanel({
@@ -17,7 +16,6 @@ export function SidePanel({
                             width,
                             isLeftPanel,
                             duration_ms = 1000,
-                            notifs
                           }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -102,8 +100,6 @@ export function SidePanel({
 
   return (
     <div style={getStyle()}>
-        <div>coucou</div>
-
       <div style={buttonStyle}>
         <RoundButton
           icon_size={50}

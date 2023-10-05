@@ -41,7 +41,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                   flex_alignItems={'stretch'}>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} notifs={notifs}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel viewport={viewport} />
           </Background>
@@ -50,7 +50,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <PlayButton />
         </Background>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} notifs={notifs}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
           <Background>
             <ChatPanel viewport={viewport} width={panelWidth} />
           </Background>
