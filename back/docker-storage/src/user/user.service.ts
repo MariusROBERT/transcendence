@@ -99,13 +99,18 @@ export class UserService {
     return await this.UserRepository.save(newProfil);
   }
 
+  // Log IN / OUT -------------------------------------------------------------------------------- //
+  async login(user: UserEntity) {
+    user.user_status = UserStateEnum.ON;
+    await this.UserRepository.save(user);
+  }
+
   async logout(user: UserEntity) {
     // pas testé
     const lastMsg = await this.getLastMsg(user);
     if (lastMsg)
       user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
-    user.socketId = '';
     user.isInGameWith = -1;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -424,33 +429,6 @@ export class UserService {
     user.urlImg = 'http://localhost:3001/' + file.path;
     await this.UserRepository.save(user);
     return user;
-  }
-
-  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    return await this.UserRepository.findOne({
-      where: { socketId: socketId.socketId },
-    });
-  }
-
-  async setUserSocketId(id: number, socketId: string) {
-    const user = await this.UserRepository.findOne({ where: { id: id } });
-    if (!user) {
-      console.error('user not found in setUserSocketId');
-      return;
-    }
-    user.socketId = socketId;
-    user.user_status = UserStateEnum.ON; // todo : virer ca
-
-    return await this.UserRepository.save(user);
-  }
-
-  async getSocketIdFromUser(id: number) {
-    const user = await this.UserRepository.findOne({ where: { id: id } });
-    if (!user) {
-      console.error('user not found in setUserSocketId');
-      return;
-    }
-    return user.socketId;
   }
 
   async getUserById(id: number): Promise<UserEntity> {
