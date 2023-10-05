@@ -68,7 +68,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user)
       console.error('connect: no such User');
     await this.userService.login(user);
-    this.server.emit('user_connection', clientId);
+    this.server.emit('user_connection', { userId: clientId });
   }
 
   async disconnect(clientId: number){
@@ -81,7 +81,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user)
       console.error('disconnect: no such User');
     await this.userService.logout(user);
-    this.server.emit('user_disconnection', clientId);
+    this.server.emit('user_disconnection', { userId: clientId });
   }
 
   // Invites Management --------------------------------------------------------------------------------------------- //
@@ -91,6 +91,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const sender = (await this.userService.getUserById(msg.sender));
     await this.userService.setUserSendInvitationTo(sender, msg.receiver);
     await this.userService.setUserInvitationType(sender, msg.gameType);
+
+    const receiver = (await this.userService.getUserById(msg.receiver));
+    await this.userService.setUserReceivedInvitationFrom(receiver, msg.sender);
 
     // Transfer the message
     this.server.to('user' + msg.receiver).emit('send_invite', {
