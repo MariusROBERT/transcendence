@@ -6,21 +6,22 @@ import { IChatUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
 import { UpdateChannelUsers } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   data: IChatUser | undefined;
-  visibility: boolean
+  visibility: boolean;
 }
 
 export default function ChatUser({ data, visibility }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
+  const { socket } = useUserContext();
 
   useEffect(() => {
-    if (visibility === false)
-      setErrorVisible(false);
-  }, [visibility])
+    if (visibility === false) setErrorVisible(false);
+  }, [visibility]);
 
   async function OnProfilClick() {}
 
@@ -35,20 +36,21 @@ export default function ChatUser({ data, visibility }: Props) {
     if (rep?.json.statusCode === 400) {
       seterrorMessage(rep?.json.message);
       setErrorVisible(true);
-    }
-    else
-    {
-      if (data?.channel_id)
-        UpdateChannelUsers(data?.channel_id);
+    } else {
+      if (data?.channel_id) UpdateChannelUsers(data?.channel_id);
     }
   }
 
   async function OnKick() {
     execCommand('kick');
+    const user = data?.sender_id;
+    socket?.emit('remove', { user: user });
   }
 
   async function OnBan() {
     execCommand('ban');
+    const user = data?.sender_id;
+    socket?.emit('remove', { user: user });
   }
 
   async function OnUnBan() {
@@ -72,7 +74,7 @@ export default function ChatUser({ data, visibility }: Props) {
       return;
     }
     setErrorVisible(true);
-    seterrorMessage('mute time is number only')
+    seterrorMessage('mute time is number only');
   }
 
   async function OnUnMute() {

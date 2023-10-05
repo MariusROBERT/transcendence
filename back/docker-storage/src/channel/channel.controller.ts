@@ -32,6 +32,7 @@ import {
   SelfBannedGuard,
   SelfCommand,
   IsProtected,
+  SelfInChannelGuard,
 } from './guards/chan-basic.guards';
 
 @Controller('channel')
@@ -72,7 +73,7 @@ export class ChannelController {
   }
 
   @Get('/msg/:id')
-  //@UseGuards(InChannelGuard)  Todo: Check why not working
+  @UseGuards(SelfInChannelGuard)
   @UseGuards(JwtAuthGuard)
   async GetChannelMessages(
     @Param('id', ParseIntPipe) id: number,

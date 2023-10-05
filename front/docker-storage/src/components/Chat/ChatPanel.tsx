@@ -46,6 +46,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
+      console.log(event.detail.value)
       setMessage(event.detail.value);
     });
   });

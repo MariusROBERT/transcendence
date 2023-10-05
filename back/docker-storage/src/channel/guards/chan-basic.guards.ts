@@ -43,6 +43,24 @@ export class PrivateGuard implements CanActivate {
   }
 }
 
+//  Check if user is in channel
+@Injectable()
+export class SelfInChannelGuard implements CanActivate {
+  constructor(
+    private readonly userService: UserService,
+  ) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user: UserEntity = request.user;
+    const params = request.params;
+
+    const users = await this.userService.getUsersInChannels(params.id);
+    const is_here = users.some((user) => user.id === user.id);
+    if (is_here) return true;
+    throw new BadRequestException('User is not In Channel');
+  }
+}
+
 //  Check if target user is in channel
 @Injectable()
 export class InChannelGuard implements CanActivate {
