@@ -7,8 +7,9 @@ import { useUserContext } from '../../contexts';
 const Navbar: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const { user } = useUserContext()
+  const { user, socket } = useUserContext()
   const logout = async () => {
+    socket?.disconnect();
     Cookies.remove('jwtToken');
     window.location.replace('/login');
   };
