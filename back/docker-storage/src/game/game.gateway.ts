@@ -17,8 +17,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server;
   // game Controller
   controller: GameController;
-  // list of all the clients Sockets, the socket_id can be found in database
+  // list of clients connected
   clients: { id: number, sockets: Socket[] }[] = [];
+  // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
   constructor(private userService: UserService) {
@@ -28,7 +29,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.controller = controller;
   }
 
-  // Socket Refresh ------------------------------------------------------------------------------------------------- //
+  // Connection / Disconnection ------------------------------------------------------------------------------------- //
   async handleConnection(userSocket: Socket) {
     this.sockets.push(userSocket);
   }
@@ -63,13 +64,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async connect(clientId: number){
-
-    this.server.emit('user_connection', clientId);
-
     const user = await this.userService.getUserById(clientId);
     if (!user)
       console.error('connect: no such User');
     await this.userService.login(user);
+    this.server.emit('user_connection', clientId);
   }
 
   async disconnect(clientId: number){
@@ -77,19 +76,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (this.clients.find(c => c.id === clientId))
       return; // the client reconnect in the 2 seconds.
 
-    this.server.emit('user_disconnection', clientId);
 
     const user = await this.userService.getUserById(clientId);
     if (!user)
       console.error('disconnect: no such User');
     await this.userService.logout(user);
+    this.server.emit('user_disconnection', clientId);
   }
 
   // Invites Management --------------------------------------------------------------------------------------------- //
   @SubscribeMessage('send_invite')
   async sendInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
-    // console.log('send_invite', msg);
-
     // Update Database
     const sender = (await this.userService.getUserById(msg.sender));
     await this.userService.setUserSendInvitationTo(sender, msg.receiver);
@@ -105,7 +102,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('accept_invite')
   async acceptInvite(@MessageBody() msg: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
-    // console.log('accept_invite', msg);
     // Update Database
     //TODO: group the call to call only 1 time save
     const sender = (await this.userService.getUserById(msg.sender));
@@ -129,7 +125,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('decline_invite')
   async declineInvite(@MessageBody() msg: { sender: number, receiver: number }) {
-    // console.log('decline_invite', msg);
     // Update Database
     const sender = (await this.userService.getUserById(msg.sender));
     const receiver = (await this.userService.getUserById(msg.receiver));
@@ -142,7 +137,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('cancel_invite')
   async cancelInvite(@MessageBody() msg: { sender: number, receiver: number }) {
-    // console.log('cancel_invite', msg);
     // Update Database
     const sender = (await this.userService.getUserById(msg.sender));
     const receiver = (await this.userService.getUserById(msg.receiver));
@@ -156,7 +150,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Queue Management ----------------------------------------------------------------------------------------------- //
   @SubscribeMessage('join_queue')
   async joinQueue(@MessageBody() msg: { sender: number, gameType: 'normal' | 'special' }) {
-    // console.log('join_queue', msg);
     if (msg.gameType === 'normal')
       return this.controller.matchmaking.joinQueue(msg.sender, false);
     if (msg.gameType === 'special')
@@ -165,11 +158,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('leave_queue')
   leaveQueue(@MessageBody() msg: { sender: number }) {
-    // console.log('leave_queue', msg);
     this.controller.queue = this.controller.queue.filter(id => id != msg.sender);
     this.controller.queueSpecial = this.controller.queueSpecial.filter(id => id != msg.sender);
-
-    // console.log('after leave: \nSpecial  ', this.controller.queueSpecial, '\nNormal  ', this.controller.queue);
   }
 
   // Game Start / End Management ------------------------------------------------------------------------------------ //
@@ -190,7 +180,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('start_game')
   async starts(@MessageBody() msg: { id: number }) {
-    // console.log('start_game', msg);
     const user = await this.userService.getUserById(msg.id);
     const otherId = this.controller.matchmaking.getGame(msg.id)?.playerIds.find(i => i !== msg.id);
     await this.userService.setUserInGameStatus(user, otherId);
@@ -199,7 +188,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('leave_game')
   async quitGame(@MessageBody() msg: { sender: number }) {
-    // console.log('leave_game', msg);
     return this.controller.matchmaking.leaveGame(msg.sender);
   }
 
