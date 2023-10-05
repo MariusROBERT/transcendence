@@ -3,6 +3,7 @@ import { Fetch, color } from '../../utils';
 import { publish } from '../../utils/event';
 import { Button } from '../ComponentBase/Button';
 import { ErrorPanel } from '../Error/ErrorPanel';
+import { UpdateChannels } from '../../utils/channel_functions';
 
 interface Props {
   name: string; //  Pass the user name in ChatMenu
@@ -42,6 +43,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
     }
     setVisible(false);
     publish('chat_created', undefined);
+    UpdateChannels();
   }
 
   return (

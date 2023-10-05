@@ -16,7 +16,7 @@ export function ChanUserList({ chan_id, onClick }: Props) {
     subscribe('enter_users', async (event: any) => {
       setUsers(event.detail.value);
     });
-  });
+  }, []);
 
   function chat() {
     return (

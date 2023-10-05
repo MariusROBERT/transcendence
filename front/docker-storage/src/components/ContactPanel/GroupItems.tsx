@@ -59,7 +59,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     subscribe('update_chan', async (event: any) => {
       setChannels(event.detail.value);
     });
-  });
+  }, []);
 
   const displayChannels = () => {
     return (

@@ -49,7 +49,7 @@ export function ChatPanel({ viewport, width }: Props) {
       //console.log(event.detail.value)
       setMessage(event.detail.value);
     });
-  });
+  }, []);
 
   async function execCommand(command: string, cmd: string): Promise<boolean> {
     const split = cmd.split(' ');

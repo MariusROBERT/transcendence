@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Fetch } from '../../utils';
 import Popup from '../ComponentBase/Popup';
 import JoinChat from './JoinChat';
 import ChatInput from './ChatInput';
 import { ChannelPublicPass } from '../../utils/interfaces';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -26,6 +27,15 @@ export function ChatMenu() {
     setChannels(res?.json);
     setJoinChatVisible(true);
   }
+
+  useEffect(() => {
+    subscribe('update_chan', () => {
+      OnJoinChannel()
+    });
+    return () => {
+      unsubscribe('update_chan', () => {});
+    };
+  }, [channels]);
 
   return (
     <div>
