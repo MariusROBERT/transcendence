@@ -51,7 +51,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
           flex_alignItems={'stretch'}
           flex_justifyContent={true ? 'flex-start' : 'flex-end'}
         >
-          <p style={{ margin: '10px', color: color.black, textShadow: 'none' }}>
+          <p style={{ margin: '10px', color: color.black, textShadow: 'none', wordWrap:'break-word' }}>
             {children}
           </p>
         </Background>
