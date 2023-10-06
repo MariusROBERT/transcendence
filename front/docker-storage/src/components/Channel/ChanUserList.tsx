@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function ChanUserList({ chan_id, onClick }: Props) {
-  let [usrs, setUsers] = useState<ChannelUsers[]>([]);
+  const [usrs, setUsers] = useState<ChannelUsers[]>([]);
   const [scrollIndex, setScrollIndex] = useState(0);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function ChanUserList({ chan_id, onClick }: Props) {
         style={{
           display: 'flex',
           transition: 'transform 0.5s',
-          transform: `translateX(-${scrollIndex * 100}%)`,
+          transform: `translateX(-${scrollIndex * usrs.length}%)`,
         }}
       >
         {usrs.map((item, idx) => (
@@ -35,21 +35,25 @@ export function ChanUserList({ chan_id, onClick }: Props) {
   }
 
   const scrollLeft = () => {
-    setScrollIndex(Math.max(scrollIndex - 1, 0));
+    setScrollIndex(Math.max(scrollIndex - 1, -Math.floor(usrs.length / 10)));
   };
 
   const scrollRight = () => {
-    setScrollIndex(Math.min(scrollIndex + 1, usrs.length));
+    const maxScrollIndex = Math.max(0, usrs.length / 10);
+    setScrollIndex(Math.min(scrollIndex + 1, maxScrollIndex));
   };
 
   return (
-    <div style={{ overflow: 'hidden', position: 'relative' }}>
-      <div>
-        {chat()}
-        <div style={{alignItems: "center"}}>
-        <button onClick={scrollLeft}> L </button>
-        <button onClick={scrollRight}> R </button>
-        </div>
+    <div style={{ overflow: 'hidden' }}>
+      {chat()}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <button onClick={scrollLeft} disabled={scrollIndex <= 0}>L</button>
+        <button
+          onClick={scrollRight}
+          disabled={scrollIndex >= usrs.length / 10}
+        >
+          R
+        </button>
       </div>
     </div>
   );
