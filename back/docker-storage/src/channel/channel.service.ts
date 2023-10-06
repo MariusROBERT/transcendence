@@ -72,12 +72,31 @@ export class ChannelService {
     return channel;
   }
 
-  async getPublicChannelsData() {
-    var channel = await this.ChannelRepository.createQueryBuilder('channel')
-      .where('channel.chan_status = :status', { status: ChanStateEnum.PUBLIC })
-      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+  async getPublicChannelsData(user: UserEntity) {
+    const banned = await this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.baned', 'user', 'user.id = :userId', {
+        userId: user.id,
+      })
       .getMany();
-    if (!channel)
+    if (banned.length > 0) {
+      var channel = await this.ChannelRepository.createQueryBuilder('channel')
+        .where('channel.chan_status = :status', {
+          status: ChanStateEnum.PUBLIC,
+        })
+        .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+        .andWhere('channel.id NOT IN (:...bannedChannelIds)', {
+          bannedChannelIds: banned.map((bannedChannel) => bannedChannel.id),
+        })
+        .getMany();
+    } else {
+      var channel = await this.ChannelRepository.createQueryBuilder('channel')
+        .where('channel.chan_status = :status', {
+          status: ChanStateEnum.PUBLIC,
+        })
+        .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+        .getMany();
+    }
+    if (!channel || channel.length === 0)
       throw new NotFoundException(
         'No Channels found, but you can create one ;)',
       );
@@ -128,10 +147,10 @@ export class ChannelService {
     for (const currentUser of usersInChannel) {
       if (currentUser.id === user.id) {
         // L'utilisateur actuel est le même que l'utilisateur passé en paramètre
-        return {currentUser};
+        return { currentUser };
       }
     }
-    throw new NotFoundException("User Not Found");
+    throw new NotFoundException('User Not Found');
   }
 
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {

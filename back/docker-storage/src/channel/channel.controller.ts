@@ -62,8 +62,8 @@ export class ChannelController {
   //  WTF Get not working here ???????????????????????
   @Post('/public_all')
   @UseGuards(JwtAuthGuard)
-  async GetPublicChannelsData() {
-    return await this.channelService.getPublicChannelsData();
+  async GetPublicChannelsData(@User() user: UserEntity) {
+    return await this.channelService.getPublicChannelsData(user);
   }
 
   @Get('/name/:id')
@@ -81,8 +81,6 @@ export class ChannelController {
     return await this.channelService.getChannelMessages(id);
   }
 
-  //  Add get channel
-  //          User Admin Ban Muted
   @Get('/users/:id')
   @UseGuards(JwtAuthGuard)
   async GetChannelUsers(

@@ -119,7 +119,6 @@ export default function ChatUser({ data, visibility }: Props) {
             ></input>
             <Button onClick={OnMute}> Mute </Button>
           </p>
-
           <Button onClick={OnUnMute}> UnMute </Button>
           <Button onClick={OnAddAdmin}> Add as Admin </Button>
           <Button onClick={OnRemAdmin}> Rem as Admin </Button>
