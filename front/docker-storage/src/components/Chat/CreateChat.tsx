@@ -4,6 +4,8 @@ import { publish } from '../../utils/event';
 import { Button } from '../ComponentBase/Button';
 import { ErrorPanel } from '../Error/ErrorPanel';
 import { UpdateChannels } from '../../utils/channel_functions';
+import SwitchToggle from '../ComponentBase/SwitchToggle';
+import { Flex } from '../ComponentBase/FlexBox';
 
 interface Props {
   name: string; //  Pass the user name in ChatMenu
@@ -15,8 +17,8 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
-  const [channelStatus, setChannelStatus] = useState('public');
 
   useEffect(() => {
     if (visible === false) {
@@ -35,7 +37,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
         channel_name: channelName,
         priv_msg: false,
         password: password === '' ? undefined : password,
-        chan_status: channelStatus,
+        chan_status: checked ? 'private' : 'public',
       }),
     );
     if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
@@ -46,6 +48,10 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
     setVisible(false);
     publish('chat_created', undefined);
     UpdateChannels();
+  }
+
+  function OnChange() {
+    setChecked(!checked);
   }
 
   return (
@@ -77,28 +83,10 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
           }}
         ></input>
       </p>
-
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="Public"
-            name="type"
-            checked={true}
-            onChange={() => setChannelStatus('public')}
-          />
-          Public
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="Private"
-            name="type"
-            onChange={() => setChannelStatus('private')}
-          />{' '}
-          Private
-        </label>
-      </div>
+      <Flex flex_direction={'row'}>
+        <p>Private Channel:</p>
+        <SwitchToggle onChange={OnChange} checked={checked}></SwitchToggle>
+      </Flex>
       <p>
         <Button onClick={OnButtonClick}>Save</Button>
       </p>
