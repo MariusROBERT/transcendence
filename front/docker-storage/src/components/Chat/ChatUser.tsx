@@ -17,8 +17,8 @@ export default function ChatUser({ data, visibility }: Props) {
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
-  const { socket } = useUserContext();
-  const [type, setType] = useState<string>("noperm");
+  const { socket, id } = useUserContext();
+  const [type, setType] = useState<string>('noperm');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,10 +27,8 @@ export default function ChatUser({ data, visibility }: Props) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
         console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
-        if (t === "owner" || t === "admin")
-          setType("perm")
-        else
-          setType("noperm")
+        if (t === 'owner' || t === 'admin') setType('perm');
+        else setType('noperm');
       }
     };
     fetchData();
@@ -103,6 +101,34 @@ export default function ChatUser({ data, visibility }: Props) {
     execCommand('rem_admin');
   }
 
+  function showAdmin() {
+    if (id !== data?.sender_id) {
+      return (
+        <>
+          <Button onClick={OnKick}> Kick </Button>
+          <Button onClick={OnBan}> Ban </Button>
+          <Button onClick={OnUnBan}> UnBan </Button>
+          <p>
+            <input
+              placeholder="Time in second"
+              style={inputStyle}
+              value={muteTime}
+              onChange={(evt) => {
+                setmuteTime(evt.target.value);
+              }}
+            ></input>
+            <Button onClick={OnMute}> Mute </Button>
+          </p>
+
+          <Button onClick={OnUnMute}> UnMute </Button>
+          <Button onClick={OnAddAdmin}> Add as Admin </Button>
+          <Button onClick={OnRemAdmin}> Rem as Admin </Button>
+        </>
+      );
+    }
+    return <div></div>;
+  }
+
   return (
     <div style={createChatStyle}>
       <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
@@ -116,24 +142,7 @@ export default function ChatUser({ data, visibility }: Props) {
         icon={String(data?.sender_urlImg)}
         onClick={OnProfilClick}
       ></RoundButton>
-      {type === "perm" ? <Button onClick={OnKick}> Kick </Button> : <div />}
-      {type === "perm" ? <Button onClick={OnBan}> Ban </Button> : <div />}
-      {type === "perm" ? <Button onClick={OnUnBan}> UnBan </Button> : <div />}
-      {type === "perm" ?  <p>
-        <input
-          placeholder="Time in second"
-          style={inputStyle}
-          value={muteTime}
-          onChange={(evt) => {
-            setmuteTime(evt.target.value);
-          }}
-        ></input>
-        <Button onClick={OnMute}> Mute </Button>
-      </p> : <div/>}
-      
-      {type === "perm" ? <Button onClick={OnUnMute}> UnMute </Button>: <div />}
-      {type === "perm" ? <Button onClick={OnAddAdmin}> Add as Admin </Button>: <div />}
-      {type === "perm" ? <Button onClick={OnRemAdmin}> Rem as Admin </Button>: <div />}
+      {type === "perm" ? showAdmin() : <></>}
     </div>
   );
 }
