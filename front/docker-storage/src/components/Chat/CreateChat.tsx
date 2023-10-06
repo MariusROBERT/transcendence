@@ -79,15 +79,25 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
       </p>
 
       <div>
-        <input
-          type="radio"
-          value="Public"
-          name="type"
-          checked={true}
-          onChange={() => setChannelStatus('public')}
-        />{' '}
-        Public
-        <input type="radio" value="Private" name="type" onChange={() => setChannelStatus('private')}/> Private
+        <label>
+          <input
+            type="radio"
+            value="Public"
+            name="type"
+            checked={true}
+            onChange={() => setChannelStatus('public')}
+          />
+          Public
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="Private"
+            name="type"
+            onChange={() => setChannelStatus('private')}
+          />{' '}
+          Private
+        </label>
       </div>
       <p>
         <Button onClick={OnButtonClick}>Save</Button>

@@ -2,7 +2,6 @@ import { RoundButton } from '..';
 import {
   ChannelMessage,
   ChannelUsers,
-  IChatUser,
 } from '../../utils/interfaces';
 
 interface Props {
