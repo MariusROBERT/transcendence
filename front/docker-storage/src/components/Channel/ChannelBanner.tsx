@@ -59,7 +59,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_leave.png')}
-          onClick={() => console.log('leave')}
+          onClick={() => {}}
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}

@@ -1,5 +1,9 @@
 import { RoundButton } from '..';
-import { ChannelMessage, ChannelUsers, IChatUser } from '../../utils/interfaces';
+import {
+  ChannelMessage,
+  ChannelUsers,
+  IChatUser,
+} from '../../utils/interfaces';
 
 interface Props {
   item: ChannelUsers;
@@ -9,15 +13,14 @@ interface Props {
 
 export function ChanUser({ item, chan_id, onClick }: Props) {
   function viewProfile() {
-    if (chan_id === -1)
-      return ;
+    if (chan_id === -1) return;
     var data: ChannelMessage;
     data = {
       channel_id: chan_id,
       sender_id: item.id,
       sender_urlImg: item.urlImg,
       sender_username: item.username,
-      message_content: "",
+      message_content: '',
     };
     onClick(data);
   }

@@ -23,8 +23,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     ChannelPublicPass | undefined
   >(undefined);
 
-  function OnClick() {
-  }
+  function OnClick() {}
 
   const filteredChannels = channels
     ? channels.filter((channel) => {

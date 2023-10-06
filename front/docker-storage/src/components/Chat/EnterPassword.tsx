@@ -24,9 +24,13 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
-    const res = await Fetch('channel/add_user/' + current?.id, 'POST', JSON.stringify({
-      password: password,
-    }),);
+    const res = await Fetch(
+      'channel/add_user/' + current?.id,
+      'POST',
+      JSON.stringify({
+        password: password,
+      }),
+    );
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(Number(current?.id));
     UpdateChannelUsers(Number(current?.id));
@@ -43,13 +47,10 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
 
   async function OnButtonClick() {
     if (current === undefined) return;
-    if (await AddUserInChannel() === 400)
-    {
+    if ((await AddUserInChannel()) === 400) {
       seterrorMessage('Wrong password');
       setErrorVisible(true);
-    }
-    else
-    {
+    } else {
       setVisible(false);
       socket?.emit('join', { channel: current?.channel_name });
     }

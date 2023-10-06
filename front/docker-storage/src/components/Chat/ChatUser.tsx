@@ -25,14 +25,14 @@ export default function ChatUser({ data, visibility }: Props) {
       if (visibility === false) setErrorVisible(false);
       if (visibility === true) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
-        console.log(rep?.json.currentUser.type);
+        //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
         if (t === 'owner' || t === 'admin') setType('perm');
         else setType('noperm');
       }
     };
     fetchData();
-  }, [visibility]);
+  }, [visibility, data?.channel_id]);
 
   async function OnProfilClick() {}
 
@@ -58,7 +58,6 @@ export default function ChatUser({ data, visibility }: Props) {
 
   async function OnKick() {
     execCommand('kick');
-    const user = data?.sender_id;
   }
 
   async function OnBan() {
@@ -110,7 +109,7 @@ export default function ChatUser({ data, visibility }: Props) {
           <Button onClick={OnUnBan}> UnBan </Button>
           <p>
             <input
-              placeholder="Time in second"
+              placeholder='Time in second'
               style={inputStyle}
               value={muteTime}
               onChange={(evt) => {
@@ -141,7 +140,7 @@ export default function ChatUser({ data, visibility }: Props) {
         icon={String(data?.sender_urlImg)}
         onClick={OnProfilClick}
       ></RoundButton>
-      {type === "perm" ? showAdmin() : <></>}
+      {type === 'perm' ? showAdmin() : <></>}
     </div>
   );
 }

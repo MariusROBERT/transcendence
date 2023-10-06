@@ -17,7 +17,12 @@ interface Props {
   setCurrent: (c: ChannelPublicPass) => void;
 }
 
-export default function ChannelElement({ data, visible, setVisible, setCurrent }: Props) {
+export default function ChannelElement({
+  data,
+  visible,
+  setVisible,
+  setCurrent,
+}: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
@@ -32,10 +37,9 @@ export default function ChannelElement({ data, visible, setVisible, setCurrent }
   async function joinChannel() {
     setCurrent(data);
     const rep = await AddUserInChannel();
-    if (rep === 400)
-    {
+    if (rep === 400) {
       setVisible(true);
-      return ;
+      return;
     }
     socket?.emit('join', { channel: data.channel_name });
   }
@@ -44,7 +48,7 @@ export default function ChannelElement({ data, visible, setVisible, setCurrent }
     <div style={ChannelElementStyle}>
       <div>
         <div style={ChannelBannerContainer}>
-          <Flex flex_direction="row">
+          <Flex flex_direction='row'>
             <RoundButton
               icon={require('../../assets/imgs/icon_user.png')}
               icon_size={50}
@@ -55,7 +59,7 @@ export default function ChannelElement({ data, visible, setVisible, setCurrent }
           <div style={{ right: '0', overflow: 'hidden' }}>
             <Flex
               zIndex={'10'}
-              flex_direction="row"
+              flex_direction='row'
               flex_justifyContent={'space-evenly'}
             >
               <RoundButton

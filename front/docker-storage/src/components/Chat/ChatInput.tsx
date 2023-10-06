@@ -48,7 +48,7 @@ export default function ChatInput({
             width: '315px',
             backgroundColor: color.white,
           }}
-          placeholder="Search Channel"
+          placeholder='Search Channel'
           value={input}
           onChange={(evt) => {
             setInput(evt.target.value);
