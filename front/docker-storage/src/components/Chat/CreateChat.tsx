@@ -16,6 +16,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
+  const [channelStatus, setChannelStatus] = useState('public');
 
   useEffect(() => {
     if (visible === false) {
@@ -34,6 +35,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
         channel_name: channelName,
         priv_msg: false,
         password: password === '' ? undefined : password,
+        chan_status: channelStatus,
       }),
     );
     if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
@@ -77,8 +79,15 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
       </p>
 
       <div>
-        <input type="radio" value="Public" name="type" /> Public
-        <input type="radio" value="Private" name="type" /> Private
+        <input
+          type="radio"
+          value="Public"
+          name="type"
+          checked={true}
+          onChange={() => setChannelStatus('public')}
+        />{' '}
+        Public
+        <input type="radio" value="Private" name="type" onChange={() => setChannelStatus('private')}/> Private
       </div>
       <p>
         <Button onClick={OnButtonClick}>Save</Button>
