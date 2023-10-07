@@ -1,24 +1,24 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { RoundButton, Settings, Profil, Popup, GameInvites } from '..';
+import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import { IUser } from '../../utils/interfaces';
-import NotifCard from './notifCard'
+import NotifCard from './notifCard';
 import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
+  const { user, socket } = useUserContext();
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const { user } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
-  const [notifs, setNotifs] = useState<Array<IUser>>([])
+  const [notifs, setNotifs] = useState<Array<IUser>>([]);
 
   const showNotif = () => {
     setNotifsVisible(!notifsVisible);
-  }
+  };
 
   const logout = async () => {
     const res = await fetch('http://localhost:3001/api/user/logout', {
@@ -34,6 +34,9 @@ const Navbar: React.FC = () => {
     } else {
       console.log(res.status);
     }
+    socket?.disconnect();
+    Cookies.remove('jwtToken');
+    window.location.replace('/login');
   };
 
   // delog the user if he close the navigator without click in logout button
@@ -51,7 +54,7 @@ const Navbar: React.FC = () => {
   const setNotif = async () => {
     let tmp = recvInvitesFrom.map(async (from) => {
       return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
-    })
+    });
     try {
       if (!tmp) {
         setNotifsVisible(false);
@@ -62,20 +65,20 @@ const Navbar: React.FC = () => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
     setNotif();
     if (notifs.length === 0)
       setNotifsVisible(false);
     // eslint-disable-next-line
-  }, [notifs])
+  }, [notifs]);
 
   return (
     <>
       <div style={navbarStyle}>
         <div>
-          <div style={{display: 'flex', background: 'black', borderRadius: '0 0 0 30px'}}>
+          <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
             {notifs.length > 0 && <div style={notifbadge}>{notifs.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
@@ -98,7 +101,7 @@ const Navbar: React.FC = () => {
               onClick={() => logout()}
             />
           </div>
-          {notifsVisible && 
+          {notifsVisible &&
             <div style={notifstyle}>
               {notifs.map((notif) => (
                 <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
@@ -124,6 +127,15 @@ const Navbar: React.FC = () => {
   );
 };
 
+const BorderStyle: CSSProperties = {
+  minWidth: 195 + 'px',
+  minHeight: 55 + 'px',
+  display: 'flex',
+  borderRadius: '0px 0px 0px 30px',
+  overflow: 'hidden',
+  border: 0 + 'px',
+};
+
 const navbarStyle: CSSProperties = {
   top: '-1px',
   right: '-1px',
@@ -144,8 +156,8 @@ const notifbadge: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  alignContent: 'center'
-}
+  alignContent: 'center',
+};
 
 const notifstyle: CSSProperties = {
   display: 'flex',
@@ -155,6 +167,6 @@ const notifstyle: CSSProperties = {
   right: '200px',
   minHeight: '100%',
   background: 'black',
-}
+};
 
 export default Navbar;

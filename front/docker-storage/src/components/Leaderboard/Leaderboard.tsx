@@ -2,13 +2,14 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { useUserContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 
 export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext } = useFriendsRequestContext();
 
   useEffect(() => {
     fetchContext();
@@ -35,28 +36,26 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-    const displayAllProfil = () => {
+    function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase()),
         )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-      let count = 1;
+        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // TODO: sort by ELO
+
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{count++}</p> {/* TO CHANGE */}
+          <p>{'RANK'}</p> {/* TO CHANGE */}
           {<UserBanner otherUser={user} />}
-          <>
-            <p>SCORE %</p>
-          </>
+          <p>ELO pt</p>
         </div>
       ));
       setUserElements(elements);
-    };
+    }
 
-    displayAllProfil();
+    filterAndSortUsers();
   }, [searchTerm, allUsers, user]);
 
   return (
@@ -92,5 +91,4 @@ const userElementStyle: CSSProperties = {
   padding: '10px',
   cursor: 'pointer',
   borderRadius: '10px',
-
 };
