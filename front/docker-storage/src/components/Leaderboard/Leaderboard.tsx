@@ -2,81 +2,51 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { useUserContext } from '../../contexts';
-import Cookies from 'js-cookie';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
+import { useUserContext, useFriendsRequestContext } from '../../contexts';
 
 export function Leaderboard({ searchTerm }: LeaderboardProps) {
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    window.location.replace('/login');
-    alert('Vous avez été déconnecté');
-  }
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { fetchContext, user } = useUserContext();
+  const { user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
 
-  const getAllProfil = async () => {
-    let cancelled = false;
-    const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-    if (cancelled) { // todo : voir si cest utile ici
-      return;
-    } else {
-      if (users && Array.isArray(users) && users.length === 0)
-        setErrorMessage('Aucun utilisateur trouvé.');
-      else setAllUsers(users);
-    }
-    return () => {
-      cancelled = true;
-    };
-  };
-
   useEffect(() => {
-    fetchContext();
-    // eslint-disable-next-line
+    const getAllProfil = async () => {
+      await fetchFriendsRequestContext();
+      const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
+      if (!users || users.length === 0)
+        setErrorMessage('no users found');
+      else
+        setAllUsers(users);
+    };
+
+    getAllProfil();
   }, []);
 
   useEffect(() => {
-    fetchFriendsRequestContext();
-    // eslint-disable-next-line
-  }, [])
-
-  useEffect(() => {
-    const getUserInfos = async () => {
-      getAllProfil();
-      const user = (await Fetch('user', 'GET'))?.json;
-      if (!user) return;
-    };
-    getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
-
-  useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-    const displayAllProfil = () => {
+    function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase()),
         )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-      let count = 1;
+        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // TODO: sort by ELO
+
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{count++}</p> {/* TO CHANGE */}
+          <p>{'RANK'}</p> {/* TO CHANGE */}
           {<UserBanner otherUser={user} />}
-          <>
-            <p>SCORE %</p>
-          </>
+          <p>ELO pt</p>
         </div>
       ));
       setUserElements(elements);
-    };
+    }
 
-    displayAllProfil();
-  }, [searchTerm, allUsers, jwtToken, user]);
+    filterAndSortUsers();
+  }, [searchTerm, allUsers, user]);
 
   return (
     <div style={container}>
@@ -111,5 +81,4 @@ const userElementStyle: CSSProperties = {
   padding: '10px',
   cursor: 'pointer',
   borderRadius: '10px',
-
 };
