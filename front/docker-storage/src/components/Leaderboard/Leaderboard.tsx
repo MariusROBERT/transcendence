@@ -18,6 +18,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
 
   useEffect(() => {
     const getAllProfil = async () => {
+      await fetchFriendsRequestContext();
       let cancelled = false;
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
       if (cancelled) { // todo : voir si cest utile ici
@@ -32,6 +33,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       };
     };
     getAllProfil();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

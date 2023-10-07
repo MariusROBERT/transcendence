@@ -5,7 +5,7 @@ import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
 import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
+import { useFriendsRequestContext } from '../../contexts';
 
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
@@ -125,15 +125,6 @@ const Navbar: React.FC = () => {
       </Popup>
     </>
   );
-};
-
-const BorderStyle: CSSProperties = {
-  minWidth: 195 + 'px',
-  minHeight: 55 + 'px',
-  display: 'flex',
-  borderRadius: '0px 0px 0px 30px',
-  overflow: 'hidden',
-  border: 0 + 'px',
 };
 
 const navbarStyle: CSSProperties = {
