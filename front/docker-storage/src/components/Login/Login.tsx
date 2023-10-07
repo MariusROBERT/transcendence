@@ -200,8 +200,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     password={password}
                     setPassword={setPassword}
                     required
-                    noVerify={signIn}
-                    // noVerify /* DEV: uncomment this line for dev */
+                    // noVerify={signIn}
+                    noVerify /* DEV: uncomment this line for dev */
                     style={{ minWidth: '100px', minHeight: '30px' }}
                   />
                   {!signIn &&
@@ -212,7 +212,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                       setPassword={setConfirmPassword}
                       placeholder={'confirm password'}
                       confirmPassword={password}
-                      // noVerify /* DEV: uncomment this line for dev */
+                      noVerify /* DEV: uncomment this line for dev */
                       style={{ minWidth: '100px', minHeight: '30px' }}
                     />
                   }

@@ -85,9 +85,9 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{ position: 'absolute', height: '100%', left: getStyle().left }}
-      >
-        <div style={buttonStyle}>
+        style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
+        >
+      <div style={buttonStyle}>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}

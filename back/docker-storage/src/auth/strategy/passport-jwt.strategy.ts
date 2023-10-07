@@ -28,11 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }); // recup user
     // if exist => return et balancer dans le request
     if (user) {
-      const { password, salt, ...result } = user; // on envoi tout sauf passport et salt
-      // reviens au meme que :
-      // delete user.salt
-      // delete user.password
-      // return user
+      const { password, salt, ...result } = user;
       return result;
     } else {
       throw new UnauthorizedException();

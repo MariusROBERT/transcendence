@@ -85,8 +85,8 @@ export class UserService {
     }
 
     //DEV: comment these 2 lines for dev
-    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\-+=[\]\\\/`'";:?.,<>~]).{8,})$/.test(updatePwdDto.newPassword))
-      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\-+=[\]\\\/`'";:?.,<>~]).{8,})$/.test(updatePwdDto.newPassword))
+    //   return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
 
     const newPassword = await bcrypt.hash(
       updatePwdDto.newPassword,

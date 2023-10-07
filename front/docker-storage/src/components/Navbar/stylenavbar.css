@@ -1,0 +1,33 @@
+.notif {
+    width: 300px;
+    height: 70px;
+    display: flex;
+    background: rgb(41, 37, 37);
+    padding: 15px;
+    margin: 5px;    
+}
+
+.notif .container {
+    margin-left: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.bar{
+    width: 6px;
+    border-radius: 10px;
+    height: 100%;
+    background: linear-gradient(to bottom, #ADD8E6, #0000FF);
+}
+
+.notif .container .username {
+    margin: 0;
+    width: 90%;
+}
+
+.notif .container .btn {
+    display: flex;
+}

@@ -2,26 +2,38 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { useUserContext, useFriendsRequestContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 
 export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { user } = useUserContext();
+  const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
+
+  useEffect(() => {
+    fetchContext();
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     const getAllProfil = async () => {
       await fetchFriendsRequestContext();
+      let cancelled = false;
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-      if (!users || users.length === 0)
-        setErrorMessage('no users found');
-      else
-        setAllUsers(users);
+      if (cancelled) { // todo : voir si cest utile ici
+        return;
+      } else {
+        if (users && Array.isArray(users) && users.length === 0)
+          setErrorMessage('Aucun utilisateur trouvé.');
+        else setAllUsers(users);
+      }
+      return () => {
+        cancelled = true;
+      };
     };
-
     getAllProfil();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
