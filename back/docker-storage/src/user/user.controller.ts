@@ -9,9 +9,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
   UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
@@ -20,15 +20,13 @@ import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import {
-  GetUserIdFromSocketIdDto,
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
   UserGameStatus,
 } from './dto/user.dto';
-import { Express, Request } from 'express';
+import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
-import { UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -89,7 +87,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async GetAllPublicProfile(
     @User() user: UserEntity,
-    @Req() request: Request,
   ): Promise<PublicProfileDto[]> {
     return await this.userService.getAllProfile(user);
   }
@@ -154,7 +151,9 @@ export class UserController {
   // Game ----------------------------------------------------------------------------------------------------------- //
   @Get('/game_status/:id')
   @UseGuards(JwtAuthGuard)
-  async GetGameStatusWithId(@Param('id', ParseIntPipe) id: number): Promise<UserGameStatus> {
+  async GetGameStatusWithId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserGameStatus> {
     //console.log('fetch user game infos')
     return await this.userService.getGameStatusWithId(id);
   }

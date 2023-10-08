@@ -13,7 +13,7 @@ import {
 import { UserService } from 'src/user/user.service';
 import { CreateChannelDto, PassChannelDto } from '../dto/channel.dto';
 
-function findPerm(
+/*function findPerm(
   usernameToFind: string,
   list: any[],
   typesToCheck: string[],
@@ -22,14 +22,13 @@ function findPerm(
     (user) =>
       user.username === usernameToFind && typesToCheck.includes(user.type),
   );
-}
+}*/
 
 //  Check For private message
 @Injectable()
 export class PrivateGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
-    private readonly userService: UserService,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -46,12 +45,9 @@ export class PrivateGuard implements CanActivate {
 //  Check if user is in channel
 @Injectable()
 export class SelfInChannelGuard implements CanActivate {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const user: UserEntity = request.user;
     const params = request.params;
 
     const users = await this.userService.getUsersInChannels(params.id);
@@ -193,8 +189,7 @@ export class IsProtected implements CanActivate {
       params.id,
     );
     if (channel?.password === null) return true;
-    if (body?.password == channel?.password)
-      return true;
+    if (body?.password == channel?.password) return true;
     throw new BadRequestException('This channel is protected by a password');
   }
 }

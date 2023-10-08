@@ -9,12 +9,10 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
-    private messageRepository: Repository<MessageEntity>,
-  ) // private authService: AuthService,
-  {}
+    private messageRepository: Repository<MessageEntity>, // private authService: AuthService,
+  ) {}
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
-    const id = chan?.id;
     const newMsg = this.messageRepository.create({
       content: message,
       sender: user,

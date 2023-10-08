@@ -5,7 +5,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
+import {
+  ChannelEntity,
+  MessageEntity,
+} from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -191,7 +194,7 @@ export class ChannelService {
     // la modification fonctionne en revanche
     else
       throw new UnauthorizedException(
-        `You're not authorize to update this channel because you're the owner or an admin`,
+        "You're not authorize to update this channel because you're the owner or an admin",
       );
   }
 
@@ -286,11 +289,7 @@ export class ChannelService {
       throw new BadRequestException(
         'Time in second cannot be equal or inferior to zero',
       );
-    await this.mutedService.createMuted(
-      channel,
-      user,
-      sec,
-    );
+    await this.mutedService.createMuted(channel, user, sec);
     return channel;
   }
 
@@ -335,11 +334,7 @@ export class ChannelService {
     return channel;
   }
 
-  AddMessageToChannel(
-    message: string,
-    user: UserEntity,
-    chan: ChannelEntity,
-  ) {
+  AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
     //if (!msg.channel.users.includes(msg.sender))
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)

@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -16,8 +21,7 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -36,7 +40,7 @@ export class AuthService {
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
-      throw new ConflictException(`username or password already used`);
+      throw new ConflictException('username or password already used');
     }
     return {
       id: user.id,
@@ -52,20 +56,21 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     if (!user) {
-      throw new NotFoundException(`username not found`);
+      throw new NotFoundException('username not found');
     }
 
     if (user.is2fa_active) {
       if (creditentials.twoFactorCode) {
-        if (!authenticator.verify(
-          {
+        if (
+          !authenticator.verify({
             token: creditentials.twoFactorCode,
             secret: user.secret2fa,
-          })) {
-          throw new UnauthorizedException(`Invalid 2fa code`);
+          })
+        ) {
+          throw new UnauthorizedException('Invalid 2fa code');
         }
       } else {
-        throw new UnauthorizedException(`Missing 2fa code`);
+        throw new UnauthorizedException('Missing 2fa code');
       }
     }
 
@@ -83,7 +88,7 @@ export class AuthService {
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     } else {
-      throw new NotFoundException(`wrong password`);
+      throw new NotFoundException('wrong password');
     }
   }
 
@@ -112,7 +117,7 @@ export class AuthService {
       try {
         await this.userRepository.save(user2); // save user in DB
       } catch (e) {
-        throw new ConflictException(`username already used`); // should not happen, will probably be removed
+        throw new ConflictException('username already used'); // should not happen, will probably be removed
       }
     }
     const user2 = await this.userRepository
@@ -134,38 +139,39 @@ export class AuthService {
     const id42: number = await fetch('https://api.intra.42.fr/v2/me', {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + ftToken,
+        Authorization: 'Bearer ' + ftToken,
       },
     })
-      .then(res => res.json())
-      .then(json => parseInt(json.id));
+      .then((res) => res.json())
+      .then((json) => parseInt(json.id));
     if (!id42) {
-      throw new NotFoundException(`Invalid intra token`);
+      throw new NotFoundException('Invalid intra token');
     }
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.id42 = :id42', { id42 })
       .getOne();
     if (!user) {
-      throw new NotFoundException(`user not found`);
+      throw new NotFoundException('user not found');
     }
     if (user.is2fa_active) {
-      if (!authenticator.verify(
-        {
+      if (
+        !authenticator.verify({
           token: code2fa,
           secret: user.secret2fa,
-        })) {
-        throw new UnauthorizedException(`Invalid 2fa code`);
+        })
+      ) {
+        throw new UnauthorizedException('Invalid 2fa code');
       }
       const payload = {
         username: user.username,
         role: user.role,
-      }
+      };
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
       // return this.jwtService.sign(payload);
     } else {
-      throw new UnauthorizedException(`2fa not active`);
+      throw new UnauthorizedException('2fa not active');
     }
   }
 }

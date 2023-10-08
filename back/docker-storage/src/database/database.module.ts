@@ -26,7 +26,12 @@ import { MutedEntity } from './entities/muted.entity';
       entities: ['dist/**/*.entity{.ts,.js}'], // a chaque modif des fichiers entity, mettre a jour la DB
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([ChannelEntity, MessageEntity, UserEntity, MutedEntity]),
+    TypeOrmModule.forFeature([
+      ChannelEntity,
+      MessageEntity,
+      UserEntity,
+      MutedEntity,
+    ]),
   ],
   controllers: [],
   providers: [

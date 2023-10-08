@@ -3,13 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import {
-  GetUserIdFromSocketIdDto,
-  PublicProfileDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-  UserGameStatus,
-} from './dto/user.dto';
+import { PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus } from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -32,10 +26,7 @@ export class UserService {
   // --------- PROFILE --------- :
   // -- Private -- :
 
-  async updateProfile(
-    profil: UpdateUserDto,
-    user: UserEntity,
-  ) {
+  async updateProfile(profil: UpdateUserDto, user: UserEntity) {
     const id: number = user.id;
     const errors = await validate(profil);
     if (errors.length > 0) {
@@ -55,7 +46,7 @@ export class UserService {
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
 
       return {
-        ...await this.UserRepository.save(newProfil),
+        ...(await this.UserRepository.save(newProfil)),
         qrCode: await toDataURL(otpauthUrl),
         code2fa: secret ? secret[1] : '',
       };
@@ -72,10 +63,13 @@ export class UserService {
       .where('user.username = :name', { name })
       .getOne();
     if (currentUser.id42 > 0)
-      throw new UnauthorizedException('Oauth42 user can\'t change password')
-    const oldHash = await bcrypt.hash(updatePwdDto.oldPassword, currentUser.salt);
+      throw new UnauthorizedException("Oauth42 user can't change password");
+    const oldHash = await bcrypt.hash(
+      updatePwdDto.oldPassword,
+      currentUser.salt,
+    );
     if (oldHash !== currentUser.password) {
-      throw new UnauthorizedException(`Wrong password`);
+      throw new UnauthorizedException('Wrong password');
     }
 
     //DEV: comment these 2 lines for dev
@@ -102,8 +96,7 @@ export class UserService {
   async logout(user: UserEntity) {
     // pas testé
     const lastMsg = await this.getLastMsg(user);
-    if (lastMsg)
-      user.last_msg_date = lastMsg.createdAt;
+    if (lastMsg) user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
     user.isInGameWith = -1;
     user.gameInvitationTo = -1;
@@ -168,11 +161,9 @@ export class UserService {
       throw new NotFoundException(`le user d'id ${id} n'existe pas`);
     }
 
-    if (userAsked.blocked.includes(user.id))
-      return ;
+    if (userAsked.blocked.includes(user.id)) return;
 
-    if (!user.sentInvitesTo.includes(id))
-      user.sentInvitesTo.push(id);
+    if (!user.sentInvitesTo.includes(id)) user.sentInvitesTo.push(id);
     if (!userAsked.recvInvitesFrom.includes(user.id))
       userAsked.recvInvitesFrom.push(user.id);
 
@@ -202,10 +193,9 @@ export class UserService {
       );
     }
 
-    if (user.blocked.includes(id) && bool === false)
-      return;
+    if (user.blocked.includes(id) && bool === false) return;
     if (user.blocked.includes(id) && bool === true) {
-      let index = user.blocked.indexOf(id);
+      const index = user.blocked.indexOf(id);
       if (index !== -1) {
         user.blocked.splice(index, 1);
         await this.UserRepository.save(user);
@@ -221,7 +211,7 @@ export class UserService {
     }
 
     if (sender.blocked.includes(user.id)) {
-      let index = sender.blocked.indexOf(user.id);
+      const index = sender.blocked.indexOf(user.id);
       if (index !== -1) {
         sender.blocked.splice(index, 1);
       }
@@ -229,25 +219,18 @@ export class UserService {
 
     this.UserRepository.save(user);
     this.UserRepository.save(sender);
-
   }
 
-  async blockAUser(
-    id: number,
-    user: UserEntity
-  ) {
+  async blockAUser(id: number, user: UserEntity) {
     user.blocked = [...user.blocked, id];
     await this.UserRepository.save(user);
   }
 
-  async unblockAUser(
-    id: number,
-    user: UserEntity
-  ) {
-    let index = user.blocked.indexOf(id)
-		if (index !== -1) {
-			user.blocked.splice(index, 1);
-		}    
+  async unblockAUser(id: number, user: UserEntity) {
+    const index = user.blocked.indexOf(id);
+    if (index !== -1) {
+      user.blocked.splice(index, 1);
+    }
     await this.UserRepository.save(user);
   }
 
@@ -260,7 +243,7 @@ export class UserService {
       .getMany();
   }
 
-  async isInChannel(id: number, channel: ChannelEntity) {
+  async isInChannel(id: number) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
   }
@@ -303,29 +286,26 @@ export class UserService {
   }
 
   async getFullAdminInChannels(channelId: number) {
-    const admin = await this.UserRepository.createQueryBuilder('user')
+    return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .getMany();
-    return admin;
   }
 
   async getBannedInChannels(channelId: number) {
-    const users = await this.UserRepository.createQueryBuilder('user')
+    return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.baned', 'baned')
       .where('baned.id = :channelId', { channelId })
       .getMany();
-    return users;
   }
 
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
-    const users = this.UserRepository.createQueryBuilder('user')
+    return this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       // .select(['user.id', 'user.username', 'user.urlImg'])
       .getMany();
-    return users;
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -333,7 +313,7 @@ export class UserService {
     // est ce quil a des new msg et si oui de quel cahnnel
     const userChannels = await this.getChannels(user);
     const lastMsg = await this.getLastMsg(user);
-    let channelsWithNewMsg: ChannelEntity[];
+    let channelsWithNewMsg: ChannelEntity[] = [];
     if (lastMsg.createdAt > user.last_msg_date) {
       // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
       // pour chaque channel aller voir s'il y a des new msg;
@@ -385,7 +365,7 @@ export class UserService {
     const channel = await this.ChannelRepository.findOne({ where: { id } });
     if (!channel)
       throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
-    if (this.isInChannel(user.id, channel)) return channel.messages;
+    if (await this.isInChannel(user.id)) return channel.messages;
     else
       throw new NotFoundException(
         `le user ${id} n'appartient pas a ce channel`,
@@ -407,7 +387,6 @@ export class UserService {
     // Vérifiez si l'utilisateur existe dans la liste des administrateurs
     return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
-
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
@@ -443,19 +422,29 @@ export class UserService {
 
   async generateTwoFactorSecret(user: UserEntity) {
     const secret = authenticator.generateSecret();
-    const otpauthUrl = authenticator.keyuri(user.username, 'Transcendence', secret);
+    const otpauthUrl = authenticator.keyuri(
+      user.username,
+      'Transcendence',
+      secret,
+    );
     user.secret2fa = secret;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
-  async setUserSendInvitationTo(user: UserEntity, otherUserId: number | undefined) {
+  async setUserSendInvitationTo(
+    user: UserEntity,
+    otherUserId: number | undefined,
+  ) {
     user.gameInvitationTo = otherUserId ? otherUserId : -1;
     return await this.UserRepository.save(user);
   }
 
-  async setUserReceivedInvitationFrom(user: UserEntity, otherUserId: number | undefined) {
+  async setUserReceivedInvitationFrom(
+    user: UserEntity,
+    otherUserId: number | undefined,
+  ) {
     user.gameInvitationFrom = otherUserId ? otherUserId : -1;
     return await this.UserRepository.save(user);
   }
@@ -465,7 +454,10 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
-  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
+  async setUserInvitationType(
+    user: UserEntity,
+    gameType: 'none' | 'normal' | 'special',
+  ) {
     user.gameInvitationType = gameType;
     return await this.UserRepository.save(user);
   }
@@ -476,7 +468,7 @@ export class UserService {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
       isInGameWith: user.isInGameWith,
-      gameInviteType: user.gameInvitationType
-    }
+      gameInviteType: user.gameInvitationType,
+    };
   }
 }
