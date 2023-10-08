@@ -24,4 +24,12 @@ ls:
 	@echo ""
 	@docker images
 
-.PHONY: all volumes down clean fclean re
+lint:
+	docker exec -it front npm run lint
+	docker exec -it back npm run lint
+
+lint-fix:
+	docker exec -it front npm run lint:fix
+	docker exec -it back npm run lint:fix
+
+.PHONY: all down up clean fclean ls lint lint-fix re
