@@ -39,15 +39,6 @@ import {
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard)
-  async GetChannelById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChannelEntity> {
-    // ==> renvoi toutes les infos channels
-    return await this.channelService.getChannelById(id);
-  }
-
   //  Only get the public data
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)
@@ -59,8 +50,7 @@ export class ChannelController {
   }
 
   //  Only get the public data for all public channels
-  //  WTF Get not working here ???????????????????????
-  @Post('/public_all')
+  @Get('/public_all')
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelsData(@User() user: UserEntity) {
     return await this.channelService.getPublicChannelsData(user);
@@ -113,20 +103,6 @@ export class ChannelController {
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
     return await this.channelService.createChannel(createChannelDto, user);
-  }
-
-  @Patch('/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
-  async UpdateChannel(
-    @Body() updateChannelDto: UpdateChannelDto,
-    @Param('id', ParseIntPipe) id: number,
-    @User() user: UserChanDto,
-  ): Promise<ChannelEntity> {
-    return await this.channelService.updateChannel(
-      id,
-      updateChannelDto,
-      user.id,
-    );
   }
 
   //todo check why old users are removed
@@ -250,5 +226,28 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.channelService.UnBanUserFromChannel(uDto.id, id);
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  async GetChannelById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ChannelEntity> {
+    // ==> renvoi toutes les infos channels
+    return await this.channelService.getChannelById(id);
+  }
+
+  @Patch('/:id') // id_chan
+  @UseGuards(JwtAuthGuard)
+  async UpdateChannel(
+    @Body() updateChannelDto: UpdateChannelDto,
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserChanDto,
+  ): Promise<ChannelEntity> {
+    return await this.channelService.updateChannel(
+      id,
+      updateChannelDto,
+      user.id,
+    );
   }
 }
