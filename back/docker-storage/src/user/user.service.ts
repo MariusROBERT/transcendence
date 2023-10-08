@@ -1,9 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus } from './dto/user.dto';
+import {
+  PublicProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+  UserGameStatus,
+} from './dto/user.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
@@ -193,8 +203,8 @@ export class UserService {
       );
     }
 
-    if (user.blocked.includes(id) && bool === false) return;
-    if (user.blocked.includes(id) && bool === true) {
+    if (user.blocked.includes(id) && !bool) return;
+    if (user.blocked.includes(id) && bool) {
       const index = user.blocked.indexOf(id);
       if (index !== -1) {
         user.blocked.splice(index, 1);
@@ -205,7 +215,7 @@ export class UserService {
     sender.sentInvitesTo.splice(indexSenderInInvites, 1);
     user.recvInvitesFrom.splice(indexReceiverInInvited, 1);
 
-    if (bool == true) {
+    if (bool) {
       user.friends = [...user.friends, sender.id];
       sender.friends = [...sender.friends, user.id];
     }
@@ -301,11 +311,13 @@ export class UserService {
 
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
-    return this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.channels', 'channel')
-      .where('channel.id = :channelId', { channelId })
-      // .select(['user.id', 'user.username', 'user.urlImg'])
-      .getMany();
+    return (
+      this.UserRepository.createQueryBuilder('user')
+        .innerJoin('user.channels', 'channel')
+        .where('channel.id = :channelId', { channelId })
+        // .select(['user.id', 'user.username', 'user.urlImg'])
+        .getMany()
+    );
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -313,7 +325,7 @@ export class UserService {
     // est ce quil a des new msg et si oui de quel cahnnel
     const userChannels = await this.getChannels(user);
     const lastMsg = await this.getLastMsg(user);
-    let channelsWithNewMsg: ChannelEntity[] = [];
+    const channelsWithNewMsg: ChannelEntity[] = [];
     if (lastMsg.createdAt > user.last_msg_date) {
       // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
       // pour chaque channel aller voir s'il y a des new msg;
@@ -328,7 +340,8 @@ export class UserService {
           channelsWithNewMsg.push(channel);
       }
       return channelsWithNewMsg;
-    } else return null;
+    }
+    return null;
   }
 
   async getLastMsg(user: UserEntity): Promise<MessageEntity> {
@@ -366,10 +379,7 @@ export class UserService {
     if (!channel)
       throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
     if (await this.isInChannel(user.id)) return channel.messages;
-    else
-      throw new NotFoundException(
-        `le user ${id} n'appartient pas a ce channel`,
-      );
+    throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`);
   }
 
   // UTILS :

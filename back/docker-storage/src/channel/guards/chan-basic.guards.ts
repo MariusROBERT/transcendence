@@ -1,8 +1,8 @@
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  BadRequestException,
+  Injectable,
 } from '@nestjs/common';
 import { ChannelService } from '../channel.service';
 import { UserChanDto } from 'src/user/dto/user.dto';
@@ -27,9 +27,8 @@ import { CreateChannelDto, PassChannelDto } from '../dto/channel.dto';
 //  Check For private message
 @Injectable()
 export class PrivateGuard implements CanActivate {
-  constructor(
-    private channelService: ChannelService,
-  ) {}
+  constructor(private channelService: ChannelService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
@@ -37,8 +36,8 @@ export class PrivateGuard implements CanActivate {
     const channel: ChannelEntity = await this.channelService.getChannelById(
       params.id,
     );
-    if (channel.priv_msg === false) return true;
-    else throw new BadRequestException('This Channel is private');
+    if (!channel.priv_msg) return true;
+    throw new BadRequestException('This Channel is private');
   }
 }
 
@@ -46,6 +45,7 @@ export class PrivateGuard implements CanActivate {
 @Injectable()
 export class SelfInChannelGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
@@ -64,6 +64,7 @@ export class InChannelGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -83,6 +84,7 @@ export class IsNotBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -102,6 +104,7 @@ export class IsBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -122,6 +125,7 @@ export class SelfBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.user;
@@ -139,6 +143,7 @@ export class SelfBannedGuard implements CanActivate {
 @Injectable()
 export class SelfCommand implements CanActivate {
   constructor() {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -175,6 +180,7 @@ export class IsProtected implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;

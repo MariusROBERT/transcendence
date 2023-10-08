@@ -87,9 +87,8 @@ export class AuthService {
       await this.userRepository.save(user);
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
-    } else {
-      throw new NotFoundException('wrong password');
     }
+    throw new NotFoundException('wrong password');
   }
 
   async ftLogin(userData: ftLoginDto) {
@@ -170,8 +169,7 @@ export class AuthService {
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
       // return this.jwtService.sign(payload);
-    } else {
-      throw new UnauthorizedException('2fa not active');
     }
+    throw new UnauthorizedException('2fa not active');
   }
 }
