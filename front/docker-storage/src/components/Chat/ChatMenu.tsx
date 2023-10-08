@@ -1,59 +1,57 @@
-import { useState } from 'react';
-import { Fetch, unsecureFetch } from '../../utils';
-import {
-  UpdateChannelMessage,
-  UpdateChannelUsers,
-  SetCurrChan,
-} from '../../utils/channel_functions';
+import { useEffect, useState } from 'react';
+import { Fetch } from '../../utils';
+import Popup from '../ComponentBase/Popup';
+import JoinChat from './JoinChat';
+import ChatInput from './ChatInput';
+import { ChannelPublicPass } from '../../utils/interfaces';
+import { subscribe, unsubscribe } from '../../utils/event';
 
+/*
+  //  If channel exist just join it and open right pannel
+  //  If channel is private just send an error
+  //  If channel protected by password, open ask for password pannel
+        //  If right ^ go to first option, if not ^ go to second option
+  //  If channel not exist open channel creation
+    //  In channel creation you can set name, password, type, and directly add users/admin
+*/
 export function ChatMenu() {
   const [inputValue, setInputValue] = useState<string>('');
-  var current_id = -1;
+  const [joinChatVisible, setJoinChatVisible] = useState<boolean>(false);
+  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(
+    undefined,
+  );
 
   //  TODO: clean here
   async function OnJoinChannel() {
-    if (inputValue === '') return;
-    setInputValue('');
-    const path = 'channel/name/' + inputValue;
-    const res = await unsecureFetch(path, 'GET');
-    if (res?.ok) {
-      var data = await res.json();
-      current_id = data.id;
-      //  Adding user to channel if not in it
-      await Fetch(
-        'channel/add_user/' + data.id,
-        'POST',
-        JSON.stringify({
-          id: -1, //current user id
-        }),
-      );
-    } else {
-      const r = await Fetch(
-        'channel',
-        'POST',
-        JSON.stringify({
-          channel_name: inputValue,
-          priv_msg: false,
-        }),
-      );
-      current_id = r?.json.id;
-    }
-    SetCurrChan(inputValue);
-    UpdateChannelMessage(current_id);
-    UpdateChannelUsers(current_id);
+    const res = await Fetch('channel/public_all', 'GET');
+    setChannels(res?.json);
+    setJoinChatVisible(true);
   }
+
+  useEffect(() => {
+    subscribe('update_chan', () => {
+      OnJoinChannel()
+    });
+    return () => {
+      unsubscribe('update_chan', () => {});
+    };
+  }, [channels]);
 
   return (
     <div>
-      <label>
-        <input
-          value={inputValue}
-          onChange={(evt) => {
-            setInputValue(evt.target.value);
-          }}
-        />
-      </label>
-      <button onClick={OnJoinChannel}>Join chat</button>
+      <ChatInput
+        input={inputValue}
+        setInput={setInputValue}
+        OnClick={OnJoinChannel}
+        OnEnter={() => {}}
+      ></ChatInput>
+      <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
+        <JoinChat
+          input={inputValue}
+          setInput={setInputValue}
+          channels={channels}
+        ></JoinChat>
+      </Popup>
     </div>
   );
 }

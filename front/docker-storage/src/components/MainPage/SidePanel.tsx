@@ -1,6 +1,8 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport } from '../../utils';
 import { RoundButton } from '..';
+import { useUserContext } from '../../contexts';
+import { unsubscribe, subscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -11,21 +13,43 @@ interface Props {
 }
 
 export function SidePanel({
-                            children,
-                            viewport,
-                            width,
-                            isLeftPanel,
-                            duration_ms = 1000,
-                          }: Props) {
+  children,
+  viewport,
+  width,
+  isLeftPanel,
+  duration_ms = 1000,
+}: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
+  const { socket, id } = useUserContext();
+
+  const Remove = async (uid: number) => {
+    if (isLeftPanel === false && uid === id) Close();
+  };
+
+  useEffect(() => {
+    socket?.on('remove', Remove);
+    return () => {
+      socket?.off('remove', Remove);
+    };
+  });
+
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (isLeftPanel === false) Open();
+    });
+    return () => {
+      unsubscribe('open_chat', () => {});
+    };
+  }, [isLeftPanel, Open]);
 
   async function Close() {
     if (isMoving) return;
+    if (isLeftPanel === false) socket?.emit('leave');
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);

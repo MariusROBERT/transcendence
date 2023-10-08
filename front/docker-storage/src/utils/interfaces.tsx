@@ -46,6 +46,14 @@ export interface ChannelMessage {
   sender_urlImg: string;
   sender_username: string;
   message_content: string;
+  channel_id: number;
+}
+
+export interface IChatUser {
+  sender_id: number;
+  sender_urlImg: string;
+  sender_username: string;
+  channel_id: number;
 }
 
 export interface ChannelUsers {
@@ -58,6 +66,22 @@ export interface ChannelUsers {
 export interface SocketMessage {
   name: string;
   id: number;
+}
+
+export interface ChannelPublic {
+  channel_id: number,
+  channel_name: string,
+  channel_status: string,
+  channel_priv_msg: boolean,
+  owner_id: number
+}
+
+export interface ChannelPublicPass {
+  id: number,
+  channel_name: string,
+  chan_status: string,
+  priv_msg: boolean,
+  has_password: boolean
 }
 
 // --------------------------- LeaderBoard & Profil :

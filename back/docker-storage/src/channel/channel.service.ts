@@ -5,19 +5,15 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  ChannelEntity,
-  MessageEntity,
-} from 'src/database/entities/channel.entity';
+import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
-import { MutedEntity } from 'src/database/entities/muted.entity';
 import { MessagesService } from 'src/messages/messages.service';
-import { UserAddChanDto } from 'src/user/dto/user.dto';
 import { MutedService } from 'src/muted/muted.service';
+import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 
 @Injectable()
 export class ChannelService {
@@ -41,23 +37,73 @@ export class ChannelService {
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
-      throw new ConflictException('alreday used');
+      throw new ConflictException('Channel already exist');
     }
     return chan;
   }
 
   async getChannelById(id: number): Promise<ChannelEntity> {
-    var channel = await this.ChannelRepository.findOne({
+    const channel = await this.ChannelRepository.findOne({
       where: { id },
-      //relations: ['admins'],
     });
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
+  async getPublicChannelById(id: number): Promise<ChannelEntity> {
+    const channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoin('channel.owner', 'owner')
+      .select([
+        'channel.id',
+        'channel.channel_name as channel_name',
+        'channel.chan_status as channel_status',
+        'channel.priv_msg',
+        'owner.id as owner_id',
+      ])
+      .where('channel.id = :id', { id })
+      .getRawOne();
+    if (!channel)
+      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+    return channel;
+  }
+
+  async getPublicChannelsData(user: UserEntity) {
+    const banned = await this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.baned', 'user', 'user.id = :userId', {
+        userId: user.id,
+      })
+      .getMany();
+    let channel;
+    if (banned.length > 0) {
+      channel = await this.ChannelRepository.createQueryBuilder('channel')
+        .where('channel.chan_status = :status', {
+          status: ChanStateEnum.PUBLIC,
+        })
+        .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+        .andWhere('channel.id NOT IN (:...bannedChannelIds)', {
+          bannedChannelIds: banned.map((bannedChannel) => bannedChannel.id),
+        })
+        .getMany();
+    } else {
+      channel = await this.ChannelRepository.createQueryBuilder('channel')
+        .where('channel.chan_status = :status', {
+          status: ChanStateEnum.PUBLIC,
+        })
+        .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+        .getMany();
+    }
+    return channel.map((channel) => ({
+      id: channel.id,
+      channel_name: channel.channel_name,
+      chan_status: channel.chan_status,
+      priv_msg: channel.priv_msg,
+      has_password: !!channel.password,
+    }));
+  }
+
   async getChannelByName(channel_name: string) {
-    var channel = await this.ChannelRepository.findOne({
+    const channel = await this.ChannelRepository.findOne({
       where: { channel_name },
       //relations: ['admins'],
     });
@@ -66,30 +112,48 @@ export class ChannelService {
     return channel;
   }
 
-  async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    const channel = await this.msgService.getMsg(id);
-    //console.log(channel);
-    //console.log(await this.userService.getUsersInChannels(id));
+  async getChannelIdByName(channel_name: string) {
+    const channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoin('channel.owner', 'owner')
+      .select(['channel.id'])
+      .where('channel.channel_name = :channel_name', { channel_name })
+      .getOne();
+    if (!channel)
+      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
+  async getChannelMessages(id: number): Promise<MessageEntity[]> {
+    return await this.msgService.getMsg(id);
+  }
+
   async getChannelUsers(id: number): Promise<UserEntity[]> {
-    const users = await this.userService.getUsersInChannels(id);
-    return users;
+    return await this.userService.getUsersInChannels(id);
+  }
+
+  async getChannelUserRights(id: number, user: UserEntity) {
+    const usersInChannel = await this.userService.getUsersInChannels(id);
+    for (const currentUser of usersInChannel) {
+      if (currentUser.id === user.id) {
+        // L'utilisateur actuel est le même que l'utilisateur passé en paramètre
+        return { currentUser };
+      }
+    }
+    throw new NotFoundException('User Not Found');
   }
 
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
-    var chans = await this.ChannelRepository.createQueryBuilder('channel')
+    const chans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.users', 'users')
       .where('users.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
       .getRawMany();
-    var admchans = await this.ChannelRepository.createQueryBuilder('channel')
+    const admchans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.admins', 'admins')
       .where('admins.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
       .getRawMany();
-    var ownchans = await this.ChannelRepository.createQueryBuilder('channel')
+    const ownchans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.owner', 'owner')
       .where('owner.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
@@ -103,8 +167,7 @@ export class ChannelService {
     ownchans.forEach((ownchans) => {
       ownchans['type'] = 'owner';
     });
-    const all = chans.concat(admchans, ownchans);
-    return all;
+    return chans.concat(admchans, ownchans);
   }
 
   async updateChannel(
@@ -135,26 +198,24 @@ export class ChannelService {
   async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    try {
-      //  TODO ADD THIS TO GUARD
-      var allusers = await this.userService.getUsersInChannels(id);
-      if (allusers.some((u) => u.id === userid))
-        throw new Error('User already in channel');
-      var currentUsers = await this.userService.getFullUsersInChannels(id);
-      currentUsers.push(user);
-      channel.users = currentUsers;
-      await this.ChannelRepository.save(channel);
-    } catch (e) {
-      console.log(e);
-    }
+    //try {
+    //  TODO ADD THIS TO GUARD
+    const allusers = await this.userService.getUsersInChannels(id);
+    if (allusers.some((u) => u.id === userid))
+      throw new ConflictException('User already in channel');
+    const currentUsers = await this.userService.getFullUsersInChannels(id);
+    currentUsers.push(user);
+    channel.users = currentUsers;
+    await this.ChannelRepository.save(channel);
+    //} catch (e) {
+    //  console.log(e);
+    //}
     return channel;
   }
 
-  removeFrom(users: UserEntity[], id)
-  {
-    const index = users.findIndex(user => user.id === id);
-    if (index !== -1)
-      users.splice(index, 1);
+  removeFrom(users: UserEntity[], id) {
+    const index = users.findIndex((user) => user.id === id);
+    if (index !== -1) users.splice(index, 1);
     return users;
   }
 
@@ -163,9 +224,9 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     try {
-      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      const currentUsers = await this.userService.getFullUsersInChannels(id);
       channel.users = this.removeFrom(currentUsers, userid);
-      var currentAdmins = await this.userService.getFullAdminInChannels(id);
+      const currentAdmins = await this.userService.getFullAdminInChannels(id);
       currentAdmins.push(user);
       channel.admins = currentAdmins;
       await this.ChannelRepository.save(channel);
@@ -176,11 +237,28 @@ export class ChannelService {
   }
 
   //  Tested
+  async remAdminInChannel(userid: number, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    const user = await this.userService.getUserById(userid);
+    try {
+      const currentAdmins = await this.userService.getFullAdminInChannels(id);
+      channel.admins = this.removeFrom(currentAdmins, userid);
+      const currentUsers = await this.userService.getFullUsersInChannels(id);
+      currentUsers.push(user);
+      channel.users = currentUsers;
+      await this.ChannelRepository.save(channel);
+    } catch (e) {
+      console.log(e);
+    }
+    return channel;
+  }
+
+  //  Tested
   async KickUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    const user = await this.userService.getUserById(uid);
+    // const user = await this.userService.getUserById(uid);
     try {
-      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      const currentUsers = await this.userService.getFullUsersInChannels(id);
       channel.users = this.removeFrom(currentUsers, uid);
       await this.ChannelRepository.save(channel);
     } catch (e) {
@@ -190,7 +268,7 @@ export class ChannelService {
   }
 
   async isMuted(user: UserEntity, chan: ChannelEntity): Promise<number> {
-    for (var i = 0; i < chan.mutedUsers.length; i++) {
+    for (let i = 0; i < chan.mutedUsers.length; i++) {
       if (chan.mutedUsers[i].user == user) return i;
     }
     return -1;
@@ -205,11 +283,16 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
     if (sec <= 0)
-      throw new BadRequestException('Time in second cannot be equal or inferior to zero');
-    var muteEntity: MutedEntity = await this.mutedService.createMuted(channel, user, sec);
+      throw new BadRequestException(
+        'Time in second cannot be equal or inferior to zero',
+      );
+    await this.mutedService.createMuted(
+      channel,
+      user,
+      sec,
+    );
     return channel;
   }
-
 
   async UnMuteUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
@@ -218,7 +301,6 @@ export class ChannelService {
     return channel;
   }
 
-
   // tested
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
@@ -226,9 +308,9 @@ export class ChannelService {
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
     try {
-      var currentUsers = await this.userService.getFullUsersInChannels(id);
+      const currentUsers = await this.userService.getFullUsersInChannels(id);
       channel.users = this.removeFrom(currentUsers, uid);
-      var currentBan = await this.userService.getBannedInChannels(id);
+      const currentBan = await this.userService.getBannedInChannels(id);
       currentBan.push(user);
       channel.baned = currentBan;
       await this.ChannelRepository.save(channel);
@@ -244,7 +326,7 @@ export class ChannelService {
     if (channel.priv_msg == true)
       throw new Error('This channel is a private message channel');
     try {
-      var currentBan = await this.userService.getBannedInChannels(id);
+      const currentBan = await this.userService.getBannedInChannels(id);
       channel.baned = this.removeFrom(currentBan, uid);
       await this.ChannelRepository.save(channel);
     } catch (e) {
@@ -253,7 +335,7 @@ export class ChannelService {
     return channel;
   }
 
-  async AddMessageToChannel(
+  AddMessageToChannel(
     message: string,
     user: UserEntity,
     chan: ChannelEntity,

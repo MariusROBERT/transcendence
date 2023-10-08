@@ -1,4 +1,4 @@
-import { Background, Border, GroupItems } from '..';
+import { Background, Border, ChatMenu, GroupItems } from '..';
 import { color, Viewport } from '../../utils';
 
 interface Props {
@@ -33,7 +33,7 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background>
       </div>
-      {/* <SearchBar>Search for friend or group here..</SearchBar> */}
+      <div>{<ChatMenu />}</div>
     </>
   );
 }

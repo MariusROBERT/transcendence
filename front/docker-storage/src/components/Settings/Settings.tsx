@@ -270,7 +270,7 @@ const modifContainerPwd: React.CSSProperties = {
   justifyContent: 'space-around',
 };
 
-const Btn: React.CSSProperties = {
+export const Btn: React.CSSProperties = {
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',

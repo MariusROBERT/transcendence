@@ -3,6 +3,7 @@ import { Background, Border, RoundButton, UserBanner, ChannelPannel } from '..';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useUserContext } from '../../contexts';
+import { subscribe } from '../../utils/event';
 
 interface Props {
   children?: ReactNode;
@@ -16,6 +17,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   const { user } = useUserContext();
 
   let [chans, setChannels] = useState<ChannelInfos[]>([]);
+  const { socket } = useUserContext();
 
   useEffect(() => {
     async function getAllUsers() {
@@ -51,6 +53,12 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
       </div>
     ));
   };
+
+  useEffect(() => {
+    subscribe('update_chan', async (event: any) => {
+      setChannels(event.detail.value);
+    });
+  }, []);
 
   const displayChannels = () => {
     return (
@@ -89,6 +97,13 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     const channels = res?.json;
     setChannels(channels);
   }
+
+  useEffect(() => {
+    socket?.on('join', FetchChannels);
+    return () => {
+      socket?.off('join', FetchChannels);
+    };
+  });
 
   function openGroup() {
     setIsOpen(!isOpen);

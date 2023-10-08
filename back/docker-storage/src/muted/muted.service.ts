@@ -21,9 +21,9 @@ export class MutedService {
     async createMuted(channel: ChannelEntity, user: UserEntity, time: number)
     {
         await this.removeMuted(channel, user);
-        var date = new Date();
+        const date = new Date();
         date.setSeconds(date.getSeconds() + time);
-        var muted = this.mutedRepository.create();
+        const muted = this.mutedRepository.create();
         muted.channel = channel;
         muted.user = user;
         muted.endDate = date;

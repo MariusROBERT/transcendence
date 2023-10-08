@@ -1,37 +1,39 @@
 import { color } from '../../utils';
 import { Background, RoundButton } from '..';
 import { useUserContext } from '../../contexts';
+import { ChannelMessage } from '../../utils/interfaces';
 
 interface Props {
   children: string;
-  user_icon: string;
-  user_name: string;
-  date: Date;
-  uid: number;
+  data: ChannelMessage;
+  last: number | undefined;
+  onClick: (name: ChannelMessage) => void;
 }
 
-export function ChatMessage({
-                              children,
-                              user_icon,
-                              user_name,
-                              date,
-                              uid,
-                            }: Props) {
+export function ChatMessage({ children, data, last, onClick }: Props) {
   const { id } = useUserContext();
 
-  function viewProfile() {
-    // TODO: link the profile to the icon btn
-    // to do so in the Props, get the User ID
+  function User() {
+    if (last === data.sender_id) return;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
+        }}
+      >
+        <RoundButton
+          icon={data.sender_urlImg}
+          onClick={() => onClick(data)}
+        ></RoundButton>
+        <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
+      </div>
+    );
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: uid === id ? 'row' : 'row-reverse',
-      }}
-    >
-      <RoundButton icon={user_icon} onClick={viewProfile}></RoundButton>
+    <div>
+      {User()}
       <div
         style={{
           flex: 'auto',
@@ -44,25 +46,15 @@ export function ChatMessage({
         }}
       >
         <Background
-          bg_color={color.white}
+          bg_color={data.sender_id === id ? color.white2 : color.white}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
           flex_justifyContent={true ? 'flex-start' : 'flex-end'}
         >
-          <p style={{ margin: '10px', color: color.black, textShadow: 'none' }}>
+          <p style={{ margin: '10px', color: color.black, textShadow: 'none', wordWrap:'break-word' }}>
             {children}
           </p>
         </Background>
-        <p
-          style={{
-            margin: '10px',
-            color: color.black,
-            textShadow: 'none',
-            fontSize: '12px',
-          }}
-        >
-          {date.toUTCString()}
-        </p>
       </div>
     </div>
   );
