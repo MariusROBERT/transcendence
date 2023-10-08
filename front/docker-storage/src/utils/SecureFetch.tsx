@@ -19,7 +19,7 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
       return { response: response, json: rep_json };
     } else {
       const rep_json = await response.json();
-      if(rep_json.statusCode === 400 || rep_json.statusCode === 409)
+      if(rep_json.statusCode !== 401)
       {
         return { response: response, json: rep_json };
       }
