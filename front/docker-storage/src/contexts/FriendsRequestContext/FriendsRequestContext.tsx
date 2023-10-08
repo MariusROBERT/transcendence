@@ -13,7 +13,7 @@ type FriendsRequestType = {
 	declineFriendRequest: (from: number, to: number) => void,
 	blockUser: (to: number, from: number) => void,
 
-	fetchFriendsRequestContext: () => void,
+	fetchFriendsRequestContext: () => Promise<void>,
 }
 
 const FriendsRequestContext = createContext<FriendsRequestType>({
@@ -27,7 +27,7 @@ const FriendsRequestContext = createContext<FriendsRequestType>({
 	declineFriendRequest: (from: number, to: number) => { },
 	blockUser: (to: number, from: number) => {},
 
-	fetchFriendsRequestContext: () => { },
+	fetchFriendsRequestContext: async () => { },
 })
 
 export function useFriendsRequestContext() {
@@ -49,7 +49,7 @@ export function FriendsRequestProvider({ children }: Props) {
 	}, [friends, recvInvitesFrom, sendInvitesTo])
 
 	async function fetchFriendsRequestContext(): Promise<void> {
-		let user = (await Fetch('user/', 'GET'))?.json;
+		const user = (await Fetch('user', 'GET'))?.json;
 		if (!user) return;
 		setFriends(user?.friends);
 		setRecvInvitesFrom(user?.recvInvitesFrom);

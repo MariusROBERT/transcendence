@@ -89,9 +89,7 @@ export interface ChannelPublicPass {
 export interface UserInfos {
   id: number;
   urlImg: string;
-  is2fa_active: boolean;
   username: string;
-  sentInvitesTo: number[];
 }
 
 export interface IUser {

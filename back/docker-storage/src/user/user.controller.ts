@@ -131,34 +131,6 @@ export class UserController {
     return await this.userService.getChannels(user);
   }
 
-  // ask_friend
-  // @Patch('demand/:id') // id of friend
-  // @UseGuards(JwtAuthGuard)
-  // async FriendsDemand(
-  //   @User() user: UserEntity,
-  //   @Param('id', ParseIntPipe) id: number,
-  // ) {
-  //   await this.userService.askFriend(user, id);
-  // }
-
-  // accept_or_denied_aks
-  // @Patch('handle_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
-  // @UseGuards(JwtAuthGuard)
-  // async responseAsks(
-  //   @User() user: UserEntity,
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Param('bool') bool: boolean,
-  // ) {
-  //   await this.userService.handleAsk(user, id, bool);
-  // }
-
-  // logout
-  @Patch('/logout')
-  @UseGuards(JwtAuthGuard)
-  async Delog(@User() user: UserEntity) {
-    await this.userService.logout(user);
-  }
-
   @Get('/:id')
   async GetUserById(
     @Param('id', ParseIntPipe) id: number,
@@ -168,7 +140,6 @@ export class UserController {
   }
 
   // --------- BLOCK --------- :
-
   @Patch('/block/:id')
   @UseGuards(JwtAuthGuard)
   async BlockAUser(
@@ -178,13 +149,6 @@ export class UserController {
     console.log('blockAUser CPONTROLER');
 
     return await this.userService.blockAUser(id, user);
-  }
-  // Sockets -------------------------------------------------------------------------------------------------------- //
-
-  @Get('/from_socket_id')
-  @UseGuards(JwtAuthGuard)
-  async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
-    return this.userService.getUserFromSocketId(socketId);
   }
 
   // Game ----------------------------------------------------------------------------------------------------------- //

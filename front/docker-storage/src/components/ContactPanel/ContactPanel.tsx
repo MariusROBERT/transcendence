@@ -17,7 +17,6 @@ export function ContactPanel({ viewport }: Props) {
           <GroupItems heading={'Friends'} duration_ms={900} />
           <GroupItems heading={'Users'} duration_ms={900} />
           <GroupItems heading={'Channels'} duration_ms={900} />
-
           <Border
             borderSize={0}
             height={50}

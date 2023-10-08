@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, SwitchToggle } from '..';
@@ -10,12 +9,6 @@ interface Props {
 }
 
 export default function Settings(props: Props) {
-  const navigate = useNavigate();
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    navigate('/login');
-    alert('Vous avez été déconnecté');
-  }
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
@@ -37,7 +30,6 @@ export default function Settings(props: Props) {
           setUserInfosSettings(user);
         } else {
           window.location.replace('http://localhost:3001/api/auth/login');
-          // alert('Vous avez été déconnecté');
         }
       };
       getUserInfos();
@@ -52,10 +44,6 @@ export default function Settings(props: Props) {
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
-    if (!jwtToken) {
-      window.location.replace('http://localhost:3001/api/auth/login');
-      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-    }
     if (
       confirmPassword === '' &&
       password === '' &&
@@ -70,16 +58,9 @@ export default function Settings(props: Props) {
       if (password !== confirmPassword)
         return setErrorMessage('passwords doesn\'t match !');
       else {
-        const user = await (fetch('http://localhost:3001/api/user/update_password', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: JSON.stringify({ newPassword: password, oldPassword: oldPassword }),
-        }))
-          .then(r => r.json());
-
+        const user = (await Fetch('user/update_password', 'PATCH',  JSON.stringify({ newPassword: password, oldPassword: oldPassword })))?.json
+        if (!user)
+          return ;
         if (user.message === 'Wrong password')
           return setErrorMessage(user.message);
         if (user.message)

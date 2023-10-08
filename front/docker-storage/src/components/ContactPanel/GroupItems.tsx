@@ -31,7 +31,6 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   const displayFriends = () => {
     if (!user)
       return ;
-    console.log('friends list');
     const friends: IUser[] = allUsers.filter(
       (u) => user?.friends.includes(u.id),
     );
