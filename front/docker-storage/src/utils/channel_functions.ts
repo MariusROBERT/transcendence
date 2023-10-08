@@ -1,11 +1,9 @@
 import { Fetch } from '.';
 import { publish } from './event';
 
-var current_chan = '';
-
 export async function UpdateChannelMessage(id: number) {
   const res2 = await Fetch('channel/msg/' + id, 'GET');
-  var msgs = res2?.json;
+  const msgs = res2?.json;
   if (msgs.statusCode === 400) return;
   publish('enter_chan', {
     detail: {
@@ -33,6 +31,8 @@ export async function UpdateChannels() {
     },
   });
 }
+
+let current_chan = '';
 
 export async function SetCurrChan(chan: string) {
   current_chan = chan;

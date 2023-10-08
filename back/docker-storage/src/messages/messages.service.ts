@@ -24,10 +24,7 @@ export class MessagesService {
   }
 
   async getMsg(channelId: number) {
-    //var msgs = await this.messageRepository.find({
-    //  where: {c: channelId},
-    //})
-    var msgs = await this.messageRepository
+    return await this.messageRepository
       .createQueryBuilder('message')
       .leftJoinAndSelect('message.channel', 'channel')
       .leftJoinAndSelect('message.sender', 'sender')
@@ -41,6 +38,5 @@ export class MessagesService {
         'sender.urlImg',
       ])
       .getRawMany();
-    return msgs;
   }
 }

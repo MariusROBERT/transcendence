@@ -85,8 +85,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
-    var chanE;
-    var userE;
+    let chanE;
+    let userE;
 
     if (channel < 0) {
       console.log('error chan < 0');

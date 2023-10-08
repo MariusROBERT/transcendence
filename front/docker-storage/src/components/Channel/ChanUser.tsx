@@ -13,8 +13,7 @@ interface Props {
 export function ChanUser({ item, chan_id, onClick }: Props) {
   function viewProfile() {
     if (chan_id === -1) return;
-    var data: ChannelMessage;
-    data = {
+    const data: ChannelMessage = {
       channel_id: chan_id,
       sender_id: item.id,
       sender_urlImg: item.urlImg,

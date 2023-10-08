@@ -32,9 +32,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
           .startsWith(input.toLowerCase());
 
         const status =
-          channelStatus === 'all' ||
-          (channelStatus === 'public' && channel.has_password === false) ||
-          (channelStatus === 'protected' && channel.has_password === true);
+          channelStatus === 'all' || (channelStatus === 'public' && !channel.has_password) || (channelStatus === 'protected' && channel.has_password);
         return name && status;
       })
     : [];

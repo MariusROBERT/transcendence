@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
@@ -286,22 +280,21 @@ export class UserService {
       //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'member';
       return data;
     });
     const fadmin = admin.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'admin';
       return data;
     });
     const fowner = owner.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'owner';
       return data;
     });
-    const all = fusers.concat(fadmin, fowner);
-    return all;
+    return fusers.concat(fadmin, fowner);
   }
 
   async getFullAdminInChannels(channelId: number) {
