@@ -15,7 +15,7 @@ interface Props {
 
   const mobile = window.innerWidth < 500;
 
-export default function CreateChat({ name, visible, setVisible }: Props) {
+export default function CreateChat({ visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);

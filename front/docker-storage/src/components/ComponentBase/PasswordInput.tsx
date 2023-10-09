@@ -42,7 +42,7 @@ export function PasswordInput(props: Props) {
   const popUpStyle: React.CSSProperties = {
     backgroundColor: errorColor,
     position: 'absolute',
-    zIndex: 115,
+    zIndex: 131,
     top: -8,
     padding: 5,
     borderRadius: '5px 0 5px 5px',
