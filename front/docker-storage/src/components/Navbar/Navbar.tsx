@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
         </div>
 
       </div>
-      <GameInvites></GameInvites>
+      <GameInvites/>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible} />
       </Popup>
@@ -134,7 +134,7 @@ const navbarStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'row-reverse',
   borderRadius: '30px',
-  zIndex: '10000',
+  zIndex: 100,
 };
 
 const notifbadge: CSSProperties = {

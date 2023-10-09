@@ -1,4 +1,5 @@
-import { color } from '../../utils';
+import {color} from '../../utils';
+import React from 'react';
 
 interface Props {
   setSearchTerm: (value: string) => void,
@@ -6,24 +7,42 @@ interface Props {
   children: string,
   isVisible: boolean
   id?: string
+  style ?: React.CSSProperties
 }
 
-export function SearchBar({ setSearchTerm, onClick, children, isVisible, id }: Props) {
+export function SearchBar({setSearchTerm, onClick, children, isVisible, id, style}: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
+  const mobile = window.innerWidth < 500;
+
   return (
-    <div style={{
-      visibility: isVisible ? 'visible' : 'hidden',
-      margin: '30px',
-      borderRadius: '10px',
-      backgroundColor: color.white,
-      height: '60px',
-      width: '400px',
-    }} className={'text cursor_pointer'}>
-      <img style={{ height: '80px', width: '80px', position: 'relative', top: '-10px', left: '-15px' }}
-           src={require('../../assets/imgs/icon_search.png')} alt={'search'} />
+    <div
+      style={{
+        visibility: isVisible ? 'visible' : 'hidden',
+        margin: '30px',
+        borderRadius: '10px',
+        backgroundColor: color.white,
+        height: mobile ? 40 : 60,
+        width: mobile ? 250 : 400,
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'row',
+        ...style,
+      }}
+      className={'text cursor_pointer'}
+    >
+      <img
+        style={{
+          height: mobile ? 50 : 80,
+          width: mobile ? 50 : 80,
+          position: 'relative',
+          top: mobile ? -5 : -10,
+          left: mobile ? -5 : -15,
+        }}
+        src={require('../../assets/imgs/icon_search.png')} alt={'search'}
+      />
       <input
         id={id}
         style={{
@@ -31,10 +50,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id }: P
           borderRadius: '10px',
           border: '0',
           position: 'relative',
-          left: '0px',
-          top: '-45px',
-          height: '55px',
-          width: '315px',
+          width: mobile ? 200 : 315,
           backgroundColor: color.white,
         }}
         placeholder={children}

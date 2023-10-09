@@ -23,8 +23,6 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     ChannelPublicPass | undefined
   >(undefined);
 
-  function OnClick() {}
-
   const filteredChannels = channels
     ? channels.filter((channel) => {
         const name = channel?.channel_name
@@ -54,7 +52,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
               visible={enterPassword}
               setVisible={setEnterPassword}
               setCurrent={setCurrentChannel}
-            ></ChannelElement>
+            />
           ))
         )}
       </div>
@@ -66,9 +64,9 @@ export default function JoinChat({ input, setInput, channels }: Props) {
       <ChatInput
         input={input}
         setInput={setInput}
-        OnClick={OnClick}
-        OnEnter={OnClick}
-      ></ChatInput>
+        OnClick={() => null}
+        OnEnter={() => null}
+      />
       <select
         value={channelStatus}
         onChange={(e) =>
@@ -95,14 +93,14 @@ export default function JoinChat({ input, setInput, channels }: Props) {
           name={''}
           visible={createChatVisible}
           setVisible={setCreChatVisible}
-        ></CreateChat>
+        />
       </Popup>
       <Popup isVisible={enterPassword} setIsVisible={setEnterPassword}>
         <EnterPassword
           visible={enterPassword}
           setVisible={setEnterPassword}
           current={currentChannel}
-        ></EnterPassword>
+        />
       </Popup>
     </div>
   );

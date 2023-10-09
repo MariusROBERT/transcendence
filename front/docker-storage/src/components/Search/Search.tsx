@@ -9,6 +9,8 @@ interface Props {
   user?: IUser
 }
 
+const mobile = window.innerWidth < 500;
+
 export function Search(props: Props) {
   const [searchMode, setSearchMode] = useState<boolean>(false);
 
@@ -28,13 +30,15 @@ export function Search(props: Props) {
     <div>
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
-                 isVisible={!searchMode}>
+                 isVisible={!searchMode}
+        style={{top: mobile ? 100: 0}}
+      >
         {props.placeHolder || ''}
       </SearchBar>
       <Popup isVisible={searchMode} setIsVisible={setSearchMode}>
         <div style={{
           display: 'flex',
-          minHeight: '300px',
+          minHeight: mobile ? 100: '300px',
           flexDirection: 'column',
           alignItems: 'center',
           backgroundColor: 'grey',

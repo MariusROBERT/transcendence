@@ -44,7 +44,6 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
             : type === 'admin'
             ? color.red
             : color.grey,
-        minWidth: '410px',
         height: '25px',
       }}
     >
@@ -56,22 +55,22 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         <RoundButton
           icon={require('../../assets/imgs/icon_chat.png')}
           onClick={OnJoinChannel}
-        ></RoundButton>
+        />
         <RoundButton
           icon={require('../../assets/imgs/icon_leave.png')}
-          onClick={() => {}}
-        ></RoundButton>
+          onClick={() => void 0}
+        />
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
-          onClick={() => {OnSetting()}}
-        ></RoundButton>
+          onClick={OnSetting}
+        />
         <p style={{ fontSize: '20px' }}>
           {name.slice(0, 25)}
           {name.length > 25 ? '...' : ''}
         </p>
       </Flex>
     <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-      <EditChat data={publicData}></EditChat>
+      <EditChat data={publicData}/>
     </Popup>
     </div>
   );

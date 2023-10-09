@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
-import { AuthGuard, Game, Login, MainPage, GameScore, Background, NotFoundPage } from './components';
-import { Route, Routes } from 'react-router-dom';
-import { Contexts } from './contexts';
+import React, {useState} from 'react';
+import {backgroundImage, color, useEffectViewport, Viewport} from './utils';
+import {AuthGuard, Background, Game, GameScore, Login, MainPage, NotFoundPage} from './components';
+import {Route, Routes} from 'react-router-dom';
+import {Contexts} from './contexts';
 
-const SIZE = 500;
+const mobile = window.innerWidth < 500;
+
+const SIZE = mobile ? 350 : 500;
 
 function App() {
   const [viewport, setViewport] = useState<Viewport>(start);
@@ -18,25 +20,25 @@ function App() {
       >
         <Background image={backgroundImage} fixed={true}>
           <Routes>
-            <Route path='/login' element={
+            <Route path="/login" element={
               <Login viewport={viewport}></Login>}>
             </Route>
-            <Route path='/' element={
+            <Route path="/" element={
               <AuthGuard isAuthenticated>
                 <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
               </AuthGuard>}>
             </Route>
-            <Route path='/game' element={
+            <Route path="/game" element={
               <AuthGuard isAuthenticated>
                 <Game viewport={viewport}></Game>
               </AuthGuard>}>
             </Route>
-            <Route path='/game/score' element={
+            <Route path="/game/score" element={
               <AuthGuard isAuthenticated>
                 <GameScore viewport={viewport}></GameScore>
               </AuthGuard>}>
             </Route>
-            <Route path='*' element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage/>}/>
           </Routes>
         </Background>
       </div>
@@ -50,7 +52,7 @@ const appStyle: React.CSSProperties = {
   color: color.white,
 
   overflow: 'hidden',
-}
+};
 
 const start: Viewport = {
   isLandscape:

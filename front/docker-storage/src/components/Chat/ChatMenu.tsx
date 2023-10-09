@@ -33,7 +33,7 @@ export function ChatMenu() {
       OnJoinChannel()
     });
     return () => {
-      unsubscribe('update_chan', () => {});
+      unsubscribe('update_chan', () => void 0);
     };
   }, [channels]);
 
@@ -43,14 +43,14 @@ export function ChatMenu() {
         input={inputValue}
         setInput={setInputValue}
         OnClick={OnJoinChannel}
-        OnEnter={() => {}}
-      ></ChatInput>
+        OnEnter={() => void 0}
+      />
       <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
         <JoinChat
           input={inputValue}
           setInput={setInputValue}
           channels={channels}
-        ></JoinChat>
+        />
       </Popup>
     </div>
   );

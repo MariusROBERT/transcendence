@@ -82,7 +82,7 @@ const notificationBadgeStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 9999,
+  zIndex: 95,
 };
 
 const notificationCountStyle: React.CSSProperties = {

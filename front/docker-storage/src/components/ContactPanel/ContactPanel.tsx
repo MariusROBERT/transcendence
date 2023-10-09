@@ -8,7 +8,7 @@ interface Props {
 export function ContactPanel({ viewport }: Props) {
   return (
     <>
-      <div style={{ height: viewport.height - 100 + 'px', width: '100%' }}>
+      <div style={{ height: viewport.height - 100, width: '100%' }}>
         <Background
           flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
@@ -33,7 +33,9 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background>
       </div>
-      <div>{<ChatMenu />}</div>
+      <div>
+        <ChatMenu />
+      </div>
     </>
   );
 }

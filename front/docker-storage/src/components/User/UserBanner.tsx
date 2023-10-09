@@ -34,6 +34,10 @@ const UserBanner = ({ otherUser }: Props) => {
     };
   }, [socket, userBanner]);
 
+  const displayName = (userBanner.username.length || '') > 11 ?
+    userBanner.username.slice(0, 11) + '...' :
+    userBanner.username;
+
   return (
     <div>
       <div style={UserBannerContainer}>
@@ -45,9 +49,9 @@ const UserBanner = ({ otherUser }: Props) => {
           }
           <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setProfilVisible(true)} />
-          <p onClick={() => setProfilVisible(true)}>{userBanner.username}</p>
+          <p onClick={() => setProfilVisible(true)}>{displayName}</p>
         </Flex>
-        {!isMe &&
+        {!isMe && !mobile &&
           <UserButton otherUser={otherUser} />
         }
       </div>
@@ -61,11 +65,14 @@ const UserBanner = ({ otherUser }: Props) => {
 };
 export default UserBanner;
 
+const mobile = window.innerWidth < 500;
+
 export const UserBannerContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  width: '400px',
+  // width:'400px',
+  width: mobile ? 200: 400,
 };
 
 const statusStyle: CSSProperties = {

@@ -33,7 +33,7 @@ export default function Popup(props: Props) {
         position: 'fixed',
         top: 0,
         left: 0,
-        zIndex: 999,
+        zIndex: 110,
         backgroundColor: 'rgba(70,70,70,0.5)',
         height: '100vh',
         width: '100vw',

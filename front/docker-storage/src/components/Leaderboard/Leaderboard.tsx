@@ -4,6 +4,8 @@ import {IUser, LeaderboardProps} from '../../utils/interfaces';
 import {Fetch} from '../../utils';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
 
+const mobile = window.innerWidth < 500;
+
 export function Leaderboard({searchTerm}: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
@@ -69,9 +71,7 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
       {userElements.length === 0 && !errorMessage && (
         <div style={{color: 'white', marginTop: '5px'}}>
           <div style={{display: 'flex', justifyContent: 'center'}}>
-            <p>
-              No user found.
-            </p>
+            <p>No user found.</p>
           </div>
           <div style={{...userElementStyle, visibility: 'hidden'}}/>
         </div>
@@ -82,7 +82,6 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
 }
 
 const container: CSSProperties = {
-  minWidth: '500px',
   background: 'grey',
   display: 'flex',
   justifyContent: 'center',
@@ -92,7 +91,7 @@ const container: CSSProperties = {
 };
 
 const userElementStyle: CSSProperties = {
-  width: '600px',
+  width: mobile ? 340: '600px',
   border: '1px solid white',
   flexWrap: 'wrap',
   display: 'flex',
@@ -100,8 +99,8 @@ const userElementStyle: CSSProperties = {
   alignContent: 'center',
   background: '#646464',
   color: 'white',
-  margin: '10px',
-  padding: '10px',
+  margin: '10px 0',
+  padding: '10px 0',
   cursor: 'pointer',
   borderRadius: '10px',
 };
