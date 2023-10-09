@@ -16,6 +16,16 @@ interface Props {
   * Click outside the popup or on the top left X to close it
 */
 export default function Popup(props: Props) {
+
+  function escape(e: KeyboardEvent) {
+    if (e.key === 'Escape' && props.isVisible)
+      props.setIsVisible(false);
+  }
+
+  React.useEffect(() => {
+    document.addEventListener('keydown', escape);
+  }, []);
+
   return (
     <div
       style={{
@@ -40,7 +50,7 @@ export default function Popup(props: Props) {
     >
       {
         props.isVisible &&
-        (<div style={{ position: 'relative', ...props.style }}>
+        (<div style={{position: 'relative', ...props.style}}>
           <p onClick={() => props.setIsVisible(false)}
              style={{
                position: 'absolute',
