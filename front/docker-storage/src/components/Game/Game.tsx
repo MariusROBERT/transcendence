@@ -11,12 +11,12 @@ export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
-
   const [state, setState] = useState<State>(start);
   const [size, setSize] = useState<Size>(basesize);
   let upPressed: boolean = false;
   let downPressed: boolean = false;
   const [factor, setFactor] = useState<number>(1);
+  const [usernames, setUsernames] = useState<string[]>(['', '']);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
@@ -24,6 +24,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
       return navigate('/');
     // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
+    socket?.on('get_usernames', (body: { p1: string, p2: string }) => {setUsernames([body.p1, body.p2])});
     // eslint-disable-next-line
   }, [id, socket, isInGameWith, navigate]);
 
@@ -135,6 +136,10 @@ export function Game({ viewport }: { viewport: Viewport }) {
 
   return (
     <div id={'container'} style={containerStyle}>
+      <div style={{display:'flex', justifyContent:'space-around', alignItems:'center'}}>
+        <p>{usernames[0]}</p>
+        <p>{usernames[1]}</p>
+      </div>
       {id && socket && isInGameWith && <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} style={{position:'relative', top:'0'}}></Sketch>}
       <div style={{position:'absolute', left:0, top:0}}>
         <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
