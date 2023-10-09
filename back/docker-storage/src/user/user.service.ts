@@ -105,7 +105,6 @@ export class UserService {
     if (lastMsg)
       user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
-    user.isInGameWith = -1;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
     await this.UserRepository.save(user);
@@ -460,11 +459,6 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
-  async setUserInGameStatus(user: UserEntity, otherUserId: number | undefined) {
-    user.isInGameWith = otherUserId ? otherUserId : -1;
-    return await this.UserRepository.save(user);
-  }
-
   async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
     user.gameInvitationType = gameType;
     return await this.UserRepository.save(user);
@@ -475,7 +469,6 @@ export class UserService {
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
-      isInGameWith: user.isInGameWith,
       gameInviteType: user.gameInvitationType
     }
   }

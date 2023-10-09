@@ -78,26 +78,17 @@ export function GameContextProvider({ children }: Props) {
     // eslint-disable-next-line
   }, [id, socket, navigate]);
 
-  // useEffect(() => {
-  // function printState(){
-  //   // console.log('[', id, '] game Context values: ', {inGame:isInGameWith, inQueue:isInQueue, inviteFrom:inviteFrom, inviteTo:inviteTo, inviteType:gameType});
-  // }
-  //   printState();
-  // }, [id, isInGameWith, isInQueue, inviteFrom, inviteTo, gameType]);
-
   async function fetchGameContext(): Promise<void> {
     // fetch invite status
     const inviteStatus: {
       gameInvitationFrom: number,
       gameInvitationTo: number,
-      isInGameWith: number,
       gameInviteType: 'none' | 'normal' | 'special'
     } | undefined
       = await (await Fetch('user/game_status/' + id, 'GET'))?.json;
     if (!inviteStatus) return;
     setInviteFrom((inviteStatus.gameInvitationFrom < 0 ? undefined : inviteStatus.gameInvitationFrom));
     setInviteTo((inviteStatus.gameInvitationTo < 0 ? undefined : inviteStatus.gameInvitationTo));
-    setIsInGameWith((inviteStatus.isInGameWith < 0 ? undefined : inviteStatus.isInGameWith));
     setGameType((inviteStatus.gameInviteType === 'none' ? undefined : inviteStatus.gameInviteType));
 
     // check if player is in Queue
@@ -265,10 +256,6 @@ export function GameContextProvider({ children }: Props) {
   function leaveGame() {
     if (!isInGameWith) return;
     socket?.emit('leave_game', { sender: id });
-    setInviteFrom(undefined);
-    setInviteTo(undefined);
-    setIsInQueue(undefined);
-    navigate('/game/score');
   }
 
   // Game Start / End -- Event reception ---------------------------------------------------------------------------- //
