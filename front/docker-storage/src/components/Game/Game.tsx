@@ -136,7 +136,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
 
   return (
     <div id={'container'} style={containerStyle}>
-      <div style={{display:'flex', justifyContent:'space-around', alignItems:'center'}}>
+      <div style={{display:'flex', justifyContent:'space-around', alignItems:'center', width:'100%'}}>
         <p>{usernames[0]}</p>
         <p>{usernames[1]}</p>
       </div>
@@ -152,6 +152,7 @@ const containerStyle: React.CSSProperties = {
   minHeight: '100%',
   minWidth: '100%',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   position: 'absolute',
