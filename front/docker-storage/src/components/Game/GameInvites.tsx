@@ -20,15 +20,15 @@ export function GameInvites(){
 
   const inviteStyle: CSSProperties = {
     top: '0px',
-    right: isInQueue || inviteFrom !== inviteTo ? '150px' : '-600px',
-    minWidth: (inviteTo ? 400 :  550) + 'px',
+    right: isInQueue || inviteFrom !== inviteTo ? '185px' : '-600px',
+    minWidth: inviteTo ? 400 :  550,
     position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
     zIndex: '9999',
     transition: '1s',
     minHeight: '60px',
-    height:'60px',
+    height: '60px',
     borderRadius: 30 + 'px',
     overflow: 'hidden'
   };
