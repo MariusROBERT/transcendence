@@ -34,6 +34,7 @@ import {
   IsProtected,
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
+import path from 'path';
 
 @Controller('channel')
 export class ChannelController {
@@ -105,7 +106,6 @@ export class ChannelController {
     return await this.channelService.createChannel(createChannelDto, user);
   }
 
-  //todo check why old users are removed
   @Post('/add_user/:id')
   @UseGuards(PrivateGuard, SelfBannedGuard, IsProtected)
   @UseGuards(JwtAuthGuard)
@@ -115,6 +115,18 @@ export class ChannelController {
   ) {
     const chat = this.channelService.addUserInChannel(user.id, id);
     return chat;
+  }
+
+  //  Quit channel
+  @Patch('leave/:id')
+  @UseGuards(PrivateGuard, SelfInChannelGuard)
+  @UseGuards(JwtAuthGuard)
+  async leaveChannel(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  )
+  {
+    return this.channelService.leaveChannel(user.id, id);
   }
 
   @Post('/add_admin/:id')

@@ -27,6 +27,11 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
     publish('open_chat', undefined);
   }
 
+  async function OnLeave() {
+    const res = await Fetch('channel/leave/' + id, 'PATCH');
+    console.log(res);
+  }
+
   async function OnSetting() {
     setEditVisible(true);
     const res = await Fetch('channel/public/' + id, 'GET');
@@ -61,7 +66,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_leave.png')}
-          onClick={() => {}}
+          onClick={OnLeave}
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
@@ -70,8 +75,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           }}
         ></RoundButton>
         <p style={{ fontSize: '20px' }}>
-          {name.slice(0, 25)}
-          {name.length > 25 ? '...' : ''}
+          {name}
         </p>
       </Flex>
       <Popup isVisible={editVisible} setIsVisible={setEditVisible}>

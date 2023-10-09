@@ -5,7 +5,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
+import {
+  ChannelEntity,
+  MessageEntity,
+} from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -198,7 +201,6 @@ export class ChannelService {
   async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
-    //try {
     //  TODO ADD THIS TO GUARD
     const allusers = await this.userService.getUsersInChannels(id);
     if (allusers.some((u) => u.id === userid))
@@ -207,9 +209,37 @@ export class ChannelService {
     currentUsers.push(user);
     channel.users = currentUsers;
     await this.ChannelRepository.save(channel);
-    //} catch (e) {
-    //  console.log(e);
-    //}
+    return channel;
+  }
+
+  async leaveChannel(userid: number, id: number): Promise<ChannelEntity> {
+    const channel = await this.getChannelById(id);
+    const users = await this.userService.getFullUsersInChannels(id);
+    const admins = await this.userService.getFullAdminInChannels(id);
+
+    console.log('ENTER: Leave');
+    if (userid === channel.owner.id) {
+      console.log('CASE: Owner is leaving');
+      if (admins.length > 0) {
+        const adm = admins[0]; // Select the first join
+        channel.admins = this.removeFrom(admins, adm.id);
+        channel.owner = adm;
+      } else {
+        console.log('No Admins select users');
+        if (users.length === 0) console.log('Destroy Channel'); // Destroy chat logic
+        const usr = users[0];
+        channel.users = this.removeFrom(users, usr.id);
+        channel.owner = usr;
+      }
+    } else {
+      //just remove the guy
+      channel.users = this.removeFrom(users, userid);
+      channel.admins = this.removeFrom(admins, userid);
+    }
+    //  remove user from the list
+
+    await this.ChannelRepository.save(channel);
+    console.log('EXIT: Leave');
     return channel;
   }
 
@@ -286,11 +316,7 @@ export class ChannelService {
       throw new BadRequestException(
         'Time in second cannot be equal or inferior to zero',
       );
-    await this.mutedService.createMuted(
-      channel,
-      user,
-      sec,
-    );
+    await this.mutedService.createMuted(channel, user, sec);
     return channel;
   }
 
@@ -335,11 +361,7 @@ export class ChannelService {
     return channel;
   }
 
-  AddMessageToChannel(
-    message: string,
-    user: UserEntity,
-    chan: ChannelEntity,
-  ) {
+  AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
     //if (!msg.channel.users.includes(msg.sender))
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)
