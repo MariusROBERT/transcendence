@@ -15,7 +15,9 @@ import { publish } from '../../utils/event';
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
   const { socket } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
-  const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined)
+  const [publicData, setPublicData] = useState<ChannelPublic | undefined>(
+    undefined,
+  );
 
   async function OnJoinChannel() {
     UpdateChannelMessage(id);
@@ -50,7 +52,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
     >
       <Flex
         zIndex={'10'}
-        flex_direction='row'
+        flex_direction="row"
         flex_justifyContent={'space-evenly'}
       >
         <RoundButton
@@ -63,16 +65,18 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
-          onClick={() => {OnSetting()}}
+          onClick={() => {
+            OnSetting();
+          }}
         ></RoundButton>
         <p style={{ fontSize: '20px' }}>
           {name.slice(0, 25)}
           {name.length > 25 ? '...' : ''}
         </p>
       </Flex>
-    <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-      <EditChat data={publicData}></EditChat>
-    </Popup>
+      <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
+        <EditChat data={publicData}></EditChat>
+      </Popup>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { RoundButton } from '../ComponentBase/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import {
+  SetCurrChan,
   UpdateChannelMessage,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
@@ -30,6 +31,7 @@ export default function ChannelElement({
     if (res?.json?.statusCode === 400) return 400;
     UpdateChannelMessage(data.id);
     UpdateChannelUsers(data.id);
+    SetCurrChan(data.channel_name);
     publish('open_chat', undefined);
     return 0;
   }
@@ -41,6 +43,7 @@ export default function ChannelElement({
       setVisible(true);
       return;
     }
+    console.log(data.channel_name);
     socket?.emit('join', { channel: data.channel_name });
   }
 
@@ -48,7 +51,7 @@ export default function ChannelElement({
     <div style={ChannelElementStyle}>
       <div>
         <div style={ChannelBannerContainer}>
-          <Flex flex_direction='row'>
+          <Flex flex_direction="row">
             <RoundButton
               icon={require('../../assets/imgs/icon_user.png')}
               icon_size={50}
@@ -59,7 +62,7 @@ export default function ChannelElement({
           <div style={{ right: '0', overflow: 'hidden' }}>
             <Flex
               zIndex={'10'}
-              flex_direction='row'
+              flex_direction="row"
               flex_justifyContent={'space-evenly'}
             >
               <RoundButton
