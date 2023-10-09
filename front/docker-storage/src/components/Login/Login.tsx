@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, TwoFA, PasswordInput } from '..';
 
-const SIZE: number = 350;
+const SIZE = 350;
 
 interface Props {
   duration_ms?: number;
@@ -32,7 +32,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (signIn) return OnConnect();
-    else return OnRegister();
+    return OnRegister();
   }
 
   async function OnRegister() {
@@ -45,12 +45,12 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           }));
           if (registerResponse?.ok) {
             return OnConnect();
-          } else {
+          } 
             setErrorMessage('this username is already used');
             console.error('register failure. Error:', registerResponse?.status);
-          }
+          
         } else {
-          setErrorMessage(`username can't be ended with _42`);
+          setErrorMessage('username can\'t be ended with _42');
         }
       } else {
         setErrorMessage('passwords are not corresponding');
@@ -75,25 +75,25 @@ export function Login({ duration_ms = 900, viewport }: Props) {
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;
-      } else if (response?.statusText === 'Invalid 2fa code') {
+      } if (response?.statusText === 'Invalid 2fa code') {
         setErrorMessage(response.statusText);
       }
 
       if (response?.ok) {
         return animateReturnToHome(response);
-      } else {
+      } 
         const data = await response?.json();
 
         if (data.message === 'Missing 2fa code') {
           setIs2fa(true);
           return;
-        } else if (data.message === 'Invalid 2fa code') {
+        } if (data.message === 'Invalid 2fa code') {
           setError2fa('Invalid 2fa code');
         } else {
           setErrorMessage(data.message);
           console.error('connection failure. Error:', response?.status);
         }
-      }
+      
     } catch (error) {
       console.error(`Error : ${error}`);
     }
@@ -124,9 +124,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
-    height: viewport.isLandscape
-      ? Math.max(SIZE, viewport.height) + 'px'
-      : Math.max(2 * SIZE, viewport.height) + 'px',
+    height: '100%',
     width: '100%',
     position: 'absolute',
     top: '0px',
