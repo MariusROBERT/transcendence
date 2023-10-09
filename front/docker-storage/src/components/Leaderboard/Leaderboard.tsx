@@ -1,15 +1,15 @@
-import { CSSProperties, useEffect, useState } from 'react';
-import { UserBanner } from '..';
-import { IUser, LeaderboardProps } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import {CSSProperties, useEffect, useState} from 'react';
+import {UserBanner} from '..';
+import {IUser, LeaderboardProps} from '../../utils/interfaces';
+import {Fetch} from '../../utils';
+import {useFriendsRequestContext, useUserContext} from '../../contexts';
 
-export function Leaderboard({ searchTerm }: LeaderboardProps) {
+export function Leaderboard({searchTerm}: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { fetchContext, user } = useUserContext();
-  const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const {fetchContext, user} = useUserContext();
+  const {fetchFriendsRequestContext} = useFriendsRequestContext();
 
   useEffect(() => {
     fetchContext();
@@ -23,11 +23,11 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
       if (cancelled) { // todo : voir si cest utile ici
         return;
-      } else {
-        if (users && Array.isArray(users) && users.length === 0)
-          setErrorMessage('Aucun utilisateur trouvé.');
-        else setAllUsers(users);
       }
+      if (users && Array.isArray(users) && users.length === 0)
+        setErrorMessage('Aucun utilisateur trouvé.');
+      else setAllUsers(users);
+
       return () => {
         cancelled = true;
       };
@@ -50,7 +50,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
           <p>{'RANK'}</p> {/* TO CHANGE */}
-          {<UserBanner otherUser={user} />}
+          {<UserBanner otherUser={user}/>}
           <p>ELO pt</p>
         </div>
       ));
@@ -63,9 +63,20 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   return (
     <div style={container}>
       {errorMessage && (
-        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+        <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>
       )}
-      <div className='container'>{userElements}</div>
+      <div className="container">{userElements}</div>
+      {userElements.length === 0 && !errorMessage && (
+        <div style={{color: 'white', marginTop: '5px'}}>
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            <p>
+              No user found.
+            </p>
+          </div>
+          <div style={{...userElementStyle, visibility: 'hidden'}}/>
+        </div>
+      )
+      }
     </div>
   );
 }

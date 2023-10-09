@@ -61,7 +61,7 @@ const UserBanner = ({ otherUser }: Props) => {
 };
 export default UserBanner;
 
-const UserBannerContainer = {
+export const UserBannerContainer = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
