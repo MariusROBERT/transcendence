@@ -89,7 +89,7 @@ export class GameMatchmaking {
     this.controller.gateway.openGame(game.playerIds);
   }
 
-  leaveGame(id: number) {
+  async leaveGame(id: number) {
     const game = this.getGame(id);
     if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
@@ -126,13 +126,12 @@ export class GameMatchmaking {
 
     //TODO: Save game score and update dataBase here
 
+    // remove the game from the controller's games
+    this.controller.games = this.controller.games.filter((g) => g !== game);
+
+    // send end Game to the player's front
     await this.controller.gateway.endGame(game.playerIds);
 
-    // remove the game from the controller's games
-    this.controller.games = this.controller.games.filter(
-      (g) => !g.playerIds.includes(id),
-    );
-    // dev msg
     return 'game end';
   }
 }

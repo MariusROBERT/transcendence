@@ -19,8 +19,7 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
       return { response: response, json: rep_json };
     }
     const rep_json = await response.json();
-    if(rep_json.statusCode !== 401)
-    {
+    if (rep_json.statusCode !== 401) {
       return { response: response, json: rep_json };
     }
     console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');

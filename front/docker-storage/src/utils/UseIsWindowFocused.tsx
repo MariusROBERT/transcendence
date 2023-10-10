@@ -6,7 +6,7 @@ export function useIsWindowFocused(): boolean {
   let inFetch = false;
 
   useEffect(() => {
-    async function resetFetch(){
+    async function resetFetch() {
       await delay(100);
       inFetch = false;
     }

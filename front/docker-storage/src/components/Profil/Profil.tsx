@@ -9,7 +9,7 @@ export interface ProfilProps {
 }
 
 export default function Profil(props: ProfilProps) {
-  const { user } = useUserContext()
+  const { user } = useUserContext();
   if (!props.otherUser)
     return (<div style={profilContainer}>
       <p>Utilisateur introuvable.</p>
@@ -33,7 +33,7 @@ export default function Profil(props: ProfilProps) {
         <p>--------------</p>
         <p>LAST MATCHS</p>
         <p>Winrate : {props.otherUser?.winrate}</p>
-        {!isMe && <UserButton otherUser={props.otherUser} /> }
+        {!isMe && <UserButton otherUser={props.otherUser} />}
       </>
     </div>
   );

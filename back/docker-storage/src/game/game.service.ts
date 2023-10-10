@@ -31,6 +31,7 @@ export class GameService {
 
   // GAME LOGIC ----------------------------------------------------------- //
   frameRate: number = 1000 / 120;
+
   //called at the start of the game and then every frame till the game ends
   async update(game: gameRoom) {
     //check for the end game conditions
