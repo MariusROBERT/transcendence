@@ -17,7 +17,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
   const { socket } = useUserContext();
-  let [msg, setMessage] = useState<ChannelMessage[]>([]);
+  const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
 
   //  See if there is a better way to do this
@@ -74,10 +74,10 @@ export function ChatPanel({ viewport, width }: Props) {
     const command = inputValue;
     const split = command.split(' ');
 
-    if ((await execCommand('add_admin', command)) === true) return true;
-    if ((await execCommand('kick', command)) === true) return true;
-    if ((await execCommand('ban', command)) === true) return true;
-    if ((await execCommand('unban', command)) === true) return true;
+    if (await execCommand('add_admin', command)) return true;
+    if (await execCommand('kick', command)) return true;
+    if (await execCommand('ban', command)) return true;
+    if (await execCommand('unban', command)) return true;
 
     //  Mute
     if (split.length === 4 && split[0] === 'mute') {
@@ -115,7 +115,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   async function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    if ((await CommandParsing()) === true) return; // If it's a command do not continue
+    if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
   }
@@ -151,7 +151,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <div style={{ minHeight: '60px' }} />
+      <div style={{ minHeight: '60px', paddingTop: 60 }} />
       <ChanUserList
         onClick={OnUserClick}
         chan_id={msg.at(0)?.channel_id ? Number(msg.at(0)?.channel_id) : -1}

@@ -69,8 +69,8 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     setNotif();
-    if (notifs.length === 0)
-      setNotifsVisible(false);
+    // if (notifs.length === 0)
+    //   setNotifsVisible(false);
     // eslint-disable-next-line
   }, [notifs]);
 
@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
           {notifsVisible &&
             <div style={notifstyle}>
               {notifs.map((notif) => (
-                <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
+                <NotifCard notif={notif} otherUser={notif} key={notif.id}/>
               ))}
             </div>}
           <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
@@ -127,6 +127,8 @@ const Navbar: React.FC = () => {
   );
 };
 
+const mobile = window.innerWidth < 500;
+
 const navbarStyle: CSSProperties = {
   top: 0,
   right: 0,
@@ -134,7 +136,7 @@ const navbarStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'row-reverse',
   borderRadius: '30px',
-  zIndex: 100,
+  zIndex: 111,
 };
 
 const notifbadge: CSSProperties = {
@@ -154,8 +156,7 @@ const notifstyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   position: 'absolute',
-  top: '90px',
-  right: '200px',
+  right: mobile ? 0: 200,
   minHeight: '100%',
   background: 'black',
 };
