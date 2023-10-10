@@ -6,7 +6,7 @@ export function useIsWindowFocused(): boolean {
   let inFetch = false;
 
   useEffect(() => {
-    async function resetFetch(){
+    async function resetFetch() {
       await delay(100);
       inFetch = false;
     }
@@ -24,9 +24,8 @@ export function useIsWindowFocused(): boolean {
       if (e?.type === 'visibilitychange') {
         if (document.hidden) {
           return setWindowIsActive(false);
-        } else {
-          return setWindowIsActive(true);
         }
+        return setWindowIsActive(true);
       }
     }
 

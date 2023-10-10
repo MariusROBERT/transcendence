@@ -16,7 +16,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const { user } = useUserContext();
 
-  let [chans, setChannels] = useState<ChannelInfos[]>([]);
+  const [chans, setChannels] = useState<ChannelInfos[]>([]);
   const { socket } = useUserContext();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
 
   const displayFriends = () => {
     if (!user)
-      return ;
+      return;
     const friends: IUser[] = allUsers.filter(
       (u) => user?.friends.includes(u.id),
     );
@@ -44,7 +44,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
 
   const displayUsers = () => {
     if (!user)
-      return ;
+      return;
     const others: IUser[] = allUsers.filter(u => u.id !== user?.id);
 
     return others.map((other: IUser) => (
@@ -75,12 +75,12 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     );
   };
 
-  let buttonStyle: React.CSSProperties = {
+  const buttonStyle: React.CSSProperties = {
     rotate: (isOpen ? 0 : 180) + 'deg',
     transition: duration_ms + 'ms ease',
   };
 
-  let groupStyle: React.CSSProperties = {
+  const groupStyle: React.CSSProperties = {
     paddingTop: isOpen ? '15px' : '0px',
     paddingRight: '5px',
     display: 'flex',

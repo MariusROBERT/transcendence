@@ -8,6 +8,7 @@ import { MutedController } from './muted.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([MutedModule]), AuthModule, MutedEntity],
   controllers: [MutedController],
-  providers: [MutedService]
+  providers: [MutedService],
 })
-export class MutedModule {}
+export class MutedModule {
+}

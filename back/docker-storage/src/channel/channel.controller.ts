@@ -37,7 +37,8 @@ import {
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
   //  Only get the public data
   @Get('/public/:id')

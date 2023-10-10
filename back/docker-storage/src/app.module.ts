@@ -27,4 +27,5 @@ import { UserGateway } from './user/user.gateway';
   providers: [AppService, UserGateway], // on mettra les gateway ici
   exports: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

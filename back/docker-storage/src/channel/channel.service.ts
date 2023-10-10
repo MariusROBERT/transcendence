@@ -5,7 +5,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ChannelEntity, MessageEntity } from 'src/database/entities/channel.entity';
+import {
+  ChannelEntity,
+  MessageEntity,
+} from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -23,7 +26,8 @@ export class ChannelService {
     private userService: UserService,
     private msgService: MessagesService,
     private mutedService: MutedService,
-  ) {}
+  ) {
+  }
 
   async createChannel(
     channel: CreateChannelDto,
@@ -189,10 +193,9 @@ export class ChannelService {
     )
       return await this.ChannelRepository.save(channelToUpdate);
     // la modification fonctionne en revanche
-    else
-      throw new UnauthorizedException(
-        `You're not authorize to update this channel because you're the owner or an admin`,
-      );
+    throw new UnauthorizedException(
+      'You\'re not authorize to update this channel because you\'re the owner or an admin',
+    );
   }
 
   async addUserInChannel(userid: number, id: number): Promise<ChannelEntity> {
@@ -286,11 +289,7 @@ export class ChannelService {
       throw new BadRequestException(
         'Time in second cannot be equal or inferior to zero',
       );
-    await this.mutedService.createMuted(
-      channel,
-      user,
-      sec,
-    );
+    await this.mutedService.createMuted(channel, user, sec);
     return channel;
   }
 
@@ -305,7 +304,7 @@ export class ChannelService {
   async BanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(uid);
-    if (channel.priv_msg == true)
+    if (channel.priv_msg)
       throw new Error('This channel is a private message channel');
     try {
       const currentUsers = await this.userService.getFullUsersInChannels(id);
@@ -323,7 +322,7 @@ export class ChannelService {
   // Tested
   async UnBanUserFromChannel(uid: number, id: number): Promise<ChannelEntity> {
     const channel = await this.getChannelById(id);
-    if (channel.priv_msg == true)
+    if (channel.priv_msg)
       throw new Error('This channel is a private message channel');
     try {
       const currentBan = await this.userService.getBannedInChannels(id);
@@ -335,11 +334,7 @@ export class ChannelService {
     return channel;
   }
 
-  AddMessageToChannel(
-    message: string,
-    user: UserEntity,
-    chan: ChannelEntity,
-  ) {
+  AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
     //if (!msg.channel.users.includes(msg.sender))
     //  throw new Error('The user is not in channel');
     //if ((await this.isMuted(msg.sender, msg.channel)) >= 0)

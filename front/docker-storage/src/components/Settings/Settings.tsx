@@ -57,19 +57,21 @@ export default function Settings(props: Props) {
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
       if (password !== confirmPassword)
         return setErrorMessage('passwords doesn\'t match !');
-      else {
-        const user = (await Fetch('user/update_password', 'PATCH',  JSON.stringify({ newPassword: password, oldPassword: oldPassword })))?.json
-        if (!user)
-          return ;
-        if (user.message === 'Wrong password')
-          return setErrorMessage(user.message);
-        if (user.message)
-          return setErrorMessage(user.message);
-        setUserInfosSettings(user);
-        setOldPassword('');
-        setPassword('');
-        setConfirmPassword('');
-      }
+
+      const user = (await Fetch('user/update_password', 'PATCH', JSON.stringify({
+        newPassword: password,
+        oldPassword: oldPassword,
+      })))?.json;
+      if (!user)
+        return;
+      if (user.message === 'Wrong password')
+        return setErrorMessage(user.message);
+      if (user.message)
+        return setErrorMessage(user.message);
+      setUserInfosSettings(user);
+      setOldPassword('');
+      setPassword('');
+      setConfirmPassword('');
     }
 
     // IMG :
@@ -169,7 +171,7 @@ export default function Settings(props: Props) {
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
-              noVerify /* DEV: uncomment this line for dev */
+                           noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
@@ -177,7 +179,7 @@ export default function Settings(props: Props) {
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
                            confirmPassword={password}
-              noVerify /* DEV: uncomment this line for dev */
+                           noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>
@@ -202,7 +204,12 @@ export default function Settings(props: Props) {
           height: '100vh',
           width: '100vw',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', alignContent: 'space-evenly', flexDirection: 'column' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            alignContent: 'space-evenly',
+            flexDirection: 'column',
+          }}>
             <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
               Scan this QrCode in your favorite 2fa application
             </p>

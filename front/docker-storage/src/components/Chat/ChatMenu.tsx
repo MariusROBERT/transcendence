@@ -30,10 +30,10 @@ export function ChatMenu() {
 
   useEffect(() => {
     subscribe('update_chan', () => {
-      OnJoinChannel()
+      OnJoinChannel();
     });
     return () => {
-      unsubscribe('update_chan', () => {});
+      unsubscribe('update_chan', () => void 0);
     };
   }, [channels]);
 
@@ -43,7 +43,7 @@ export function ChatMenu() {
         input={inputValue}
         setInput={setInputValue}
         OnClick={OnJoinChannel}
-        OnEnter={() => {}}
+        OnEnter={() => void 0}
       ></ChatInput>
       <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
         <JoinChat

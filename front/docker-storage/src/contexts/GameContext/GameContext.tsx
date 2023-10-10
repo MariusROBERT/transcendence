@@ -32,25 +32,38 @@ const GameContext = createContext<GameContextType>({
   gameType: undefined,
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => {
+    void (gameType);
+    return;
   },
   acceptGameInvite: (from: number) => {
+    void (from);
+    return;
   },
   declineGameInvite: (from: number) => {
+    void (from);
+    return;
   },
   cancelGameInvite: () => {
+    return;
   },
 
   joinQueue: (gameType: 'normal' | 'special') => {
+    void (gameType);
+    return;
   },
   leaveQueue: () => {
+    return;
   },
 
   startGame: () => {
+    return;
   },
   leaveGame: () => {
+    return;
   },
 
   fetchGameContext: () => {
+    return;
   },
 });
 
@@ -129,7 +142,7 @@ export function GameContextProvider({ children }: Props) {
     // Set invite and Send it
     setInviteTo(to);
     setGameType(inviteGameType);
-    socket?.emit('send_invite', { sender: id, receiver: to, gameType:gameType });
+    socket?.emit('send_invite', { sender: id, receiver: to, gameType: gameType });
   }
 
   function acceptGameInvite(from: number) {
@@ -137,27 +150,27 @@ export function GameContextProvider({ children }: Props) {
     if (inviteTo && inviteTo !== from)
       cancelGameInvite();
     if (inviteFrom && inviteFrom !== from)
-      declineGameInvite(inviteFrom)
+      declineGameInvite(inviteFrom);
 
     setInviteFrom(undefined);
-    socket?.emit('accept_invite', { sender: id, receiver:from ? from : inviteFrom, gameType:gameType });
+    socket?.emit('accept_invite', { sender: id, receiver: from ? from : inviteFrom, gameType: gameType });
   }
 
-  function declineGameInvite(from: number){
-    socket?.emit('decline_invite', { sender: id, receiver:from });
+  function declineGameInvite(from: number) {
+    socket?.emit('decline_invite', { sender: id, receiver: from });
 
     // reset the invite from
     if (inviteFrom === from)
       setInviteFrom(undefined);
   }
 
-  function cancelGameInvite(){
+  function cancelGameInvite() {
     socket?.emit('cancel_invite', { sender: id, receiver: inviteTo });
     setInviteTo(undefined);
   }
 
   // Invites -- Event reception ------------------------------------------------------------------------------------- //
-  function onGameInviteReceived(body: { sender: number, receiver: number, gameType:'normal' | 'special' }) {
+  function onGameInviteReceived(body: { sender: number, receiver: number, gameType: 'normal' | 'special' }) {
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'send_invite\'');
 
@@ -174,10 +187,10 @@ export function GameContextProvider({ children }: Props) {
 
     // Update Invitation
     setInviteFrom(body.sender);
-    setGameType(body.gameType)
+    setGameType(body.gameType);
   }
 
-  function onGameInviteAccepted(body: { sender: number, receiver: number }){
+  function onGameInviteAccepted(body: { sender: number, receiver: number }) {
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'accept_invite\'');
 
@@ -198,7 +211,7 @@ export function GameContextProvider({ children }: Props) {
     setInviteTo(undefined);
   }
 
-  function onGameInviteCanceled(body: { sender: number, receiver: number }){
+  function onGameInviteCanceled(body: { sender: number, receiver: number }) {
     if (id !== body.receiver)
       return console.warn('user [' + id + '] RECEIVED message destined to [' + body.receiver + ']: \'cancel_invite\'');
 
@@ -227,7 +240,7 @@ export function GameContextProvider({ children }: Props) {
 
   // Queue Management ----------------------------------------------------------------------------------------------- //
   // Queue -- Event emission ---------------------------------------------------------------------------------------- //
-  function joinQueue(gameType: 'normal' | 'special'){
+  function joinQueue(gameType: 'normal' | 'special') {
     if (isInGameWith)
       return;
     if (inviteFrom)
@@ -259,7 +272,7 @@ export function GameContextProvider({ children }: Props) {
   }
 
   // Game Start / End -- Event reception ---------------------------------------------------------------------------- //
-  function onOpenGame(body: { p1: number, p2: number}){
+  function onOpenGame(body: { p1: number, p2: number }) {
     setInviteFrom(undefined);
     setInviteTo(undefined);
     setIsInQueue(undefined);
@@ -267,7 +280,7 @@ export function GameContextProvider({ children }: Props) {
     navigate('/game');
   }
 
-  function onGameEnds(){
+  function onGameEnds() {
     setInviteFrom(undefined);
     setInviteTo(undefined);
     setIsInQueue(undefined);

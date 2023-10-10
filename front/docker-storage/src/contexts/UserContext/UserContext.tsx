@@ -23,6 +23,7 @@ const UserContext = createContext<UserContextType>({
   isOnline: false,
   socket: undefined,
   fetchContext: async () => {
+    return;
   },
   user: undefined,
 });
@@ -63,6 +64,7 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('disconnect', (reason) => {
       //console.log('Disconnected from socket.io server', reason);
+      void reason;
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
