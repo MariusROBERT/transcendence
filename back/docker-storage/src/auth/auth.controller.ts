@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Request, Res, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Res,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSubDto } from './dtos/user-sub.dto';
 import { UserEntity } from '../database/entities/user.entity';
@@ -17,9 +26,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async Login(
-    @Body() credentials: LoginCreditDto,
-  ) {
+  async Login(@Body() credentials: LoginCreditDto) {
     return await this.authService.login(credentials); // return acces_token
   }
 
@@ -43,7 +50,11 @@ export class AuthController {
     } as ftLoginDto);
 
     return res.redirect(
-      'http://localhost:3000?' + new URLSearchParams({ 'access-token': token, 'ftToken': req.user.ftToken }),
+      'http://localhost:3000?' +
+        new URLSearchParams({
+          'access-token': token,
+          ftToken: req.user.ftToken,
+        }),
     );
   }
 

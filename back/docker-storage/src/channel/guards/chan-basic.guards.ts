@@ -1,8 +1,8 @@
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  BadRequestException,
+  Injectable,
 } from '@nestjs/common';
 import { ChannelService } from '../channel.service';
 import { UserChanDto } from 'src/user/dto/user.dto';
@@ -13,7 +13,7 @@ import {
 import { UserService } from 'src/user/user.service';
 import { CreateChannelDto, PassChannelDto } from '../dto/channel.dto';
 
-function findPerm(
+/*function findPerm(
   usernameToFind: string,
   list: any[],
   typesToCheck: string[],
@@ -22,15 +22,13 @@ function findPerm(
     (user) =>
       user.username === usernameToFind && typesToCheck.includes(user.type),
   );
-}
+}*/
 
 //  Check For private message
 @Injectable()
 export class PrivateGuard implements CanActivate {
-  constructor(
-    private channelService: ChannelService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private channelService: ChannelService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
@@ -38,20 +36,18 @@ export class PrivateGuard implements CanActivate {
     const channel: ChannelEntity = await this.channelService.getChannelById(
       params.id,
     );
-    if (channel.priv_msg === false) return true;
-    else throw new BadRequestException('This Channel is private');
+    if (!channel.priv_msg) return true;
+    throw new BadRequestException('This Channel is private');
   }
 }
 
 //  Check if user is in channel
 @Injectable()
 export class SelfInChannelGuard implements CanActivate {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const user: UserEntity = request.user;
     const params = request.params;
 
     const users = await this.userService.getUsersInChannels(params.id);
@@ -68,6 +64,7 @@ export class InChannelGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -87,6 +84,7 @@ export class IsNotBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -106,6 +104,7 @@ export class IsBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -126,6 +125,7 @@ export class SelfBannedGuard implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.user;
@@ -143,6 +143,7 @@ export class SelfBannedGuard implements CanActivate {
 @Injectable()
 export class SelfCommand implements CanActivate {
   constructor() {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body: UserChanDto = request.body;
@@ -179,6 +180,7 @@ export class IsProtected implements CanActivate {
     private channelService: ChannelService,
     private readonly userService: UserService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
@@ -193,8 +195,7 @@ export class IsProtected implements CanActivate {
       params.id,
     );
     if (channel?.password === null) return true;
-    if (body?.password == channel?.password)
-      return true;
+    if (body?.password == channel?.password) return true;
     throw new BadRequestException('This channel is protected by a password');
   }
 }

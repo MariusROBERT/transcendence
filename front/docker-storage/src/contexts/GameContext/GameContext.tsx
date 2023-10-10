@@ -32,25 +32,38 @@ const GameContext = createContext<GameContextType>({
   gameType: undefined,
 
   sendGameInvite: (to: number, gameType: 'normal' | 'special') => {
+    void(gameType);
+    return;
   },
   acceptGameInvite: (from: number) => {
+    void(from);
+    return;
   },
   declineGameInvite: (from: number) => {
+    void(from);
+    return;
   },
   cancelGameInvite: () => {
+    return;
   },
 
   joinQueue: (gameType: 'normal' | 'special') => {
+    void(gameType);
+    return;
   },
   leaveQueue: () => {
+    return;
   },
 
   startGame: () => {
+    return;
   },
   leaveGame: () => {
+    return;
   },
 
   fetchGameContext: () => {
+    return;
   },
 });
 

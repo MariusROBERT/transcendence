@@ -119,7 +119,6 @@ export class UserEntity {
   @Column({ default: -1 })
   gameInvitationFrom: number;
 
-  @Column( { default: 'none' })
+  @Column({ default: 'none' })
   gameInvitationType: 'none' | 'normal' | 'special';
-
 }

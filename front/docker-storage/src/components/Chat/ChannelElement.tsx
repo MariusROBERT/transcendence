@@ -19,7 +19,6 @@ interface Props {
 
 export default function ChannelElement({
   data,
-  visible,
   setVisible,
   setCurrent,
 }: Props) {
@@ -52,7 +51,7 @@ export default function ChannelElement({
             <RoundButton
               icon={require('../../assets/imgs/icon_user.png')}
               icon_size={50}
-              onClick={() => {}}
+              onClick={() => void 0}
             ></RoundButton>
             <p> {data.channel_name} </p>
           </Flex>

@@ -28,7 +28,7 @@ export function SidePanel({
   const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
-    if (isLeftPanel === false && uid === id) Close();
+    if (!isLeftPanel && uid === id) Close();
   };
 
   useEffect(() => {
@@ -40,16 +40,16 @@ export function SidePanel({
 
   useEffect(() => {
     subscribe('open_chat', () => {
-      if (isLeftPanel === false) Open();
+      if (!isLeftPanel) Open();
     });
     return () => {
-      unsubscribe('open_chat', () => {});
+      unsubscribe('open_chat', () => void 0);
     };
   }, [isLeftPanel, Open]);
 
   async function Close() {
     if (isMoving) return;
-    if (isLeftPanel === false) socket?.emit('leave');
+    if (!isLeftPanel) socket?.emit('leave');
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
@@ -71,7 +71,7 @@ export function SidePanel({
   }
 
   function getStyle(): React.CSSProperties {
-    let style: React.CSSProperties = {
+    const style: React.CSSProperties = {
       zIndex: '100',
       width: width + 'px',
       height: '100%',

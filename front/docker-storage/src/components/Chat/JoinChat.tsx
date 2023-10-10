@@ -23,8 +23,6 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     ChannelPublicPass | undefined
   >(undefined);
 
-  function OnClick() {}
-
   const filteredChannels = channels
     ? channels.filter((channel) => {
         const name = channel?.channel_name
@@ -66,8 +64,8 @@ export default function JoinChat({ input, setInput, channels }: Props) {
       <ChatInput
         input={input}
         setInput={setInput}
-        OnClick={OnClick}
-        OnEnter={OnClick}
+        OnClick={() => void 0}
+        OnEnter={() => void 0}
       ></ChatInput>
       <select
         value={channelStatus}

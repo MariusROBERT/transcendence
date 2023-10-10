@@ -64,7 +64,7 @@ export function PasswordInput(props: Props) {
         );
       return;
     }
-    let errors: string[] = [];
+    const errors: string[] = [];
     if (!minMin.test(props.password))
       errors.push('min');
     if (!minMaj.test(props.password))

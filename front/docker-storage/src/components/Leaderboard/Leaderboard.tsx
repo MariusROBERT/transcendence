@@ -23,11 +23,10 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
       if (cancelled) { // todo : voir si cest utile ici
         return;
-      } else {
-        if (users && Array.isArray(users) && users.length === 0)
-          setErrorMessage('Aucun utilisateur trouvé.');
-        else setAllUsers(users);
       }
+      if (users && Array.isArray(users) && users.length === 0)
+        setErrorMessage('Aucun utilisateur trouvé.');
+      else setAllUsers(users);
       return () => {
         cancelled = true;
       };

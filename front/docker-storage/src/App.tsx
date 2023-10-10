@@ -4,7 +4,7 @@ import { AuthGuard, Game, Login, MainPage, GameScore, Background, NotFoundPage }
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 
-const SIZE: number = 500;
+const SIZE = 500;
 
 function App() {
   const [viewport, setViewport] = useState<Viewport>(start);
@@ -48,6 +48,7 @@ const appStyle: React.CSSProperties = {
   height: '100%',
   width: '100%',
   color: color.white,
+
   overflow: 'hidden',
 }
 

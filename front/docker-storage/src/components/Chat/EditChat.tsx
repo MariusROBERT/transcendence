@@ -8,7 +8,7 @@ interface Props {
   data: ChannelPublic | undefined;
 }
 
-export default function EditChat({ data }: Props) {
+export default function EditChat({}: Props) {
   const [password, setPassword] = useState<string>('');
 
   return (
@@ -17,7 +17,7 @@ export default function EditChat({ data }: Props) {
 
       <p style={{ textAlign: 'center', fontSize: '14px' }}>
         <input
-          placeholder="New password"
+          placeholder='New password'
           style={inputStyle}
           value={password}
           onChange={(evt) => {
@@ -29,33 +29,33 @@ export default function EditChat({ data }: Props) {
       </p>
 
       <div>
-        <input type="radio" value="Public" name="type" /> Public
-        <input type="radio" value="Private" name="type" /> Private
+        <input type='radio' value='Public' name='type' /> Public
+        <input type='radio' value='Private' name='type' /> Private
       </div>
 
       <h4>User List</h4>
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
+        onClick={() => void 0}
+      />
 
       <h4>Admins Users</h4>
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
+        onClick={() => void 0}
+      />
 
       <h4>Banned users</h4>
       <RoundButton
         icon={require('../../assets/imgs/icon_add_friend.png')}
         icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
-      <br></br>
+        onClick={() => void 0}
+      />
+      <br />
 
-      <Button onClick={() => {}}>Save</Button>
+      <Button onClick={() => void 0}>Save</Button>
     </div>
   );
 }
