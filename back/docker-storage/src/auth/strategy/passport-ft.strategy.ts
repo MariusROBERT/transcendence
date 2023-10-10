@@ -19,12 +19,12 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     refreshToken: string,
     profile: Profile,
   ): Promise<any> {
-    request.session.accessToken = accessToken;
+    // request.session.accessToken = accessToken;
     // console.log('accessToken: ', accessToken);
     // console.log('refreshToken: ', refreshToken);
     // console.log('profile: ', profile);
     // console.log('login: ', profile.username);
-    return { ...profile, ftToken: accessToken };
+    return profile;
     // return { 'profile': profile, 'ftToken': accessToken };
     // return profile?.provider === '42';
   }
