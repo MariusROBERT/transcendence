@@ -5,7 +5,8 @@ import { MessagesService } from './messages.service';
 export class MessagesController {
   ChannelService: any;
 
-  constructor(private MessageService: MessagesService) {}
+  constructor(private MessageService: MessagesService) {
+  }
 
   //@Post()
   //@UseGuards(JwtAuthGuard)

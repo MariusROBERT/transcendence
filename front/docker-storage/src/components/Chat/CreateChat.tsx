@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Fetch, color } from '../../utils';
 import { publish } from '../../utils/event';
 import { Button } from '../ComponentBase/Button';
@@ -13,7 +13,7 @@ interface Props {
   setVisible: (b: boolean) => void;
 }
 
-export default function CreateChat({ name, visible, setVisible }: Props) {
+export default function CreateChat({ visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
   const [errorMessage, seterrorMessage] = useState<string>('Error');
 
   useEffect(() => {
-    if (visible === false) {
+    if (!visible) {
       setChannelName('');
       setPassword('');
       setErrorVisible(false);
@@ -64,7 +64,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Name"
+          placeholder='Name'
           style={inputStyle}
           value={channelName}
           onChange={(evt) => {
@@ -75,7 +75,7 @@ export default function CreateChat({ name, visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Optional password"
+          placeholder='Optional password'
           style={inputStyle}
           value={password}
           onChange={(evt) => {

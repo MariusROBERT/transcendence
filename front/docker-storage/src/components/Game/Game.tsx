@@ -13,12 +13,12 @@ export function Game({ viewport }: { viewport: Viewport }) {
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
   const [fullScreen, setFullScreen] = useState<boolean>(false);
-
   const [state, setState] = useState<State>(start);
   const [size, setSize] = useState<Size>(basesize);
-  let upPressed: boolean = false;
-  let downPressed: boolean = false;
+  let upPressed = false;
+  let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
+  const [usernames, setUsernames] = useState<string[]>(['', '']);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
@@ -26,6 +26,16 @@ export function Game({ viewport }: { viewport: Viewport }) {
       return navigate('/');
     // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
+    socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
+      setUsernames([body.p1, body.p2]);
+    });
+
+    return (
+      () => {
+        socket?.off('get_usernames');
+        socket?.off('start_game');
+      }
+    )
     // eslint-disable-next-line
   }, [id, socket, isInGameWith, navigate]);
 
@@ -137,8 +147,12 @@ export function Game({ viewport }: { viewport: Viewport }) {
 
   return (
     <ReactFullscreen>
-      {({ ref, onRequest, onExit }) => (
+      {({ onRequest, onExit }) => (
         <div id={'container'} style={containerStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%' }}>
+            <p>{usernames[0]}</p>
+            <p>{usernames[1]}</p>
+          </div>
           {id && socket && isInGameWith &&
             <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
                     style={{ position: 'relative', top: '0' }}></Sketch>}
@@ -162,11 +176,11 @@ export function Game({ viewport }: { viewport: Viewport }) {
   );
 }
 
-
 const containerStyle: React.CSSProperties = {
   minHeight: '100%',
   minWidth: '100%',
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   position: 'absolute',

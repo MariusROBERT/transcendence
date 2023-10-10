@@ -13,12 +13,12 @@ interface Props {
 }
 
 export function SidePanel({
-  children,
-  viewport,
-  width,
-  isLeftPanel,
-  duration_ms = 1000,
-}: Props) {
+                            children,
+                            viewport,
+                            width,
+                            isLeftPanel,
+                            duration_ms = 1000,
+                          }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export function SidePanel({
   const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
-    if (isLeftPanel === false && uid === id) Close();
+    if (!isLeftPanel && uid === id) Close();
   };
 
   useEffect(() => {
@@ -40,17 +40,17 @@ export function SidePanel({
 
   useEffect(() => {
     subscribe('open_chat', () => {
-      if (isLeftPanel === false) Open();
+      if (!isLeftPanel) Open();
     });
     return () => {
-      unsubscribe('open_chat', () => {});
+      unsubscribe('open_chat', () => void 0);
     };
     // eslint-disable-next-line
   }, [isLeftPanel, isMoving, duration_ms]);
 
   async function Close() {
     if (isMoving) return;
-    if (isLeftPanel === false) socket?.emit('leave');
+    if (!isLeftPanel) socket?.emit('leave');
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
@@ -72,7 +72,7 @@ export function SidePanel({
   }
 
   function getStyle(): React.CSSProperties {
-    let style: React.CSSProperties = {
+    const style: React.CSSProperties = {
       zIndex: '100',
       width: width + 'px',
       height: '100%',
@@ -111,8 +111,8 @@ export function SidePanel({
     return (
       <div
         style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
-        >
-      <div style={buttonStyle}>
+      >
+        <div style={buttonStyle}>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}

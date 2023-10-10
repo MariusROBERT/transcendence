@@ -111,15 +111,11 @@ export class UserEntity {
 
   // Game Invites:
   @Column({ default: -1 })
-  isInGameWith: number;
-
-  @Column({ default: -1 })
   gameInvitationTo: number;
 
   @Column({ default: -1 })
   gameInvitationFrom: number;
 
-  @Column( { default: 'none' })
+  @Column({ default: 'none' })
   gameInvitationType: 'none' | 'normal' | 'special';
-
 }

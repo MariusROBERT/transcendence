@@ -22,8 +22,8 @@ export default function ChatUser({ data, visibility }: Props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (visibility === false) setErrorVisible(false);
-      if (visibility === true) {
+      if (!visibility) setErrorVisible(false);
+      if (visibility) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
         //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
@@ -33,8 +33,6 @@ export default function ChatUser({ data, visibility }: Props) {
     };
     fetchData();
   }, [visibility, data?.channel_id]);
-
-  async function OnProfilClick() {}
 
   async function execCommand(command: string) {
     const rep = await Fetch(
@@ -70,8 +68,8 @@ export default function ChatUser({ data, visibility }: Props) {
 
   async function OnMute() {
     if (muteTime === '') return;
-    let isnum = /^\d+$/.test(muteTime);
-    if (isnum) {
+    const isNum = /^\d+$/.test(muteTime);
+    if (isNum) {
       const number = Number(muteTime);
       Fetch(
         'channel/mute/' + data?.channel_id,
@@ -138,7 +136,7 @@ export default function ChatUser({ data, visibility }: Props) {
       <RoundButton
         icon_size={100}
         icon={String(data?.sender_urlImg)}
-        onClick={OnProfilClick}
+        onClick={() => void 0}
       ></RoundButton>
       {type === 'perm' ? showAdmin() : <></>}
     </div>
