@@ -162,6 +162,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   );
 }
 
+
 const containerStyle: React.CSSProperties = {
   minHeight: '100%',
   minWidth: '100%',
