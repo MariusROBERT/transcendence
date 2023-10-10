@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { basesize, Size, start, State } from './game.utils';
+import {Ball, basesize, Size, start, State} from './game.utils';
 import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { RoundButton } from '..';
 import { useNavigate } from 'react-router-dom';
+
+// const ball = new Ball({x: 0, y: 0}, 20)
 
 export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
   const [usernames, setUsernames] = useState<string[]>(['', '']);
+  const [ball] = useState<Ball>(new Ball({x: 0, y: 0}));
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
@@ -116,22 +119,28 @@ export function Game({ viewport }: { viewport: Viewport }) {
     p5.background(0);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(32);
+    ball.draw(p5, size);
   };
 
   const draw = (p5: p5Types) => {
     p5.resizeCanvas(size.width, size.height);
     p5.background(15);
+    {
+      p5.fill(60);
+      p5.ellipse(size.width / 2, size.height / 2, size.ball * 3);
+      p5.fill(15);
+      p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
+      p5.fill(60);
+      p5.rect(size.width / 2 - 5, 0, 10, size.height);
+      p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
+      p5.fill(255);
+      p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
+    }
 
-    p5.fill(60);
-    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3);
-    p5.fill(15);
-    p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
-    p5.fill(60);
-    p5.rect(size.width / 2 - 5, 0, 10, size.height);
-    p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
-    p5.fill(255);
-    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
-    p5.ellipse(state.ball.x, state.ball.y, size.ball);
+    // p5.ellipse(state.ball.x, state.ball.y, size.ball);
+    ball.update(state.ball, size);
+    ball.draw(p5, size);
+
     p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
     p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
   };

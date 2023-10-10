@@ -1,3 +1,5 @@
+import p5Types from 'p5';
+
 export interface State {
   ball: { x: number, y: number },
   p1: number,
@@ -20,7 +22,7 @@ export const basesize = {
   height: 720,
   width: 1280,
   ball: 50,
-  bar: { x: 25, y: 144 },
+  bar: {x: 25, y: 144},
   halfBar: 72,
   halfBall: 25,
   p1X: 25,
@@ -28,10 +30,10 @@ export const basesize = {
 };
 
 export const start: State = {
-  ball: { x: basesize.width / 2, y: basesize.height / 2 },
+  ball: {x: basesize.width / 2, y: basesize.height / 2},
   p1: basesize.height / 2,
   p2: basesize.height / 2,
-  score: { p1: 0, p2: 0 },
+  score: {p1: 0, p2: 0},
 };
 
 export interface gameRoom {
@@ -39,4 +41,53 @@ export interface gameRoom {
   playerIds: number[],
   state: State,
   ready: boolean,
+}
+
+class Particle {
+  age: number;
+  pos: { x: number, y: number };
+
+  constructor(pos: { x: number, y: number }) {
+    this.pos = pos;
+    this.age = 0;
+  }
+
+  update() {
+    this.age++;
+  }
+
+  draw(p5: p5Types, size: number) {
+    p5.fill(255, 0, 0);
+    p5.noStroke();
+    p5.circle(this.pos.x, this.pos.y, size - this.age);
+    p5.fill(255, 255, 255);
+  }
+}
+
+export class Ball {
+  pos: { x: number, y: number };
+  particles: Particle[];
+
+  constructor(pos: { x: number, y: number }) {
+    this.pos = pos;
+    this.particles = [];
+  }
+
+  update(vec: { x: number, y: number }, size: Size) {
+    while (this.particles.length > size.ball - 1)
+      this.particles.shift();
+    for (const particle of this.particles) {
+      particle.update();
+    }
+    this.pos.x = vec.x;
+    this.pos.y = vec.y;
+    this.particles.push(new Particle({...this.pos}));
+  }
+
+  draw(p5: p5Types, size: Size) {
+    for (const particle of this.particles) {
+      particle.draw(p5, size.ball);
+    }
+    p5.circle(this.pos.x, this.pos.y, size.ball);
+  }
 }
