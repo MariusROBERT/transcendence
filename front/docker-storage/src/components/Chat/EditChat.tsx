@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { ChannelPublic } from '../../utils/interfaces';
@@ -6,10 +6,18 @@ import { createChatStyle, inputStyle } from './CreateChat';
 
 interface Props {
   data: ChannelPublic | undefined;
+  visibility: boolean;
 }
 
-export default function EditChat({ data }: Props) {
+export default function EditChat({ data, visibility }: Props) {
   const [password, setPassword] = useState<string>('');
+
+  useEffect(() => {
+    if (visibility === true)
+    {
+      console.log("here visible :D");
+    }
+  }, [visibility])
 
   return (
     <div style={createChatStyle}>

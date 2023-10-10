@@ -82,7 +82,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         <p style={{ fontSize: '20px' }}>{name}</p>
       </Flex>
       <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-        <EditChat data={publicData}></EditChat>
+        <EditChat data={publicData} visibility={editVisible}></EditChat>
       </Popup>
     </div>
   );
