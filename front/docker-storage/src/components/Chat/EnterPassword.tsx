@@ -39,7 +39,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
   }
 
   useEffect(() => {
-    if (visible === false) {
+    if (!visible) {
       setPassword('');
       setErrorVisible(false);
     }

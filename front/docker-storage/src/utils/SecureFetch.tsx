@@ -17,15 +17,14 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
     if (response.ok) {
       const rep_json = await response.json();
       return { response: response, json: rep_json };
-    } else {
-      const rep_json = await response.json();
-      if(rep_json.statusCode !== 401)
-      {
-        return { response: response, json: rep_json };
-      }
-      console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-      window.location.href = '/login';
     }
+    const rep_json = await response.json();
+    if(rep_json.statusCode !== 401)
+    {
+      return { response: response, json: rep_json };
+    }
+    console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+    window.location.href = '/login';
   } catch (e) {
     console.log(e);
     console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
