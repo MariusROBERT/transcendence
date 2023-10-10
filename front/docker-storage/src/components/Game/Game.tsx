@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Ball, basesize, Size, start, State} from './game.utils';
+import {basesize, GuidedBall, Size, start, State} from './game.utils';
 import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from 'react-p5';
@@ -19,7 +19,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
   const [usernames, setUsernames] = useState<string[]>(['', '']);
-  const [ball] = useState<Ball>(new Ball({x: 0, y: 0}));
+  const [ball] = useState<GuidedBall>(new GuidedBall({x: 0, y: 0}));
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {

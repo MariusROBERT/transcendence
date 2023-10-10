@@ -73,6 +73,19 @@ export class Ball {
     this.particles = [];
   }
 
+  draw(p5: p5Types, size: Size) {
+    for (const particle of this.particles) {
+      particle.draw(p5, size.ball);
+    }
+    p5.circle(this.pos.x, this.pos.y, size.ball);
+  }
+}
+
+export class GuidedBall extends Ball {
+  constructor(pos: { x: number, y: number }) {
+    super(pos);
+  }
+
   update(vec: { x: number, y: number }, size: Size) {
     while (this.particles.length > size.ball - 1)
       this.particles.shift();
@@ -83,11 +96,34 @@ export class Ball {
     this.pos.y = vec.y;
     this.particles.push(new Particle({...this.pos}));
   }
+}
 
-  draw(p5: p5Types, size: Size) {
+export class AutonomousBall extends Ball {
+  dir: { x: number, y: number };
+
+  constructor(pos: { x: number, y: number }, dir: { x: number, y: number }) {
+    super(pos);
+    this.dir = dir;
+  }
+
+  update(size: Size) {
+    while (this.particles.length > size.ball - 1)
+      this.particles.shift();
     for (const particle of this.particles) {
-      particle.draw(p5, size.ball);
+      particle.update();
     }
-    p5.circle(this.pos.x, this.pos.y, size.ball);
+    this.pos.x += this.dir.x;
+    if (this.pos.x - (size.ball/2) < 0)
+      this.dir.x *= -1;
+    else if (this.pos.x + (size.ball/2) > size.width)
+      this.dir.x *= -1;
+
+    if (this.pos.y - (size.ball/2) < 0)
+      this.dir.y *= -1;
+    else if (this.pos.y + (size.ball/2) > size.height)
+      this.dir.y *= -1;
+
+    this.pos.y += this.dir.y;
+    this.particles.push(new Particle({...this.pos}));
   }
 }
