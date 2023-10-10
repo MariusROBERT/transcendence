@@ -11,15 +11,17 @@ export function PlayButton() {
     setIsSpecial(isInQueue === 'special');
   }, [isInQueue]);
 
+  const mobile = window.innerWidth < 500;
+
   return (
     <>
       <Flex>
         <RoundButton
-          icon_size={200}
+          icon_size={mobile ? 175 : 200}
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={() => {
             joinQueue(isSpecial ? 'special' : 'normal');
-          }}></RoundButton>
+          }}/>
         <Flex flex_direction={'row'}>
           <p>Special Mode: </p>
           <SwitchToggle onChange={() => {
@@ -27,7 +29,7 @@ export function PlayButton() {
           }} checked={isSpecial}></SwitchToggle>
         </Flex>
       </Flex>
-      <div style={{ height: '56px' }} />
+      <div style={{ height: mobile ? 38: 56 }} />
     </>
   );
 }
