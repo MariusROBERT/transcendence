@@ -14,8 +14,8 @@ export function Game({ viewport }: { viewport: Viewport }) {
 
   const [state, setState] = useState<State>(start);
   const [size, setSize] = useState<Size>(basesize);
-  let upPressed: boolean = false;
-  let downPressed: boolean = false;
+  let upPressed = false;
+  let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //

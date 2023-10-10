@@ -52,7 +52,7 @@ const Navbar: React.FC = () => {
   }, [profilVisible]);
 
   const setNotif = async () => {
-    let tmp = recvInvitesFrom.map(async (from) => {
+    const tmp = recvInvitesFrom.map(async (from) => {
       return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
     });
     try {
@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
         setNotifsVisible(false);
         return;
       }
-      let res = await Promise.all(tmp);
+      const res = await Promise.all(tmp);
       setNotifs(res as IUser[]);
     } catch (e) {
       console.log(e);
