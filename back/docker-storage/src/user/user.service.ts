@@ -24,6 +24,7 @@ import * as fs from 'fs';
 import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { GameEntity } from 'src/database/entities/game.entity';
 
 @Injectable()
 export class UserService {
@@ -520,5 +521,28 @@ export class UserService {
       isInGameWith: user.isInGameWith,
       gameInviteType: user.gameInvitationType
     }
+  }
+
+  // GAME SAVING 
+  async endOfGameUpdatingProfile(gameId:number, user:UserEntity, won:boolean){
+  
+    user.gamesPlayed += 1;
+    if (user.gamesId === undefined)
+      user.gamesId = [];
+    user.gamesId.push(gameId);
+    if(won)
+    {
+      user.gamesWon += 1;
+      user.elo += 15;
+    }
+    else
+    {
+      user.gamesLost += 1;
+      user.elo -= 15;
+      if (user.elo < 0)
+        user.elo = 0;
+    }
+    user.winrate = user.gamesWon / user.gamesPlayed * 100;
+    return await this.UserRepository.save(user);
   }
 }

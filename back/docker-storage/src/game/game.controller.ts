@@ -41,4 +41,10 @@ export class GameController {
     const inGameWith = game.playerIds[0] !== id ? game.playerIds[0] : game.playerIds[1];
     return { isInGameWith: inGameWith };
   }
+
+
+  @Get('/get_last_game/:id')
+  async getScore(@Param('id', ParseIntPipe) id: number) {
+    return await this.matchmaking.getLastGame(id);
+  }
 }

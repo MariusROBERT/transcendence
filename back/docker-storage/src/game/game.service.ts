@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { clamp, delay, gameRoom, size, State } from './game.interfaces';
 import { GameController } from './game.controller';
 
+//rajout pour le matchmeking
 @Injectable()
 export class GameService {
   controller: GameController;

@@ -97,11 +97,23 @@ export class UserEntity {
 
   // GAME :
 
+  @Column('integer', { array: true, nullable: true })
+  gamesId: number[];
+  
   @Column({ default: '' })
   socketId: string;
 
-  @Column({ default: 0 })
+  @Column({ type: 'decimal', precision: 5, scale: 2, default : 100.00 })
   winrate: number;
+
+  @Column({ default: 0 })
+  gamesPlayed: number;
+
+  @Column({ default: 0 })
+  gamesWon: number
+
+  @Column({ default: 0 })
+  gamesLost: number
 
   @OneToMany(() => GameEntity, (game) => game.player1)
   gamesAsPlayer1: GameEntity[];

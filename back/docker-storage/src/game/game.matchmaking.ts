@@ -2,13 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { GameController } from './game.controller';
 import { gameRoom, size } from './game.interfaces';
 import { delay } from 'rxjs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/database/entities/user.entity';
+import { GameEntity } from 'src/database/entities/game.entity';
+import { Repository } from 'typeorm';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GameMatchmaking {
-  controller: GameController;
+  
+  constructor(
+    @InjectRepository(GameEntity)
+    private gameRepository: Repository<GameEntity>,
+    private service: UserService
+  ) {}
 
+  controller: GameController;
+  
   setController(controller: GameController) {
     this.controller = controller;
+  }
+
+  async addGame(user1:UserEntity, user2: UserEntity, n1:number, n2:number) {
+    
+    const winner = (n1 > n2 ? user1.id : user2.id);
+    const newGame = this.gameRepository.create({
+      player1: user1.id,
+      player2: user2.id,
+      elo1:    user1.elo,
+      elo2:    user2.elo,
+      points1: n1,
+      points2: n2,
+      winner:  winner,
+      date:    new Date(),
+    });
+    await this.gameRepository.save(newGame);
+    return (newGame.id);
   }
 
   //returns a Game with 1 given or the 2 given player
@@ -74,9 +103,9 @@ export class GameMatchmaking {
     if (game === undefined) return;
     const playerNumber = game.playerIds.indexOf(id);
     if (playerNumber === 0)
-      game.state.score.p1 = 0;
+      game.state.score.p1 = -1;
     else
-      game.state.score.p2 = 0;
+      game.state.score.p2 = -1;
     return this.endGame(id);
   }
 
@@ -101,6 +130,14 @@ export class GameMatchmaking {
     if (game === undefined)
       return 'game not found';
 
+    const user1 = await this.service.getUserById(game.playerIds[0]);
+    const user2 = await this.service.getUserById(game.playerIds[1]);
+
+    // user1.gamesId = [...user1.gamesId, id];
+    // user2.gamesId = [...user2.gamesId, id];
+    
+    // user1.elo =
+    
     //stop the game
     if (game.state.running) {
       game.state.running = false;
@@ -108,13 +145,29 @@ export class GameMatchmaking {
       await delay(35);
     }
 
+    this.controller.games = this.controller.games.filter(g => !g.playerIds.includes(id));
+
+    let gameId = await this.addGame(user1, user2, game.state.score.p1, game.state.score.p2);
+    let player1Won = game.state.score.p1 > game.state.score.p2;
+    await this.service.endOfGameUpdatingProfile(gameId, user1, player1Won);
+    await this.service.endOfGameUpdatingProfile(gameId, user2, !player1Won);
     //TODO: Save game score and update dataBase here
 
     await this.controller.gateway.endGame(game.playerIds);
 
     // remove the game from the controller's games
-    this.controller.games = this.controller.games.filter(g => !g.playerIds.includes(id));
     // dev msg
     return 'game end';
   }
+
+  async getLastGame(playerId: number) : Promise<{game: GameEntity}> {
+    const games = await this.gameRepository.find({
+      where: [{ player1: playerId }, { player2: playerId }],
+      order: { date: 'DESC' }, // Tri par date décroissante pour obtenir la dernière partie
+      take: 1, // Limitation à une seule partie (la dernière)
+    });
+    console.log(playerId, games)
+    return {game:games[0]};
+  }
 }
+

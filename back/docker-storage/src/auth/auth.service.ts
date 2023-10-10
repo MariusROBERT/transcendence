@@ -33,6 +33,8 @@ export class AuthService {
     user.invited = [];
     user.invites = [];
     user.blocked = [];
+    user.gamesId = [];
+    user.elo = 1000;
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
