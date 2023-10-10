@@ -212,35 +212,33 @@ export class ChannelService {
     return channel;
   }
 
-  async leaveChannel(userid: number, id: number): Promise<ChannelEntity> {
+  async leaveChannel(userid: number, id: number) {
     const channel = await this.getChannelById(id);
     const users = await this.userService.getFullUsersInChannels(id);
     const admins = await this.userService.getFullAdminInChannels(id);
 
-    console.log('ENTER: Leave');
     if (userid === channel.owner.id) {
-      console.log('CASE: Owner is leaving');
       if (admins.length > 0) {
         const adm = admins[0]; // Select the first join
         channel.admins = this.removeFrom(admins, adm.id);
         channel.owner = adm;
       } else {
-        console.log('No Admins select users');
-        if (users.length === 0) console.log('Destroy Channel'); // Destroy chat logic
+        if (users.length === 0) {
+          const msg_ids = await this.msgService.getIds(channel.id);
+          await this.msgService.delete(msg_ids);
+          await this.ChannelRepository.delete(channel.id);
+          return { id: channel.id, name: channel.channel_name };
+        }
         const usr = users[0];
         channel.users = this.removeFrom(users, usr.id);
         channel.owner = usr;
       }
     } else {
-      //just remove the guy
       channel.users = this.removeFrom(users, userid);
       channel.admins = this.removeFrom(admins, userid);
     }
-    //  remove user from the list
-
     await this.ChannelRepository.save(channel);
-    console.log('EXIT: Leave');
-    return channel;
+    return { id: channel.id, name: channel.channel_name };
   }
 
   removeFrom(users: UserEntity[], id) {
