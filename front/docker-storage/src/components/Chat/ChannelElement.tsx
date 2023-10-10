@@ -43,7 +43,6 @@ export default function ChannelElement({
       setVisible(true);
       return;
     }
-    console.log(data.channel_name);
     socket?.emit('join', { channel: data.channel_name });
   }
 

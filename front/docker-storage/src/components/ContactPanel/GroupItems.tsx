@@ -3,7 +3,8 @@ import { Background, Border, RoundButton, UserBanner, ChannelPannel } from '..';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useUserContext } from '../../contexts';
-import { subscribe } from '../../utils/event';
+import { publish, subscribe, unsubscribe } from '../../utils/event';
+import { GetCurrChan } from '../../utils/channel_functions';
 
 interface Props {
   children?: ReactNode;
@@ -29,8 +30,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   }, [isOpen]);
 
   const displayFriends = () => {
-    if (!user)
-      return ;
+    if (!user) return;
     const friends: IUser[] = allUsers.filter(
       (u) => user?.friends.includes(u.id),
     );
@@ -43,9 +43,8 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   };
 
   const displayUsers = () => {
-    if (!user)
-      return ;
-    const others: IUser[] = allUsers.filter(u => u.id !== user?.id);
+    if (!user) return;
+    const others: IUser[] = allUsers.filter((u) => u.id !== user?.id);
 
     return others.map((other: IUser) => (
       <div key={other.id}>
@@ -58,6 +57,26 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     subscribe('update_chan', async (event: any) => {
       setChannels(event.detail.value);
     });
+    return () => {
+      unsubscribe('update_chan', () => {});
+    };
+  }, []);
+
+  useEffect(() => {
+    subscribe('fetch_chan', async (event: any) => {
+      FetchChannels();
+      const chat = event.detail.value;
+      if ((await GetCurrChan()) === chat) {
+        publish('close_chat', {
+          detail: {
+            value: null,
+          },
+        });
+      }
+    });
+    return () => {
+      unsubscribe('fetch_chan', () => {});
+    };
   }, []);
 
   const displayChannels = () => {
@@ -126,9 +145,14 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
         >
           <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
           <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {
-              openGroup();
-            }} /></div>
+            <RoundButton
+              icon={require('../../assets/imgs/side_panel_button.png')}
+              icon_size={40}
+              onClick={() => {
+                openGroup();
+              }}
+            />
+          </div>
         </Background>
       </Border>
       <div style={groupStyle}>

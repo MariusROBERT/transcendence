@@ -5,6 +5,7 @@ import {
   UpdateChannelMessage,
   UpdateChannelUsers,
   SetCurrChan,
+  UpdateChannels,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
 import Popup from '../ComponentBase/Popup';
@@ -29,7 +30,11 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
 
   async function OnLeave() {
     const res = await Fetch('channel/leave/' + id, 'PATCH');
-    console.log(res);
+    publish('fetch_chan', {
+      detail: {
+        value: res?.json?.name,
+      },
+    });
   }
 
   async function OnSetting() {
@@ -74,9 +79,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
             OnSetting();
           }}
         ></RoundButton>
-        <p style={{ fontSize: '20px' }}>
-          {name}
-        </p>
+        <p style={{ fontSize: '20px' }}>{name}</p>
       </Flex>
       <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
         <EditChat data={publicData}></EditChat>

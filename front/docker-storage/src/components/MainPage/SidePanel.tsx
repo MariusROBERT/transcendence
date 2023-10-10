@@ -3,6 +3,7 @@ import { delay, Viewport } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
 import { unsubscribe, subscribe } from '../../utils/event';
+import { SetCurrChan } from '../../utils/channel_functions';
 
 interface Props {
   children: ReactNode;
@@ -45,11 +46,23 @@ export function SidePanel({
     return () => {
       unsubscribe('open_chat', () => {});
     };
-  }, [isLeftPanel, Open]);
+  }, [isLeftPanel]);
+
+  useEffect(() => {
+    subscribe('close_chat', () => {
+      if (isLeftPanel === false) Close();
+    });
+    return () => {
+      unsubscribe('close_chat', () => {});
+    };
+  }, [isLeftPanel]);
 
   async function Close() {
     if (isMoving) return;
-    if (isLeftPanel === false) socket?.emit('leave');
+    if (isLeftPanel === false) {
+      socket?.emit('leave');
+      SetCurrChan("");
+    }
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
@@ -109,9 +122,14 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
-        >
-      <div style={buttonStyle}>
+        style={{
+          color: 'red',
+          position: 'absolute',
+          height: '100%',
+          left: getStyle().left,
+        }}
+      >
+        <div style={buttonStyle}>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
