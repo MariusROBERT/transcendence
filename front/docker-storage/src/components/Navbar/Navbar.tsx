@@ -68,7 +68,6 @@ const Navbar: React.FC = () => {
         console.log(e);
       }
     };
-
     setNotif();
   }, [recvInvitesFrom]);
 
