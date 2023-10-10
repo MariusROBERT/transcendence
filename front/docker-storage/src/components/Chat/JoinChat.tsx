@@ -25,14 +25,14 @@ export default function JoinChat({ input, setInput, channels }: Props) {
 
   const filteredChannels = channels
     ? channels.filter((channel) => {
-        const name = channel?.channel_name
-          .toLowerCase()
-          .startsWith(input.toLowerCase());
+      const name = channel?.channel_name
+        .toLowerCase()
+        .startsWith(input.toLowerCase());
 
-        const status =
-          channelStatus === 'all' || (channelStatus === 'public' && !channel.has_password) || (channelStatus === 'protected' && channel.has_password);
-        return name && status;
-      })
+      const status =
+        channelStatus === 'all' || (channelStatus === 'public' && !channel.has_password) || (channelStatus === 'protected' && channel.has_password);
+      return name && status;
+    })
     : [];
 
   function List() {
@@ -74,9 +74,9 @@ export default function JoinChat({ input, setInput, channels }: Props) {
         }
         style={{ borderRadius: '5px', margin: '10px' }}
       >
-        <option value="all">Tous</option>
-        <option value="public">Public</option>
-        <option value="protected">Protected</option>
+        <option value='all'>Tous</option>
+        <option value='public'>Public</option>
+        <option value='protected'>Protected</option>
       </select>
       <div>{List()}</div>
       <div style={{ margin: '10px' }}>

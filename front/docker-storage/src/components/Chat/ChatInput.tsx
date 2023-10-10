@@ -8,11 +8,11 @@ interface Props {
 }
 
 export default function ChatInput({
-  input,
-  setInput,
-  OnEnter,
-  OnClick,
-}: Props) {
+                                    input,
+                                    setInput,
+                                    OnEnter,
+                                    OnClick,
+                                  }: Props) {
   return (
     <div
       style={{

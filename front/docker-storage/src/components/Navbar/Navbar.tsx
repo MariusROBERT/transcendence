@@ -51,28 +51,25 @@ const Navbar: React.FC = () => {
     // eslint-disable-next-line
   }, [profilVisible]);
 
-  const setNotif = async () => {
-    const tmp = recvInvitesFrom.map(async (from) => {
-      return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
-    });
-    try {
-      if (!tmp) {
-        setNotifsVisible(false);
-        return;
-      }
-      const res = await Promise.all(tmp);
-      setNotifs(res as IUser[]);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   useEffect(() => {
+    const setNotif = async () => {
+      const tmp = recvInvitesFrom.map(async (from) => {
+        return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
+      });
+      try {
+        if (!tmp) {
+          setNotifsVisible(false);
+          return;
+        }
+        const res = await Promise.all(tmp);
+        setNotifs(res as IUser[]);
+      } catch (e) {
+        console.log(e);
+      }
+    };
     setNotif();
-    if (notifs.length === 0)
-      setNotifsVisible(false);
-    // eslint-disable-next-line
-  }, [notifs]);
+  }, [recvInvitesFrom]);
 
   return (
     <>

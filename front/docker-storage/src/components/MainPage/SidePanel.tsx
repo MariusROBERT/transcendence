@@ -13,12 +13,12 @@ interface Props {
 }
 
 export function SidePanel({
-  children,
-  viewport,
-  width,
-  isLeftPanel,
-  duration_ms = 1000,
-}: Props) {
+                            children,
+                            viewport,
+                            width,
+                            isLeftPanel,
+                            duration_ms = 1000,
+                          }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
@@ -110,8 +110,8 @@ export function SidePanel({
     return (
       <div
         style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
-        >
-      <div style={buttonStyle}>
+      >
+        <div style={buttonStyle}>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}

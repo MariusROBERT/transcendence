@@ -30,7 +30,7 @@ export function ChatMenu() {
 
   useEffect(() => {
     subscribe('update_chan', () => {
-      OnJoinChannel()
+      OnJoinChannel();
     });
     return () => {
       unsubscribe('update_chan', () => void 0);

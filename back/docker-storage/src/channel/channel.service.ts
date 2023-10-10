@@ -26,7 +26,8 @@ export class ChannelService {
     private userService: UserService,
     private msgService: MessagesService,
     private mutedService: MutedService,
-  ) {}
+  ) {
+  }
 
   async createChannel(
     channel: CreateChannelDto,
@@ -193,7 +194,7 @@ export class ChannelService {
       return await this.ChannelRepository.save(channelToUpdate);
     // la modification fonctionne en revanche
     throw new UnauthorizedException(
-      "You're not authorize to update this channel because you're the owner or an admin",
+      'You\'re not authorize to update this channel because you\'re the owner or an admin',
     );
   }
 

@@ -50,7 +50,7 @@ const appStyle: React.CSSProperties = {
   color: color.white,
 
   overflow: 'hidden',
-}
+};
 
 const start: Viewport = {
   isLandscape:

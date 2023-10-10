@@ -13,7 +13,7 @@ interface Props {
   setVisible: (b: boolean) => void;
 }
 
-export default function CreateChat({visible, setVisible }: Props) {
+export default function CreateChat({ visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
@@ -64,7 +64,7 @@ export default function CreateChat({visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Name"
+          placeholder='Name'
           style={inputStyle}
           value={channelName}
           onChange={(evt) => {
@@ -75,7 +75,7 @@ export default function CreateChat({visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Optional password"
+          placeholder='Optional password'
           style={inputStyle}
           value={password}
           onChange={(evt) => {

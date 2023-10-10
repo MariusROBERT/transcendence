@@ -1,7 +1,7 @@
-import {color, delay, RedirectToHome, unsecureFetch, Viewport} from '../../utils';
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Background, Border, Button, Flex, PasswordInput, TwoFA} from '..';
+import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 
 const SIZE = 350;
 
@@ -10,7 +10,7 @@ interface Props {
   viewport: Viewport;
 }
 
-export function Login({duration_ms = 900, viewport}: Props) {
+export function Login({ duration_ms = 900, viewport }: Props) {
 
   // ReactHook -------------------------------------------------------------------------------------------------------//
   const [signIn, setSign] = useState(true);
@@ -74,14 +74,14 @@ export function Login({duration_ms = 900, viewport}: Props) {
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;
-      } 
+      }
       if (response?.statusText === 'Invalid 2fa code') {
         setErrorMessage(response.statusText);
       }
 
       if (response?.ok) {
         return animateReturnToHome(response);
-      } 
+      }
       const data = await response?.json();
 
       if (data.message === 'Missing 2fa code') {
@@ -180,19 +180,19 @@ export function Login({duration_ms = 900, viewport}: Props) {
         </Border>
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
-            <div style={{padding: '0 35px 0 0'}}>
+            <div style={{ padding: '0 35px 0 0' }}>
               <form onSubmit={handleSubmit}>
                 <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px 30px 10px 10px'}
-                            forceStyle={{overflow: ''}}>
-                  {errorMessage && <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>}
+                            forceStyle={{ overflow: '' }}>
+                  {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
                   <input
-                    style={{minWidth: 100 + 'px', minHeight: 30 + 'px'}}
-                    type="text"
-                    name="username"
+                    style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
+                    type='text'
+                    name='username'
                     id={'username'}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="login.."
+                    placeholder='login..'
                     required
                   />
                   <PasswordInput
@@ -203,33 +203,33 @@ export function Login({duration_ms = 900, viewport}: Props) {
                     required
                     // noVerify={signIn}
                     noVerify /* DEV: uncomment this line for dev */
-                    style={{minWidth: '100px', minHeight: '30px'}}
+                    style={{ minWidth: '100px', minHeight: '30px' }}
                   />
                   {!signIn &&
-                      <PasswordInput
-                          hidePassword={hidePassword}
-                          setHidePassword={setHidePassword}
-                          password={confirmPassword}
-                          setPassword={setConfirmPassword}
-                          placeholder={'confirm password'}
-                          confirmPassword={password}
-                          noVerify /* DEV: uncomment this line for dev */
-                          style={{minWidth: '100px', minHeight: '30px'}}
-                      />
+                    <PasswordInput
+                      hidePassword={hidePassword}
+                      setHidePassword={setHidePassword}
+                      password={confirmPassword}
+                      setPassword={setConfirmPassword}
+                      placeholder={'confirm password'}
+                      confirmPassword={password}
+                      noVerify /* DEV: uncomment this line for dev */
+                      style={{ minWidth: '100px', minHeight: '30px' }}
+                    />
                   }
                   <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
                     <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
                       <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
                     </button>
                   </Flex>
-                  <br/>
+                  <br />
                 </Background>
               </form>
               <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                 <p>or sign in with Intra42</p>
                 <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
                   window.location.replace('http://localhost:3001/api/auth/login/42');
-                }}/>
+                }} />
               </Flex>
             </div>
           </Background>
