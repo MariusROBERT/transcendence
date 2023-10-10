@@ -32,4 +32,8 @@ lint-fix:
 	docker exec -it front npm run lint:fix
 	docker exec -it back npm run lint:fix
 
-.PHONY: all down up clean fclean ls lint lint-fix re
+install:
+	docker exec -it front npm install
+	docker exec -it front npm install
+
+.PHONY: all down up clean fclean ls lint lint-fix install re
