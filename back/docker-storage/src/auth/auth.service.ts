@@ -112,7 +112,6 @@ export class AuthService {
       user2.recvInvitesFrom = [];
       user2.blocked = [];
       user2.urlImg = urlImg;
-      user2.id42 = userData.id42;
       try {
         await this.userRepository.save(user2); // save user in DB
       } catch (e) {
@@ -125,7 +124,7 @@ export class AuthService {
       .getOne();
     // JWT
     if (user2.is2fa_active) {
-      return '';
+      return 'missing 2fa code';
     }
     const payload = {
       username,
@@ -134,21 +133,19 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async ftLogin2fa(ftToken: string, code2fa: string) {
-    const id42: number = await fetch('https://api.intra.42.fr/v2/me', {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + ftToken,
-      },
-    })
-      .then((res) => res.json())
-      .then((json) => parseInt(json.id));
-    if (!id42) {
-      throw new NotFoundException('Invalid intra token');
+  async ftLogin2fa(req: any, code2fa: string) {
+    let ftLogin = '';
+    for (const rawSession in req.sessionStore.sessions) {
+      const session = JSON.parse(req.sessionStore.sessions[rawSession]);
+      if (session.passport.user.username)
+        ftLogin = session.passport.user.username + '_42';
+    }
+    if (ftLogin === '') {
+      throw new UnauthorizedException('no session found');
     }
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.id42 = :id42', { id42 })
+      .where('user.username = :ftLogin', { ftLogin })
       .getOne();
     if (!user) {
       throw new NotFoundException('user not found');

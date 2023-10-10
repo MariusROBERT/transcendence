@@ -72,7 +72,7 @@ export class UserService {
     const currentUser = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    if (currentUser.id42 > 0)
+    if (currentUser.username.endsWith('_42'))
       throw new UnauthorizedException("Oauth42 user can't change password");
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
