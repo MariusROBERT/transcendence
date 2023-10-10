@@ -6,11 +6,13 @@ import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { RoundButton } from '..';
 import { useNavigate } from 'react-router-dom';
+import ReactFullscreen from 'react-easyfullscreen';
 
 export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
+  const [fullScreen, setFullScreen] = useState<boolean>(false);
 
   const [state, setState] = useState<State>(start);
   const [size, setSize] = useState<Size>(basesize);
@@ -93,7 +95,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
       height: basesize.height * newFactor,
       width: basesize.width * newFactor,
       ball: basesize.ball * newFactor,
-      bar: {x:basesize.bar.x * newFactor, y:basesize.bar.y * newFactor},
+      bar: { x: basesize.bar.x * newFactor, y: basesize.bar.y * newFactor },
       halfBar: basesize.halfBar * newFactor,
       halfBall: basesize.halfBall * newFactor,
       p1X: basesize.p1X * newFactor,
@@ -104,7 +106,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
   // Display Game Management ---------------------------------------------------------------------------------------- //
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     const canvas = p5.createCanvas(size.width, size.height);
-    try{
+    try {
       canvas.parent(canvasParentRef);
     } catch (e) {
       canvas.parent('container');
@@ -124,22 +126,39 @@ export function Game({ viewport }: { viewport: Viewport }) {
     p5.fill(15);
     p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
     p5.fill(60);
-    p5.rect(size.width/2 - 5, 0, 10, size.height);
+    p5.rect(size.width / 2 - 5, 0, 10, size.height);
     p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
     p5.fill(255);
-    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width/2,  25);
+    p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
     p5.ellipse(state.ball.x, state.ball.y, size.ball);
     p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
     p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
   };
 
   return (
-    <div id={'container'} style={containerStyle}>
-      {id && socket && isInGameWith && <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased} style={{position:'relative', top:'0'}}></Sketch>}
-      <div style={{position:'absolute', left:0, top:0}}>
-        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {leaveGame()}}></RoundButton>
-      </div>
-    </div>
+    <ReactFullscreen>
+      {({ ref, onRequest, onExit }) => (
+        <div id={'container'} style={containerStyle}>
+          {id && socket && isInGameWith &&
+            <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
+                    style={{ position: 'relative', top: '0' }}></Sketch>}
+          <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', flexDirection: 'row' }}>
+            <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
+              leaveGame();
+            }}></RoundButton>
+            <RoundButton
+              icon={fullScreen ? require('../../assets/imgs/icon_not_full_screen.png') : require('../../assets/imgs/icon_full_screen.png')}
+              onClick={() => {
+                if (fullScreen)
+                  onExit();
+                else
+                  onRequest();
+                setFullScreen(!fullScreen);
+              }}></RoundButton>
+          </div>
+        </div>
+      )}
+    </ReactFullscreen>
   );
 }
 
