@@ -4,6 +4,7 @@ import { Viewport } from '../../utils';
 import { Background } from '..';
 import { useUserContext } from '../../contexts';
 import { Fetch } from '../../utils';
+import { TheWinnerIs } from './TheWinnerIs';
 import React, { useEffect } from 'react';
 
 // Johan
@@ -41,12 +42,3 @@ export function GameScore({ viewport }: { viewport: Viewport }) {
     </Background>
   );
 }
-
-function TheWinnerIs({ won }: { won:boolean }){
-  if (won)
-    return (<h4>YOU WON!!</h4>);
-  else
-    return (<h4>YOU LOSE!!</h4>)
-}
-
-export default TheWinnerIs;
