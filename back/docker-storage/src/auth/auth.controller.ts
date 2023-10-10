@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Post,
-  Request,
+  Req,
   Res,
   UseFilters,
   UseGuards,
@@ -34,16 +34,14 @@ export class AuthController {
   @Get('login/42')
   @UseGuards(FtOAuthGuard)
   auth42() {
-    return 'login';
+    return 'How did you get here ?';
   }
 
   @Get('callback/42')
   @UseGuards(FtOAuthGuard)
   @UseFilters(FtAuthFilter)
-  async auth42callback(@Request() req, @Res() res) {
-    // console.log('id: ', req.user.id);
-    // console.log('token: ', req.user.ftToken);
-    // const user = req.profile.user;
+  async auth42callback(@Req() req, @Res() res) {
+    // console.log('req: ', req.session);
     const token = await this.authService.ftLogin({
       username: req.user.username,
       urlImg: req.user._json.image.link,
@@ -51,16 +49,12 @@ export class AuthController {
     } as ftLoginDto);
 
     return res.redirect(
-      'http://localhost:3000?' +
-      new URLSearchParams({
-        'access-token': token,
-        ftToken: req.user.ftToken,
-      }),
+      'http://localhost:3000?' + new URLSearchParams({ 'access-token': token }),
     );
   }
 
   @Post('2fa/42')
-  async twoFa42(@Body() body) {
-    return await this.authService.ftLogin2fa(body.ftToken, body.code2fa);
+  async twoFa42(@Body() body, @Req() req) {
+    return await this.authService.ftLogin2fa(req, body.code2fa);
   }
 }
