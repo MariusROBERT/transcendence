@@ -46,10 +46,12 @@ export interface gameRoom {
 class Particle {
   age: number;
   pos: { x: number, y: number };
+  color: [number, number, number];
 
-  constructor(pos: { x: number, y: number }) {
+  constructor(pos: { x: number, y: number }, color: [number, number, number] = [255, 0, 0]) {
     this.pos = pos;
     this.age = 0;
+    this.color = color;
   }
 
   update() {
@@ -57,7 +59,7 @@ class Particle {
   }
 
   draw(p5: p5Types, size: number) {
-    p5.fill(255, 0, 0);
+    p5.fill(...this.color, 255 - (this.age) * 15);
     p5.noStroke();
     p5.circle(this.pos.x, this.pos.y, size - this.age);
     p5.fill(255, 255, 255);
@@ -67,6 +69,7 @@ class Particle {
 export class Ball {
   pos: { x: number, y: number };
   particles: Particle[];
+  rainbow = new Rainbow();
 
   constructor(pos: { x: number, y: number }) {
     this.pos = pos;
@@ -94,7 +97,7 @@ export class GuidedBall extends Ball {
     }
     this.pos.x = vec.x;
     this.pos.y = vec.y;
-    this.particles.push(new Particle({...this.pos}));
+    this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
   }
 }
 
@@ -113,17 +116,73 @@ export class AutonomousBall extends Ball {
       particle.update();
     }
     this.pos.x += this.dir.x;
-    if (this.pos.x - (size.ball/2) < 0)
+    if (this.pos.x - (size.ball / 2) < 5)
       this.dir.x *= -1;
-    else if (this.pos.x + (size.ball/2) > size.width)
+    else if (this.pos.x + (size.ball / 2) > (size.width - 5))
       this.dir.x *= -1;
 
-    if (this.pos.y - (size.ball/2) < 0)
+    if (this.pos.y - (size.ball / 2) < 5)
       this.dir.y *= -1;
-    else if (this.pos.y + (size.ball/2) > size.height)
+    else if (this.pos.y + (size.ball / 2) > (size.height - 5))
       this.dir.y *= -1;
 
     this.pos.y += this.dir.y;
-    this.particles.push(new Particle({...this.pos}));
+    this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
   }
 }
+
+class Rainbow {
+  step = 0;
+  red = 255;
+  green = 0;
+  blue = 0;
+  static increase = 5;
+
+  next(): [number, number, number] {
+    switch (this.step) {
+      case 0:
+        this.green += Rainbow.increase;
+        if (this.green >= 255)
+          this.step++;
+        break;
+      case 1:
+        this.red -= Rainbow.increase;
+        if (this.red <= 0)
+          this.step++;
+        break;
+      case 2:
+        this.blue += Rainbow.increase;
+        if (this.blue >= 255)
+          this.step++;
+        break;
+      case 3:
+        this.green -= Rainbow.increase;
+        if (this.green <= 0)
+          this.step++;
+        break;
+      case 4:
+        this.red += Rainbow.increase;
+        if (this.red >= 255)
+          this.step++;
+        break;
+      case 5:
+        this.blue -= Rainbow.increase;
+        if (this.blue <= 0)
+          this.step = 0;
+        break;
+    }
+    return [this.red, this.green, this.blue];
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
