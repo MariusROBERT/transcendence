@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { ChannelPublic } from '../../utils/interfaces';
 import { createChatStyle, inputStyle } from './CreateChat';
@@ -28,7 +27,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
       setPassword('');
       setErrVisible(false);
     }
-  }, [visibility]);
+  }, [visibility, data?.channel_status]);
 
   async function OnSave() {
     if (password.length > 300) {
@@ -36,7 +35,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
       setError('Password is too long');
       return;
     }
-    const res = await Fetch(
+    await Fetch(
       'channel/edit/' + data?.channel_id,
       'PATCH',
       JSON.stringify({
@@ -59,7 +58,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
           placeholder="New password"
           style={inputStyle}
           value={password}
-          maxLength={5}
+          maxLength={300}
           onChange={(evt) => {
             setPassword(evt.target.value);
           }}

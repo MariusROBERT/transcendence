@@ -5,7 +5,6 @@ import {
   UpdateChannelMessage,
   UpdateChannelUsers,
   SetCurrChan,
-  UpdateChannels,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
 import Popup from '../ComponentBase/Popup';
