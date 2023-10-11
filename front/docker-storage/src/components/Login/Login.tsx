@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import {AnimatedBackground} from '../ComponentBase/AnimatedBackground';
+import {API_URL} from '../../utils/Global';
 
 const SIZE = 350;
 
@@ -235,7 +236,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
               <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                 <p>or sign in with Intra42</p>
                 <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-                  window.location.replace('http://localhost:3001/api/auth/login/42');
+                  window.location.replace(API_URL + '/api/auth/login/42');
                 }} />
               </Flex>
             </div>

@@ -6,6 +6,7 @@ import { useUserContext } from '../../contexts';
 import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 import { useFriendsRequestContext } from '../../contexts';
+import {API_URL} from '../../utils/Global';
 
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
@@ -21,7 +22,7 @@ const Navbar: React.FC = () => {
   };
 
   const logout = async () => {
-    const res = await fetch('http://localhost:3001/api/user/logout', {
+    const res = await fetch(API_URL + '/api/user/logout', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'appsetNotifsVisiblelication/json',

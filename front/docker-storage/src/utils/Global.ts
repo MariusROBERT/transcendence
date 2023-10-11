@@ -13,3 +13,4 @@ export const color = {
   green: '#00CC66', // Owner
 };
 
+export const API_URL = 'http://localhost:3001';

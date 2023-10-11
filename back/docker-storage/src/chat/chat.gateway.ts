@@ -12,6 +12,7 @@ import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChatCheckGuard } from './guards/chat.guards';
+import { FRONT_URL } from '../utils/Globals';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -25,7 +26,7 @@ export interface ChannelMessage {
 @WebSocketGateway({
   cors: {
     credentials: true,
-    origin: ['http://localhost:3000'],
+    origin: [FRONT_URL],
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -34,8 +35,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;
