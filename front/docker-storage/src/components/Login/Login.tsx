@@ -174,7 +174,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
                   flex_justifyContent={'space-around'} forceStyle={{padding: 0, margin: 0}}>
-        <AnimatedBackground viewport={viewport} style={{zIndex: -1}}/>
+        <AnimatedBackground viewport={viewport} style={{zIndex: -1}} ballNumber={10}/>
 
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>

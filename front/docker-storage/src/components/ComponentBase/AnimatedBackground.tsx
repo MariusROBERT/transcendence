@@ -7,15 +7,16 @@ import {Viewport} from '../../utils';
 interface Props {
   viewport: Viewport;
   style ?: React.CSSProperties;
+  ballNumber ?: number;
 }
 
 export function AnimatedBackground(props: Props) {
   const [size, setSize] = useState<Size>({...basesize, ball: 30});
-  const [ball] = useState<AutonomousBall>(new AutonomousBall({x: 50, y: 50}, {x: 4, y: 7}));
+  // const [ball] = useState<AutonomousBall>(new AutonomousBall({x: 50, y: 50}, {x: 4, y: 7}));
   const [balls] = useState<AutonomousBall[]>([]);
 
   useEffect(() => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < (props.ballNumber || 1); i++) {
       balls.push(new AutonomousBall({
           x: Math.random() * (props.viewport.width - (size.ball * 3)) + (size.ball * 1.5),
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),
