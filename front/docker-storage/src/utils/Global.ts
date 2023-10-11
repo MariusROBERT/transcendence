@@ -13,4 +13,3 @@ export const color = {
   green: '#00CC66', // Owner
 };
 
-export const backgroundImage = require('../assets/imgs/login_background.png');

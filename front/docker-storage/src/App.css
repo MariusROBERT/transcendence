@@ -31,12 +31,12 @@ body {
     margin: 0;
     padding: 0;
     cursor: url('assets/imgs/cursor/cursor.png'), default;
-    background-image: url("assets/imgs/login_background.png");
     background-position: center center;
     background-size: cover;
-    background-color: var(--clear);
+    background-color: #090909;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overflow-y: hidden;
 }
 
 .cursor_default {
