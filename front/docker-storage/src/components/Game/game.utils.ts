@@ -133,10 +133,38 @@ export class AutonomousBall extends Ball {
 
 class Rainbow {
   step = 0;
-  red = 255;
+  red = 0;
   green = 0;
   blue = 0;
   static increase = 5;
+
+  constructor() {
+    const startRandom = Math.floor(Math.random() * 6);
+    this.step = startRandom;
+    switch (startRandom) {
+      case 0:
+        this.red = Math.floor(Math.random() * 255);
+        break;
+      case 1:
+        this.red = Math.floor(Math.random() * 255);
+        this.green = 255;
+        break;
+      case 2:
+        this.green = Math.floor(Math.random() * 255);
+        break;
+      case 3:
+        this.green = Math.floor(Math.random() * 255);
+        this.blue = 255;
+        break;
+      case 4:
+        this.blue = Math.floor(Math.random() * 255);
+        break;
+      case 5:
+        this.red = Math.floor(Math.random() * 255);
+        this.blue = 255;
+        break;
+    }
+  }
 
   next(): [number, number, number] {
     switch (this.step) {
