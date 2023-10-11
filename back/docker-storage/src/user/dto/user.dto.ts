@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  isNumber,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
@@ -74,6 +75,14 @@ export class PublicProfileDto {
   @IsNotEmpty()
   @IsBoolean()
   is_friend: boolean;
+
+  @IsNumber()
+  @IsNotEmpty()
+  gamesPlayed: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  elo: number;
 }
 
 export class UpdatePwdDto {

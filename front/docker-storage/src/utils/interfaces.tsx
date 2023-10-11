@@ -76,6 +76,7 @@ export interface IUser {
   urlImg: string;
   user_status: string;
   winrate: number;
+  elo: number;
   is_friend: boolean;
   invited: number[];
   invites: number[];
@@ -88,6 +89,7 @@ export interface IUserComplete {
   user_status: string;
   role: string;
   winrate: number;
+  elo:number;
   is_friend: boolean;
   invited: number[];
   invites: number[];

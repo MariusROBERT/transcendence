@@ -141,6 +141,8 @@ export class UserService {
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
+    PublicProfile.gamesPlayed = profile.gamesPlayed;
+    PublicProfile.elo = profile.elo;
 
     if (user && user.friends && Array.isArray(user.friends)) {
       PublicProfile.is_friend = user.friends.some(
