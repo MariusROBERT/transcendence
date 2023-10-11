@@ -77,9 +77,17 @@ export class Ball {
   }
 
   draw(p5: p5Types, size: Size) {
+    // Particles
     for (const particle of this.particles) {
       particle.draw(p5, size.ball);
     }
+    // Neon
+    p5.noStroke();
+    for (let i = 0; i < 30; i += 5) {
+      p5.fill(255, 0, 0, 25);
+      p5.circle(this.pos.x, this.pos.y, size.ball + i);
+    }
+    p5.fill(255);
     p5.circle(this.pos.x, this.pos.y, size.ball);
   }
 }
@@ -118,19 +126,25 @@ export class AutonomousBall extends Ball {
     for (const particle of this.particles) {
       particle.update();
     }
+
     this.pos.x += this.dir.x;
     if (this.pos.x - (size.ball / 2) < 5)
       this.dir.x *= -1;
     else if (this.pos.x + (size.ball / 2) > (size.width - 5))
       this.dir.x *= -1;
 
+    this.pos.y += this.dir.y;
     if (this.pos.y - (size.ball / 2) < 5)
       this.dir.y *= -1;
     else if (this.pos.y + (size.ball / 2) > (size.height - 5))
       this.dir.y *= -1;
 
-    this.pos.y += this.dir.y;
-    this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
+    // Red / Blue particles depending on ball X pos
+    const blue = this.pos.x * 255 / size.width;
+    const red = 255 - (this.pos.x * 255 / size.width);
+    this.particles.push(new Particle({...this.pos}, [red, 0, blue]));
+    // Rainbow particles
+    // this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
   }
 }
 
