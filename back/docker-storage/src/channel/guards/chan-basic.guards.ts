@@ -12,6 +12,7 @@ import {
 } from 'src/database/entities/channel.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateChannelDto, PassChannelDto } from '../dto/channel.dto';
+import * as bcrypt from 'bcrypt';
 
 function findPerm(
   usernameToFind: string,
@@ -46,9 +47,7 @@ export class PrivateGuard implements CanActivate {
 //  Check if user is in channel
 @Injectable()
 export class SelfInChannelGuard implements CanActivate {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user: UserEntity = request.user;
@@ -193,8 +192,10 @@ export class IsProtected implements CanActivate {
       params.id,
     );
     if (channel?.password === null) return true;
-    if (body?.password == channel?.password)
-      return true;
+    if (body.password && channel.salt)
+      if (await bcrypt.compare(body?.password, channel.password)) return true;
+    else
+      throw new BadRequestException('No password given');
     throw new BadRequestException('This channel is protected by a password');
   }
 }

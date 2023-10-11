@@ -21,6 +21,7 @@ import { UserService } from 'src/user/user.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { MutedService } from 'src/muted/muted.service';
 import { ChanStateEnum } from 'src/utils/enums/channel.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -41,6 +42,9 @@ export class ChannelService {
     });
     chan.owner = user;
     chan.admins = [];
+    chan.salt = await bcrypt.genSalt();
+    if (chan.password)
+      chan.password = await bcrypt.hash(chan.password, chan.salt);
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -54,7 +58,9 @@ export class ChannelService {
 
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
-    channel.password = dto.password.length > 0 ? dto.password : null;
+    channel.password = null;
+    if (dto.password.length > 0)
+      channel.password = await bcrypt.hash(dto.password, channel.salt);
     channel.chan_status =
       dto.chan_status === 'private'
         ? ChanStateEnum.PRIVATE

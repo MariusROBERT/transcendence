@@ -26,6 +26,9 @@ export class ChannelEntity {
   @Column({ nullable: true })
   password?: string;
 
+  @Column({ nullable: true })
+  salt!: string;
+
   @Column({
     type: 'enum',
     enum: ChanStateEnum,
