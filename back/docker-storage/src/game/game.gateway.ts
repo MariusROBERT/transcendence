@@ -235,7 +235,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const game = this.controller.matchmaking.getGame(msg.id);
     if (game === undefined || !game.state.running) return;
-    return this.controller.service.movePlayer(
+    return this.controller.service.onPlayerMove(
       game.state,
       game.playerIds.indexOf(msg.id),
       msg.isMoving,
@@ -244,14 +244,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   sendState(game: { playerIds: number[]; state: State; ready: number[] }) {
+    const gameState: {
+      balls: { id: number, pos: { x: number, y: number } }[],
+      p1: number,
+      p2: number,
+      score: { p1: number, p2: number }
+    } = {
+      balls: game.state.balls.map((b) => {return { id: b.id, pos: {x: b.pos.x, y: b.pos.y}}}),
+      p1: game.state.p1,
+      p2: game.state.p2,
+      score: game.state.score,
+    }
+
     this.server
       .to('user' + game.playerIds[0])
       .to('user' + game.playerIds[1])
-      .emit('update_game_state', {
-        ball: game.state.ball,
-        p1: game.state.p1,
-        p2: game.state.p2,
-        score: game.state.score,
-      });
+      .emit('update_game_state', { gameState: gameState });
   }
 }
