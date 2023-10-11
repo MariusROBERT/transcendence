@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {basesize, GuidedBall, Size, start, State} from './game.utils';
+import { baseSize, GuidedBall, Size, start, GameState, Ball } from './game.utils';
 import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from 'react-p5';
@@ -13,13 +13,13 @@ export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
-  const [state, setState] = useState<State>(start);
-  const [size, setSize] = useState<Size>(basesize);
+  const [gameState, setGameState] = useState<GameState>(start);
+  const [size, setSize] = useState<Size>(baseSize);
   let upPressed = false;
   let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
   const [usernames, setUsernames] = useState<string[]>(['', '']);
-  const [ball] = useState<GuidedBall>(new GuidedBall({x: 0, y: 0}));
+  const [balls, setBalls] = useState<GuidedBall[]>([]);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
@@ -68,14 +68,19 @@ export function Game({ viewport }: { viewport: Viewport }) {
   // In Game -- Event reception ------------------------------------------------------------------------------------- //
   // In Game -- Connection Socket ----------------------------------------------------------------------------------- //
   useEffect(() => {
-    function onGameStateUpdate(updatedState: {
-      ball: { x: number, y: number },
-      p1: number,
-      p2: number,
-      score: { p1: number, p2: number }
+    function onGameStateUpdate(body: {
+      gameState: {
+        balls: { id: number, pos: { x: number, y: number } }[],
+        p1: number,
+        p2: number,
+        score: { p1: number, p2: number }
+      }
     }) {
-      setState({
-        ball: { x: updatedState.ball.x * factor, y: updatedState.ball.y * factor },
+      const updatedState = body.gameState;
+
+      setGameState({
+        balls: updatedState.balls.map(ball =>
+        {return {id: ball.id, pos: {x: ball.pos.x * factor, y: ball.pos.y * factor}}}),
         p1: updatedState.p1 * factor,
         p2: updatedState.p2 * factor,
         score: { p1: updatedState.score.p1, p2: updatedState.score.p2 },
@@ -93,17 +98,17 @@ export function Game({ viewport }: { viewport: Viewport }) {
   // Resize Window Management --------------------------------------------------------------------------------------- //
 
   useEffect(() => {
-    const newFactor = Math.min(viewport.width / basesize.width, viewport.height / basesize.height);
+    const newFactor = Math.min(viewport.width / baseSize.width, viewport.height / baseSize.height);
     setFactor(newFactor);
     setSize({
-      height: basesize.height * newFactor,
-      width: basesize.width * newFactor,
-      ball: basesize.ball * newFactor,
-      bar: { x: basesize.bar.x * newFactor, y: basesize.bar.y * newFactor },
-      halfBar: basesize.halfBar * newFactor,
-      halfBall: basesize.halfBall * newFactor,
-      p1X: basesize.p1X * newFactor,
-      p2X: basesize.p2X * newFactor,
+      height: baseSize.height * newFactor,
+      width: baseSize.width * newFactor,
+      ball: baseSize.ball * newFactor,
+      bar: { x: baseSize.bar.x * newFactor, y: baseSize.bar.y * newFactor },
+      halfBar: baseSize.halfBar * newFactor,
+      halfBall: baseSize.halfBall * newFactor,
+      p1X: baseSize.p1X * newFactor,
+      p2X: baseSize.p2X * newFactor,
     });
   }, [viewport.width, viewport.height]);
 
@@ -119,7 +124,6 @@ export function Game({ viewport }: { viewport: Viewport }) {
     p5.background(0);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(32);
-    ball.draw(p5, size);
   };
 
   const draw = (p5: p5Types) => {
@@ -134,15 +138,36 @@ export function Game({ viewport }: { viewport: Viewport }) {
       p5.rect(size.width / 2 - 5, 0, 10, size.height);
       p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
       p5.fill(255);
-      p5.text(state.score.p1 + ' / ' + state.score.p2, size.width / 2, 25);
+      p5.text(gameState.score.p1 + ' / ' + gameState.score.p2, size.width / 2, 25);
+    }
+    console.log('1 => balls: ', balls.length, ' | state: ', gameState.balls.length)
+
+    if (balls.length !== gameState.balls.length)
+      setBalls(balls.filter(b => gameState.balls.some((bState) => bState.id === b.id)));
+
+    console.log('2 => balls: ', balls.length, ' | state: ', gameState.balls.length)
+    if (balls.length !== gameState.balls.length) {
+      const newBalls: GuidedBall[] = balls;
+      for (let i = 0; i < gameState.balls.length; i++) {
+        const ballState = gameState.balls[i];
+        if (newBalls.some(b => b.id === ballState.id))
+          continue;
+        newBalls.push(new GuidedBall(ballState.id, ballState.pos));
+      }
+      setBalls(newBalls);
+    }
+    console.log('3 => balls: ', balls.length, ' | state: ', gameState.balls.length)
+
+    // p5.ellipse(gameState.ball.x, gameState.ball.y, size.ball);
+    for (let i = 0; i < gameState.balls.length; i++) {
+      const ballState = gameState.balls[i];
+      const ball = balls.find(b => b.id === ballState.id);
+      ball?.update(ballState.pos, size);
+      ball?.draw(p5, size);
     }
 
-    // p5.ellipse(state.ball.x, state.ball.y, size.ball);
-    ball.update(state.ball, size);
-    ball.draw(p5, size);
-
-    p5.rect(size.p1X - size.bar.x, state.p1 - size.halfBar, size.bar.x, size.bar.y);
-    p5.rect(size.p2X, state.p2 - size.halfBar, size.bar.x, size.bar.y);
+    p5.rect(size.p1X - size.bar.x, gameState.p1 - size.halfBar, size.bar.x, size.bar.y);
+    p5.rect(size.p2X, gameState.p2 - size.halfBar, size.bar.x, size.bar.y);
   };
 
   return (
