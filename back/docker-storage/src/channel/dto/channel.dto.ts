@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Length,
 } from 'class-validator';
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { UserEntity } from '../../database/entities/user.entity';
@@ -44,6 +45,7 @@ export class PassChannelDto {
 
 export class EditChannelDto {
   @IsString()
+  @Length(0, 300)
   password: string;
 
   @IsNotEmpty()

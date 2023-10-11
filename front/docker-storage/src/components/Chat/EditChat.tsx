@@ -6,6 +6,7 @@ import { createChatStyle, inputStyle } from './CreateChat';
 import SwitchToggle from '../ComponentBase/SwitchToggle';
 import { Flex } from '../ComponentBase/FlexBox';
 import { Fetch } from '../../utils';
+import { ErrorPanel } from '../Error/ErrorPanel';
 
 interface Props {
   data: ChannelPublic | undefined;
@@ -16,15 +17,25 @@ interface Props {
 export default function EditChat({ data, visibility, setVisible }: Props) {
   const [password, setPassword] = useState<string>('');
   const [checked, setChecked] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [errVisible, setErrVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (visibility === true) {
       if (data?.channel_status === 'private') setChecked(true);
       else setChecked(false);
-    } else setPassword('');
+    } else {
+      setPassword('');
+      setErrVisible(false);
+    }
   }, [visibility]);
 
   async function OnSave() {
+    if (password.length > 300) {
+      setErrVisible(true);
+      setError('Password is too long');
+      return;
+    }
     const res = await Fetch(
       'channel/edit/' + data?.channel_id,
       'PATCH',
@@ -38,6 +49,9 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
 
   return (
     <div style={createChatStyle}>
+      <div style={{ visibility: errVisible ? 'inherit' : 'hidden' }}>
+        <ErrorPanel text={error}></ErrorPanel>
+      </div>
       <h2>Edit Channel</h2>
 
       <p style={{ textAlign: 'center', fontSize: '14px' }}>
@@ -45,6 +59,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
           placeholder="New password"
           style={inputStyle}
           value={password}
+          maxLength={5}
           onChange={(evt) => {
             setPassword(evt.target.value);
           }}
@@ -55,7 +70,12 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
 
       <Flex flex_direction={'row'}>
         <p>Private Channel:</p>
-        <SwitchToggle onChange={() => {setChecked(!checked)}} checked={checked}></SwitchToggle>
+        <SwitchToggle
+          onChange={() => {
+            setChecked(!checked);
+          }}
+          checked={checked}
+        ></SwitchToggle>
       </Flex>
 
       <Button onClick={OnSave}>Save</Button>

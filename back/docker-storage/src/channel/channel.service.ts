@@ -55,9 +55,10 @@ export class ChannelService {
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
     channel.password = dto.password.length > 0 ? dto.password : null;
-    console.log(dto.chan_status);
-    channel.chan_status = dto.chan_status === "private" ? ChanStateEnum.PRIVATE : ChanStateEnum.PUBLIC;
-    console.log(channel);
+    channel.chan_status =
+      dto.chan_status === 'private'
+        ? ChanStateEnum.PRIVATE
+        : ChanStateEnum.PUBLIC;
     return await this.ChannelRepository.save(channel);
   }
 
