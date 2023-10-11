@@ -2,6 +2,7 @@ import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../uti
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
+import {AnimatedBackground} from '../ComponentBase/AnimatedBackground';
 
 const SIZE = 350;
 
@@ -130,6 +131,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     width: '100%',
     position: 'absolute',
     top: '0px',
+    zIndex: 2,
   };
 
   const animStyle: React.CSSProperties = {
@@ -140,6 +142,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     position: 'absolute',
     top: '50px',
     transition: duration_ms / 3 + 'ms ease',
+    zIndex: 2,
   };
 
   const connectingStyle: React.CSSProperties = {
@@ -150,6 +153,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     position: 'absolute',
     top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
     transition: duration_ms + 'ms ease',
+    zIndex: 2,
   };
 
   const connectedStyle: React.CSSProperties = {
@@ -162,13 +166,16 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     top: viewport.isLandscape
       ? -Math.max(SIZE, viewport.height) + 'px'
       : -Math.max(2 * SIZE, viewport.height) + 'px',
+    zIndex: 2,
   };
 
   return (
     <div
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-                  flex_justifyContent={'space-around'}>
+                  flex_justifyContent={'space-around'} forceStyle={{padding: 0, margin: 0}}>
+        <AnimatedBackground viewport={viewport} style={{zIndex: -1}}/>
+
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
