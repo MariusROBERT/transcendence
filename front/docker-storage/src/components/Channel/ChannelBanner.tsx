@@ -38,9 +38,9 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
   }
 
   async function OnSetting() {
-    setEditVisible(true);
     const res = await Fetch('channel/public/' + id, 'GET');
-    setPublicData(res?.json);
+    await setPublicData(res?.json);
+    setEditVisible(true);
   }
 
   return (
@@ -82,7 +82,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         <p style={{ fontSize: '20px' }}>{name}</p>
       </Flex>
       <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-        <EditChat data={publicData} visibility={editVisible}></EditChat>
+        <EditChat data={publicData} visibility={editVisible} setVisible={setEditVisible}></EditChat>
       </Popup>
     </div>
   );

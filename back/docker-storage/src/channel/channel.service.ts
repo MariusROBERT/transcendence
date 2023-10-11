@@ -10,9 +10,13 @@ import {
   MessageEntity,
 } from 'src/database/entities/channel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
-import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
+import {
+  CreateChannelDto,
+  EditChannelDto,
+  UpdateChannelDto,
+} from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { MutedService } from 'src/muted/muted.service';
@@ -43,6 +47,18 @@ export class ChannelService {
       throw new ConflictException('Channel already exist');
     }
     return chan;
+  }
+
+  async editChannel(dto: EditChannelDto, id: number) {
+    let channel = await this.getChannelById(id);
+
+    if (!channel)
+      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+    channel.password = dto.password.length > 0 ? dto.password : null;
+    console.log(dto.chan_status);
+    channel.chan_status = dto.chan_status === "private" ? ChanStateEnum.PRIVATE : ChanStateEnum.PUBLIC;
+    console.log(channel);
+    return await this.ChannelRepository.save(channel);
   }
 
   async getChannelById(id: number): Promise<ChannelEntity> {

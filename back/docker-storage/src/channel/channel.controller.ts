@@ -9,7 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
+import {
+  CreateChannelDto,
+  EditChannelDto,
+  UpdateChannelDto,
+} from './dto/channel.dto';
 import { UserChanDto } from 'src/user/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import {
@@ -106,6 +110,17 @@ export class ChannelController {
     return await this.channelService.createChannel(createChannelDto, user);
   }
 
+  @Patch('/edit/:id')
+  @UseGuards(AdminGuard, PrivateGuard)
+  @UseGuards(JwtAuthGuard)
+  async EditChannel(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() editChannelDto: EditChannelDto,
+  ) {
+    return this.channelService.editChannel(editChannelDto, id);
+  }
+
   @Post('/add_user/:id')
   @UseGuards(PrivateGuard, SelfBannedGuard, IsProtected)
   @UseGuards(JwtAuthGuard)
@@ -124,8 +139,7 @@ export class ChannelController {
   async leaveChannel(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
-  )
-  {
+  ) {
     return this.channelService.leaveChannel(user.id, id);
   }
 

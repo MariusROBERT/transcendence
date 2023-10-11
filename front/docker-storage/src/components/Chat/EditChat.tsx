@@ -3,21 +3,38 @@ import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { ChannelPublic } from '../../utils/interfaces';
 import { createChatStyle, inputStyle } from './CreateChat';
+import SwitchToggle from '../ComponentBase/SwitchToggle';
+import { Flex } from '../ComponentBase/FlexBox';
+import { Fetch } from '../../utils';
 
 interface Props {
   data: ChannelPublic | undefined;
   visibility: boolean;
+  setVisible: (b: boolean) => void;
 }
 
-export default function EditChat({ data, visibility }: Props) {
+export default function EditChat({ data, visibility, setVisible }: Props) {
   const [password, setPassword] = useState<string>('');
+  const [checked, setChecked] = useState<boolean>(false);
 
   useEffect(() => {
-    if (visibility === true)
-    {
-      console.log("here visible :D");
-    }
-  }, [visibility])
+    if (visibility === true) {
+      if (data?.channel_status === 'private') setChecked(true);
+      else setChecked(false);
+    } else setPassword('');
+  }, [visibility]);
+
+  async function OnSave() {
+    const res = await Fetch(
+      'channel/edit/' + data?.channel_id,
+      'PATCH',
+      JSON.stringify({
+        password: password,
+        chan_status: checked ? 'private' : 'public',
+      }),
+    );
+    setVisible(false);
+  }
 
   return (
     <div style={createChatStyle}>
@@ -36,34 +53,12 @@ export default function EditChat({ data, visibility }: Props) {
         leave empty to remove password
       </p>
 
-      <div>
-        <input type="radio" value="Public" name="type" /> Public
-        <input type="radio" value="Private" name="type" /> Private
-      </div>
+      <Flex flex_direction={'row'}>
+        <p>Private Channel:</p>
+        <SwitchToggle onChange={() => {setChecked(!checked)}} checked={checked}></SwitchToggle>
+      </Flex>
 
-      <h4>User List</h4>
-      <RoundButton
-        icon={require('../../assets/imgs/icon_add_friend.png')}
-        icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
-
-      <h4>Admins Users</h4>
-      <RoundButton
-        icon={require('../../assets/imgs/icon_add_friend.png')}
-        icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
-
-      <h4>Banned users</h4>
-      <RoundButton
-        icon={require('../../assets/imgs/icon_add_friend.png')}
-        icon_size={42}
-        onClick={() => {}}
-      ></RoundButton>
-      <br></br>
-
-      <Button onClick={() => {}}>Save</Button>
+      <Button onClick={OnSave}>Save</Button>
     </div>
   );
 }

@@ -42,6 +42,15 @@ export class PassChannelDto {
   password: string;
 }
 
+export class EditChannelDto {
+  @IsString()
+  password: string;
+
+  @IsNotEmpty()
+  @IsEnum(ChanStateEnum)
+  chan_status: ChanStateEnum
+}
+
 // GET CHANNEL AND DISPLAY INFO
 export class ChannelDto {
   @IsNumber()
