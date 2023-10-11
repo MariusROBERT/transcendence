@@ -22,8 +22,8 @@ export function AnimatedBackground(props: Props) {
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),
         },
         {
-          x: (Math.random() * 20) - 10,
-          y: (Math.random() * 20) - 10
+          x: Math.random() - 0.5,
+          y: Math.random() - 0.5
         }));
     }
   }, []);

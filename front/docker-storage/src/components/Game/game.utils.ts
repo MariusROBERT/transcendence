@@ -106,7 +106,10 @@ export class AutonomousBall extends Ball {
 
   constructor(pos: { x: number, y: number }, dir: { x: number, y: number }) {
     super(pos);
-    this.dir = dir;
+    const normedDir = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+    const normedX = dir.x / normedDir * (Math.random() * 5 + 3);
+    const normedY = dir.y / normedDir * (Math.random() * 5 + 3);
+    this.dir = {x: normedX, y: normedY};
   }
 
   update(size: Size) {
@@ -202,15 +205,3 @@ class Rainbow {
     return [this.red, this.green, this.blue];
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
