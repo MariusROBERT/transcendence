@@ -25,7 +25,7 @@ export function Search(props: Props) {
   }, [searchMode]);
 
   return (
-    <div>
+    <div style={{zIndex: 2}}>
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
                  isVisible={!searchMode}>
