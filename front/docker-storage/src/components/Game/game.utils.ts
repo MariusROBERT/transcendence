@@ -1,7 +1,7 @@
 import p5Types from 'p5';
 
-export interface State {
-  ball: { x: number, y: number },
+export interface GameState {
+  balls: {id:number, pos:{x: number, y: number}}[],
   p1: number,
   p2: number,
   score: { p1: number, p2: number }
@@ -18,7 +18,7 @@ export interface Size {
   p2X: number,
 }
 
-export const basesize = {
+export const baseSize = {
   height: 720,
   width: 1280,
   ball: 50,
@@ -29,17 +29,17 @@ export const basesize = {
   p2X: 1280 - 25,
 };
 
-export const start: State = {
-  ball: {x: basesize.width / 2, y: basesize.height / 2},
-  p1: basesize.height / 2,
-  p2: basesize.height / 2,
+export const start: GameState = {
+  balls: [],
+  p1: baseSize.height / 2,
+  p2: baseSize.height / 2,
   score: {p1: 0, p2: 0},
 };
 
 export interface gameRoom {
   room: string,
   playerIds: number[],
-  state: State,
+  state: GameState,
   ready: boolean,
 }
 
@@ -85,8 +85,10 @@ export class Ball {
 }
 
 export class GuidedBall extends Ball {
-  constructor(pos: { x: number, y: number }) {
+  id: number;
+  constructor(id: number, pos: { x: number, y: number }) {
     super(pos);
+    this.id = id;
   }
 
   update(vec: { x: number, y: number }, size: Size) {

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import {AutonomousBall, basesize, Size} from '../Game/game.utils';
+import {AutonomousBall, baseSize, Size} from '../Game/game.utils';
 import {Viewport} from '../../utils';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function AnimatedBackground(props: Props) {
-  const [size, setSize] = useState<Size>({...basesize, ball: 30});
+  const [size, setSize] = useState<Size>({...baseSize, ball: 30});
   const [ball] = useState<AutonomousBall>(new AutonomousBall({x: 50, y: 50}, {x: 4, y: 7}));
   const [balls] = useState<AutonomousBall[]>([]);
 
