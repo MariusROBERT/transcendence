@@ -7,48 +7,22 @@ import {IUser} from '../../utils/interfaces';
 import NotifCard from './notifCard';
 
 const Navbar: React.FC = () => {
-  const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const {user, socket} = useUserContext();
+  const [profileVisible, setProfileVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const {recvInvitesFrom} = useFriendsRequestContext();
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
+  const { user, socket } = useUserContext();
+  const { recvInvitesFrom } = useFriendsRequestContext();
 
   const showNotif = () => {
     setNotifsVisible(!notifsVisible);
   };
 
   const logout = async () => {
-    const res = await fetch('http://localhost:3001/api/user/logout', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'appsetNotifsVisiblelication/json',
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    });
-    if (res.ok) {
-      Cookies.remove('jwtToken');
-      window.location.replace('/login');
-    } else {
-      console.log(res.status);
-    }
     socket?.disconnect();
     Cookies.remove('jwtToken');
     window.location.replace('/login');
   };
-
-  // delog the user if he close the navigator without click in logout button
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      logout();
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-    // eslint-disable-next-line
-  }, [profilVisible]);
 
   useEffect(() => {
     const setNotif = async () => {
@@ -83,7 +57,7 @@ const Navbar: React.FC = () => {
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
               icon_size={50}
-              onClick={() => setProfilVisible(!profilVisible)}
+              onClick={() => setProfileVisible(!profileVisible)}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_setting.png')}
@@ -97,26 +71,19 @@ const Navbar: React.FC = () => {
             />
           </div>
           {notifsVisible &&
-              <div style={notifstyle}>
-                {notifs.map((notif) => (
-                  <NotifCard notif={notif} otherUser={notif} key={notif.id}/>
-                ))}
-              </div>}
-          <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-            <Settings isVisible={settingsVisible}/>
-          </Popup>
-          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={user}/>
-          </Popup>
+            <div style={notifstyle}>
+              {notifs.map((notif) => (
+                <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
+              ))}
+            </div>}
         </div>
-
       </div>
       <GameInvites/>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible}/>
       </Popup>
-      <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-        <Profil otherUser={user}/>
+      <Popup isVisible={profileVisible} setIsVisible={setProfileVisible}>
+        <Profil otherUser={user} />
       </Popup>
     </>
   );

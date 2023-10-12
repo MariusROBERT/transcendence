@@ -16,6 +16,7 @@
     "p5": "^1.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-easyfullscreen": "^1.1.2",
     "react-p5": "^1.3.35",
     "react-router-dom": "^6.16.0",
     "react-scripts": "^5.0.1",

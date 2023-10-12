@@ -6,11 +6,13 @@ import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { RoundButton } from '..';
 import { useNavigate } from 'react-router-dom';
+import ReactFullscreen from 'react-easyfullscreen';
 
 export function Game({ viewport }: { viewport: Viewport }) {
   const navigate = useNavigate();
   const { id, socket } = useUserContext();
   const { leaveGame, isInGameWith } = useGameContext();
+  const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [state, setState] = useState<State>(start);
   const [size, setSize] = useState<Size>(basesize);
   let upPressed = false;
@@ -27,6 +29,13 @@ export function Game({ viewport }: { viewport: Viewport }) {
     socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
       setUsernames([body.p1, body.p2]);
     });
+
+    return (
+      () => {
+        socket?.off('get_usernames');
+        socket?.off('start_game');
+      }
+    )
     // eslint-disable-next-line
   }, [id, socket, isInGameWith, navigate]);
 
@@ -137,20 +146,33 @@ export function Game({ viewport }: { viewport: Viewport }) {
   };
 
   return (
-    <div id={'container'} style={containerStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%' }}>
-        <p>{usernames[0]}</p>
-        <p>{usernames[1]}</p>
-      </div>
-      {id && socket && isInGameWith &&
-        <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
-                style={{ position: 'relative', top: '0' }}></Sketch>}
-      <div style={{ position: 'absolute', left: 0, top: 0 }}>
-        <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
-          leaveGame();
-        }}></RoundButton>
-      </div>
-    </div>
+    <ReactFullscreen>
+      {({ onRequest, onExit }) => (
+        <div id={'container'} style={containerStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%' }}>
+            <p>{usernames[0]}</p>
+            <p>{usernames[1]}</p>
+          </div>
+          {id && socket && isInGameWith &&
+            <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
+                    style={{ position: 'relative', top: '0' }}></Sketch>}
+          <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', flexDirection: 'row' }}>
+            <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
+              leaveGame();
+            }}></RoundButton>
+            <RoundButton
+              icon={fullScreen ? require('../../assets/imgs/icon_not_full_screen.png') : require('../../assets/imgs/icon_full_screen.png')}
+              onClick={() => {
+                if (fullScreen)
+                  onExit();
+                else
+                  onRequest();
+                setFullScreen(!fullScreen);
+              }}></RoundButton>
+          </div>
+        </div>
+      )}
+    </ReactFullscreen>
   );
 }
 
