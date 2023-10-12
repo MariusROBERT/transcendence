@@ -8,6 +8,7 @@ export function useIsWindowFocused(): boolean {
   useEffect(() => {
     async function resetFetch() {
       await delay(100);
+      // eslint-disable-next-line
       inFetch = false;
     }
 

@@ -45,7 +45,8 @@ export function SidePanel({
     return () => {
       unsubscribe('open_chat', () => void 0);
     };
-  }, [isLeftPanel, Open]);
+    // eslint-disable-next-line
+  }, [isLeftPanel, isMoving, duration_ms]);
 
   async function Close() {
     if (isMoving) return;

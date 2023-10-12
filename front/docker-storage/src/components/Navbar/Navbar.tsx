@@ -9,11 +9,11 @@ import { useFriendsRequestContext } from '../../contexts';
 
 const Navbar: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const { user, socket } = useUserContext();
+  const [profileVisible, setProfileVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const { recvInvitesFrom } = useFriendsRequestContext();
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
+  const { user, socket } = useUserContext();
+  const { recvInvitesFrom } = useFriendsRequestContext();
 
   const showNotif = () => {
     setNotifsVisible(!notifsVisible);
@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
               icon_size={50}
-              onClick={() => setProfilVisible(!profilVisible)}
+              onClick={() => setProfileVisible(!profileVisible)}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_setting.png')}
@@ -80,11 +80,12 @@ const Navbar: React.FC = () => {
             </div>}
         </div>
       </div>
+
       <GameInvites></GameInvites>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible} />
       </Popup>
-      <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+      <Popup isVisible={profileVisible} setIsVisible={setProfileVisible}>
         <Profil otherUser={user} />
       </Popup>
     </>
@@ -92,8 +93,8 @@ const Navbar: React.FC = () => {
 };
 
 const navbarStyle: CSSProperties = {
-  top: '-1px',
-  right: '-1px',
+  top: '0px',
+  right: '0px',
   position: 'fixed',
   display: 'flex',
   flexDirection: 'row-reverse',
