@@ -67,12 +67,12 @@ class Particle {
 }
 
 export class Ball {
-  pos: { x: number, y: number };
+  pos: p5Types.Vector;
   particles: Particle[];
   rainbow = new Rainbow();
 
-  constructor(pos: { x: number, y: number }) {
-    this.pos = pos;
+  constructor(p5: p5Types, pos: { x: number, y: number }) {
+    this.pos = p5.createVector(pos.x, pos.y);
     this.particles = [];
   }
 
@@ -94,10 +94,11 @@ export class Ball {
 
 export class GuidedBall extends Ball {
   id: number;
-  constructor(id: number, pos: { x: number, y: number }) {
-    super(pos);
+  constructor(p5: p5Types, id: number, pos: { x: number, y: number }) {
+    super(p5, pos);
     this.id = id;
   }
+
 
   update(vec: { x: number, y: number }, size: Size) {
     while (this.particles.length > size.ball - 1)
@@ -111,35 +112,105 @@ export class GuidedBall extends Ball {
   }
 }
 
-export class AutonomousBall extends Ball {
-  dir: { x: number, y: number };
 
-  constructor(pos: { x: number, y: number }, dir: { x: number, y: number }) {
-    super(pos);
-    const normedDir = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
-    const normedX = dir.x / normedDir * (Math.random() * 5 + 3);
-    const normedY = dir.y / normedDir * (Math.random() * 5 + 3);
-    this.dir = {x: normedX, y: normedY};
+export class AutonomousBall extends Ball {
+  readonly minSpeed = 2;
+  readonly maxSpeed = 20;
+  dir: p5Types.Vector;
+  speed: number;
+  grow = true;
+
+  constructor(p5: p5Types, pos: { x: number, y: number }, dir: { x: number, y: number }) {
+    super(p5, pos);
+    this.dir = p5.createVector(dir.x, dir.y);
+    this.dir.normalize();
+    this.speed = Math.random() * 5 + 3;
   }
 
-  update(size: Size) {
+  // update(size: Size) {
+  //   while (this.particles.length > size.ball - 1)
+  //     this.particles.shift();
+  //   for (const particle of this.particles) {
+  //     particle.update();
+  //   }
+  //
+  //   this.pos.x += this.dir.x;
+  //   if (this.pos.x - (size.ball / 2) < 5)
+  //     this.dir.x *= -1;
+  //   else if (this.pos.x + (size.ball / 2) > (size.width - 5))
+  //     this.dir.x *= -1;
+  //
+  //   this.pos.y += this.dir.y;
+  //   if (this.pos.y - (size.ball / 2) < 5)
+  //     this.dir.y *= -1;
+  //   else if (this.pos.y + (size.ball / 2) > (size.height - 5))
+  //     this.dir.y *= -1;
+  //
+  // }
+
+  static dot(vec1: p5Types.Vector, vec2: p5Types.Vector) {
+    return vec1.x * vec2.x + vec1.y * vec2.y;
+  }
+
+  static reflect(vec: p5Types.Vector, normal: p5Types.Vector) {
+    const dot = AutonomousBall.dot(vec, normal);
+    vec.sub(p5Types.Vector.mult(normal, 2 * dot));
+  }
+
+  bounceWithWall(size: Size) {
+    if (this.pos.x - (size.ball / 2) < 5)
+      this.dir.x *= -1;
+    else if (this.pos.x + (size.ball / 2) > (size.width - 5))
+      this.dir.x *= -1;
+
+    if (this.pos.y - (size.ball / 2) < 5)
+      this.dir.y *= -1;
+    else if (this.pos.y + (size.ball / 2) > (size.height - 5))
+      this.dir.y *= -1;
+  }
+
+  bounceWithBall(size: Size, ball: AutonomousBall, p5: p5Types) {
+    if (Math.abs(this.pos.x - ball.pos.x) > size.ball) return;
+    if (Math.abs(this.pos.y - ball.pos.y) > size.ball) return;
+    console.log('collision');
+    const len = Math.sqrt((this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2);
+    if (len > size.ball) return;
+    const normal = p5.createVector(
+      (ball.pos.x - this.pos.x) / len,
+      (ball.pos.y - this.pos.y) / len,
+    );
+    AutonomousBall.reflect(this.dir, normal);
+    AutonomousBall.reflect(ball.dir, normal);
+    this.changeSpeed(this);
+    this.changeSpeed(ball);
+  }
+
+  changeSpeed(ball: AutonomousBall) {
+    ball.speed += ball.grow ? 0.1 : -0.1;
+    if (ball.speed > ball.maxSpeed) {
+      ball.speed = ball.maxSpeed;
+      ball.grow = false;
+    }
+    if (ball.speed < ball.minSpeed) {
+      ball.speed = ball.minSpeed;
+      ball.grow = true;
+    }
+  }
+
+  update(size: Size, balls: AutonomousBall[], p5: p5Types) {
     while (this.particles.length > size.ball - 1)
       this.particles.shift();
     for (const particle of this.particles) {
       particle.update();
     }
 
-    this.pos.x += this.dir.x;
-    if (this.pos.x - (size.ball / 2) < 5)
-      this.dir.x *= -1;
-    else if (this.pos.x + (size.ball / 2) > (size.width - 5))
-      this.dir.x *= -1;
+    this.bounceWithWall(size);
+    for (const ball of balls) {
+      this.bounceWithBall(size, ball, p5);
+    }
 
-    this.pos.y += this.dir.y;
-    if (this.pos.y - (size.ball / 2) < 5)
-      this.dir.y *= -1;
-    else if (this.pos.y + (size.ball / 2) > (size.height - 5))
-      this.dir.y *= -1;
+    this.dir.normalize();
+    this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
     // Red / Blue particles depending on ball X pos
     const blue = this.pos.x * 255 / size.width;
@@ -147,6 +218,33 @@ export class AutonomousBall extends Ball {
     this.particles.push(new Particle({...this.pos}, [red, 0, blue]));
     // Rainbow particles
     // this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
+  }
+
+}
+
+export class MouseBall extends AutonomousBall {
+  update(size: Size, balls: AutonomousBall[], p5: p5Types) {
+    for (const ball of balls) {
+      this.bounceWithBall(size, ball, p5);
+    }
+
+    this.pos.x = p5.mouseX;
+    this.pos.y = p5.mouseY;
+  }
+
+  draw(p5: p5Types, size: Size) {
+    // Particles
+    for (const particle of this.particles) {
+      particle.draw(p5, size.ball);
+    }
+    // Neon
+    p5.noStroke();
+    for (let i = 0; i < 30; i += 5) {
+      p5.fill(255, 0, 0, 25);
+      p5.circle(this.pos.x, this.pos.y, size.ball + i);
+    }
+    p5.fill(this.rainbow.next());
+    p5.circle(this.pos.x, this.pos.y, size.ball);
   }
 }
 

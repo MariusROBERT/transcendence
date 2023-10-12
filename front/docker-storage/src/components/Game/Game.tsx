@@ -157,7 +157,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
         const ballState = gameState.balls[i];
         if (newBalls.some(b => b.id === ballState.id))
           continue;
-        newBalls.push(new GuidedBall(ballState.id, ballState.pos));
+        newBalls.push(new GuidedBall(p5, ballState.id, ballState.pos));
       }
       setBalls(newBalls);
     }

@@ -17,7 +17,7 @@ function App() {
         className={'cursor_perso'}
         style={appStyle}
       >
-        <AnimatedBackground viewport={viewport} ballNumber={10} />
+        <AnimatedBackground viewport={viewport} ballNumber={10} style={{zIndex:'-1'}}/>
         <Routes>
           <Route path='/login' element={
             <Login viewport={viewport}></Login>}>
