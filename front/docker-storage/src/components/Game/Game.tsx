@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { baseSize, GuidedBall, Size, start, GameState, Ball } from './game.utils';
+import { baseSize, GuidedBall, Size, start, GameState } from './game.utils';
 import { useGameContext, useUserContext } from '../../contexts';
 import { Viewport } from '../../utils';
 import Sketch from 'react-p5';
