@@ -3,6 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, SwitchToggle } from '..';
+import {API_URL} from '../../utils/Global';
 
 interface Props {
   isVisible: boolean;
@@ -29,7 +30,7 @@ export default function Settings(props: Props) {
         if (user) {
           setUserInfosSettings(user);
         } else {
-          window.location.replace('http://localhost:3001/api/auth/login');
+          window.location.replace(API_URL + '/api/auth/login');
         }
       };
       getUserInfos();
@@ -80,7 +81,7 @@ export default function Settings(props: Props) {
       formData.append('file', newImage || '');
 
       const user = await fetch(
-        'http://localhost:3001/api/user/update_picture',
+        API_URL + '/api/user/update_picture',
         {
           method: 'POST',
           headers: {

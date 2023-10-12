@@ -80,7 +80,6 @@ const Navbar: React.FC = () => {
             </div>}
         </div>
       </div>
-
       <GameInvites></GameInvites>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible} />

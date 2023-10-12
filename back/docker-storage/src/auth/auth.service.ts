@@ -14,6 +14,7 @@ import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { ftLoginDto } from './dtos/ft-login.dto';
 import { authenticator } from 'otplib';
+import { API_URL } from '../utils/Globals';
 
 @Injectable()
 export class AuthService {
@@ -21,8 +22,7 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
@@ -33,7 +33,7 @@ export class AuthService {
     user.salt = await bcrypt.genSalt(); // genere le salt
     user.password = await bcrypt.hash(user.password, user.salt);
     user.user_status = UserStateEnum.ON;
-    user.urlImg = 'http://localhost:3001/public/default.png';
+    user.urlImg = API_URL + '/public/default.png';
     user.friends = [];
     user.sentInvitesTo = [];
     user.recvInvitesFrom = [];
