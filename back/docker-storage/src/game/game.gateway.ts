@@ -18,12 +18,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number, sockets: Socket[] }[] = [];
+  clients: { id: number; sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
-  constructor(private userService: UserService) {
-  }
+  constructor(private userService: UserService) {}
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -62,8 +61,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async connect(clientId: number) {
-    if (clientId === 0)
-      return;
+    if (clientId === 0) return;
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('connect: no such User');
     await this.userService.login(user);
@@ -84,7 +82,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_invite')
   async sendInvite(
     @MessageBody()
-      msg: {
+    msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -109,7 +107,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('accept_invite')
   async acceptInvite(
     @MessageBody()
-      msg: {
+    msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -203,15 +201,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async endGame(playerIds: number[]) {
-    this.server.to('user' + playerIds[0]).to('user' + playerIds[1]).emit('end_game');
+    this.server
+      .to('user' + playerIds[0])
+      .to('user' + playerIds[1])
+      .emit('end_game');
   }
 
   @SubscribeMessage('start_game')
   async starts(@MessageBody() msg: { id: number }) {
-    const user = await this.userService.getUserById(msg.id);
+    // const user = await this.userService.getUserById(msg.id);
     const playerIds = this.controller.matchmaking.getGame(msg.id)?.playerIds;
 
-    const otherId = playerIds.find(i => i !== msg.id);
+    // const otherId = playerIds.find((i) => i !== msg.id);
     const p1 = await this.userService.getUserById(playerIds[0]);
     const p2 = await this.userService.getUserById(playerIds[1]);
 

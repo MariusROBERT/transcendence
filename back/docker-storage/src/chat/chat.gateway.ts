@@ -34,8 +34,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;

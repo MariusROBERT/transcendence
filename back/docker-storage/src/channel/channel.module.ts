@@ -33,5 +33,4 @@ import { MutedEntity } from 'src/database/entities/muted.entity';
     ChatGateway,
   ],
 })
-export class ChannelModule {
-}
+export class ChannelModule {}

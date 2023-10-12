@@ -18,8 +18,7 @@ import { FtAuthFilter } from './filters/ftAuth.filter';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {
-  }
+  constructor(private authService: AuthService) {}
 
   @Post('/register')
   async Register(@Body() userData: UserSubDto): Promise<Partial<UserEntity>> {
