@@ -39,7 +39,6 @@ export function MainPage({panelWidth, viewport}: Props) {
 
   return (
     <div style={MainPageStyle}>
-      <AnimatedBackground viewport={viewport}/>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                   flex_alignItems={'stretch'} forceStyle={{zIndex: 2}}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
