@@ -13,6 +13,10 @@ const UserBanner = ({ otherUser }: Props) => {
   const { id, user, socket } = useUserContext();
   const isMe = otherUser.id === user?.id;
   const [userBanner, setUserBanner] = useState<IUser>(otherUser.id === id && user ? user : otherUser);
+  const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  useEffect(() => {
+    setMobile(window.innerWidth < 650);
+  }, [window.innerWidth])
 
   useEffect(() => {
     function connect(body: { userId: number }) {
@@ -37,6 +41,22 @@ const UserBanner = ({ otherUser }: Props) => {
   const displayName = (userBanner.username.length || '') > 11 ?
     userBanner.username.slice(0, 11) + '...' :
     userBanner.username;
+
+  const UserBannerContainer = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // width:'400px',
+    width: mobile ? 200: 400,
+  };
+
+  const statusStyle: CSSProperties = {
+    position: 'absolute',
+    left: '0px',
+    top: '0px',
+    width: '10px',
+    height: '10px',
+  };
 
   return (
     <div>
@@ -64,21 +84,3 @@ const UserBanner = ({ otherUser }: Props) => {
   );
 };
 export default UserBanner;
-
-const mobile = window.innerWidth < 500;
-
-export const UserBannerContainer = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  // width:'400px',
-  width: mobile ? 200: 400,
-};
-
-const statusStyle: CSSProperties = {
-  position: 'absolute',
-  left: '0px',
-  top: '0px',
-  width: '10px',
-  height: '10px',
-};

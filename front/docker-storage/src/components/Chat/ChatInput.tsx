@@ -7,14 +7,15 @@ interface Props {
   OnClick: () => void;
 }
 
-const mobile = window.innerWidth < 500;
-
 export default function ChatInput({
                                     input,
                                     setInput,
                                     OnEnter,
                                     OnClick,
                                   }: Props) {
+
+  const mobile = window.innerWidth < 500;
+
   return (
     <div
       style={{

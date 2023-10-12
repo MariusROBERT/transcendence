@@ -9,10 +9,10 @@ interface Props {
   user?: IUser
 }
 
-const mobile = window.innerWidth < 500;
 
 export function Search(props: Props) {
   const [searchMode, setSearchMode] = useState<boolean>(false);
+  const mobile = window.innerWidth < 500;
 
   useEffect(() => {
     const input = document.getElementById('searchBar') as HTMLInputElement;

@@ -43,6 +43,40 @@ const Navbar: React.FC = () => {
     setNotif();
   }, [recvInvitesFrom]);
 
+  const mobile = window.innerWidth < 500;
+
+  const navbarStyle: CSSProperties = {
+    top: 0,
+    right: 0,
+    position: 'fixed',
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    borderRadius: '30px',
+    zIndex: 111,
+  };
+
+  const notifbadge: CSSProperties = {
+    position: 'absolute',
+    width: '20px',
+    height: '20px',
+    top: '20px',
+    background: 'red',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  };
+
+  const notifstyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
+    right: mobile ? 0 : 200,
+    minHeight: '100%',
+    background: 'black',
+  };
+
   return (
     <>
       <div style={navbarStyle}>
@@ -87,40 +121,6 @@ const Navbar: React.FC = () => {
       </Popup>
     </>
   );
-};
-
-const mobile = window.innerWidth < 500;
-
-const navbarStyle: CSSProperties = {
-  top: 0,
-  right: 0,
-  position: 'fixed',
-  display: 'flex',
-  flexDirection: 'row-reverse',
-  borderRadius: '30px',
-  zIndex: 111,
-};
-
-const notifbadge: CSSProperties = {
-  position: 'absolute',
-  width: '20px',
-  height: '20px',
-  top: '20px',
-  background: 'red',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  alignContent: 'center',
-};
-
-const notifstyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'absolute',
-  right: mobile ? 0 : 200,
-  minHeight: '100%',
-  background: 'black',
 };
 
 export default Navbar;

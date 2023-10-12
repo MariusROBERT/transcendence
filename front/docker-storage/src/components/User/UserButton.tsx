@@ -1,17 +1,16 @@
-import { color } from '../../utils';
-import { RoundButton, Flex } from '..';
-import { useEffect, useState } from 'react';
-import { IUser } from '../../utils/interfaces';
-import { lookGame, openChat } from '../../utils/user_functions';
-import { useGameContext, useUserContext } from '../../contexts';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
+import {color} from '../../utils';
+import {Flex, RoundButton} from '..';
+import {useEffect, useState} from 'react';
+import {IUser} from '../../utils/interfaces';
+import {lookGame, openChat} from '../../utils/user_functions';
+import {useFriendsRequestContext, useGameContext, useUserContext} from '../../contexts';
 
 interface Props {
   otherUser: IUser;
 }
 
-export function UserButton({ otherUser }: Props) {
-  const { sendGameInvite } = useGameContext();
+export function UserButton({otherUser}: Props) {
+  const {sendGameInvite} = useGameContext();
   const {
     sendFriendRequest,
     acceptFriendRequest,
@@ -22,7 +21,7 @@ export function UserButton({ otherUser }: Props) {
     friends,
     blocked,
   } = useFriendsRequestContext();
-  const { id, user } = useUserContext();
+  const {id, user} = useUserContext();
   const [isBlocked, setIsBlocked] = useState(blocked?.includes(otherUser.id));
 
   useEffect(() => {
@@ -40,28 +39,28 @@ export function UserButton({ otherUser }: Props) {
         minWidth: '100px',
         height: '25px',
       }}>
-        <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
+        <Flex zIndex={'10'} flex_direction="row" flex_justifyContent={'space-evenly'}>
           {friends?.includes(otherUser.id) &&
-            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()} />}
+              <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()}/>}
           {friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')}
-                                                           onClick={() => sendGameInvite(otherUser.id, 'normal')} />}
+                                                           onClick={() => sendGameInvite(otherUser.id, 'normal')}/>}
           {friends?.includes(otherUser.id) &&
-            <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()} />}
+              <RoundButton icon={require('../../assets/imgs/icon_look_game.png')} onClick={() => lookGame()}/>}
           {!friends?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
-            <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')}
-                         onClick={() => sendFriendRequest(otherUser.id)} />
+              <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')}
+                           onClick={() => sendFriendRequest(otherUser.id)}/>
           }
           {user && <RoundButton icon={require('../../assets/imgs/icon_block.png')} onClick={() => {
             setIsBlocked(true);
             blockUser(otherUser.id, user.id);
-          }} isDisabled={isBlocked} />}
+          }} isDisabled={isBlocked}/>}
           {recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) && !isBlocked &&
-            <div style={askStyle}>
-              <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-                           onClick={() => acceptFriendRequest(id, otherUser.id)} />
-              <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-                           onClick={() => declineFriendRequest(id, otherUser.id)} />
-            </div>
+              <div style={askStyle}>
+                <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
+                             onClick={() => acceptFriendRequest(id, otherUser.id)}/>
+                <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
+                             onClick={() => declineFriendRequest(id, otherUser.id)}/>
+              </div>
           }
         </Flex>
       </div>

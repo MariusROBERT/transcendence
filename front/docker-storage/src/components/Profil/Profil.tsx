@@ -10,16 +10,43 @@ export interface ProfilProps {
 
 export default function Profil(props: ProfilProps) {
   const {user} = useUserContext();
+  const mobile = window.innerWidth < 500;
+
+  const profilContainer: React.CSSProperties = {
+    borderRadius: '10px',
+    padding: mobile ? 15: 20,
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'grey',
+    height: '100%',
+    color: 'white',
+    margin: mobile ? 5: 10,
+    cursor: 'pointer',
+    minWidth: '300px',
+  };
+
   if (!props.otherUser)
     return (<div style={profilContainer}>
       <p>Utilisateur introuvable.</p>
     </div>);
 
   const isMe = props.otherUser?.id === user?.id;
-  const mobile = window.innerWidth < 500;
   const displayName = props.otherUser?.username.length > 11 ?
     props.otherUser?.username.slice(0, 11) + '...' :
     props.otherUser?.username;
+
+
+  const imgStyle = {
+    width: '200px',
+    borderRadius: '5px',
+    border: '2px solid',
+  };
+
+  const statusStyle = {
+    width: '10px',
+    height: '10px',
+  };
 
   return (
     <div style={profilContainer}>
@@ -46,29 +73,3 @@ export default function Profil(props: ProfilProps) {
 
 }
 
-const mobile = window.innerWidth < 500;
-
-const profilContainer: React.CSSProperties = {
-  borderRadius: '10px',
-  padding: mobile ? 15: 20,
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  background: 'grey',
-  height: '100%',
-  color: 'white',
-  margin: mobile ? 5: 10,
-  cursor: 'pointer',
-  minWidth: '300px',
-};
-
-const imgStyle = {
-  width: '200px',
-  borderRadius: '5px',
-  border: '2px solid',
-};
-
-const statusStyle = {
-  width: '10px',
-  height: '10px',
-};

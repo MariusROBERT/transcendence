@@ -13,7 +13,7 @@ interface Props {
   setVisible: (b: boolean) => void;
 }
 
-  const mobile = window.innerWidth < 500;
+
 
 export default function CreateChat({ visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
@@ -21,6 +21,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
+  const mobile = window.innerWidth < 500;
 
   useEffect(() => {
     if (!visible) {
@@ -57,7 +58,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
   }
 
   return (
-    <div style={createChatStyle}>
+    <div style={{...createChatStyle, padding: mobile ? 10 : 42}}>
       <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
         <ErrorPanel text={errorMessage}></ErrorPanel>
       </div>
@@ -96,20 +97,6 @@ export default function CreateChat({ visible, setVisible }: Props) {
   );
 }
 
-export const createChatStyle: React.CSSProperties = {
-  borderRadius: '10px',
-  padding: mobile ? 10 : 42,
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  background: 'grey',
-  height: '100%',
-  color: 'white',
-  margin: '10px',
-  cursor: 'pointer',
-  minWidth: '300px',
-};
-
 export const inputStyle: React.CSSProperties = {
   outline: 'none',
   borderRadius: '10px',
@@ -119,4 +106,18 @@ export const inputStyle: React.CSSProperties = {
   height: '32px',
   width: '315px',
   backgroundColor: color.white,
+};
+
+export const createChatStyle: React.CSSProperties = {
+  borderRadius: '10px',
+  padding: window.innerWidth < 500 ? 10 : 42,
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  background: 'grey',
+  height: '100%',
+  color: 'white',
+  margin: '10px',
+  cursor: 'pointer',
+  minWidth: '300px',
 };

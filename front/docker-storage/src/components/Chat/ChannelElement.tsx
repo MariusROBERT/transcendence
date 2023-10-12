@@ -14,8 +14,6 @@ interface Props {
   setCurrent: (c: ChannelPublicPass) => void;
 }
 
-const mobile = window.innerWidth < 500;
-
 export default function ChannelElement({
                                          data,
                                          setVisible,
@@ -41,6 +39,28 @@ export default function ChannelElement({
     }
     socket?.emit('join', {channel: data.channel_name});
   }
+
+  const mobile = window.innerWidth < 500;
+
+  const ChannelElementStyle: CSSProperties = {
+    width: mobile ? 320 : 520,
+    border: '1px solid white',
+    //flexWrap: 'wrap',
+    display: 'flex',
+    margin: 10,
+    //alignContent: 'center',
+    background: '#646464',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '10px',
+  };
+
+  const ChannelBannerContainer = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  };
 
   return (
     <div style={ChannelElementStyle}>
@@ -74,23 +94,3 @@ export default function ChannelElement({
     </div>
   );
 }
-
-const ChannelElementStyle: CSSProperties = {
-  width: mobile ? 320 : 520,
-  border: '1px solid white',
-  //flexWrap: 'wrap',
-  display: 'flex',
-  margin: 10,
-  //alignContent: 'center',
-  background: '#646464',
-  color: 'white',
-  cursor: 'pointer',
-  borderRadius: '10px',
-};
-
-const ChannelBannerContainer = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  width: '100%',
-};

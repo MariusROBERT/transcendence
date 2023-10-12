@@ -4,14 +4,16 @@ import {IUser, LeaderboardProps} from '../../utils/interfaces';
 import {Fetch} from '../../utils';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
 
-const mobile = window.innerWidth < 500;
-
 export function Leaderboard({searchTerm}: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const {fetchContext, user} = useUserContext();
   const {fetchFriendsRequestContext} = useFriendsRequestContext();
+  const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  useEffect(() => {
+    setMobile(window.innerWidth < 650);
+  }, [window.innerWidth])
 
   useEffect(() => {
     fetchContext();
@@ -62,6 +64,32 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
     filterAndSortUsers();
   }, [searchTerm, allUsers, user]);
 
+  const container: CSSProperties = {
+    background: 'grey',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    maxHeight: '500px',
+    overflowY: 'scroll',
+    // width: mobile ? 200 : 700,
+  };
+
+  const userElementStyle: CSSProperties = {
+    maxWidth: mobile ? 500 : 600,
+    border: '1px solid white',
+    flexWrap: 'nowrap',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignContent: 'center',
+    background: '#646464',
+    color: 'white',
+    margin: '10px 0',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: '10px',
+  };
+
+
   return (
     <div style={container}>
       {errorMessage && (
@@ -80,27 +108,3 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
     </div>
   );
 }
-
-const container: CSSProperties = {
-  background: 'grey',
-  display: 'flex',
-  justifyContent: 'center',
-  alignContent: 'center',
-  maxHeight: '500px',
-  overflowY: 'scroll',
-};
-
-const userElementStyle: CSSProperties = {
-  width: mobile ? 340: '600px',
-  border: '1px solid white',
-  flexWrap: 'wrap',
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignContent: 'center',
-  background: '#646464',
-  color: 'white',
-  margin: '10px 0',
-  padding: '10px 0',
-  cursor: 'pointer',
-  borderRadius: '10px',
-};
