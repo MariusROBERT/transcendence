@@ -3,7 +3,6 @@ import {Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel} from
 import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
-import {AnimatedBackground} from '../ComponentBase/AnimatedBackground';
 
 interface Props {
   panelWidth: number;

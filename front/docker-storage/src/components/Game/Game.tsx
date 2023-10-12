@@ -173,6 +173,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
     p5.rect(size.p2X, gameState.p2 - size.halfBar, size.bar.x, size.bar.y);
   };
 
+
   return (
     <ReactFullscreen>
       {({ onRequest, onExit }) => (
