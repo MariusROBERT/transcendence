@@ -65,7 +65,7 @@ export function SidePanel({
     await delay(duration_ms);
     setIsShowing(true);
     setIsAnim(false);
-    await delay(duration_ms);
+    await delay(duration_ms / 4);
     setIsOpen(true);
     setIsShowing(false);
   }
