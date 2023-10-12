@@ -15,7 +15,7 @@ import { publish } from '../../utils/event';
 export function ChannelPannel({ id, name, type }: ChannelInfos) {
   const { socket } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
-  const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined)
+  const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined);
 
   async function OnJoinChannel() {
     UpdateChannelMessage(id);

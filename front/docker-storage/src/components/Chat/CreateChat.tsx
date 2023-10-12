@@ -22,7 +22,6 @@ export default function CreateChat({ visible, setVisible }: Props) {
   const [checked, setChecked] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
 
-
   useEffect(() => {
     if (!visible) {
       setChannelName('');
@@ -67,7 +66,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Name"
+          placeholder='Name'
           style={inputStyle}
           value={channelName}
           onChange={(evt) => {
@@ -78,7 +77,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder="Optional password"
+          placeholder='Optional password'
           style={inputStyle}
           value={password}
           onChange={(evt) => {

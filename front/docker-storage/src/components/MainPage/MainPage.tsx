@@ -26,7 +26,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
   useEffect(() => {
     fetchFriendsRequestContext();
     // eslint-disable-next-line
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!user)

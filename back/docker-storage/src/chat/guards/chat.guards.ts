@@ -11,7 +11,8 @@ export class ChatCheckGuard implements CanActivate {
     private jwtService: JwtService,
     private muteService: MutedService,
     private channelService: ChannelService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Mettez en œuvre votre logique pour vérifier si l'utilisateur est banni

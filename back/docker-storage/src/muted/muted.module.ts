@@ -10,4 +10,5 @@ import { MutedController } from './muted.controller';
   controllers: [MutedController],
   providers: [MutedService],
 })
-export class MutedModule {}
+export class MutedModule {
+}

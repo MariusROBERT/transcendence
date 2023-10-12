@@ -1,19 +1,18 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
+import React, {CSSProperties, useEffect, useState} from 'react';
+import {GameInvites, Popup, Profil, RoundButton, Settings} from '..';
 import Cookies from 'js-cookie';
-import { Fetch } from '../../utils';
-import { useUserContext } from '../../contexts';
-import { IUser } from '../../utils/interfaces';
+import {Fetch} from '../../utils';
+import {useFriendsRequestContext, useUserContext} from '../../contexts';
+import {IUser} from '../../utils/interfaces';
 import NotifCard from './notifCard';
-import { useFriendsRequestContext } from '../../contexts';
 
 const Navbar: React.FC = () => {
   const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
-  const { user, socket } = useUserContext();
+  const {user, socket} = useUserContext();
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const { recvInvitesFrom } = useFriendsRequestContext();
+  const {recvInvitesFrom} = useFriendsRequestContext();
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
 
   const showNotif = () => {
@@ -51,34 +50,30 @@ const Navbar: React.FC = () => {
     // eslint-disable-next-line
   }, [profilVisible]);
 
-  const setNotif = async () => {
-    const tmp = recvInvitesFrom.map(async (from) => {
-      return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
-    });
-    try {
-      if (!tmp) {
-        setNotifsVisible(false);
-        return;
-      }
-      const res = await Promise.all(tmp);
-      setNotifs(res as IUser[]);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   useEffect(() => {
+    const setNotif = async () => {
+      const tmp = recvInvitesFrom.map(async (from) => {
+        return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
+      });
+      try {
+        if (!tmp) {
+          setNotifsVisible(false);
+          return;
+        }
+        const res = await Promise.all(tmp);
+        setNotifs(res as IUser[]);
+      } catch (e) {
+        console.log(e);
+      }
+    };
     setNotif();
-    // if (notifs.length === 0)
-    //   setNotifsVisible(false);
-    // eslint-disable-next-line
-  }, [notifs]);
+  }, [recvInvitesFrom]);
 
   return (
     <>
       <div style={navbarStyle}>
         <div>
-          <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
+          <div style={{display: 'flex', background: 'black', borderRadius: '0 0 0 30px'}}>
             {notifs.length > 0 && <div style={notifbadge}>{notifs.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
@@ -102,26 +97,26 @@ const Navbar: React.FC = () => {
             />
           </div>
           {notifsVisible &&
-            <div style={notifstyle}>
-              {notifs.map((notif) => (
-                <NotifCard notif={notif} otherUser={notif} key={notif.id}/>
-              ))}
-            </div>}
+              <div style={notifstyle}>
+                {notifs.map((notif) => (
+                  <NotifCard notif={notif} otherUser={notif} key={notif.id}/>
+                ))}
+              </div>}
           <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-            <Settings isVisible={settingsVisible} />
+            <Settings isVisible={settingsVisible}/>
           </Popup>
           <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={user} />
+            <Profil otherUser={user}/>
           </Popup>
         </div>
 
       </div>
       <GameInvites/>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-        <Settings isVisible={settingsVisible} />
+        <Settings isVisible={settingsVisible}/>
       </Popup>
       <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-        <Profil otherUser={user} />
+        <Profil otherUser={user}/>
       </Popup>
     </>
   );
@@ -156,7 +151,7 @@ const notifstyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   position: 'absolute',
-  right: mobile ? 0: 200,
+  right: mobile ? 0 : 200,
   minHeight: '100%',
   background: 'black',
 };

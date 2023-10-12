@@ -72,7 +72,6 @@ export default function Settings(props: Props) {
       setOldPassword('');
       setPassword('');
       setConfirmPassword('');
-
     }
 
     // IMG :
@@ -214,29 +213,29 @@ export default function Settings(props: Props) {
             height: '100vh',
             width: '100vw',
           }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                alignContent: 'space-evenly',
-                flexDirection: 'column'
-              }}>
-                  <p style={{backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5}}>
-                      Scan this QrCode in your favorite 2fa application
-                  </p>
-                  <img src={qrCode2fa} alt="qrCode2fa"/>
-                  <p style={{
-                    backgroundColor: 'lightgrey',
-                    padding: '.7em',
-                    borderRadius: 5,
-                    color: 'black',
-                    fontSize: '1.75em',
-                    textShadow: 'none',
-                  }}>{code2fa}</p>
-                  <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{display: 'none'}}/>
-                  <label htmlFor={'2faDone'}>
-                      <p style={{backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5}}>Done</p>
-                  </label>
-              </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              alignContent: 'space-evenly',
+              flexDirection: 'column'
+            }}>
+              <p style={{backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5}}>
+                Scan this QrCode in your favorite 2fa application
+              </p>
+              <img src={qrCode2fa} alt="qrCode2fa"/>
+              <p style={{
+                backgroundColor: 'lightgrey',
+                padding: '.7em',
+                borderRadius: 5,
+                color: 'black',
+                fontSize: '1.75em',
+                textShadow: 'none',
+              }}>{code2fa}</p>
+              <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{display: 'none'}}/>
+              <label htmlFor={'2faDone'}>
+                <p style={{backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5}}>Done</p>
+              </label>
+            </div>
           </div>
       }
     </div>

@@ -4,7 +4,7 @@
     display: flex;
     background: rgb(41, 37, 37);
     padding: 15px;
-    margin: 5px;    
+    margin: 5px;
 }
 
 .notif .container {
@@ -16,7 +16,7 @@
     justify-content: space-around;
 }
 
-.bar{
+.bar {
     width: 6px;
     border-radius: 10px;
     height: 100%;

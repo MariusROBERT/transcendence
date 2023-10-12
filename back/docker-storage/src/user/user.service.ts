@@ -31,37 +31,38 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
 
-  async updateProfile(profil: UpdateUserDto, user: UserEntity) {
+  async updateProfile(profile: UpdateUserDto, user: UserEntity) {
     const id: number = user.id;
-    const errors = await validate(profil);
+    const errors = await validate(profile);
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    //console.log('modifications apportées: ', profil);
+    //console.log('modifications apportées: ', profile);
 
-    const newProfil = await this.UserRepository.preload({
+    const newProfile = await this.UserRepository.preload({
       id, // search user == id
-      ...profil, // modif seulement les differences
+      ...profile, // modif seulement les differences
     });
-    if (!newProfil) {
+    if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
-    if (profil.is2fa_active) {
-      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfil);
+    if (profile.is2fa_active) {
+      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
 
       return {
-        ...(await this.UserRepository.save(newProfil)),
+        ...(await this.UserRepository.save(newProfile)),
         qrCode: await toDataURL(otpauthUrl),
         code2fa: secret ? secret[1] : '',
       };
     }
-    return await this.UserRepository.save(newProfil);
+    return await this.UserRepository.save(newProfile);
   }
 
   async updatePassword(updatePwdDto: UpdatePwdDto, user: UserEntity) {
@@ -72,8 +73,8 @@ export class UserService {
     const currentUser = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    if (currentUser.id42 > 0)
-      throw new UnauthorizedException("Oauth42 user can't change password");
+    if (currentUser.username.endsWith('_42'))
+      throw new UnauthorizedException('Oauth42 user can\'t change password');
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
       currentUser.salt,
@@ -108,7 +109,6 @@ export class UserService {
     const lastMsg = await this.getLastMsg(user);
     if (lastMsg) user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
-    user.isInGameWith = -1;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
     await this.UserRepository.save(user);
@@ -459,15 +459,7 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
-  async setUserInGameStatus(user: UserEntity, otherUserId: number | undefined) {
-    user.isInGameWith = otherUserId ? otherUserId : -1;
-    return await this.UserRepository.save(user);
-  }
-
-  async setUserInvitationType(
-    user: UserEntity,
-    gameType: 'none' | 'normal' | 'special',
-  ) {
+  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
     user.gameInvitationType = gameType;
     return await this.UserRepository.save(user);
   }
@@ -477,7 +469,6 @@ export class UserService {
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
-      isInGameWith: user.isInGameWith,
       gameInviteType: user.gameInvitationType,
     };
   }

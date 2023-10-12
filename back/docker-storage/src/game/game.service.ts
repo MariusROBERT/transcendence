@@ -31,6 +31,7 @@ export class GameService {
 
   // GAME LOGIC ----------------------------------------------------------- //
   frameRate: number = 1000 / 120;
+
   //called at the start of the game and then every frame till the game ends
   async update(game: gameRoom) {
     //check for the end game conditions
@@ -94,7 +95,7 @@ export class GameService {
     else this.bounce(state);
 
     //increase progressively the speed
-    state.speed = Math.min(state.speed + 0.001, 10);
+    state.speed = Math.min(state.speed + 0.005, 10);
   }
 
   //manage the 'physics' of the game

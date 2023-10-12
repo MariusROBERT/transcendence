@@ -39,14 +39,12 @@ export class UserEntity {
   @Column({ default: false })
   is2fa_active!: boolean;
 
+  //
   @Column({ default: 'ta gueule' })
   secret2fa?: string;
 
   @Column({ type: 'enum', enum: UserStateEnum })
   user_status!: UserStateEnum;
-
-  @Column({ default: -1 })
-  id42!: number;
 
   // CHANNEL :
 
@@ -110,9 +108,6 @@ export class UserEntity {
   elo: number;
 
   // Game Invites:
-  @Column({ default: -1 })
-  isInGameWith: number;
-
   @Column({ default: -1 })
   gameInvitationTo: number;
 

@@ -10,24 +10,23 @@ const NotifCard = ({notif, otherUser}: { notif: UserInfos, otherUser: IUser }) =
   if (recvInvitesFrom.includes(otherUser.id)) {
     return (
       <div className="notif">
-        <div className="bar"></div>
+        <div className="bar"/>
         <div className="container">
           <p className="username">
             {notif.username} vous a demande en ami
           </p>
           <div className="btn">
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-                         onClick={() => acceptFriendRequest(id, otherUser.id)}
-            />
+                         onClick={() => acceptFriendRequest(id, otherUser.id)}/>
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-                         onClick={() => declineFriendRequest(id, otherUser.id)}
-            />
+                         onClick={() => declineFriendRequest(id, otherUser.id)}/>
           </div>
         </div>
       </div>
     );
   }
   return null;
+
 };
 
 export default NotifCard;
