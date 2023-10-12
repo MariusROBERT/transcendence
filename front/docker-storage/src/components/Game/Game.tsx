@@ -140,12 +140,10 @@ export function Game({ viewport }: { viewport: Viewport }) {
       p5.fill(255);
       p5.text(gameState.score.p1 + ' / ' + gameState.score.p2, size.width / 2, 25);
     }
-    console.log('1 => balls: ', balls.length, ' | state: ', gameState.balls.length)
 
     if (balls.length !== gameState.balls.length)
       setBalls(balls.filter(b => gameState.balls.some((bState) => bState.id === b.id)));
 
-    console.log('2 => balls: ', balls.length, ' | state: ', gameState.balls.length)
     if (balls.length !== gameState.balls.length) {
       const newBalls: GuidedBall[] = balls;
       for (let i = 0; i < gameState.balls.length; i++) {
@@ -156,9 +154,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
       }
       setBalls(newBalls);
     }
-    console.log('3 => balls: ', balls.length, ' | state: ', gameState.balls.length)
 
-    // p5.ellipse(gameState.ball.x, gameState.ball.y, size.ball);
     for (let i = 0; i < gameState.balls.length; i++) {
       const ballState = gameState.balls[i];
       const ball = balls.find(b => b.id === ballState.id);

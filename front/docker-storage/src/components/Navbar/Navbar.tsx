@@ -8,7 +8,6 @@ import NotifCard from './notifCard';
 import { useFriendsRequestContext } from '../../contexts';
 
 const Navbar: React.FC = () => {
-  const jwtToken = Cookies.get('jwtToken');
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const { user, socket } = useUserContext();
@@ -21,35 +20,10 @@ const Navbar: React.FC = () => {
   };
 
   const logout = async () => {
-    const res = await fetch('http://localhost:3001/api/user/logout', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'appsetNotifsVisiblelication/json',
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    });
-    if (res.ok) {
-      Cookies.remove('jwtToken');
-      window.location.replace('/login');
-    } else {
-      console.log(res.status);
-    }
     socket?.disconnect();
     Cookies.remove('jwtToken');
     window.location.replace('/login');
   };
-
-  // delog the user if he close the navigator without click in logout button
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      logout();
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-    // eslint-disable-next-line
-  }, [profilVisible]);
 
 
   useEffect(() => {
@@ -104,14 +78,7 @@ const Navbar: React.FC = () => {
                 <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
               ))}
             </div>}
-          <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-            <Settings isVisible={settingsVisible} />
-          </Popup>
-          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={user} />
-          </Popup>
         </div>
-
       </div>
       <GameInvites></GameInvites>
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
