@@ -77,6 +77,7 @@ export interface IUser {
   user_status: string;
   winrate: number;
   elo: number;
+  gamesPlayed:number;
   is_friend: boolean;
   invited: number[];
   invites: number[];
@@ -90,6 +91,7 @@ export interface IUserComplete {
   role: string;
   winrate: number;
   elo:number;
+  gamesPlayed:number;
   is_friend: boolean;
   invited: number[];
   invites: number[];
