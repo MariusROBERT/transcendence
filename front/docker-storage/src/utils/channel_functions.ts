@@ -32,7 +32,7 @@ export async function UpdateChannels() {
   });
 }
 
-let current_chan = '';
+export let current_chan = '';
 
 export async function SetCurrChan(chan: string) {
   current_chan = chan;
