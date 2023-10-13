@@ -77,12 +77,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
-    if (user.gameInvitationTo > 0)
+    if (user?.gameInvitationTo > 0)
       await this.cancelInvite({
         sender: clientId,
         receiver: user.gameInvitationTo,
       });
-    if (user.gameInvitationFrom > 0)
+    if (user?.gameInvitationFrom > 0)
       await this.declineInvite({
         sender: clientId,
         receiver: user.gameInvitationFrom,
