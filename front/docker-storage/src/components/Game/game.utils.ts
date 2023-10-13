@@ -1,7 +1,7 @@
 import p5Types from 'p5';
 
 export interface GameState {
-  balls: {id:number, pos:{x: number, y: number}}[],
+  balls: { id: number, pos: { x: number, y: number } }[],
   p1: number,
   p2: number,
   score: { p1: number, p2: number }
@@ -66,6 +66,8 @@ class Particle {
   }
 }
 
+const THEME: 'RED/BLUE' | 'RGB' | 'white' = 'white';
+
 export class Ball {
   pos: p5Types.Vector;
   particles: Particle[];
@@ -83,8 +85,16 @@ export class Ball {
     }
     // Neon
     p5.noStroke();
+    if (THEME === 'RED/BLUE') {
+      const red = 255 - (this.pos.x * 255 / size.width);
+      const blue = this.pos.x * 255 / size.width;
+      p5.fill(red, 0, blue, 25);
+    } else if (THEME === 'RGB') {
+      p5.fill(...this.rainbow.current(), 25);
+    } else if (THEME === 'white') {
+      p5.fill(200, 200, 200, 25);
+    }
     for (let i = 0; i < 30; i += 5) {
-      p5.fill(255, 0, 0, 25);
       p5.circle(this.pos.x, this.pos.y, size.ball + i);
     }
     p5.fill(255);
@@ -94,11 +104,11 @@ export class Ball {
 
 export class GuidedBall extends Ball {
   id: number;
+
   constructor(p5: p5Types, id: number, pos: { x: number, y: number }) {
     super(p5, pos);
     this.id = id;
   }
-
 
   update(vec: { x: number, y: number }, size: Size) {
     while (this.particles.length > size.ball - 1)
@@ -126,27 +136,6 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.speed = Math.random() * 5 + 3;
   }
-
-  // update(size: Size) {
-  //   while (this.particles.length > size.ball - 1)
-  //     this.particles.shift();
-  //   for (const particle of this.particles) {
-  //     particle.update();
-  //   }
-  //
-  //   this.pos.x += this.dir.x;
-  //   if (this.pos.x - (size.ball / 2) < 5)
-  //     this.dir.x *= -1;
-  //   else if (this.pos.x + (size.ball / 2) > (size.width - 5))
-  //     this.dir.x *= -1;
-  //
-  //   this.pos.y += this.dir.y;
-  //   if (this.pos.y - (size.ball / 2) < 5)
-  //     this.dir.y *= -1;
-  //   else if (this.pos.y + (size.ball / 2) > (size.height - 5))
-  //     this.dir.y *= -1;
-  //
-  // }
 
   static dot(vec1: p5Types.Vector, vec2: p5Types.Vector) {
     return vec1.x * vec2.x + vec1.y * vec2.y;
@@ -212,12 +201,18 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
-    // Red / Blue particles depending on ball X pos
-    const blue = this.pos.x * 255 / size.width;
-    const red = 255 - (this.pos.x * 255 / size.width);
-    this.particles.push(new Particle({...this.pos}, [red, 0, blue]));
-    // Rainbow particles
-    // this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
+    if (THEME === 'RED/BLUE') {
+      // Red / Blue particles depending on ball X pos
+      const blue = this.pos.x * 255 / size.width;
+      const red = 255 - (this.pos.x * 255 / size.width);
+      this.particles.push(new Particle({...this.pos}, [red, 0, blue]));
+    } else if (THEME === 'RGB') {
+      // Rainbow particles
+      this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
+    } else if (THEME === 'white') {
+      this.particles.push(new Particle({...this.pos}, [200, 200, 200]));
+    }
+
   }
 
 }
@@ -239,11 +234,11 @@ export class MouseBall extends AutonomousBall {
     }
     // Neon
     p5.noStroke();
-    for (let i = 0; i < 30; i += 5) {
-      p5.fill(255, 0, 0, 25);
+    for (let i = 0; i < 20; i += 2) {
+      p5.fill(255, 255, 255, 25);
       p5.circle(this.pos.x, this.pos.y, size.ball + i);
     }
-    p5.fill(this.rainbow.next());
+    p5.fill(20);
     p5.circle(this.pos.x, this.pos.y, size.ball);
   }
 }
@@ -316,6 +311,10 @@ class Rainbow {
           this.step = 0;
         break;
     }
+    return [this.red, this.green, this.blue];
+  }
+
+  current(): [number, number, number] {
     return [this.red, this.green, this.blue];
   }
 }
