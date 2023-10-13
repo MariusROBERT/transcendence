@@ -78,6 +78,22 @@ export class Ball {
     this.particles = [];
   }
 
+  getColor(size: Size): [number, number, number] {
+    if (THEME === 'RED/BLUE') {
+      const red = 255 - (this.pos.x * 255 / size.width);
+      const blue = this.pos.x * 255 / size.width;
+      return [red, 0, blue];
+    }
+    if (THEME === 'RGB') {
+      return this.rainbow.current();
+    }
+    if (THEME === 'white') {
+      return [200, 200, 200];
+    }
+    return [0, 0, 0];
+
+  }
+
   draw(p5: p5Types, size: Size) {
     // Particles
     for (const particle of this.particles) {
@@ -85,15 +101,7 @@ export class Ball {
     }
     // Neon
     p5.noStroke();
-    if (THEME === 'RED/BLUE') {
-      const red = 255 - (this.pos.x * 255 / size.width);
-      const blue = this.pos.x * 255 / size.width;
-      p5.fill(red, 0, blue, 25);
-    } else if (THEME === 'RGB') {
-      p5.fill(...this.rainbow.current(), 25);
-    } else if (THEME === 'white') {
-      p5.fill(200, 200, 200, 25);
-    }
+    p5.fill(...this.getColor(size), 25);
     for (let i = 0; i < 30; i += 5) {
       p5.circle(this.pos.x, this.pos.y, size.ball + i);
     }
@@ -118,7 +126,7 @@ export class GuidedBall extends Ball {
     }
     this.pos.x = vec.x;
     this.pos.y = vec.y;
-    this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
+    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
   }
 }
 
@@ -201,18 +209,7 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
-    if (THEME === 'RED/BLUE') {
-      // Red / Blue particles depending on ball X pos
-      const blue = this.pos.x * 255 / size.width;
-      const red = 255 - (this.pos.x * 255 / size.width);
-      this.particles.push(new Particle({...this.pos}, [red, 0, blue]));
-    } else if (THEME === 'RGB') {
-      // Rainbow particles
-      this.particles.push(new Particle({...this.pos}, this.rainbow.next()));
-    } else if (THEME === 'white') {
-      this.particles.push(new Particle({...this.pos}, [200, 200, 200]));
-    }
-
+    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
   }
 
 }
