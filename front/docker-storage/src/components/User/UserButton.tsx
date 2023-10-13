@@ -22,7 +22,7 @@ export function UserButton({ otherUser }: Props) {
     friends,
     blocked,
   } = useFriendsRequestContext();
-  const { id, user } = useUserContext();
+  const { id, user, socket } = useUserContext();
   const [isBlocked, setIsBlocked] = useState(blocked?.includes(otherUser.id));
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function UserButton({ otherUser }: Props) {
       }}>
         <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
           {friends?.includes(otherUser.id) &&
-            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat()} />}
+            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat(otherUser, socket)} />}
           {friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')}
                                                            onClick={() => sendGameInvite(otherUser.id, 'normal')} />}
           {friends?.includes(otherUser.id) &&

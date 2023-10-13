@@ -34,8 +34,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -92,6 +91,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('error chan < 0');
       return;
     }
+    //  Check if socket is in room
+    const current_room = this.server.sockets.adapter.rooms.get(channel);
+    if (!current_room?.has(client.id)) return;
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {

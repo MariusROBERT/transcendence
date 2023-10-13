@@ -22,6 +22,7 @@ import { MessagesService } from 'src/messages/messages.service';
 import { MutedService } from 'src/muted/muted.service';
 import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ChannelService {
@@ -31,8 +32,7 @@ export class ChannelService {
     private userService: UserService,
     private msgService: MessagesService,
     private mutedService: MutedService,
-  ) {
-  }
+  ) {}
 
   async createChannel(
     channel: CreateChannelDto,
@@ -52,6 +52,29 @@ export class ChannelService {
       throw new ConflictException('Channel already exist');
     }
     return chan;
+  }
+
+  async joinPrivate(second_user: any, user: UserEntity) {
+    const user_two = await this.userService.getUserById(second_user.id);
+    let channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.users', 'user')
+      .innerJoin('channel.users', 'user_two')
+      .where('channel.priv_msg = :priv_msg', { priv_msg: true })
+      .andWhere('user.id = :userId', { userId: user.id })
+      .andWhere('user_two.id = :userTwoId', { userTwoId: user_two.id })
+      .getOne();
+    //  Todo check if name already exist
+    if (!channel) {
+      console.log('CHANNEL NOT FOUND');
+      channel = this.ChannelRepository.create({
+        channel_name: randomUUID(),
+        priv_msg: true,
+        users: [user, second_user],
+        owner: user,
+      });
+      await this.ChannelRepository.save(channel);
+    }
+    return { channel_name: channel.channel_name, id: channel.id };
   }
 
   async editChannel(dto: EditChannelDto, id: number) {
@@ -217,7 +240,7 @@ export class ChannelService {
       return await this.ChannelRepository.save(channelToUpdate);
     // la modification fonctionne en revanche
     throw new UnauthorizedException(
-      'You\'re not authorize to update this channel because you\'re the owner or an admin',
+      "You're not authorize to update this channel because you're the owner or an admin",
     );
   }
 

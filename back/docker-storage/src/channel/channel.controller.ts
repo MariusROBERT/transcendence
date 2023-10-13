@@ -42,8 +42,7 @@ import path from 'path';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {
-  }
+  constructor(private channelService: ChannelService) {}
 
   //  Only get the public data
   @Get('/public/:id')
@@ -109,6 +108,16 @@ export class ChannelController {
     @User() user: UserEntity,
   ): Promise<ChannelEntity> {
     return await this.channelService.createChannel(createChannelDto, user);
+  }
+
+  //  Join private channel if exist, else create it
+  @Post('/join_private')
+  @UseGuards(JwtAuthGuard)
+  async JoinPrivate(
+    @Body() second_user: any, // Create private user dto
+    @User() user: UserEntity,
+  ) {
+    return await this.channelService.joinPrivate(second_user, user);
   }
 
   @Patch('/edit/:id')
