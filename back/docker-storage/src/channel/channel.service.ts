@@ -65,7 +65,6 @@ export class ChannelService {
       .getOne();
     //  Todo check if name already exist
     if (!channel) {
-      console.log('CHANNEL NOT FOUND');
       channel = this.ChannelRepository.create({
         channel_name: randomUUID(),
         priv_msg: true,
@@ -197,16 +196,19 @@ export class ChannelService {
       .leftJoinAndSelect('channel.users', 'users')
       .where('users.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
+      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
       .getRawMany();
     const admchans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.admins', 'admins')
       .where('admins.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
+      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
       .getRawMany();
     const ownchans = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.owner', 'owner')
       .where('owner.id = :id', { id })
       .select(['channel.id as id', 'channel.channel_name as name'])
+      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
       .getRawMany();
     chans.forEach((chan) => {
       chan['type'] = 'member';
