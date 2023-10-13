@@ -87,6 +87,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { message, channel } = body;
     let chanE;
 
+    if (message.length > 256) return;
     if (channel < 0) {
       console.log('error chan < 0');
       return;

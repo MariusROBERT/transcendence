@@ -114,7 +114,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function onEnterPressed() {
-    if (inputValue.length <= 0) return;
+    if (inputValue.length <= 0 || inputValue.length > 256) return;
     if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
@@ -190,6 +190,7 @@ export function ChatPanel({ viewport, width }: Props) {
             if (e.keyCode !== 13) return;
             onEnterPressed();
           }}
+          maxLength={256}
           style={{
             height: 50 + 'px',
             flex: 'auto',
