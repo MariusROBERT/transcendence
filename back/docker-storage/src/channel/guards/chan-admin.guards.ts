@@ -1,11 +1,10 @@
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  BadRequestException,
+  Injectable,
 } from '@nestjs/common';
 import { ChannelService } from '../channel.service';
-import { UserChanDto } from 'src/user/dto/user.dto';
 import { UserEntity } from 'src/database/entities/channel.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -28,7 +27,9 @@ export class AdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
@@ -48,7 +49,9 @@ export class TargetIsAdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const body = request.body;
@@ -69,7 +72,9 @@ export class OwnerGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user: UserEntity = request.user;

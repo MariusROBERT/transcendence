@@ -20,7 +20,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
   const [errVisible, setErrVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    if (visibility === true) {
+    if (visibility) {
       if (data?.channel_status === 'private') setChecked(true);
       else setChecked(false);
     } else {
@@ -55,7 +55,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
 
       <p style={{ textAlign: 'center', fontSize: '14px' }}>
         <input
-          placeholder="New password"
+          placeholder='New password'
           style={inputStyle}
           value={password}
           maxLength={300}

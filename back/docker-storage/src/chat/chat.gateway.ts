@@ -5,7 +5,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Injectable, UseGuards } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
@@ -34,7 +34,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   @WebSocketServer()
   server: Server;
@@ -86,7 +87,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
     let chanE;
-    let userE;
 
     if (channel < 0) {
       console.log('error chan < 0');
@@ -102,7 +102,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const payload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
-    userE = await this.userService.getUserByUsername(payload.username);
+    const userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     const data: ChannelMessage = {

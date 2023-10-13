@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  BadGatewayException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChannelService } from 'src/channel/channel.service';
@@ -16,7 +11,9 @@ export class ChatCheckGuard implements CanActivate {
     private jwtService: JwtService,
     private muteService: MutedService,
     private channelService: ChannelService,
-  ) {}
+  ) {
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Mettez en œuvre votre logique pour vérifier si l'utilisateur est banni
     const client = context.switchToWs().getClient();

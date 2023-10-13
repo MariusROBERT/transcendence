@@ -17,7 +17,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const { user } = useUserContext();
 
-  let [chans, setChannels] = useState<ChannelInfos[]>([]);
+  const [chans, setChannels] = useState<ChannelInfos[]>([]);
   const { socket } = useUserContext();
 
   useEffect(() => {
@@ -58,7 +58,9 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
       setChannels(event.detail.value);
     });
     return () => {
-      unsubscribe('update_chan', () => {});
+      unsubscribe('update_chan', () => {
+        console.log('unsubscribe update_chan');
+      });
     };
   }, []);
 
@@ -75,7 +77,9 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
       }
     });
     return () => {
-      unsubscribe('fetch_chan', () => {});
+      unsubscribe('fetch_chan', () => {
+        console.log('unsubscribe fetch_chan');
+      });
     };
   }, []);
 
@@ -94,12 +98,12 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     );
   };
 
-  let buttonStyle: React.CSSProperties = {
+  const buttonStyle: React.CSSProperties = {
     rotate: (isOpen ? 0 : 180) + 'deg',
     transition: duration_ms + 'ms ease',
   };
 
-  let groupStyle: React.CSSProperties = {
+  const groupStyle: React.CSSProperties = {
     paddingTop: isOpen ? '15px' : '0px',
     paddingRight: '5px',
     display: 'flex',

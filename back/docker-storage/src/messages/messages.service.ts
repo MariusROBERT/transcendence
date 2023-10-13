@@ -17,7 +17,6 @@ export class MessagesService {
   }
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
-    const id = chan?.id;
     const newMsg = this.messageRepository.create({
       content: message,
       sender: user,

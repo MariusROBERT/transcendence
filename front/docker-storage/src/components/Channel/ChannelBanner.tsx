@@ -53,8 +53,8 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           type === 'owner'
             ? color.green
             : type === 'admin'
-            ? color.red
-            : color.grey,
+              ? color.red
+              : color.grey,
         minWidth: '410px',
         height: '25px',
       }}

@@ -29,7 +29,7 @@ export function SidePanel({
   const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
-    if (isLeftPanel === false && uid === id) Close();
+    if (!isLeftPanel && uid === id) Close();
   };
 
   useEffect(() => {
@@ -41,27 +41,29 @@ export function SidePanel({
 
   useEffect(() => {
     subscribe('open_chat', () => {
-      if (isLeftPanel === false) Open();
+      if (!isLeftPanel) Open();
     });
     return () => {
-      unsubscribe('open_chat', () => {});
+      unsubscribe('open_chat', () => void 0);
     };
   }, [isLeftPanel]);
 
   useEffect(() => {
     subscribe('close_chat', () => {
-      if (isLeftPanel === false) Close();
+      if (!isLeftPanel) Close();
     });
     return () => {
-      unsubscribe('close_chat', () => {});
+      unsubscribe('close_chat', () => {
+        console.log('unsubscribe close_chat');
+      });
     };
   }, [isLeftPanel]);
 
   async function Close() {
     if (isMoving) return;
-    if (isLeftPanel === false) {
+    if (!isLeftPanel) {
       socket?.emit('leave');
-      SetCurrChan("");
+      SetCurrChan('');
     }
     setIsAnim(true);
     await delay(duration_ms / 3);
@@ -84,7 +86,7 @@ export function SidePanel({
   }
 
   function getStyle(): React.CSSProperties {
-    let style: React.CSSProperties = {
+    const style: React.CSSProperties = {
       zIndex: '100',
       width: width + 'px',
       height: '100%',

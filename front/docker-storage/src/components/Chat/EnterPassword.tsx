@@ -39,7 +39,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
   }
 
   useEffect(() => {
-    if (visible === false) {
+    if (!visible) {
       setPassword('');
       setErrorVisible(false);
     }
@@ -65,7 +65,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
 
       <p>
         <input
-          placeholder="Password"
+          placeholder='Password'
           style={inputStyle}
           value={password}
           onChange={(evt) => {
