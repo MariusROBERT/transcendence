@@ -12,6 +12,16 @@ export function ChanUserList({ chan_id, onClick }: Props) {
   const [usrs, setUsers] = useState<ChannelUsers[]>([]);
   const [scrollIndex, setScrollIndex] = useState(0);
 
+  const uniqueIds = new Set();
+
+  const unique = usrs.filter((item) => {
+    if (!uniqueIds.has(item.id)) {
+      uniqueIds.add(item.id);
+      return true;
+    }
+    return false;
+  });
+
   useEffect(() => {
     subscribe('enter_users', async (event: any) => {
       setUsers(event.detail.value);
@@ -27,7 +37,7 @@ export function ChanUserList({ chan_id, onClick }: Props) {
           transform: `translateX(-${scrollIndex * usrs.length}%)`,
         }}
       >
-        {usrs.map((item, idx) => (
+        {unique.map((item, idx) => (
           <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>
