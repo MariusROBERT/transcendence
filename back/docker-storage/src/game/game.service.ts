@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { clamp, delay, gameRoom, size, State, Vector2, Ball } from './game.interfaces';
+import {
+  clamp,
+  delay,
+  gameRoom,
+  size,
+  State,
+  Vector2,
+  Ball,
+} from './game.interfaces';
 import { GameController } from './game.controller';
 
 @Injectable()
@@ -50,19 +58,19 @@ export class GameService {
       state.balls[i].update();
     }
 
-
     //check if the ball enter a 'GOAL'
     this.goal(state);
 
     // remove the balls that are out of the screen
-    state.balls = state.balls.filter((b) => b.pos.x > 0 && b.pos.x < size.width);
+    state.balls = state.balls.filter(
+      (b) => b.pos.x > 0 && b.pos.x < size.width,
+    );
 
     // Start the new Round
-    if (state.balls.length === 0)
-      return this.startNewRound(state);
+    if (state.balls.length === 0) return this.startNewRound(state);
 
     //manage the 'physics' of the game
-    else this.bounce(state);
+    this.bounce(state);
 
     //increase progressively the speed of players
     state.player_speed = Math.min(state.player_speed + 0.001, 7);
@@ -73,7 +81,12 @@ export class GameService {
     }
   }
 
-  onPlayerMove(state: State, player: number, isMoving: boolean, moveUp: boolean) {
+  onPlayerMove(
+    state: State,
+    player: number,
+    isMoving: boolean,
+    moveUp: boolean,
+  ) {
     if (player === 0) {
       state.moveP1.isMoving = isMoving;
       state.moveP1.up = moveUp;
@@ -83,7 +96,7 @@ export class GameService {
     }
   }
 
-  private movePlayerBar(state: State){
+  private movePlayerBar(state: State) {
     if (state.moveP1.isMoving) {
       state.p1 += state.moveP1.up ? -state.player_speed : state.player_speed;
       state.p1 = clamp(
@@ -130,8 +143,7 @@ export class GameService {
   async startNewRound(state: State) {
     //wait 1 second
     await delay(1000);
-    if (!state.isSpecial)
-      return this.startNewRoundNormal(state);
+    if (!state.isSpecial) return this.startNewRoundNormal(state);
 
     const mod = this.getRandomMod();
     switch (mod) {
@@ -147,12 +159,14 @@ export class GameService {
   }
 
   private startNewRoundNormal(state: State) {
-    state.balls.push(new Ball(
-      new Vector2(size.width / 2, size.height / 2),
-      new Vector2(1,1),
-      Math.max(state.player_speed - 2, 1),
-      0,
-    ));
+    state.balls.push(
+      new Ball(
+        new Vector2(size.width / 2, size.height / 2),
+        new Vector2(1, 1),
+        Math.max(state.player_speed - 2, 1),
+        0,
+      ),
+    );
     state.player_speed = Math.max(state.player_speed - 2, 1);
   }
 
@@ -176,16 +190,18 @@ export class GameService {
     state.player_speed = Math.max(state.player_speed - 2, 1);
   }
 
-  private createNBalls(state: State, n: number){
+  private createNBalls(state: State, n: number) {
     const yposincr = (size.height - 2 * size.ball) / (n + 1);
     let ypos = size.ball + yposincr;
     for (let i = 0; i < n; i++) {
-      state.balls.push(new Ball(
-        new Vector2(size.width / 2, ypos),
-        new Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1),
-        1,
-        i,
-      ));
+      state.balls.push(
+        new Ball(
+          new Vector2(size.width / 2, ypos),
+          new Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1),
+          1,
+          i,
+        ),
+      );
       ypos += yposincr;
     }
   }

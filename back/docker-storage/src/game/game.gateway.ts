@@ -72,16 +72,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async disconnect(clientId: number) {
     // console.log('disconnecting user', clientId);
     await delay(2000);
-    if (this.clients.find((c) => c.id === clientId))
-      return; // the client reconnect in the 2 seconds.
+    if (this.clients.find((c) => c.id === clientId)) return; // the client reconnect in the 2 seconds.
 
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
     if (user.gameInvitationTo > 0)
-      await this.cancelInvite({ sender: clientId, receiver:user.gameInvitationTo });
+      await this.cancelInvite({
+        sender: clientId,
+        receiver: user.gameInvitationTo,
+      });
     if (user.gameInvitationFrom > 0)
-      await this.declineInvite({ sender: clientId, receiver:user.gameInvitationFrom });
+      await this.declineInvite({
+        sender: clientId,
+        receiver: user.gameInvitationFrom,
+      });
     await this.controller.matchmaking.leaveGame(clientId);
     await this.userService.logout(user);
     this.server.emit('user_disconnection', { userId: clientId });
@@ -218,10 +223,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('start_game')
   async starts(@MessageBody() msg: { id: number }) {
-    const user = await this.userService.getUserById(msg.id);
+    // const user = await this.userService.getUserById(msg.id);
     const playerIds = this.controller.matchmaking.getGame(msg.id)?.playerIds;
 
-    const otherId = playerIds.find((i) => i !== msg.id);
+    // const otherId = playerIds.find((i) => i !== msg.id);
     const p1 = await this.userService.getUserById(playerIds[0]);
     const p2 = await this.userService.getUserById(playerIds[1]);
 
@@ -255,16 +260,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   sendState(game: { playerIds: number[]; state: State; ready: number[] }) {
     const gameState: {
-      balls: { id: number, pos: { x: number, y: number } }[],
-      p1: number,
-      p2: number,
-      score: { p1: number, p2: number }
+      balls: { id: number; pos: { x: number; y: number } }[];
+      p1: number;
+      p2: number;
+      score: { p1: number; p2: number };
     } = {
-      balls: game.state.balls.map((b) => {return { id: b.id, pos: {x: b.pos.x, y: b.pos.y}}}),
+      balls: game.state.balls.map((b) => {
+        return { id: b.id, pos: { x: b.pos.x, y: b.pos.y } };
+      }),
       p1: game.state.p1,
       p2: game.state.p2,
       score: game.state.score,
-    }
+    };
 
     this.server
       .to('user' + game.playerIds[0])

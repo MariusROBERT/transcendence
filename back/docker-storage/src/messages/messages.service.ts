@@ -10,8 +10,7 @@ export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
     private messageRepository: Repository<MessageEntity>, // private authService: AuthService,
-  ) {
-  }
+  ) {}
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
     const newMsg = this.messageRepository.create({

@@ -25,5 +25,4 @@ import { MessagesService } from '../messages/messages.service';
   providers: [UserService, MessagesService],
   exports: [UserService],
 })
-export class UserModule {
-}
+export class UserModule {}

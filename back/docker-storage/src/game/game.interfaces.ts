@@ -109,7 +109,10 @@ export class Ball {
   }
 
   bounceWithWall() {
-    if (this.pos.y < size.halfBall || this.pos.y > size.height - size.halfBall) {
+    if (
+      this.pos.y < size.halfBall ||
+      this.pos.y > size.height - size.halfBall
+    ) {
       this.dir.y *= -1;
     }
   }
@@ -135,13 +138,14 @@ export class Ball {
         this.pos.x - (size.p2X + size.ball),
         this.pos.y - state.p2,
       );
-
   }
 
   bounceWithBall(ball: Ball) {
     if (Math.abs(this.pos.x - ball.pos.x) > size.ball) return;
     if (Math.abs(this.pos.y - ball.pos.y) > size.ball) return;
-    const len = Math.sqrt((this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2);
+    const len = Math.sqrt(
+      (this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2,
+    );
     if (len > size.ball) return;
     const normal = new Vector2(
       (ball.pos.x - this.pos.x) / len,
