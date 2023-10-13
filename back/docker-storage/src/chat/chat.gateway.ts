@@ -11,7 +11,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { ChatCheckGuard } from './guards/chat.guards';
+import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -81,7 +81,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('remove', user);
   }
 
-  @UseGuards(ChatCheckGuard)
+  @UseGuards(ChatCheckGuard, BlockGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
