@@ -132,6 +132,7 @@ export function Game({viewport}: { viewport: Viewport }) {
     p5.background(0);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.textSize(32);
+    p5.rectMode(p5.CENTER);
   };
 
   const draw = (p5: p5Types) => {
@@ -143,7 +144,7 @@ export function Game({viewport}: { viewport: Viewport }) {
       p5.fill(15);
       p5.ellipse(size.width / 2, size.height / 2, size.ball * 3 - 20);
       p5.fill(60);
-      p5.rect(size.width / 2 - 5, 0, 10, size.height);
+      p5.rect(size.width / 2, size.height / 2, 10, size.height);
       p5.ellipse(size.width / 2, size.height / 2, size.ball * 0.5);
       p5.fill(255);
       p5.text(gameState.score.p1 + ' / ' + gameState.score.p2, size.width / 2, 25);
@@ -163,6 +164,15 @@ export function Game({viewport}: { viewport: Viewport }) {
       setBalls(newBalls);
     }
 
+    p5.fill(255, 0, 0, 20);
+    for (let i = 0; i < 50; i += 5) {
+      p5.rect(size.p1X - size.bar.x / 2, gameState.p1, size.bar.x + i, size.bar.y + i, 20);
+    }
+    p5.fill(0, 0, 255, 20);
+    for (let i = 0; i < 50; i += 5) {
+      p5.rect(size.p2X + size.bar.x / 2, gameState.p2, size.bar.x + i, size.bar.y + i, 20);
+    }
+
     for (let i = 0; i < gameState.balls.length; i++) {
       const ballState = gameState.balls[i];
       const ball = balls.find(b => b.id === ballState.id);
@@ -170,8 +180,9 @@ export function Game({viewport}: { viewport: Viewport }) {
       ball?.draw(p5, size);
     }
 
-    p5.rect(size.p1X - size.bar.x, gameState.p1 - size.halfBar, size.bar.x, size.bar.y);
-    p5.rect(size.p2X, gameState.p2 - size.halfBar, size.bar.x, size.bar.y);
+    p5.fill(255);
+    p5.rect(size.p1X - size.bar.x / 2, gameState.p1, size.bar.x, size.bar.y);
+    p5.rect(size.p2X + size.bar.x / 2, gameState.p2, size.bar.x, size.bar.y);
   };
 
 
