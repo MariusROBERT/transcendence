@@ -12,6 +12,7 @@ import { ChannelService } from './channel.service';
 import {
   CreateChannelDto,
   EditChannelDto,
+  PublicChannelDto,
   UpdateChannelDto,
 } from './dto/channel.dto';
 import { UserChanDto } from 'src/user/dto/user.dto';
@@ -106,7 +107,7 @@ export class ChannelController {
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
     @User() user: UserEntity,
-  ): Promise<ChannelEntity> {
+  ): Promise<PublicChannelDto> {
     return await this.channelService.createChannel(createChannelDto, user);
   }
 
@@ -116,7 +117,7 @@ export class ChannelController {
   async JoinPrivate(
     @Body() second_user: any, // Create private user dto
     @User() user: UserEntity,
-  ) {
+  ): Promise<PublicChannelDto> {
     return await this.channelService.joinPrivate(second_user, user);
   }
 

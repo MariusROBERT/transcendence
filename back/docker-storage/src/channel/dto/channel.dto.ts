@@ -9,8 +9,17 @@ import {
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { UserEntity } from '../../database/entities/user.entity';
 
-// CHANNEL :
+export class PublicChannelDto {
+  id: number;
+  channel_name: string;
+  chan_status: ChanStateEnum;
+  priv_msg: boolean;
+  has_password: boolean;
+  owner_id: number;
+  owner_username: string;
+}
 
+// CHANNEL :
 export class ChannelNameDto {
   @IsNotEmpty()
   @IsString()

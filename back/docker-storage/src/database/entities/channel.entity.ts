@@ -15,8 +15,6 @@ import { MutedEntity } from './muted.entity';
 
 @Entity('channel')
 export class ChannelEntity {
-  // BASICS :
-
   @PrimaryGeneratedColumn()
   id!: number;
 

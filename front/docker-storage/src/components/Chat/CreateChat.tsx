@@ -40,6 +40,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
         chan_status: checked ? 'private' : 'public',
       }),
     );
+    console.log(rep?.json);
     if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
       seterrorMessage(rep?.json.message);
       setErrorVisible(true);
@@ -64,7 +65,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder='Name'
+          placeholder="Name"
           style={inputStyle}
           value={channelName}
           onChange={(evt) => {
@@ -75,7 +76,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
 
       <p>
         <input
-          placeholder='Optional password'
+          placeholder="Optional password"
           style={inputStyle}
           value={password}
           onChange={(evt) => {
