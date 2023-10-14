@@ -50,7 +50,7 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChannelEntity> {
+  ): Promise<PublicChannelDto> {
     // ==> Send all public info
     return await this.channelService.getPublicChannelById(id);
   }
@@ -273,18 +273,3 @@ export class ChannelController {
     // ==> renvoi toutes les infos channels
     return await this.channelService.getChannelById(id);
   }
-
-  @Patch('/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
-  async UpdateChannel(
-    @Body() updateChannelDto: UpdateChannelDto,
-    @Param('id', ParseIntPipe) id: number,
-    @User() user: UserChanDto,
-  ): Promise<ChannelEntity> {
-    return await this.channelService.updateChannel(
-      id,
-      updateChannelDto,
-      user.id,
-    );
-  }
-}

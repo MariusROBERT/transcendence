@@ -106,7 +106,7 @@ export class ChannelService {
   }
 
   /*
-    @description Edit a channel
+    @description Edit chan_status and password in channel
     @param {EditChannelDto} dto - The channel Dto to edit
     @param {number} id - The channel id to edit
     @return {PublicChannelDto} - Public channel data
@@ -119,7 +119,7 @@ export class ChannelService {
     let channel = await this.getChannelById(id);
 
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new NotFoundException(`channel ${id} does not exist`);
     channel.password = null;
     if (dto.password.length > 0)
       channel.password = await bcrypt.hash(dto.password, channel.salt);
@@ -127,6 +127,7 @@ export class ChannelService {
       dto.chan_status === 'private'
         ? ChanStateEnum.PRIVATE
         : ChanStateEnum.PUBLIC;
+    this.ChannelRepository.save(channel);
     return this.returnPublicData(channel);
   }
 
@@ -151,7 +152,7 @@ export class ChannelService {
     @return {PublicChannelDto} - Public channel data
     @throw {NotFoundException} - If channel not found
   */
-  async getPublicChannelById(id: number): Promise<ChannelEntity> {
+  async getPublicChannelById(id: number): Promise<PublicChannelDto> {
     const channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoin('channel.owner', 'owner')
       .select([
@@ -165,11 +166,11 @@ export class ChannelService {
       .getRawOne();
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
-    return channel;
+    return this.returnPublicData(channel);
   }
 
   /*
-    @description Get all public channels where use is not banned
+    @description Get all public channels where user is not banned
     @param {UserEntity} user - The user that request the channels
     @return {PublicChannelDto[]} - Public channels data
   */
@@ -311,32 +312,8 @@ export class ChannelService {
     return chans.concat(admchans, ownchans);
   }
 
-  async updateChannel(
-    id: number,
-    channelDto: UpdateChannelDto,
-    uid: number,
-  ): Promise<ChannelEntity> {
-    const chan = await this.getChannelById(id);
-    const user = await this.userService.getUserById(uid);
-    const channelToUpdate = await this.ChannelRepository.preload({
-      id, // search user == id
-      ...channelDto, // modif seulement les differences
-    });
-    if (!channelToUpdate)
-      throw new NotFoundException(`la channel d'id: ${id} n'existe pas`);
-    if (
-      this.userService.isChanOwner(user, chan) ||
-      this.userService.isChanAdmin(user, chan)
-    )
-      return await this.ChannelRepository.save(channelToUpdate);
-    // la modification fonctionne en revanche
-    throw new UnauthorizedException(
-      "You're not authorize to update this channel because you're the owner or an admin",
-    );
-  }
-
   /*
-    @description Add user in channel
+    @description Enter in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
@@ -400,7 +377,7 @@ export class ChannelService {
   }
 
   /*
-    @description Add admin in channel
+    @description set user as admin in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
@@ -425,7 +402,7 @@ export class ChannelService {
   }
 
   /*
-    @description Remove admin in channel
+    @description Remove user as admin in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
@@ -498,6 +475,7 @@ export class ChannelService {
         'Time in second cannot be equal or inferior to zero',
       );
     await this.mutedService.createMuted(channel, user, sec);
+    await this.ChannelRepository.save(channel);
     return this.returnPublicData(channel);
   }
 
@@ -511,6 +489,7 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     await this.mutedService.removeMuted(channel, user);
+    await this.ChannelRepository.save(channel);
     return this.returnPublicData(channel);
   }
 
