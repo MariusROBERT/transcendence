@@ -39,23 +39,19 @@ import {
   IsProtected,
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
-import path from 'path';
 
 @Controller('channel')
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
-  //  Only get the public data
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PublicChannelDto> {
-    // ==> Send all public info
     return await this.channelService.getPublicChannelById(id);
   }
 
-  //  Only get the public data for all public channels
   @Get('/public_all')
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelsData(@User() user: UserEntity) {
@@ -117,7 +113,7 @@ export class ChannelController {
   async JoinPrivate(
     @Body() second_user: any, // Create private user dto
     @User() user: UserEntity,
-  ): Promise<PublicChannelDto> {
+  ) {
     return await this.channelService.joinPrivate(second_user, user);
   }
 

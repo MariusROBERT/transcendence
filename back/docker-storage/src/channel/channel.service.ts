@@ -3,7 +3,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ChannelEntity,
@@ -16,7 +15,6 @@ import {
   CreateChannelDto,
   EditChannelDto,
   PublicChannelDto,
-  UpdateChannelDto,
 } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
 import { MessagesService } from 'src/messages/messages.service';
@@ -79,12 +77,12 @@ export class ChannelService {
     @description Join a private channel if exist, else create it
     @param {any} second_user - The second user to join the private channel
     @param {UserEntity} user - The user that create the private channel
-    @return {PublicChannelDto} - Public channel data
+    @return {ChannelENtity} - Public channel data
   */
   async joinPrivate(
     second_user: any,
     user: UserEntity,
-  ): Promise<PublicChannelDto> {
+  ) {
     const user_two = await this.userService.getUserById(second_user.id);
     let channel = await this.ChannelRepository.createQueryBuilder('channel')
       .innerJoin('channel.users', 'user')
@@ -102,7 +100,7 @@ export class ChannelService {
       });
       await this.ChannelRepository.save(channel);
     }
-    return this.returnPublicData(channel);
+    return {id: channel.id, channel_name: channel.channel_name};
   }
 
   /*
