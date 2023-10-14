@@ -118,8 +118,7 @@ export class ChannelService {
   ): Promise<PublicChannelDto> {
     let channel = await this.getChannelById(id);
 
-    if (!channel)
-      throw new NotFoundException(`channel ${id} does not exist`);
+    if (!channel) throw new NotFoundException(`channel ${id} does not exist`);
     channel.password = null;
     if (dto.password.length > 0)
       channel.password = await bcrypt.hash(dto.password, channel.salt);
@@ -277,38 +276,33 @@ export class ChannelService {
   }
 
   /*
+    @description Get channels of user by type
+    @param {string} type - The type of user {users, admins, owner}
+    @param {number} id - The user id
+    @return {ChannelEntity[]} - The channels user with type
+  */
+  async getChannelOfUserByType(type: string, id: number) {
+    const channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.' + type, type)
+      .where(type + '.id = :id', { id })
+      .select(['channel.id as id', 'channel.channel_name as name'])
+      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
+      .getRawMany();
+    channel.forEach((channel) => {
+      channel['type'] = type;
+    });
+    return channel;
+  }
+
+  /*
     @description Get channels of user
     @param {number} id - The user id
     @return {ChannelEntity[]} - The channels user
   */
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
-    const chans = await this.ChannelRepository.createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.users', 'users')
-      .where('users.id = :id', { id })
-      .select(['channel.id as id', 'channel.channel_name as name'])
-      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
-      .getRawMany();
-    const admchans = await this.ChannelRepository.createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.admins', 'admins')
-      .where('admins.id = :id', { id })
-      .select(['channel.id as id', 'channel.channel_name as name'])
-      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
-      .getRawMany();
-    const ownchans = await this.ChannelRepository.createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.owner', 'owner')
-      .where('owner.id = :id', { id })
-      .select(['channel.id as id', 'channel.channel_name as name'])
-      .andWhere('channel.priv_msg = :priv_msg', { priv_msg: false })
-      .getRawMany();
-    chans.forEach((chan) => {
-      chan['type'] = 'member';
-    });
-    admchans.forEach((admchans) => {
-      admchans['type'] = 'admin';
-    });
-    ownchans.forEach((ownchans) => {
-      ownchans['type'] = 'owner';
-    });
+    const chans = await this.getChannelOfUserByType('users', id);
+    const admchans = await this.getChannelOfUserByType('admins', id);
+    const ownchans = await this.getChannelOfUserByType('owner', id);
     return chans.concat(admchans, ownchans);
   }
 
@@ -485,7 +479,10 @@ export class ChannelService {
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
   */
-  async UnMuteUserFromChannel(userid: number, id: number): Promise<PublicChannelDto> {
+  async UnMuteUserFromChannel(
+    userid: number,
+    id: number,
+  ): Promise<PublicChannelDto> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     await this.mutedService.removeMuted(channel, user);
@@ -500,11 +497,16 @@ export class ChannelService {
     @return {PublicChannelDto} - Public channel data
     @throw {BadRequestException} - If channel is a private message channel
   */
-  async BanUserFromChannel(userid: number, id: number): Promise<PublicChannelDto> {
+  async BanUserFromChannel(
+    userid: number,
+    id: number,
+  ): Promise<PublicChannelDto> {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     if (channel.priv_msg)
-      throw new BadRequestException('This channel is a private message channel');
+      throw new BadRequestException(
+        'This channel is a private message channel',
+      );
     try {
       const currentUsers = await this.userService.getFullUsersInChannels(id);
       channel.users = this.removeFrom(currentUsers, userid);
@@ -524,7 +526,10 @@ export class ChannelService {
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
   */
-  async UnBanUserFromChannel(userid: number, id: number): Promise<PublicChannelDto> {
+  async UnBanUserFromChannel(
+    userid: number,
+    id: number,
+  ): Promise<PublicChannelDto> {
     const channel = await this.getChannelById(id);
     if (channel.priv_msg)
       throw new Error('This channel is a private message channel');

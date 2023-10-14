@@ -273,3 +273,4 @@ export class ChannelController {
     // ==> renvoi toutes les infos channels
     return await this.channelService.getChannelById(id);
   }
+}
