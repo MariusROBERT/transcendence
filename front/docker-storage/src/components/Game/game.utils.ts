@@ -66,7 +66,7 @@ class Particle {
   }
 }
 
-const THEME: 'RED/BLUE' | 'RGB' | 'white' = 'white';
+const THEME: 'RED/BLUE' | 'RGB' | 'white' = 'RGB';
 
 export class Ball {
   pos: p5Types.Vector;
@@ -85,7 +85,7 @@ export class Ball {
       return [red, 0, blue];
     }
     if (THEME === 'RGB') {
-      return this.rainbow.current();
+      return this.rainbow.next();
     }
     if (THEME === 'white') {
       return [200, 200, 200];
@@ -132,7 +132,7 @@ export class GuidedBall extends Ball {
 
 
 export class AutonomousBall extends Ball {
-  readonly minSpeed = 2;
+  readonly minSpeed = 5;
   readonly maxSpeed = 20;
   dir: p5Types.Vector;
   speed: number;
@@ -156,14 +156,14 @@ export class AutonomousBall extends Ball {
 
   bounceWithWall(size: Size) {
     if (this.pos.x - (size.ball / 2) < 5)
-      this.dir.x *= -1;
+      this.dir.x = Math.abs(this.dir.x);
     else if (this.pos.x + (size.ball / 2) > (size.width - 5))
-      this.dir.x *= -1;
+      this.dir.x = -Math.abs(this.dir.x);
 
     if (this.pos.y - (size.ball / 2) < 5)
-      this.dir.y *= -1;
+      this.dir.y = Math.abs(this.dir.y);
     else if (this.pos.y + (size.ball / 2) > (size.height - 5))
-      this.dir.y *= -1;
+      this.dir.y = -Math.abs(this.dir.y);
   }
 
   bounceWithBall(size: Size, ball: AutonomousBall, p5: p5Types) {
