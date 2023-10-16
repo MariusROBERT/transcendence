@@ -6,9 +6,11 @@ interface Props {
 }
 
 export function ContactPanel({ viewport }: Props) {
+  const mobile = viewport.width < 500;
+
   return (
     <>
-      <div style={{ height: viewport.height - 100 + 'px', width: '100%' }}>
+      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 }}>
         <Background
           flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
@@ -33,20 +35,9 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background>
       </div>
-      <div>{<ChatMenu />}</div>
+      <div>
+        <ChatMenu />
+      </div>
     </>
   );
 }
-
-/*const userElementStyle: CSSProperties = {
-  position: 'absolute',
-  border: '2px solid red',
-  width: '1000px',
-  display: 'flex',
-  justifyContent: 'space-around',
-  background: 'grey',
-  color: 'white',
-  margin: '10px',
-  padding: '10px',
-  cursor: 'pointer',
-};*/

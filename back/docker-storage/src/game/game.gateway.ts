@@ -18,7 +18,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number, sockets: Socket[] }[] = [];
+  clients: { id: number; sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
@@ -62,8 +62,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async connect(clientId: number) {
-    if (clientId === 0)
-      return;
+    if (clientId === 0) return;
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('connect: no such User');
     await this.userService.login(user);
@@ -72,16 +71,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async disconnect(clientId: number) {
     await delay(2000);
-    if (this.clients.find((c) => c.id === clientId))
-      return; // the client reconnect in the 2 seconds.
+    if (this.clients.find((c) => c.id === clientId)) return; // the client reconnect in the 2 seconds.
 
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
     if (user.gameInvitationTo)
-      await this.cancelInvite({ sender: clientId, receiver:user.gameInvitationTo });
+      await this.cancelInvite({
+        sender: clientId,
+        receiver: user.gameInvitationTo,
+      });
     if (user.gameInvitationFrom)
-      await this.declineInvite({ sender: clientId, receiver:user.gameInvitationFrom });
+      await this.declineInvite({
+        sender: clientId,
+        receiver: user.gameInvitationFrom,
+      });
     await this.controller.matchmaking.leaveGame(clientId);
     await this.userService.logout(user);
     this.server.emit('user_disconnection', { userId: clientId });
@@ -210,15 +214,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async endGame(playerIds: number[]) {
-    this.server.to('user' + playerIds[0]).to('user' + playerIds[1]).emit('end_game');
+    this.server
+      .to('user' + playerIds[0])
+      .to('user' + playerIds[1])
+      .emit('end_game');
   }
 
   @SubscribeMessage('start_game')
   async starts(@MessageBody() msg: { id: number }) {
-    const user = await this.userService.getUserById(msg.id);
+    // const user = await this.userService.getUserById(msg.id);
     const playerIds = this.controller.matchmaking.getGame(msg.id)?.playerIds;
 
-    const otherId = playerIds.find(i => i !== msg.id);
+    // const otherId = playerIds.find((i) => i !== msg.id);
     const p1 = await this.userService.getUserById(playerIds[0]);
     const p2 = await this.userService.getUserById(playerIds[1]);
 

@@ -2,10 +2,9 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
-import { useUserContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard';
-import { useFriendsRequestContext } from '../../contexts';
 
 const Navbar: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
@@ -25,7 +24,6 @@ const Navbar: React.FC = () => {
     window.location.replace('/login');
   };
 
-
   useEffect(() => {
     const setNotif = async () => {
       const tmp = recvInvitesFrom.map(async (from) => {
@@ -44,6 +42,40 @@ const Navbar: React.FC = () => {
     };
     setNotif();
   }, [recvInvitesFrom]);
+
+  const mobile = window.innerWidth < 500;
+
+  const navbarStyle: CSSProperties = {
+    top: 0,
+    right: 0,
+    position: 'fixed',
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    borderRadius: '30px',
+    zIndex: 111,
+  };
+
+  const notifbadge: CSSProperties = {
+    position: 'absolute',
+    width: '20px',
+    height: '20px',
+    top: '20px',
+    background: 'red',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  };
+
+  const notifstyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
+    right: mobile ? 0 : 200,
+    minHeight: '100%',
+    background: 'black',
+  };
 
   return (
     <>
@@ -80,8 +112,7 @@ const Navbar: React.FC = () => {
             </div>}
         </div>
       </div>
-
-      <GameInvites></GameInvites>
+      <GameInvites />
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible} />
       </Popup>
@@ -90,39 +121,6 @@ const Navbar: React.FC = () => {
       </Popup>
     </>
   );
-};
-
-const navbarStyle: CSSProperties = {
-  top: '0px',
-  right: '0px',
-  position: 'fixed',
-  display: 'flex',
-  flexDirection: 'row-reverse',
-  borderRadius: '30px',
-  zIndex: '10000',
-};
-
-const notifbadge: CSSProperties = {
-  position: 'absolute',
-  width: '20px',
-  height: '20px',
-  top: '20px',
-  background: 'red',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  alignContent: 'center',
-};
-
-const notifstyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'absolute',
-  top: '90px',
-  right: '200px',
-  minHeight: '100%',
-  background: 'black',
 };
 
 export default Navbar;

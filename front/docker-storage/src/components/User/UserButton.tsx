@@ -1,10 +1,9 @@
 import { color } from '../../utils';
-import { RoundButton, Flex } from '..';
+import { Flex, RoundButton } from '..';
 import { useEffect, useState } from 'react';
 import { IUser } from '../../utils/interfaces';
 import { lookGame, openChat } from '../../utils/user_functions';
-import { useGameContext, useUserContext } from '../../contexts';
-import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
+import { useFriendsRequestContext, useGameContext, useUserContext } from '../../contexts';
 
 interface Props {
   otherUser: IUser;

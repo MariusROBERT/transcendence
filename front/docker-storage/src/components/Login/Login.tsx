@@ -1,7 +1,7 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
+import { Background, Border, Button, Flex, TwoFA, PasswordInput } from '..';
 
 const SIZE = 350;
 
@@ -48,6 +48,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           }
           setErrorMessage('this username is already used');
           console.error('register failure. Error:', registerResponse?.status);
+
         } else {
           setErrorMessage('username can\'t be ended with _42');
         }
@@ -94,6 +95,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         setErrorMessage(data.message);
         console.error('connection failure. Error:', response?.status);
       }
+
     } catch (error) {
       console.error(`Error : ${error}`);
     }
@@ -124,9 +126,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
-    height: viewport.isLandscape
-      ? Math.max(SIZE, viewport.height) + 'px'
-      : Math.max(2 * SIZE, viewport.height) + 'px',
+    height: '100%',
     width: '100%',
     position: 'absolute',
     top: '0px',

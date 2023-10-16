@@ -459,7 +459,10 @@ export class UserService {
     return await this.UserRepository.save(user);
   }
 
-  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
+  async setUserInvitationType(
+    user: UserEntity,
+    gameType: 'none' | 'normal' | 'special',
+  ) {
     user.gameInvitationType = gameType;
     return await this.UserRepository.save(user);
   }
