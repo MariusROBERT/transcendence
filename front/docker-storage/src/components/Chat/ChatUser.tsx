@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Fetch } from '../../utils';
+import { Fetch, styles } from '../../utils';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { IChatUser } from '../../utils/interfaces';
@@ -7,6 +7,7 @@ import { ErrorPanel } from '../Error/ErrorPanel';
 import { UpdateChannelUsers } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext } from '../../contexts';
+import { Flex } from '../ComponentBase/FlexBox';
 
 interface Props {
   data: IChatUser | undefined;
@@ -102,23 +103,31 @@ export default function ChatUser({ data, visibility }: Props) {
     if (id !== data?.sender_id) {
       return (
         <>
-          <Button onClick={OnKick}> Kick </Button>
-          <Button onClick={OnBan}> Ban </Button>
-          <Button onClick={OnUnBan}> UnBan </Button>
+          <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+            <Button onClick={OnKick}> Kick </Button>
+            <Button onClick={OnBan}> Ban </Button>
+            <Button onClick={OnUnBan}> UnBan </Button>
+          </Flex>
           <p>
             <input
-              placeholder='Time in second'
+              placeholder="Time in second"
               style={inputStyle}
               value={muteTime}
               onChange={(evt) => {
                 setmuteTime(evt.target.value);
               }}
             ></input>
-            <Button onClick={OnMute}> Mute </Button>
           </p>
-          <Button onClick={OnUnMute}> UnMute </Button>
-          <Button onClick={OnAddAdmin}> Add as Admin </Button>
-          <Button onClick={OnRemAdmin}> Rem as Admin </Button>
+          <div style={{display:'flex', gap:5, flexDirection:'column', justifyContent:'space-around'}}>
+            <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+              <Button onClick={OnMute}> Mute </Button>
+              <Button onClick={OnUnMute}> UnMute </Button>
+            </Flex>
+            <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+              <Button onClick={OnAddAdmin}> Add as Admin </Button>
+              <Button onClick={OnRemAdmin}> Rem as Admin </Button>
+            </Flex>
+          </div>
         </>
       );
     }
