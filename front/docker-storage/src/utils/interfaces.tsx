@@ -101,22 +101,8 @@ export interface IUser {
   elo: number;
   gamesPlayed:number;
   is_friend: boolean;
-  invited: number[];
-  invites: number[];
-}
-
-export interface IUserComplete {
-  id: number;
-  username: string;
-  urlImg: string;
-  user_status: string;
-  role: string;
-  winrate: number;
-  elo:number;
-  gamesPlayed:number;
-  is_friend: boolean;
-  invited: number[];
-  invites: number[];
+  sentInvitesTo: number[];
+  recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
 }
