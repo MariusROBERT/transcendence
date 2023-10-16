@@ -263,19 +263,16 @@ export class UserService {
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };

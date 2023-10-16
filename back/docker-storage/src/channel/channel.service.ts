@@ -46,7 +46,7 @@ export class ChannelService {
     return publicData;
   }
 
-  /*
+  /**
     @description Create a channel
     @param {CreateChannelDto} channel - The channel to create Dto
     @param {UserEntity} user - User that create the channel
@@ -73,7 +73,7 @@ export class ChannelService {
     return this.returnPublicData(chan);
   }
 
-  /*
+  /**
     @description Join a private channel if exist, else create it
     @param {any} second_user - The second user to join the private channel
     @param {UserEntity} user - The user that create the private channel
@@ -103,7 +103,7 @@ export class ChannelService {
     return {id: channel.id, channel_name: channel.channel_name};
   }
 
-  /*
+  /**
     @description Edit chan_status and password in channel
     @param {EditChannelDto} dto - The channel Dto to edit
     @param {number} id - The channel id to edit
@@ -128,7 +128,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Get a channel entity by id
     @param {number} id - The channel id
     @return {ChannelEntity} - The channel entity
@@ -143,7 +143,7 @@ export class ChannelService {
     return channel;
   }
 
-  /*
+  /**
     @description Get channel public data entity by id
     @param {number} id - The channel id
     @return {PublicChannelDto} - Public channel data
@@ -166,7 +166,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Get all public channels where user is not banned
     @param {UserEntity} user - The user that request the channels
     @return {PublicChannelDto[]} - Public channels data
@@ -205,7 +205,7 @@ export class ChannelService {
     }));
   }
 
-  /*
+  /**
     @description Get a channel entity by name
     @param {string} channel_name - The channel name
     @return {ChannelEntity} - The channel entity
@@ -221,7 +221,7 @@ export class ChannelService {
     return channel;
   }
 
-  /*
+  /**
     @description Get a channel id by name
     @param {string} channel_name - The channel name
     @return {ChannelEntity} - The channel entity
@@ -238,7 +238,7 @@ export class ChannelService {
     return channel;
   }
 
-  /*
+  /**
     @description Get channel messages
     @param {number} id - The channel id
     @return {MessageEntity[]} - The channel messages
@@ -247,7 +247,7 @@ export class ChannelService {
     return await this.msgService.getMsg(id);
   }
 
-  /*
+  /**
     @description Get channel users
     @param {number} - The channel id
     @return {UserEntity[]} - The channel users
@@ -256,7 +256,7 @@ export class ChannelService {
     return await this.userService.getUsersInChannels(id);
   }
 
-  /*
+  /**
     @description Get channel user with rights
     @param {number} id - The channel id
     @param {UserEntity} user - The user that request the channel
@@ -273,7 +273,7 @@ export class ChannelService {
     throw new NotFoundException('User Not Found');
   }
 
-  /*
+  /**
     @description Get channels of user by type
     @param {string} type - The type of user {users, admins, owner}
     @param {number} id - The user id
@@ -292,7 +292,7 @@ export class ChannelService {
     return channel;
   }
 
-  /*
+  /**
     @description Get channels of user
     @param {number} id - The user id
     @return {ChannelEntity[]} - The channels user
@@ -304,7 +304,7 @@ export class ChannelService {
     return chans.concat(admchans, ownchans);
   }
 
-  /*
+  /**
     @description Enter in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -327,7 +327,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Leave channel, if owner give admin to first user or give owner to first admin, else give owner to first user, else delete channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -368,7 +368,7 @@ export class ChannelService {
     return users;
   }
 
-  /*
+  /**
     @description set user as admin in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -393,7 +393,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Remove user as admin in channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -418,7 +418,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Kick user from channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -447,7 +447,7 @@ export class ChannelService {
     return -1;
   }
 
-  /*
+  /**
     @description Mute user from channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -471,7 +471,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Unmute user from channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -488,7 +488,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Ban user from channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -518,7 +518,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Unban user from channel
     @param {number} userid - The user id
     @param {number} id - The channel id
@@ -541,7 +541,7 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  /*
+  /**
     @description Add message in channel
     @param {string} message - The message
     @param {UserEntity} user - The user that send the message
