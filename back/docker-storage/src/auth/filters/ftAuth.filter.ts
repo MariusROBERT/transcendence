@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { FRONT_URL } from '../../utils/Globals';
 
 @Catch(UnauthorizedException)
 export class FtAuthFilter implements ExceptionFilter {
@@ -14,6 +15,6 @@ export class FtAuthFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
 
-    response.status(status).redirect('http://localhost:3000/login');
+    response.status(status).redirect(FRONT_URL + '/login');
   }
 }

@@ -1,4 +1,4 @@
-import { SearchBar, Leaderboard, Popup } from '..';
+import { Leaderboard, Popup, SearchBar } from '..';
 import React, { useEffect, useState } from 'react';
 import { IUser } from '../../utils/interfaces';
 
@@ -9,8 +9,10 @@ interface Props {
   user?: IUser
 }
 
+
 export function Search(props: Props) {
   const [searchMode, setSearchMode] = useState<boolean>(false);
+  const mobile = window.innerWidth < 500;
 
   useEffect(() => {
     const input = document.getElementById('searchBar') as HTMLInputElement;
@@ -25,16 +27,18 @@ export function Search(props: Props) {
   }, [searchMode]);
 
   return (
-    <div>
+    <div style={{zIndex: 2}}>
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
-                 isVisible={!searchMode}>
+                 isVisible={!searchMode}
+                 style={{ top: mobile ? 80 : 0 }}
+      >
         {props.placeHolder || ''}
       </SearchBar>
       <Popup isVisible={searchMode} setIsVisible={setSearchMode}>
         <div style={{
           display: 'flex',
-          minHeight: '300px',
+          minHeight: mobile ? 100 : '300px',
           flexDirection: 'column',
           alignItems: 'center',
           backgroundColor: 'grey',

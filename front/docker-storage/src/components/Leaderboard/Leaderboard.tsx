@@ -10,6 +10,10 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  useEffect(() => {
+    setMobile(window.innerWidth < 650);
+  }, [window.innerWidth]);
 
   useEffect(() => {
     fetchContext();
@@ -27,6 +31,7 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       if (users && Array.isArray(users) && users.length === 0)
         setErrorMessage('Aucun utilisateur trouvé.');
       else setAllUsers(users);
+
       return () => {
         cancelled = true;
       };
@@ -59,37 +64,47 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
     filterAndSortUsers();
   }, [searchTerm, allUsers, user]);
 
+  const container: CSSProperties = {
+    background: 'grey',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    maxHeight: '500px',
+    overflowY: 'scroll',
+    // width: mobile ? 200 : 700,
+  };
+
+  const userElementStyle: CSSProperties = {
+    maxWidth: mobile ? 500 : 600,
+    border: '1px solid white',
+    flexWrap: 'nowrap',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignContent: 'center',
+    background: '#646464',
+    color: 'white',
+    margin: '10px 0',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: '10px',
+  };
+
+
   return (
     <div style={container}>
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
       <div className='container'>{userElements}</div>
+      {userElements.length === 0 && !errorMessage && (
+        <div style={{ color: 'white', marginTop: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <p>No user found.</p>
+          </div>
+          <div style={{ ...userElementStyle, visibility: 'hidden' }} />
+        </div>
+      )
+      }
     </div>
   );
 }
-
-const container: CSSProperties = {
-  minWidth: '500px',
-  background: 'grey',
-  display: 'flex',
-  justifyContent: 'center',
-  alignContent: 'center',
-  maxHeight: '500px',
-  overflowY: 'scroll',
-};
-
-const userElementStyle: CSSProperties = {
-  width: '600px',
-  border: '1px solid white',
-  flexWrap: 'wrap',
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignContent: 'center',
-  background: '#646464',
-  color: 'white',
-  margin: '10px',
-  padding: '10px',
-  cursor: 'pointer',
-  borderRadius: '10px',
-};

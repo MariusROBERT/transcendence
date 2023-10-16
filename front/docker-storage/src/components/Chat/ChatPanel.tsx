@@ -188,7 +188,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <div style={{ minHeight: '60px' }} />
+      <div style={{ minHeight: '60px', paddingTop: 60 }} />
       <ChanUserList
         onClick={OnUserClick}
         chan_id={msg.at(0)?.channel_id ? Number(msg.at(0)?.channel_id) : -1}

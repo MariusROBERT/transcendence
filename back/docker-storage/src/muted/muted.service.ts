@@ -12,8 +12,7 @@ export class MutedService {
   constructor(
     @InjectRepository(MutedEntity)
     private mutedRepository: Repository<MutedEntity>,
-  ) {
-  }
+  ) {}
 
   async removeMuted(channel: ChannelEntity, user: UserEntity) {
     const if_exist = await this.getMutedInChannel(channel.id, user.id);

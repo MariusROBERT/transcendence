@@ -21,5 +21,4 @@ export class userPictureFileInterception extends FileInterceptor('file', {
     cb(null, true);
   },
   limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
-}) {
-}
+}) {}

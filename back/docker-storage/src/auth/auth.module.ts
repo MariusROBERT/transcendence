@@ -35,5 +35,4 @@ import { FtAuthFilter } from './filters/ftAuth.filter';
   ],
   exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}

@@ -65,21 +65,17 @@ export class GameMatchmaking {
   }
 
   // add a new game in the games lists
-  async createGame(p1: number, p2: number, isSpecial) {
-    const game = {
+  async createGame(p1: number, p2: number, isSpecial: boolean) {
+    const game: gameRoom = {
       playerIds: [p1, p2],
       state: {
         running: true,
         isSpecial: isSpecial,
-        ball: { x: size.width / 2, y: size.height / 2 },
-        dir: this.controller.service.normalize({
-          x: Math.random() * 2 - 1,
-          y: Math.random() * 2 - 1,
-        }),
+        balls: [],
         p1: size.height / 2,
         p2: size.height / 2,
         score: { p1: 0, p2: 0 },
-        speed: 1,
+        player_speed: 1,
         moveP1: { isMoving: false, up: false },
         moveP2: { isMoving: false, up: false },
       },
@@ -99,7 +95,7 @@ export class GameMatchmaking {
   }
 
   //Called from each player before starting
-  startGame(id: number) {
+  async startGame(id: number) {
     //check if the two players are free and stops there games
     const game = this.getGame(id);
     if (game === undefined) return;
@@ -109,7 +105,10 @@ export class GameMatchmaking {
     game.ready.push(id);
 
     // if all there launch the game
-    if (game.ready.length == 2) this.controller.service.update(game);
+    if (game.ready.length == 2) {
+      await this.controller.service.startNewRound(game.state);
+      this.controller.service.update(game);
+    }
   }
 
   async endGame(id: number) {

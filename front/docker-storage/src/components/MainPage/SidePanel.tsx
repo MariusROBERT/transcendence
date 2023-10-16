@@ -1,9 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { delay, Viewport } from '../../utils';
+import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
-import { unsubscribe, subscribe } from '../../utils/event';
 import { SetCurrChan } from '../../utils/channel_functions';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -44,7 +44,7 @@ export function SidePanel({
       if (!isLeftPanel) Open();
     });
     return () => {
-      unsubscribe('open_chat', () => void 0);
+      unsubscribe('open_chat', () => null);
     };
   }, [isLeftPanel]);
 
@@ -80,14 +80,14 @@ export function SidePanel({
     await delay(duration_ms);
     setIsShowing(true);
     setIsAnim(false);
-    await delay(duration_ms);
+    await delay(duration_ms / 4);
     setIsOpen(true);
     setIsShowing(false);
   }
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      zIndex: '100',
+      zIndex: 110,
       width: width + 'px',
       height: '100%',
       position: 'absolute',
@@ -124,12 +124,7 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{
-          color: 'red',
-          position: 'absolute',
-          height: '100%',
-          left: getStyle().left,
-        }}
+        style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
           <RoundButton

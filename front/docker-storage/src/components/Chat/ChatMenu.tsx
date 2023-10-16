@@ -44,13 +44,13 @@ export function ChatMenu() {
         setInput={setInputValue}
         OnClick={OnJoinChannel}
         OnEnter={() => void 0}
-      ></ChatInput>
+      />
       <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
         <JoinChat
           input={inputValue}
           setInput={setInputValue}
           channels={channels}
-        ></JoinChat>
+        />
       </Popup>
     </div>
   );

@@ -44,5 +44,4 @@ import { MutedEntity } from './entities/muted.entity';
   ],
   exports: [],
 })
-export class DatabaseModule {
-}
+export class DatabaseModule {}

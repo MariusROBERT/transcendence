@@ -26,14 +26,17 @@ export function GameInvites() {
     getUsername();
   }, [inviteFrom, inviteTo]);
 
+  const mobile = window.innerWidth < 500;
+
   const inviteStyle: CSSProperties = {
-    top: '0px',
-    right: isInQueue || inviteFrom !== inviteTo ? '150px' : '-600px',
-    minWidth: (inviteTo ? 400 : 550) + 'px',
+    top: mobile ? 60 : 0,
+    right: isInQueue || inviteFrom !== inviteTo ? (mobile ? -30 : 185) : -600,
+    minWidth: mobile ? 200 : (inviteTo ? 400 : 550),
+    marginLeft: 5,
     position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
-    zIndex: '9999',
+    zIndex: 95,
     transition: '1s',
     minHeight: '60px',
     height: '60px',
@@ -73,7 +76,8 @@ export function GameInvites() {
           {/*}}>Decline</Button>*/}
         </>)}
         {isInQueue && (<>
-          <p style={{ marginLeft: 10 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
+          <p
+            style={{ marginLeft: mobile ? 20 : 10 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
           <Button onClick={leaveQueue}>Cancel</Button>
         </>)}
         <p style={{ minWidth: '30px' }}></p>

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Background, Border, RoundButton, UserBanner, ChannelPannel } from '..';
 import { color, Fetch } from '../../utils';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
@@ -103,12 +103,14 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     transition: duration_ms + 'ms ease',
   };
 
+  const mobile = window.innerWidth < 500;
+
   const groupStyle: React.CSSProperties = {
     paddingTop: isOpen ? '15px' : '0px',
     paddingRight: '5px',
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: '50px',
+    marginLeft: mobile ? 15 : 50,
     overflow: 'scroll',
     height: isOpen ? '100%' : '0px',
     gap: '30px',
@@ -147,7 +149,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
           flex_direction={'row'}
           flex_justifyContent={'flex-end'}
         >
-          <h2 style={{ position: 'absolute', left: '5px' }}>{heading}</h2>
+          <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
           <div style={buttonStyle}>
             <RoundButton
               icon={require('../../assets/imgs/side_panel_button.png')}

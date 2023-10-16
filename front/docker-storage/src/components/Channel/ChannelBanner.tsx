@@ -55,7 +55,6 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
             : type === 'admin'
               ? color.red
               : color.grey,
-        minWidth: '410px',
         height: '25px',
       }}
     >
@@ -67,7 +66,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         <RoundButton
           icon={require('../../assets/imgs/icon_chat.png')}
           onClick={OnJoinChannel}
-        ></RoundButton>
+        />
         <RoundButton
           icon={require('../../assets/imgs/icon_leave.png')}
           onClick={OnLeave}
