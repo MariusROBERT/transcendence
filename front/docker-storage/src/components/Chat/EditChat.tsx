@@ -6,6 +6,7 @@ import SwitchToggle from '../ComponentBase/SwitchToggle';
 import { Flex } from '../ComponentBase/FlexBox';
 import { Fetch } from '../../utils';
 import { ErrorPanel } from '../Error/ErrorPanel';
+import { channel } from 'diagnostics_channel';
 
 interface Props {
   data: ChannelPublic | undefined;
@@ -35,6 +36,7 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
       setError('Password is too long');
       return;
     }
+    console.log(data);
     await Fetch(
       'channel/edit/' + data?.channel_id,
       'PATCH',

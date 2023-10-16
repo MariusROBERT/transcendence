@@ -135,6 +135,7 @@ export class ChannelService {
     @throw {NotFoundException} - If channel not found
   */
   async getChannelById(id: number): Promise<ChannelEntity> {
+    console.log(id);
     const channel = await this.ChannelRepository.findOne({
       where: { id },
     });
@@ -163,7 +164,7 @@ export class ChannelService {
       .getRawOne();
     if (!channel)
       throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
-    return this.returnPublicData(channel);
+    return channel;
   }
 
   /**
