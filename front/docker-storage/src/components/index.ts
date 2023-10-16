@@ -31,7 +31,7 @@ export { GroupItems } from './ContactPanel/GroupItems';
 // Game
 export { Game } from './Game/Game';
 export { GameScore } from './Game/GameScore';
-export { PlayButton } from './Game/PlayButton'
+export { PlayButton } from './Game/PlayButton';
 export { GameInvites } from './Game/GameInvites';
 
 // Leaderboard

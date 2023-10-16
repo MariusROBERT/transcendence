@@ -8,14 +8,14 @@ import {
 } from 'react';
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 
 type UserContextType = {
   id: number;
   isOnline: boolean;
   socket: Socket | undefined,
   fetchContext: () => Promise<void>,
-  user?: IUserComplete,
+  user?: IUser,
 }
 
 const UserContext = createContext<UserContextType>({
@@ -23,6 +23,7 @@ const UserContext = createContext<UserContextType>({
   isOnline: false,
   socket: undefined,
   fetchContext: async () => {
+    return;
   },
   user: undefined,
 });
@@ -40,9 +41,10 @@ export function UserContextProvider({ children }: Props) {
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
-  const [user, setUser] = useState<IUserComplete>();
+  const [user, setUser] = useState<IUser>();
 
   async function fetchContext(): Promise<void> {
+    setId(0);
     const user = (await Fetch('user', 'GET'))?.json;
     if (!user) {
       setIsOnline(false);
@@ -51,7 +53,8 @@ export function UserContextProvider({ children }: Props) {
       setUsername(user.username);
       setId(user.id);
       setIsOnline(true);
-      initSocket();
+      if (!socket)
+        initSocket();
     }
   }
 
@@ -60,12 +63,12 @@ export function UserContextProvider({ children }: Props) {
       console.log('Connection to socket.io server failed', err);
     });
     socket?.on('disconnect', (reason) => {
-      socket?.emit('reset_user_socket_id', { id: id });
-      console.log('Disconnected from socket.io server', reason);
+      //console.log('Disconnected from socket.io server', reason);
+      void reason;
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
+      // console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
     });
     socket?.connect();
 

@@ -1,9 +1,9 @@
 import { color, Viewport, useIsWindowFocused } from '../../utils';
 import { Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel } from '..';
 import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
 import { Search } from '../Search/Search';
 import { useUserContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts/FriendsRequestContext/FriendsRequestContext';
 
 interface Props {
   panelWidth: number;
@@ -12,12 +12,10 @@ interface Props {
 
 export function MainPage({ panelWidth, viewport }: Props) {
   const focused = useIsWindowFocused();
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken)
-    window.location.replace('http://localhost:3001/api/auth/login');
   const [searchTerm, setSearchTerm] = useState('');
   const [notifs, setNotifs] = useState<number>(0);
   const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext, recvInvitesFrom } = useFriendsRequestContext();
 
   useEffect(() => {
     if (focused) {
@@ -27,10 +25,16 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }, [focused]);
 
   useEffect(() => {
+    fetchFriendsRequestContext();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
     if (!user)
       return;
-    if (user.invites && Array.isArray(user.invites) && user.invites.length > 0)
-      setNotifs(user.invites.length);
+    if (recvInvitesFrom && recvInvitesFrom.length > 0)
+      setNotifs(recvInvitesFrom.length);
+    // eslint-disable-next-line
   }, [user]);
 
   return (
@@ -39,7 +43,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
                   flex_alignItems={'stretch'}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
           <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel meUser={user} viewport={viewport} />
+            <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
         <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
@@ -52,7 +56,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           </Background>
         </SidePanel>
       </Background>
-      <Navbar meUser={user} />
+      <Navbar />
       <div style={notificationBadgeStyle}>
         {notifs && <span style={notificationCountStyle}> 1 </span>}
       </div>

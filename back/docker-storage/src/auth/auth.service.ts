@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../database/entities/user.entity';
@@ -30,15 +35,15 @@ export class AuthService {
     user.user_status = UserStateEnum.ON;
     user.urlImg = 'http://localhost:3001/public/default.png';
     user.friends = [];
-    user.invited = [];
-    user.invites = [];
+    user.sentInvitesTo = [];
+    user.recvInvitesFrom = [];
     user.blocked = [];
     user.gamesId = [];
     user.elo = 1000;
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
-      throw new ConflictException(`username or password already used`);
+      throw new ConflictException('username or password already used');
     }
     return {
       id: user.id,
@@ -54,20 +59,21 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     if (!user) {
-      throw new NotFoundException(`username not found`);
+      throw new NotFoundException('username not found');
     }
 
     if (user.is2fa_active) {
       if (creditentials.twoFactorCode) {
-        if (!authenticator.verify(
-          {
+        if (
+          !authenticator.verify({
             token: creditentials.twoFactorCode,
             secret: user.secret2fa,
-          })) {
-          throw new UnauthorizedException(`Invalid 2fa code`);
+          })
+        ) {
+          throw new UnauthorizedException('Invalid 2fa code');
         }
       } else {
-        throw new UnauthorizedException(`Missing 2fa code`);
+        throw new UnauthorizedException('Missing 2fa code');
       }
     }
 
@@ -84,9 +90,8 @@ export class AuthService {
       await this.userRepository.save(user);
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
-    } else {
-      throw new NotFoundException(`wrong password`);
     }
+    throw new NotFoundException('wrong password');
   }
 
   async ftLogin(userData: ftLoginDto) {
@@ -106,15 +111,14 @@ export class AuthService {
       user2.password = '42'; // = await bcrypt.hash(user.password, user.salt);
       user2.user_status = UserStateEnum.ON;
       user2.friends = [];
-      user2.invited = [];
-      user2.invites = [];
+      user2.sentInvitesTo = [];
+      user2.recvInvitesFrom = [];
       user2.blocked = [];
       user2.urlImg = urlImg;
-      user2.id42 = userData.id42;
       try {
         await this.userRepository.save(user2); // save user in DB
       } catch (e) {
-        throw new ConflictException(`username already used`); // should not happen, will probably be removed
+        throw new ConflictException('username already used'); // should not happen, will probably be removed
       }
     }
     const user2 = await this.userRepository
@@ -123,7 +127,7 @@ export class AuthService {
       .getOne();
     // JWT
     if (user2.is2fa_active) {
-      return '';
+      return 'missing 2fa code';
     }
     const payload = {
       username,
@@ -132,42 +136,40 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async ftLogin2fa(ftToken: string, code2fa: string) {
-    const id42: number = await fetch('https://api.intra.42.fr/v2/me', {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + ftToken,
-      },
-    })
-      .then(res => res.json())
-      .then(json => parseInt(json.id));
-    if (!id42) {
-      throw new NotFoundException(`Invalid intra token`);
+  async ftLogin2fa(req: any, code2fa: string) {
+    let ftLogin = '';
+    for (const rawSession in req.sessionStore.sessions) {
+      const session = JSON.parse(req.sessionStore.sessions[rawSession]);
+      if (session.passport.user.username)
+        ftLogin = session.passport.user.username + '_42';
+    }
+    if (ftLogin === '') {
+      throw new UnauthorizedException('no session found');
     }
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.id42 = :id42', { id42 })
+      .where('user.username = :ftLogin', { ftLogin })
       .getOne();
     if (!user) {
-      throw new NotFoundException(`user not found`);
+      throw new NotFoundException('user not found');
     }
     if (user.is2fa_active) {
-      if (!authenticator.verify(
-        {
+      if (
+        !authenticator.verify({
           token: code2fa,
           secret: user.secret2fa,
-        })) {
-        throw new UnauthorizedException(`Invalid 2fa code`);
+        })
+      ) {
+        throw new UnauthorizedException('Invalid 2fa code');
       }
       const payload = {
         username: user.username,
         role: user.role,
-      }
+      };
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
       // return this.jwtService.sign(payload);
-    } else {
-      throw new UnauthorizedException(`2fa not active`);
     }
+    throw new UnauthorizedException('2fa not active');
   }
 }

@@ -1,6 +1,8 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport } from '../../utils';
 import { RoundButton } from '..';
+import { useUserContext } from '../../contexts';
+import { unsubscribe, subscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -23,9 +25,32 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
+  const { socket, id } = useUserContext();
+
+  const Remove = async (uid: number) => {
+    if (!isLeftPanel && uid === id) Close();
+  };
+
+  useEffect(() => {
+    socket?.on('remove', Remove);
+    return () => {
+      socket?.off('remove', Remove);
+    };
+  });
+
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (!isLeftPanel) Open();
+    });
+    return () => {
+      unsubscribe('open_chat', () => void 0);
+    };
+    // eslint-disable-next-line
+  }, [isLeftPanel, isMoving, duration_ms]);
 
   async function Close() {
     if (isMoving) return;
+    if (!isLeftPanel) socket?.emit('leave');
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
@@ -47,7 +72,7 @@ export function SidePanel({
   }
 
   function getStyle(): React.CSSProperties {
-    let style: React.CSSProperties = {
+    const style: React.CSSProperties = {
       zIndex: '100',
       width: width + 'px',
       height: '100%',
@@ -85,7 +110,7 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{ position: 'absolute', height: '100%', left: getStyle().left }}
+        style={{ color: 'red', position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
           <RoundButton

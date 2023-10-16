@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Viewport, color, Fetch } from '../../utils';
-import { Background, RoundButton, ChatMessage, ChatMenu, ChanUserList } from '..';
+import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
-import { GetCurrChan, UpdateChannelMessage } from '../../utils/channel_functions';
-import { ChannelMessage, SocketMessage } from '../../utils/interfaces';
+import { GetCurrChan, UpdateChannelUsers } from '../../utils/channel_functions';
+import { ChannelMessage, IChatUser } from '../../utils/interfaces';
+import ChatUser from './ChatUser';
 
 interface Props {
   viewport: Viewport;
@@ -13,13 +14,15 @@ interface Props {
 
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
+  const [userVisible, setUserVisible] = useState<boolean>(false);
+  const [currUser, setCurrUser] = useState<IChatUser>();
   const { socket } = useUserContext();
-  let [msg, setMessage] = useState<ChannelMessage[]>([]);
+  const [msg, setMessage] = useState<ChannelMessage[]>([]);
+  const msgsRef = useRef<HTMLDivElement | null>(null);
 
   //  See if there is a better way to do this
-  const getMsg = async (message: SocketMessage) => {
-    if ((await GetCurrChan()) === message.name)
-      UpdateChannelMessage(message.id);
+  const getMsg = async (message: ChannelMessage) => {
+    setMessage([...msg, message]);
     setInputValue('');
   };
 
@@ -30,12 +33,23 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   });
 
+  const updateUsers = async (id: number) => {
+    UpdateChannelUsers(id);
+  };
+
+  useEffect(() => {
+    socket?.on('join', updateUsers);
+    return () => {
+      socket?.off('join', updateUsers);
+    };
+  });
+
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
-      //  TODO: add check for owner
+      //console.log(event.detail.value)
       setMessage(event.detail.value);
     });
-  });
+  }, []);
 
   async function execCommand(command: string, cmd: string): Promise<boolean> {
     const split = cmd.split(' ');
@@ -44,9 +58,13 @@ export function ChatPanel({ viewport, width }: Props) {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
       setInputValue('');
-      Fetch('channel/' + command + '/' + id_channel, 'POST', JSON.stringify({
-        id: id_user,
-      }));
+      Fetch(
+        'channel/' + command + '/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+        }),
+      );
       return true;
     }
     return false;
@@ -56,14 +74,10 @@ export function ChatPanel({ viewport, width }: Props) {
     const command = inputValue;
     const split = command.split(' ');
 
-    if (await execCommand('add_admin', command) === true)
-      return true;
-    if (await execCommand('kick', command) === true)
-      return true;
-    if (await execCommand('ban', command) === true)
-      return true;
-    if (await execCommand('unban', command) === true)
-      return true;
+    if (await execCommand('add_admin', command)) return true;
+    if (await execCommand('kick', command)) return true;
+    if (await execCommand('ban', command)) return true;
+    if (await execCommand('unban', command)) return true;
 
     //  Mute
     if (split.length === 4 && split[0] === 'mute') {
@@ -71,10 +85,14 @@ export function ChatPanel({ viewport, width }: Props) {
       const id_user = parseInt(split[2], 10);
       const time = parseInt(split[3], 10);
       setInputValue('');
-      Fetch('channel/mute/' + id_channel, 'POST', JSON.stringify({
-        id: id_user,
-        time: time,
-      }));
+      Fetch(
+        'channel/mute/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+          time: time,
+        }),
+      );
       return true;
     }
 
@@ -83,9 +101,13 @@ export function ChatPanel({ viewport, width }: Props) {
       const id_channel = parseInt(split[1], 10);
       const id_user = parseInt(split[2], 10);
       setInputValue('');
-      Fetch('channel/unmute/' + id_channel, 'POST', JSON.stringify({
-        id: id_user,
-      }));
+      Fetch(
+        'channel/unmute/' + id_channel,
+        'POST',
+        JSON.stringify({
+          id: id_user,
+        }),
+      );
       return true;
     }
     return false;
@@ -93,10 +115,22 @@ export function ChatPanel({ viewport, width }: Props) {
 
   async function onEnterPressed() {
     if (inputValue.length <= 0) return;
-    if (await CommandParsing() === true) return; // If its a command do not continue
+    if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
   }
+
+  async function OnUserClick(msgs: ChannelMessage) {
+    setCurrUser(msgs);
+    setUserVisible(true);
+  }
+
+  useEffect(() => {
+    // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
+    if (msgsRef.current) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    }
+  }, [msg]);
 
   function chat() {
     return (
@@ -104,10 +138,9 @@ export function ChatPanel({ viewport, width }: Props) {
         {msg.map((data, idx) => (
           <ChatMessage
             key={idx}
-            user_icon={data.sender_urlImg}
-            user_name={data.sender_username}
-            date={new Date()} //  TODO Change by real dates
-            uid={data.sender_id}
+            data={data}
+            onClick={OnUserClick}
+            last={idx > 0 ? msg[idx - 1].sender_id : undefined}
           >
             {data.message_content}
           </ChatMessage>
@@ -118,20 +151,25 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <div style={{ minHeight: '70px' }} />
-      <ChatMenu />
-      <ChanUserList />
-      <div style={{
-        height: viewport.height - 125 + 'px',
-        width: width - 50 + 'px',
-        backgroundColor: color.grey,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '5px 5px',
-        padding: '10px',
-        borderRadius: '15px',
-        overflow: 'scroll',
-      }}>
+      <div style={{ minHeight: '60px' }} />
+      <ChanUserList
+        onClick={OnUserClick}
+        chan_id={msg.at(0)?.channel_id ? Number(msg.at(0)?.channel_id) : -1}
+      />
+      <div
+        style={{
+          height: viewport.height - 125 + 'px',
+          width: width - 50 + 'px',
+          backgroundColor: color.grey,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px 5px',
+          padding: '10px',
+          borderRadius: '15px',
+          overflow: 'scroll',
+        }}
+        ref={msgsRef as React.RefObject<HTMLDivElement>}
+      >
         {chat()}
       </div>
       <div
@@ -165,6 +203,9 @@ export function ChatPanel({ viewport, width }: Props) {
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={onEnterPressed}
         ></RoundButton>
+        <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
+          <ChatUser data={currUser} visibility={userVisible}></ChatUser>
+        </Popup>
       </div>
     </Background>
   );

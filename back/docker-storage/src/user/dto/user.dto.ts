@@ -101,9 +101,6 @@ export class GetUserIdFromSocketIdDto {
 
 export class UserGameStatus {
   @IsNumber()
-  isInGameWith: number;
-
-  @IsNumber()
   gameInvitationTo: number;
 
   @IsNumber()

@@ -31,7 +31,8 @@ export class GameService {
   }
 
   // GAME LOGIC ----------------------------------------------------------- //
-  frameRate:number = 1000/120;
+  frameRate: number = 1000 / 120;
+
   //called at the start of the game and then every frame till the game ends
   async update(game: gameRoom) {
     //check for the end game conditions
@@ -64,11 +65,19 @@ export class GameService {
     // move the players
     if (state.moveP1.isMoving) {
       state.p1 += state.moveP1.up ? -state.speed : state.speed;
-      state.p1 = clamp(state.p1, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
+      state.p1 = clamp(
+        state.p1,
+        size.ball * 1.5 + size.halfBar,
+        size.height - size.ball * 1.5 - size.halfBar,
+      );
     }
     if (state.moveP2.isMoving) {
       state.p2 += state.moveP2.up ? -state.speed : state.speed;
-      state.p2 = clamp(state.p2, size.ball * 1.5 + size.halfBar, size.height - size.ball * 1.5 - size.halfBar);
+      state.p2 = clamp(
+        state.p2,
+        size.ball * 1.5 + size.halfBar,
+        size.height - size.ball * 1.5 - size.halfBar,
+      );
     }
 
     //check if the ball enter a 'GOAL'
@@ -87,7 +96,7 @@ export class GameService {
     else this.bounce(state);
 
     //increase progressively the speed
-    state.speed = Math.min(state.speed + 0.001, 10)
+    state.speed = Math.min(state.speed + 0.005, 10);
   }
 
   //manage the 'physics' of the game
@@ -100,16 +109,26 @@ export class GameService {
       state.dir.y *= -1;
 
     //collision with the left player
-    if (((state.ball.x - size.halfBall) <= (size.p1X))
-      && ((state.ball.y - size.halfBall) < (state.p1 + size.halfBar))
-      && ((state.ball.y + size.halfBall) > (state.p1 - size.halfBar)))
-      state.dir = {x:state.ball.x - (size.p1X - size.ball), y: state.ball.y - state.p1}
+    if (
+      state.ball.x - size.halfBall <= size.p1X &&
+      state.ball.y - size.halfBall < state.p1 + size.halfBar &&
+      state.ball.y + size.halfBall > state.p1 - size.halfBar
+    )
+      state.dir = {
+        x: state.ball.x - (size.p1X - size.ball),
+        y: state.ball.y - state.p1,
+      };
 
     //collision with the right player
-    if (((state.ball.x + size.halfBall) >= (size.p2X))
-      && ((state.ball.y - size.halfBall) < (state.p2 + size.halfBar))
-      && ((state.ball.y + size.halfBall) > (state.p2 - size.halfBar)))
-      state.dir = {x: state.ball.x - (size.p2X + size.ball), y: state.ball.y - state.p2}
+    if (
+      state.ball.x + size.halfBall >= size.p2X &&
+      state.ball.y - size.halfBall < state.p2 + size.halfBar &&
+      state.ball.y + size.halfBall > state.p2 - size.halfBar
+    )
+      state.dir = {
+        x: state.ball.x - (size.p2X + size.ball),
+        y: state.ball.y - state.p2,
+      };
 
     state.dir = this.normalize(state.dir);
   }

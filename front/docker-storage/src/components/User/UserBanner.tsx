@@ -1,38 +1,60 @@
-import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
+import { Flex, Popup, Profil, RoundButton } from '..';
 import { UserButton } from './UserButton';
-import { IUser, IUserComplete } from '../../utils/interfaces';
-import React, { CSSProperties, useState } from 'react';
+import { IUser } from '../../utils/interfaces';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   otherUser: IUser;
-  meUser: IUserComplete;
 }
 
-const UserBanner = ({ otherUser, meUser }: Props) => {
-  // const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+const UserBanner = ({ otherUser }: Props) => {
   const [profilVisible, setProfilVisible] = useState<boolean>(false);
+  const { id, user, socket } = useUserContext();
+  const isMe = otherUser.id === user?.id;
+  const [userBanner, setUserBanner] = useState<IUser>(otherUser.id === id && user ? user : otherUser);
 
-  const isMe = otherUser.id === meUser?.id;
+  useEffect(() => {
+    function connect(body: { userId: number }) {
+      console.log('connect: ', body);
+      if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'on' });
+    }
+
+    function disconnect(body: { userId: number }) {
+      console.log('disconnect: ', body);
+      if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'off' });
+    }
+
+    socket?.on('user_connection', connect);
+    socket?.on('user_disconnection', disconnect);
+
+    return () => {
+      socket?.off('user_connection');
+      socket?.off('user_disconnection');
+    };
+  }, [socket, userBanner]);
 
   return (
     <div>
       <div style={UserBannerContainer}>
         <Flex flex_direction='row'>
-          {isMe || <img style={statusStyle}
-                        src={(isMe ? meUser : otherUser)?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
-                        alt={(isMe ? meUser : otherUser)?.user_status ? 'connected' : 'disconnected'} />}
-          <RoundButton icon={(isMe ? meUser : otherUser).urlImg} icon_size={50}
+          {!isMe &&
+            <img style={statusStyle}
+                 src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
+                 alt={userBanner.user_status ? 'connected' : 'disconnected'} />
+          }
+          <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setProfilVisible(true)} />
-          <p onClick={() => setProfilVisible(true)}>{(isMe ? meUser : otherUser).username}</p>
+          <p onClick={() => setProfilVisible(true)}>{userBanner.username}</p>
         </Flex>
-        <UserButton otherUser={otherUser} meUser={meUser} />
+        {!isMe &&
+          <UserButton otherUser={otherUser} />
+        }
       </div>
       {profilVisible && (
-        <AuthGuard isAuthenticated>
-          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={otherUser} meUser={meUser} />
-          </Popup>
-        </AuthGuard>
+        <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+          <Profil otherUser={otherUser} />
+        </Popup>
       )}
     </div>
   );

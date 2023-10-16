@@ -12,4 +12,5 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   providers: [GameService, GameMatchmaking, GameGateway],
   controllers: [GameController],
 })
-export class GameModule {}
+export class GameModule {
+}
