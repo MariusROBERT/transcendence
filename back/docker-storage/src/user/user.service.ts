@@ -219,12 +219,13 @@ export class UserService {
         sender.blocked.splice(index, 1);
       }
     }
-
     this.UserRepository.save(user);
     this.UserRepository.save(sender);
   }
 
   async blockAUser(id: number, user: UserEntity) {
+    if (!user.blocked)
+      user.blocked = [];
     user.blocked = [...user.blocked, id];
     await this.UserRepository.save(user);
   }
@@ -467,5 +468,13 @@ export class UserService {
       gameInvitationTo: user.gameInvitationTo,
       gameInviteType: user.gameInvitationType,
     };
+  }
+
+  async cancelFriendRequest(user: UserEntity, receiver: UserEntity) {
+    user.sentInvitesTo = user.sentInvitesTo.filter((id) => id !== receiver.id);
+    receiver.recvInvitesFrom = receiver.recvInvitesFrom.filter((id) => id !== user.id);
+
+    await this.UserRepository.save(user);
+    await this.UserRepository.save(receiver);
   }
 }

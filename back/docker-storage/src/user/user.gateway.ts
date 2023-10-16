@@ -71,4 +71,15 @@ export class UserGateway {
       .to('user' + msg.sender)
       .emit('unblock_user', { sender: msg.sender, receiver: msg.receiver });
   }
+
+  @SubscribeMessage('cancel_friend_request')
+  async cancelInvite(@MessageBody() msg: { sender: number; receiver: number }) {
+    const sender = await this.userService.getUserById(msg.sender);
+    const receiver = await this.userService.getUserById(msg.receiver);
+    await this.userService.cancelFriendRequest(sender, receiver);
+    this.server.to('user' + msg.receiver).emit('cancel_friend_request', {
+      sender: msg.sender,
+      receiver: msg.receiver,
+    });
+  }
 }
