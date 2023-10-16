@@ -3,7 +3,7 @@ import { Viewport } from '../../utils';
 import { Background, UserBanner } from '..';
 import { useUserContext } from '../../contexts';
 import { Fetch } from '../../utils';
-import { IUser, IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 // import  UserBanner  from '../User/UserBanner';
 import { TheWinnerIs} from './TheWinnerIs';
 import ScorePannel from './ScorePannel';
@@ -20,7 +20,7 @@ export function GameScore({ viewport }: { viewport: Viewport }) {
   const [won, setWon] = React.useState(false);
 
   const [game, setGame] = React.useState<any | undefined>(undefined);
-  const [profil1, setProfil1] = React.useState<IUserComplete>();
+  const [profil1, setProfil1] = React.useState<IUser>();
   const [profil2, setProfil2] = React.useState<IUser>();
   
   async function getScore() {

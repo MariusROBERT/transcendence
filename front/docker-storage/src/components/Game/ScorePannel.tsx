@@ -2,12 +2,12 @@ import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
 import { UserButton } from '../User/UserButton';
 import { Background, UserBanner } from '..';
 import { useUserContext } from '../../contexts';
-import { IUser, IUserComplete } from '../../utils/interfaces';
+import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useState } from 'react';
 
 interface Props {
     user2: IUser;
-    user1: IUserComplete;
+    user1: IUser;
     score1:number;
     score2:number;
   }
@@ -22,7 +22,7 @@ const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
         <div>
             <Flex flex_direction='row' flex_gap='5px 20px'>
                 <Flex flex_direction='column'>
-                    <div>
+                    <div style={{...nameStyle, color:'blue'}}>
                         {user1.username}
                     </div>
                     <div>
@@ -32,20 +32,20 @@ const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
                 </Flex>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>Games Played</p>
-                        <p style={tdStyle}>{user1.gamesPlayed}</p>
+                        <p>Games Played</p>
+                        <p>{user1.gamesPlayed}</p>
                     </Flex>
                 </div>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>Winrate</p>
-                        <p style={tdStyle}>{user1.winrate} %</p>
+                        <p>Winrate</p>
+                        <p>{user1.winrate} %</p>
                     </Flex>
                 </div>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>ELO</p>
-                        <p style={tdStyle}>{user1.elo}</p>
+                        <p>ELO</p>
+                        <p>{user1.elo}</p>
                     </Flex>
                 </div>
             </Flex>
@@ -57,31 +57,29 @@ const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
             <Flex flex_direction='row' flex_gap='5px 20px'>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>ELO</p>
-                        <p style={tdStyle}>{user2.elo}</p>
+                        <p>ELO</p>
+                        <p>{user2.elo}</p>
                     </Flex>
                 </div>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>Winrate</p>
-                        <p style={tdStyle}>{user2.winrate} %</p>
+                        <p>Winrate</p>
+                        <p>{user2.winrate} %</p>
                     </Flex>
                 </div>
                 <div>
                     <Flex flex_alignItems='center'>
-                        <p style={tdStyle}>Games Played</p>
-                        <p style={tdStyle}>{user2.gamesPlayed}</p>
+                        <p>Games Played</p>
+                        <p>{user2.gamesPlayed}</p>
                     </Flex>
                 </div>
-                <div style={{position:'relative'}}>
-                    <Flex flex_direction='column' flex_alignItems='center' flex_gap='30px 5px'>
-                        {<img style={{...statusStyle, position: 'absolute'}}
-                                    src={user2.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : 
-                                    require('../../assets/imgs/icon_red_disconnect.png')}
-                                    alt={user2.user_status ? 'connected' : 'disconnected'} />}
-                        <div style={{position:'absolute', top: -20}}>{user2.username}</div>
+                <div>
+                    <Flex flex_direction='column'>
+                        <div style={{...nameStyle, color:'red'}}>{user2.username}</div>
+                        <div>
                         <RoundButton icon={user2.urlImg} icon_size={100} 
                                 onClick={() => setProfilVisible(true)} />
+                        </div>
                     </Flex>
                 </div>
             </Flex>
@@ -108,7 +106,10 @@ const statusStyle: CSSProperties = {
     height: '10px',
   };
 
-  const tdStyle = {
-
+  const nameStyle: CSSProperties = {
+    marginTop: '5px',
+    fontWeight: 'bold',
+    textShadow: '2px 2px 4px #000000',
+    fontSize:'20px',
   };
   
