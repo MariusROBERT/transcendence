@@ -142,13 +142,6 @@ export class UserService {
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
-    if (user && user.friends && Array.isArray(user.friends)) {
-      PublicProfile.is_friend = user.friends.some(
-        (friend) => friend === profile.id,
-      );
-    } else {
-      PublicProfile.is_friend = false;
-    }
     return PublicProfile;
   }
 

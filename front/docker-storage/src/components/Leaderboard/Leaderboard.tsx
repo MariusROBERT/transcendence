@@ -27,6 +27,8 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
       if (users && Array.isArray(users) && users.length === 0)
         setErrorMessage('Aucun utilisateur trouvé.');
       else setAllUsers(users);
+      // Rank users by ELO
+
       return () => {
         cancelled = true;
       };

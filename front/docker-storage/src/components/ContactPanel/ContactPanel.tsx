@@ -14,7 +14,9 @@ export function ContactPanel({ viewport }: Props) {
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
         >
-          <GroupItems heading={'Friends'} duration_ms={900} />
+          <GroupItems heading={'Friends'} duration_ms={900} >
+
+          </GroupItems>
           <GroupItems heading={'Users'} duration_ms={900} />
           <GroupItems heading={'Channels'} duration_ms={900} />
           <Border
