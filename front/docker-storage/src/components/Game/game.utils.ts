@@ -169,7 +169,6 @@ export class AutonomousBall extends Ball {
   bounceWithBall(size: Size, ball: AutonomousBall, p5: p5Types) {
     if (Math.abs(this.pos.x - ball.pos.x) > size.ball) return;
     if (Math.abs(this.pos.y - ball.pos.y) > size.ball) return;
-    console.log('collision');
     const len = Math.sqrt((this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2);
     if (len > size.ball) return;
     const normal = p5.createVector(
