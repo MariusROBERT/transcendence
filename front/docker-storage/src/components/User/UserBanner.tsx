@@ -65,7 +65,7 @@ const UserBanner = ({ otherUser }: Props) => {
 
   return (
     <>
-      <div id={'' + otherUser.id} style={userBannerStyle}>
+      <div style={userBannerStyle}>
         <Flex flex_direction='row'>
           <img style={statusStyle}
                src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
