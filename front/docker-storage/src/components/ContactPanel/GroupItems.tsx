@@ -30,7 +30,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
 
   const displayFriends = () => {
     if (!user)
-      return ;
+      return;
     const friends: IUser[] = allUsers.filter(
       (u) => user?.friends.includes(u.id),
     );
@@ -44,7 +44,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
 
   const displayUsers = () => {
     if (!user)
-      return ;
+      return;
     const others: IUser[] = allUsers.filter(u => u.id !== user?.id);
 
     return others.map((other: IUser) => (
@@ -87,7 +87,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     paddingRight: '5px',
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: mobile ? 15:50,
+    marginLeft: mobile ? 15 : 50,
     overflow: 'scroll',
     height: isOpen ? '100%' : '0px',
     gap: '30px',

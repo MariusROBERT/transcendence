@@ -1,4 +1,4 @@
-import {color} from '../../utils';
+import { color } from '../../utils';
 import React from 'react';
 
 interface Props {
@@ -7,10 +7,10 @@ interface Props {
   children: string,
   isVisible: boolean
   id?: string
-  style ?: React.CSSProperties
+  style?: React.CSSProperties
 }
 
-export function SearchBar({setSearchTerm, onClick, children, isVisible, id, style}: Props) {
+export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, style }: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };

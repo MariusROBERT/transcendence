@@ -50,7 +50,7 @@ export default function Popup(props: Props) {
     >
       {
         props.isVisible &&
-        (<div style={{position: 'relative', ...props.style}}>
+        (<div style={{ position: 'relative', ...props.style }}>
           <p onClick={() => props.setIsVisible(false)}
              style={{
                position: 'absolute',

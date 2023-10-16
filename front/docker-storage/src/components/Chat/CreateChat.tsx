@@ -14,7 +14,6 @@ interface Props {
 }
 
 
-
 export default function CreateChat({ visible, setVisible }: Props) {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -58,7 +57,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
   }
 
   return (
-    <div style={{...createChatStyle, padding: mobile ? 10 : 42}}>
+    <div style={{ ...createChatStyle, padding: mobile ? 10 : 42 }}>
       <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
         <ErrorPanel text={errorMessage}></ErrorPanel>
       </div>

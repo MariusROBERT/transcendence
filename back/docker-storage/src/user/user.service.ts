@@ -31,7 +31,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -73,7 +74,7 @@ export class UserService {
       .where('user.username = :name', { name })
       .getOne();
     if (currentUser.username.endsWith('_42'))
-      throw new UnauthorizedException("Oauth42 user can't change password");
+      throw new UnauthorizedException('Oauth42 user can\'t change password');
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
       currentUser.salt,

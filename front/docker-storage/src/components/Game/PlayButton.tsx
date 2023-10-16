@@ -21,7 +21,7 @@ export function PlayButton() {
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={() => {
             joinQueue(isSpecial ? 'special' : 'normal');
-          }}/>
+          }} />
         <Flex flex_direction={'row'}>
           <p>Special Mode: </p>
           <SwitchToggle onChange={() => {
@@ -29,7 +29,7 @@ export function PlayButton() {
           }} checked={isSpecial}></SwitchToggle>
         </Flex>
       </Flex>
-      <div style={{ height: mobile ? 38: 56 }} />
+      <div style={{ height: mobile ? 38 : 56 }} />
     </>
   );
 }

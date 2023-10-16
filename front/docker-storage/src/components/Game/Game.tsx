@@ -35,7 +35,7 @@ export function Game({ viewport }: { viewport: Viewport }) {
         socket?.off('get_usernames');
         socket?.off('start_game');
       }
-    )
+    );
     // eslint-disable-next-line
   }, [id, socket, isInGameWith, navigate]);
 

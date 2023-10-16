@@ -1,19 +1,19 @@
-import {CSSProperties, useEffect, useState} from 'react';
-import {UserBanner} from '..';
-import {IUser, LeaderboardProps} from '../../utils/interfaces';
-import {Fetch} from '../../utils';
-import {useFriendsRequestContext, useUserContext} from '../../contexts';
+import { CSSProperties, useEffect, useState } from 'react';
+import { UserBanner } from '..';
+import { IUser, LeaderboardProps } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 
-export function Leaderboard({searchTerm}: LeaderboardProps) {
+export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const {fetchContext, user} = useUserContext();
-  const {fetchFriendsRequestContext} = useFriendsRequestContext();
+  const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext } = useFriendsRequestContext();
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
   useEffect(() => {
     setMobile(window.innerWidth < 650);
-  }, [window.innerWidth])
+  }, [window.innerWidth]);
 
   useEffect(() => {
     fetchContext();
@@ -54,7 +54,7 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
           <p>{'RANK'}</p> {/* TO CHANGE */}
-          {<UserBanner otherUser={user}/>}
+          {<UserBanner otherUser={user} />}
           <p>ELO pt</p>
         </div>
       ));
@@ -93,15 +93,15 @@ export function Leaderboard({searchTerm}: LeaderboardProps) {
   return (
     <div style={container}>
       {errorMessage && (
-        <div style={{color: 'red', marginTop: '5px'}}>{errorMessage}</div>
+        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
-      <div className="container">{userElements}</div>
+      <div className='container'>{userElements}</div>
       {userElements.length === 0 && !errorMessage && (
-        <div style={{color: 'white', marginTop: '5px'}}>
-          <div style={{display: 'flex', justifyContent: 'center'}}>
+        <div style={{ color: 'white', marginTop: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <p>No user found.</p>
           </div>
-          <div style={{...userElementStyle, visibility: 'hidden'}}/>
+          <div style={{ ...userElementStyle, visibility: 'hidden' }} />
         </div>
       )
       }

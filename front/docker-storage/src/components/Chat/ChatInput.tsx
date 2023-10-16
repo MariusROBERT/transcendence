@@ -1,4 +1,4 @@
-import {color} from '../../utils';
+import { color } from '../../utils';
 
 interface Props {
   input: string;
@@ -50,7 +50,7 @@ export default function ChatInput({
           width: mobile ? 180 : 315,
           backgroundColor: color.white,
         }}
-        placeholder="Search Channel"
+        placeholder='Search Channel'
         value={input}
         onChange={(evt) => {
           setInput(evt.target.value);

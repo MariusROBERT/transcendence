@@ -1,9 +1,9 @@
-import React, {CSSProperties, useEffect, useState} from 'react';
-import {GameInvites, Popup, Profil, RoundButton, Settings} from '..';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
-import {Fetch} from '../../utils';
-import {useFriendsRequestContext, useUserContext} from '../../contexts';
-import {IUser} from '../../utils/interfaces';
+import { Fetch } from '../../utils';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 
 const Navbar: React.FC = () => {
@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
     <>
       <div style={navbarStyle}>
         <div>
-          <div style={{display: 'flex', background: 'black', borderRadius: '0 0 0 30px'}}>
+          <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
             {notifs.length > 0 && <div style={notifbadge}>{notifs.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
@@ -112,9 +112,9 @@ const Navbar: React.FC = () => {
             </div>}
         </div>
       </div>
-      <GameInvites/>
+      <GameInvites />
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-        <Settings isVisible={settingsVisible}/>
+        <Settings isVisible={settingsVisible} />
       </Popup>
       <Popup isVisible={profileVisible} setIsVisible={setProfileVisible}>
         <Profil otherUser={user} />

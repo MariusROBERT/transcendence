@@ -22,7 +22,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+  }
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -94,7 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_invite')
   async sendInvite(
     @MessageBody()
-    msg: {
+      msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -119,7 +120,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('accept_invite')
   async acceptInvite(
     @MessageBody()
-    msg: {
+      msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';

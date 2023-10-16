@@ -1,6 +1,6 @@
-import {Leaderboard, Popup, SearchBar} from '..';
-import React, {useEffect, useState} from 'react';
-import {IUser} from '../../utils/interfaces';
+import { Leaderboard, Popup, SearchBar } from '..';
+import React, { useEffect, useState } from 'react';
+import { IUser } from '../../utils/interfaces';
 
 interface Props {
   searchTerm: string,
@@ -31,7 +31,7 @@ export function Search(props: Props) {
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
                  isVisible={!searchMode}
-                 style={{top: mobile ? 80 : 0}}
+                 style={{ top: mobile ? 80 : 0 }}
       >
         {props.placeHolder || ''}
       </SearchBar>

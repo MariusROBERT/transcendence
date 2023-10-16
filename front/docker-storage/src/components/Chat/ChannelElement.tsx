@@ -1,11 +1,11 @@
-import {CSSProperties} from 'react';
-import {Flex} from '../ComponentBase/FlexBox';
-import {RoundButton} from '../ComponentBase/RoundButton';
-import {ChannelPublicPass} from '../../utils/interfaces';
-import {Fetch} from '../../utils';
-import {UpdateChannelMessage, UpdateChannelUsers,} from '../../utils/channel_functions';
-import {useUserContext} from '../../contexts';
-import {publish} from '../../utils/event';
+import { CSSProperties } from 'react';
+import { Flex } from '../ComponentBase/FlexBox';
+import { RoundButton } from '../ComponentBase/RoundButton';
+import { ChannelPublicPass } from '../../utils/interfaces';
+import { Fetch } from '../../utils';
+import { UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
+import { useUserContext } from '../../contexts';
+import { publish } from '../../utils/event';
 
 interface Props {
   data: ChannelPublicPass;
@@ -19,7 +19,7 @@ export default function ChannelElement({
                                          setVisible,
                                          setCurrent,
                                        }: Props) {
-  const {socket} = useUserContext();
+  const { socket } = useUserContext();
 
   async function AddUserInChannel() {
     const res = await Fetch('channel/add_user/' + data.id, 'POST');
@@ -37,7 +37,7 @@ export default function ChannelElement({
       setVisible(true);
       return;
     }
-    socket?.emit('join', {channel: data.channel_name});
+    socket?.emit('join', { channel: data.channel_name });
   }
 
   const mobile = window.innerWidth < 500;
@@ -73,7 +73,7 @@ export default function ChannelElement({
           />
           <p> {data.channel_name} </p>
         </Flex>
-        <div style={{overflow: 'hidden', paddingRight: mobile ? 10: 20}}>
+        <div style={{ overflow: 'hidden', paddingRight: mobile ? 10 : 20 }}>
           <Flex
             zIndex={'10'}
             flex_direction={'row'}

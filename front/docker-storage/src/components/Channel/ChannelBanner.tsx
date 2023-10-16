@@ -42,8 +42,8 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           type === 'owner'
             ? color.green
             : type === 'admin'
-            ? color.red
-            : color.grey,
+              ? color.red
+              : color.grey,
         height: '25px',
       }}
     >
@@ -69,9 +69,9 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           {name.length > 25 ? '...' : ''}
         </p>
       </Flex>
-    <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
-      <EditChat data={publicData}/>
-    </Popup>
+      <Popup isVisible={editVisible} setIsVisible={setEditVisible}>
+        <EditChat data={publicData} />
+      </Popup>
     </div>
   );
 }

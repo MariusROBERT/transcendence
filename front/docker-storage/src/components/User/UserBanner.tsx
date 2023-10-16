@@ -16,7 +16,7 @@ const UserBanner = ({ otherUser }: Props) => {
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
   useEffect(() => {
     setMobile(window.innerWidth < 650);
-  }, [window.innerWidth])
+  }, [window.innerWidth]);
 
   useEffect(() => {
     function connect(body: { userId: number }) {
@@ -47,7 +47,7 @@ const UserBanner = ({ otherUser }: Props) => {
     alignItems: 'center',
     justifyContent: 'space-between',
     // width:'400px',
-    width: mobile ? 200: 400,
+    width: mobile ? 200 : 400,
   };
 
   const statusStyle: CSSProperties = {
