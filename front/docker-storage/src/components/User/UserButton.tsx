@@ -34,10 +34,7 @@ export function UserButton({ otherUser }: Props) {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        borderRadius: '12.5px',
-        backgroundColor: color.grey,
         minWidth: '100px',
-        height: '25px',
       }}>
         <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
           {friends?.includes(otherUser.id) &&

@@ -3,6 +3,7 @@ import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
+import { color } from '../../utils';
 
 interface Props {
   otherUser: IUser;
@@ -46,7 +47,6 @@ const UserBanner = ({ otherUser }: Props) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    // width:'400px',
     width: mobile ? 200 : 400,
   };
 
@@ -59,27 +59,36 @@ const UserBanner = ({ otherUser }: Props) => {
   };
 
   return (
-    <div>
-      <div style={UserBannerContainer}>
-        <Flex flex_direction='row'>
-          {!isMe &&
+    <div style={{marginTop: 5}}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderRadius: '12.5px',
+        backgroundColor: color.grey,
+        minWidth: '100px',
+        height: '25px',
+      }}>
+        <div style={UserBannerContainer}>
+          <Flex flex_direction='row'>
             <img style={statusStyle}
-                 src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
-                 alt={userBanner.user_status ? 'connected' : 'disconnected'} />
+                   src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
+                   alt={userBanner.user_status ? 'connected' : 'disconnected'} />
+            <RoundButton icon={userBanner.urlImg} icon_size={50}
+                         onClick={() => setProfilVisible(true)} />
+            <p onClick={() => setProfilVisible(true)}>{displayName}</p>
+          </Flex>
+          {!isMe && !mobile &&
+            <UserButton otherUser={otherUser} />
           }
-          <RoundButton icon={userBanner.urlImg} icon_size={50}
-                       onClick={() => setProfilVisible(true)} />
-          <p onClick={() => setProfilVisible(true)}>{displayName}</p>
-        </Flex>
-        {!isMe && !mobile &&
-          <UserButton otherUser={otherUser} />
-        }
+        </div>
+        {profilVisible && (
+          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
+            <Profil otherUser={otherUser} />
+          </Popup>
+        )}
       </div>
-      {profilVisible && (
-        <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-          <Profil otherUser={otherUser} />
-        </Popup>
-      )}
     </div>
   );
 };
