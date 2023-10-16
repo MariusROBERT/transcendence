@@ -10,20 +10,20 @@ import { GameController } from './game.controller';
 import { Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { delay, State } from './game.interfaces';
+import { FRONT_URL } from '../utils/Globals';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
+@WebSocketGateway({ cors: { origin: [FRONT_URL] } })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Socket in the back side
   @WebSocketServer() server;
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number; sockets: Socket[] }[] = [];
+  clients: { id: number, sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
-  constructor(private userService: UserService) {
-  }
+  constructor(private userService: UserService) {}
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -76,12 +76,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.userService.getUserById(clientId);
     if (!user) console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
-    if (user.gameInvitationTo)
+    if (user?.gameInvitationTo > 0)
       await this.cancelInvite({
         sender: clientId,
         receiver: user.gameInvitationTo,
       });
-    if (user.gameInvitationFrom)
+    if (user?.gameInvitationFrom > 0)
       await this.declineInvite({
         sender: clientId,
         receiver: user.gameInvitationFrom,
@@ -95,7 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_invite')
   async sendInvite(
     @MessageBody()
-      msg: {
+    msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -120,7 +120,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('accept_invite')
   async acceptInvite(
     @MessageBody()
-      msg: {
+    msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -249,7 +249,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const game = this.controller.matchmaking.getGame(msg.id);
     if (game === undefined || !game.state.running) return;
-    return this.controller.service.movePlayer(
+    return this.controller.service.onPlayerMove(
       game.state,
       game.playerIds.indexOf(msg.id),
       msg.isMoving,
@@ -258,14 +258,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   sendState(game: { playerIds: number[]; state: State; ready: number[] }) {
+    const gameState: {
+      balls: { id: number; pos: { x: number; y: number } }[];
+      p1: number;
+      p2: number;
+      score: { p1: number; p2: number };
+    } = {
+      balls: game.state.balls.map((b) => {
+        return { id: b.id, pos: { x: b.pos.x, y: b.pos.y } };
+      }),
+      p1: game.state.p1,
+      p2: game.state.p2,
+      score: game.state.score,
+    };
+
     this.server
       .to('user' + game.playerIds[0])
       .to('user' + game.playerIds[1])
-      .emit('update_game_state', {
-        ball: game.state.ball,
-        p1: game.state.p1,
-        p2: game.state.p2,
-        score: game.state.score,
-      });
+      .emit('update_game_state', { gameState: gameState });
   }
 }

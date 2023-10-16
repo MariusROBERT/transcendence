@@ -70,10 +70,6 @@ export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()
   winrate: number;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  is_friend: boolean;
 }
 
 export class UpdatePwdDto {

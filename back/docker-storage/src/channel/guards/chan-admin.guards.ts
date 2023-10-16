@@ -27,8 +27,7 @@ export class AdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -49,8 +48,7 @@ export class TargetIsAdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -72,8 +70,7 @@ export class OwnerGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

@@ -1,7 +1,8 @@
 import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Background, Border, Button, Flex, TwoFA, PasswordInput } from '..';
+import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
+import {API_URL} from '../../utils/Global';
 
 const SIZE = 350;
 
@@ -48,7 +49,6 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           }
           setErrorMessage('this username is already used');
           console.error('register failure. Error:', registerResponse?.status);
-
         } else {
           setErrorMessage('username can\'t be ended with _42');
         }
@@ -95,7 +95,6 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         setErrorMessage(data.message);
         console.error('connection failure. Error:', response?.status);
       }
-
     } catch (error) {
       console.error(`Error : ${error}`);
     }
@@ -130,6 +129,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     width: '100%',
     position: 'absolute',
     top: '0px',
+    zIndex: 2,
   };
 
   const animStyle: React.CSSProperties = {
@@ -140,6 +140,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     position: 'absolute',
     top: '50px',
     transition: duration_ms / 3 + 'ms ease',
+    zIndex: 2,
   };
 
   const connectingStyle: React.CSSProperties = {
@@ -150,6 +151,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     position: 'absolute',
     top: viewport.isLandscape ? -Math.max(SIZE, viewport.height) + 'px' : -Math.max(2 * SIZE, viewport.height) + 'px',
     transition: duration_ms + 'ms ease',
+    zIndex: 2,
   };
 
   const connectedStyle: React.CSSProperties = {
@@ -162,13 +164,15 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     top: viewport.isLandscape
       ? -Math.max(SIZE, viewport.height) + 'px'
       : -Math.max(2 * SIZE, viewport.height) + 'px',
+    zIndex: 2,
   };
 
   return (
     <div
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-                  flex_justifyContent={'space-around'}>
+                  flex_justifyContent={'space-around'} forceStyle={{padding: 0, margin: 0}}>
+
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
             <h2>Welcome to Pong</h2>
@@ -228,7 +232,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
               <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
                 <p>or sign in with Intra42</p>
                 <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
-                  window.location.replace('http://localhost:3001/api/auth/login/42');
+                  window.location.replace(API_URL + '/api/auth/login/42');
                 }} />
               </Flex>
             </div>

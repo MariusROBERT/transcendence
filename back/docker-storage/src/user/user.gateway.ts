@@ -6,14 +6,14 @@ import {
 } from '@nestjs/websockets';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { FRONT_URL } from '../utils/Globals';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
+@WebSocketGateway({ cors: { origin: [FRONT_URL] } })
 export class UserGateway {
   @WebSocketServer() server;
   controller: UserController;
 
-  constructor(private userService: UserService) {
-  }
+  constructor(private userService: UserService) {}
 
   @SubscribeMessage('send_friend_request')
   async handleSendFriendRequest(

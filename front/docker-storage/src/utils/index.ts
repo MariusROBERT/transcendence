@@ -1,4 +1,4 @@
-export { color, styles, backgroundImage } from './Global';
+export { color, styles } from './Global';
 export type { Viewport } from './Viewport';
 export { useEffectViewport } from './Viewport';
 export { RedirectToHome } from './RedirectToHome';
