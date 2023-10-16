@@ -1,4 +1,4 @@
-import { Flex, Popup, Profil, RoundButton } from '..';
+import { Flex, Profil, RoundButton } from '..';
 import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
@@ -43,10 +43,15 @@ const UserBanner = ({ otherUser }: Props) => {
     userBanner.username.slice(0, 11) + '...' :
     userBanner.username;
 
-  const UserBannerContainer = {
+  const userBannerStyle : React.CSSProperties = {
     display: 'flex',
-    alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: '12.5px',
+    backgroundColor: color.grey,
+    height: '25px',
+    marginTop: 5,
     width: mobile ? 200 : 400,
   };
 
@@ -59,37 +64,20 @@ const UserBanner = ({ otherUser }: Props) => {
   };
 
   return (
-    <div style={{marginTop: 5}}>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderRadius: '12.5px',
-        backgroundColor: color.grey,
-        minWidth: '100px',
-        height: '25px',
-      }}>
-        <div style={UserBannerContainer}>
-          <Flex flex_direction='row'>
-            <img style={statusStyle}
-                   src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
-                   alt={userBanner.user_status ? 'connected' : 'disconnected'} />
-            <RoundButton icon={userBanner.urlImg} icon_size={50}
-                         onClick={() => setProfilVisible(true)} />
-            <p onClick={() => setProfilVisible(true)}>{displayName}</p>
-          </Flex>
-          {!isMe && !mobile &&
-            <UserButton otherUser={otherUser} />
-          }
-        </div>
-        {profilVisible && (
-          <Popup isVisible={profilVisible} setIsVisible={setProfilVisible}>
-            <Profil otherUser={otherUser} />
-          </Popup>
-        )}
+    <>
+      <div id={'' + otherUser.id} style={userBannerStyle}>
+        <Flex flex_direction='row'>
+          <img style={statusStyle}
+               src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
+               alt={userBanner.user_status ? 'connected' : 'disconnected'} />
+          <RoundButton icon={userBanner.urlImg} icon_size={50}
+                       onClick={() => setProfilVisible(true)} />
+          <p onClick={() => setProfilVisible(true)}>{displayName}</p>
+        </Flex>
+        {!isMe && !mobile && <UserButton otherUser={otherUser} />}
       </div>
-    </div>
+      {profilVisible && <Profil otherUser={otherUser} isVisible={profilVisible} setIsVisible={setProfilVisible} />}
+    </>
   );
 };
 export default UserBanner;
