@@ -1,15 +1,15 @@
-import React, {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import {TwoFA} from '..';
-import {unsecureFetch} from '../../utils';
+import { TwoFA } from '..';
+import { unsecureFetch } from '../../utils';
 
 interface AuthGuardProps {
   isAuthenticated: boolean;
   children: React.ReactNode;
 }
 
-const Authguard: React.FC<AuthGuardProps> = ({children}): any => {
+const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
   const ft_token = new URLSearchParams(window.location.search).get('access-token');
   const [error2fa, setError2fa] = React.useState<string>('');
   const [is2fa, setIs2fa] = React.useState<boolean>(ft_token === 'missing 2fa code');

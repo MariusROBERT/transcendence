@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
 import { color, useEffectViewport, Viewport } from './utils';
 import { AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage } from './components';
+import { backgroundImage, color, useEffectViewport, Viewport } from './utils';
+import { AuthGuard, Background, Game, GameScore, Login, MainPage, NotFoundPage } from './components';
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 import { AnimatedBackground } from './components/ComponentBase/AnimatedBackground';
 
-const SIZE = 500;
 
 function App() {
+  const mobile = window.innerWidth < 500;
+  const SIZE = mobile ? 350 : 500;
+  const start: Viewport = {
+    isLandscape:
+      window.innerWidth >= SIZE * 2 &&
+      window.innerWidth / window.innerHeight > 0.9,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
   const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
+
+  const appStyle: React.CSSProperties = {
+    height: '100%',
+    width: '100%',
+    color: color.white,
+
+    overflow: 'hidden',
+  };
 
   return (
     <Contexts>
@@ -43,21 +61,5 @@ function App() {
     </Contexts>
   );
 }
-
-const appStyle: React.CSSProperties = {
-  height: '100%',
-  width: '100%',
-  color: color.white,
-
-  overflow: 'hidden',
-};
-
-const start: Viewport = {
-  isLandscape:
-    window.innerWidth >= SIZE * 2 &&
-    window.innerWidth / window.innerHeight > 0.9,
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
 
 export default App;

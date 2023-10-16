@@ -125,9 +125,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
   // Styles ----------------------------------------------------------------------------------------------------------//
   const connectionStyle: React.CSSProperties = {
-    height: viewport.isLandscape
-      ? Math.max(SIZE, viewport.height) + 'px'
-      : Math.max(2 * SIZE, viewport.height) + 'px',
+    height: '100%',
     width: '100%',
     position: 'absolute',
     top: '0px',

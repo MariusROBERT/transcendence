@@ -19,7 +19,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number; sockets: Socket[] }[] = [];
+  clients: { id: number, sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
@@ -70,7 +70,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async disconnect(clientId: number) {
-    // console.log('disconnecting user', clientId);
     await delay(2000);
     if (this.clients.find((c) => c.id === clientId)) return; // the client reconnect in the 2 seconds.
 

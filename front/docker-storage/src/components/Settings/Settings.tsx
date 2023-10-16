@@ -120,10 +120,19 @@ export default function Settings(props: Props) {
     setErrorMessage('');
   };
 
+  const mobile = window.innerWidth < 500;
+
+  const displayName = (userInfosSettings?.username.length || '') > 11 ?
+    userInfosSettings?.username.slice(0, 11) + '...' :
+    userInfosSettings?.username;
+
   return (
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
-        <p>{userInfosSettings?.username}</p>
+        {mobile ?
+          <h3>{displayName}</h3> :
+          <h2>{displayName}</h2>
+        }
         <div>
           <div style={modifContainerImage}>
             <img style={{
@@ -200,7 +209,7 @@ export default function Settings(props: Props) {
           position: 'fixed',
           top: 0,
           left: 0,
-          zIndex: 999,
+          zIndex: 130,
           backgroundColor: 'rgba(70,70,70,0.5)',
           height: '100vh',
           width: '100vw',
