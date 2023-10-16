@@ -21,6 +21,7 @@ import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { API_URL } from '../utils/Globals';
 
 @Injectable()
 export class UserService {
@@ -31,8 +32,7 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {
-  }
+  ) {}
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -74,7 +74,7 @@ export class UserService {
       .where('user.username = :name', { name })
       .getOne();
     if (currentUser.username.endsWith('_42'))
-      throw new UnauthorizedException('Oauth42 user can\'t change password');
+      throw new UnauthorizedException("Oauth42 user can't change password");
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
       currentUser.salt,
@@ -142,13 +142,6 @@ export class UserService {
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
-    if (user && user.friends && Array.isArray(user.friends)) {
-      PublicProfile.is_friend = user.friends.some(
-        (friend) => friend === profile.id,
-      );
-    } else {
-      PublicProfile.is_friend = false;
-    }
     return PublicProfile;
   }
 
@@ -402,13 +395,13 @@ export class UserService {
     if (
       user.urlImg != '' &&
       !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
-      user.urlImg !== 'http://localhost:3001/public/default.png'
+      user.urlImg !== API_URL + '/public/default.png'
     ) {
-      fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
+      fs.rm(user.urlImg.replace(API_URL + '/', ''), (err) => {
         if (err) console.error('remove old: ', err);
       });
     }
-    user.urlImg = 'http://localhost:3001/' + file.path;
+    user.urlImg = API_URL + '/' + file.path;
     await this.UserRepository.save(user);
     return user;
   }
@@ -417,7 +410,7 @@ export class UserService {
     const user = await this.UserRepository.findOne({
       where: { id },
     });
-    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    if (!user) return;
     return user;
   }
 

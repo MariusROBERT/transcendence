@@ -23,7 +23,6 @@ export interface UserAndInvites {
   urlImg: string;
   user_status: string;
   winrate: number;
-  is_friend: boolean;
   recvInvitesFrom: number;
 }
 
@@ -98,7 +97,6 @@ export interface IUser {
   urlImg: string;
   user_status: string;
   winrate: number;
-  is_friend: boolean;
   sentInvitesTo: number[];
   recvInvitesFrom: number[];
   friends: number[];

@@ -10,5 +10,4 @@ import { GameMatchmaking } from './game.matchmaking';
   providers: [GameService, GameMatchmaking, GameGateway],
   controllers: [GameController],
 })
-export class GameModule {
-}
+export class GameModule {}
