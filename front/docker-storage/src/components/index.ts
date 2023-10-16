@@ -6,7 +6,7 @@ export { default as AuthGuard } from './AuthGuard/Authguard';
 
 // Channel
 export { ChanUser } from './Channel/ChanUser';
-export { ChannelPannel } from './Channel/ChannelBanner';
+export { ChannelBanner } from './Channel/ChannelBanner';
 export { ChanUserList } from './Channel/ChanUserList';
 
 // Chat
