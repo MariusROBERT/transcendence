@@ -13,7 +13,7 @@ export class MessagesService {
   ) {}
 
   async delete(msgs : MessageEntity[]) {
-    this.messageRepository.remove(msgs);
+    return this.messageRepository.remove(msgs);
   }
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
