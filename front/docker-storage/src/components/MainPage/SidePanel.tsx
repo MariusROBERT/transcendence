@@ -1,8 +1,8 @@
-import React, {ReactNode, useEffect, useState} from 'react';
-import {delay, Viewport} from '../../utils';
-import {RoundButton} from '..';
-import {useUserContext} from '../../contexts';
-import {subscribe, unsubscribe} from '../../utils/event';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { delay, Viewport, color } from '../../utils';
+import { RoundButton } from '..';
+import { useUserContext } from '../../contexts';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -25,7 +25,7 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const {socket, id} = useUserContext();
+  const { socket, id } = useUserContext();
 
   const Remove = async (uid: number) => {
     if (!isLeftPanel && uid === id) Close();
@@ -110,7 +110,7 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{color: 'red', position: 'absolute', height: '100%', left: getStyle().left}}
+        style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
           <RoundButton
@@ -132,7 +132,7 @@ export function SidePanel({
           onClick={isOpen ? Close : Open}
         />
       </div>
-      <div style={{overflow: 'hidden', display: 'flex', height: '100%'}}>
+      <div style={{ overflow: 'hidden', display: 'flex', height: '100%' }}>
         {children}
       </div>
     </div>
