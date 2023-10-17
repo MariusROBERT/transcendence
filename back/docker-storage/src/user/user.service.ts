@@ -105,9 +105,10 @@ export class UserService {
   }
 
   async logout(user: UserEntity) {
-    // pas testé
     const lastMsg = await this.getLastMsg(user);
-    if (lastMsg) user.last_msg_date = lastMsg.createdAt;
+    console.log('putute');
+    
+    if (lastMsg) user.last_msg_date = lastMsg;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -316,7 +317,7 @@ export class UserService {
     const userChannels = await this.getChannels(user);
     const lastMsg = await this.getLastMsg(user);
     const channelsWithNewMsg: ChannelEntity[] = [];
-    if (lastMsg.createdAt > user.last_msg_date) {
+    if (lastMsg > user.last_msg_date) {
       // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
       // pour chaque channel aller voir s'il y a des new msg;
       for (const channel of userChannels) {
@@ -334,12 +335,13 @@ export class UserService {
     return null;
   }
 
-  async getLastMsg(user: UserEntity): Promise<MessageEntity> {
-    // pas testé
+  async getLastMsg(user: UserEntity): Promise<Date> {
+    console.log('pute');
+    
     const userChannels = await this.getChannels(user);
     if (!userChannels || userChannels.length === 0) return null;
     let latestMessage: MessageEntity | null = null;
-    // Itérer sur les chaînes pour trouver le dernier message
+
     for (const channel of userChannels) {
       const messagesInChannel = await this.MessageRepository.find({
         where: { channel: { id: channel.id } },
@@ -356,7 +358,7 @@ export class UserService {
         }
       }
     }
-    return latestMessage;
+    return latestMessage.createdAt;
   }
 
   async getMsgsByChannel(

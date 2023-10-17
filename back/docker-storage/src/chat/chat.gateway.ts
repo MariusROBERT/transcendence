@@ -112,6 +112,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       message_content: message,
       channel_id: chanE.id,
     };
+    
     this.server.to(channel).emit('message', data);
+    let usersList = await this.userService.getFullUsersInChannels(channel.id);
+    let tmp = await this.userService.getFullAdminInChannels(channel.id)
+    usersList.concat(tmp, chanE.owner);
+    usersList.forEach(user => {
+      this.server.to('user' + user).emit('notifMsg', data);
+    });
   }
 }

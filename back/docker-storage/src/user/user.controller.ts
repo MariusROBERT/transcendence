@@ -117,7 +117,7 @@ export class UserController {
   // get last message
   @Get('get_last_msg')
   @UseGuards(JwtAuthGuard)
-  async GetLastMsg(@User() user: UserEntity): Promise<MessageEntity | null> {
+  async GetLastMsg(@User() user: UserEntity): Promise<Date | null> {
     return await this.userService.getLastMsg(user);
   }
 

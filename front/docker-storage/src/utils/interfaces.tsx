@@ -101,6 +101,7 @@ export interface IUser {
   recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
+  last_msg_date: Date;
 }
 
 export interface LeaderboardProps {
