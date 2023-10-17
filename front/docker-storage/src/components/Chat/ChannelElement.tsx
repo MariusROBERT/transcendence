@@ -19,10 +19,10 @@ interface Props {
 }
 
 export default function ChannelElement({
-                                         data,
-                                         setVisible,
-                                         setCurrent,
-                                       }: Props) {
+  data,
+  setVisible,
+  setCurrent,
+}: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
@@ -48,61 +48,48 @@ export default function ChannelElement({
   const mobile = window.innerWidth < 500;
 
   const ChannelElementStyle: CSSProperties = {
-    width: mobile ? 320 : 520,
+    //width: mobile ? 320 : 520,
     border: '1px solid white',
-    //flexWrap: 'wrap',
     display: 'flex',
-    margin: 10,
-    //alignContent: 'center',
     background: '#646464',
     color: 'white',
     cursor: 'pointer',
     borderRadius: '10px',
+    justifyContent: 'space-between',
+    width: '100%',
   };
 
   const ChannelBannerContainer = {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
   };
 
   return (
     <div style={ChannelElementStyle}>
-      <div>
-        <div style={ChannelBannerContainer}>
-          <Flex flex_direction="row">
-            <RoundButton
-              icon={require(
-                data.has_password
-                  ? '../../assets/imgs/icon_lock.png'
-                  : '../../assets/imgs/icon_chat.png',
-              )}
-              onClick={joinChannel}
-            />
-            <p>42</p>
-          </Flex>
-          <div style={{ right: '0', overflow: 'hidden' }}>
-            <Flex
-              zIndex={'10'}
-              flex_direction="row"
-              flex_justifyContent={'space-evenly'}
-            >
-              <RoundButton
-                icon={require(
-                  data.has_password
-                    ? '../../assets/imgs/icon_lock.png'
-                    : '../../assets/imgs/icon_chat.png',
-                )}
-                onClick={() => {
-                  joinChannel();
-                }}
-              ></RoundButton>
-              <p>42</p>
-            </Flex>
-          </div>
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginRight: '10px',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <p style={{ margin: '0 10px' }}> Channel </p>
+          <p style={{ margin: '0 10px' }}>{data.channel_name}</p>
         </div>
+        <RoundButton
+          icon={require(
+            data.has_password
+              ? '../../assets/imgs/icon_lock.png'
+              : '../../assets/imgs/icon_chat.png',
+          )}
+          onClick={joinChannel}
+        />
       </div>
+      <div style={{ right: '0', overflow: 'hidden' }}></div>
     </div>
   );
 }

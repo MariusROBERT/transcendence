@@ -37,7 +37,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
 
   function List() {
     return (
-      <div style={{ height: '400px', overflow: 'scroll' }}>
+      <div style={{ height: '400px', overflow: 'scroll', width: '100%', padding:'5px' }}>
         {filteredChannels.length === 0 ? (
           <p style={{ textAlign: 'center' }}>
             Found nothing...
@@ -78,7 +78,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
         <option value='public'>Public</option>
         <option value='protected'>Protected</option>
       </select>
-      <div>{List()}</div>
+      {List()}
       <div style={{ margin: '10px' }}>
         <Button
           onClick={() => {

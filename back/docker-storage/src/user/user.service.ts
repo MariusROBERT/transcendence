@@ -292,22 +292,21 @@ export class UserService {
       .getMany();
   }
 
-  async getBannedInChannels(channelId: number) {
-    return await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.baned', 'baned')
-      .where('baned.id = :channelId', { channelId })
-      .getMany();
-  }
-
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
     return (
       this.UserRepository.createQueryBuilder('user')
         .innerJoin('user.channels', 'channel')
         .where('channel.id = :channelId', { channelId })
-        // .select(['user.id', 'user.username', 'user.urlImg'])
         .getMany()
     );
+  }
+
+  async getBannedInChannels(channelId: number) {
+    return await this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.baned', 'baned')
+      .where('baned.id = :channelId', { channelId })
+      .getMany();
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
