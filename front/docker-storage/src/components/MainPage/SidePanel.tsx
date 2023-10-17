@@ -10,6 +10,8 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
+  contextIsOpen?: boolean;
+  setContextIsOpen?: (isOpen: boolean) => void | undefined;
 }
 
 export function SidePanel({
@@ -18,6 +20,8 @@ export function SidePanel({
                             width,
                             isLeftPanel,
                             duration_ms = 1000,
+                            contextIsOpen = false,
+                            setContextIsOpen = undefined,
                           }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -27,26 +31,15 @@ export function SidePanel({
   const isMoving = isAnim || isHiding || isShowing;
   const { socket, id } = useUserContext();
 
-  const Remove = async (uid: number) => {
-    if (!isLeftPanel && uid === id) Close();
-  };
+  useEffect(() => {
+    if (contextIsOpen)
+      Open();
+  }, [contextIsOpen]);
 
   useEffect(() => {
-    socket?.on('remove', Remove);
-    return () => {
-      socket?.off('remove', Remove);
-    };
-  });
-
-  useEffect(() => {
-    subscribe('open_chat', () => {
-      if (!isLeftPanel) Open();
-    });
-    return () => {
-      unsubscribe('open_chat', () => null);
-    };
-    // eslint-disable-next-line
-  }, [isLeftPanel, isMoving, duration_ms]);
+    if (setContextIsOpen)
+      setContextIsOpen(isOpen);
+  }, [isOpen, setContextIsOpen]);
 
   async function Close() {
     if (isMoving) return;

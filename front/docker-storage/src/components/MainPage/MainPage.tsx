@@ -3,6 +3,7 @@ import {Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel} from
 import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   panelWidth: number;
@@ -14,6 +15,7 @@ export function MainPage({panelWidth, viewport}: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const {fetchContext, user} = useUserContext();
   const {fetchFriendsRequestContext} = useFriendsRequestContext();
+  const { theme, setTheme, isSettingsOpen, setIsSettingsOpen, isProfileOpen, setIsProfileOpen, isChatOpen, setIsChatOpen, isFriendsOpen, setIsFriendsOpen, isChannelsOpen, setIsChannelsOpen} = useUIContext();
 
   useEffect(() => {
     if (focused) {
