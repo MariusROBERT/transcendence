@@ -122,20 +122,11 @@ export function FriendsRequestProvider({ children }: Props) {
     if (blocked.includes(body.sender))
       return;
     setFriends([...friends, body.receiver]);
-
-    const tmp2 = sendInvitesTo as number[];
-    const index = tmp2.indexOf(body.receiver);
-    if (index !== -1)
-      tmp2.splice(index, 1);
-    setSendInvitesTo(tmp2);
+    setSendInvitesTo(sendInvitesTo.filter((invite) => invite !== body.receiver));
   }
 
   function onDeclineFriendRequest(body: { sender: number, receiver: number }) {
-    const tmp2 = sendInvitesTo as number[];
-    const index = tmp2.indexOf(body.receiver);
-    if (index !== -1)
-      tmp2.splice(index, 1);
-    setSendInvitesTo(tmp2);
+    setSendInvitesTo(sendInvitesTo.filter((invite) => (invite !== body.receiver)));
   }
 
   function onBlockUser(body: { to: number, from: number }) {

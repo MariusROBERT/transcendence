@@ -3,14 +3,14 @@ import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
-import { IUser } from '../../utils/interfaces';
+import { IUser, NotifInfos } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 
 const Navbar: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profileVisible, setProfileVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const [notifs, setNotifs] = useState<Array<IUser>>([]);
+  const [notifs, setNotifs] = useState<Array<NotifInfos>>([]);
   const { user, socket } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
 
@@ -24,6 +24,32 @@ const Navbar: React.FC = () => {
     window.location.replace('/login');
   };
 
+  const getNotifMsg = async () => {
+    const jwtToken = Cookies.get('jwtToken');
+    const MsgsUnread: NotifInfos[] = [];
+    const channels = (await Fetch('channel/public_all', 'GET'))?.json;
+    if (!channels) return;
+  
+    console.log('channels : ', channels);
+    const lastMsg = await fetch('http://localhost:3001/api/user/get_last_msg', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    });
+    console.log('ici = ', lastMsg);
+    
+    channels.forEach(async (chan: any) => {
+      console.log('chan : ', chan);
+      const msgs = (await Fetch('channel/msg/' + chan.id, 'GET'))?.json;
+      console.log('msgs : ', msgs);
+      // if (msgs && msgs[msgs.length].date > lastMsg)
+      //   MsgsUnread.push(msgs[msgs.length]);
+    });
+    return MsgsUnread;
+  }
+
   useEffect(() => {
     const setNotif = async () => {
       const tmp = recvInvitesFrom.map(async (from) => {
@@ -35,13 +61,16 @@ const Navbar: React.FC = () => {
           return;
         }
         const res = await Promise.all(tmp);
-        setNotifs(res as IUser[]);
+        setNotifs(res as NotifInfos[]);
+        const msgs = await getNotifMsg();
+        // if (msgs)
+        //   setNotifs((prevNotifs) => [...prevNotifs, ...msgs])
       } catch (e) {
         console.log(e);
       }
     };
     setNotif();
-  }, [recvInvitesFrom]);
+  }, [recvInvitesFrom.length]);
 
   const mobile = window.innerWidth < 500;
 
@@ -69,6 +98,9 @@ const Navbar: React.FC = () => {
   };
 
   const notifstyle: CSSProperties = {
+    border: '1px solid red',
+    maxHeight: '500px',
+    overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
@@ -107,12 +139,12 @@ const Navbar: React.FC = () => {
           {notifsVisible &&
             <div style={notifstyle}>
               {notifs.map((notif) => (
-                <div key={notif.id}><NotifCard notif={notif} otherUser={notif} /></div>
+                <div key={notif.id}><NotifCard notif={notif} otherUserId={notif.id} /></div>
               ))}
             </div>}
         </div>
       </div>
-      <GameInvites/>
+      <GameInvites />
       <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
         <Settings isVisible={settingsVisible} />
       </Popup>

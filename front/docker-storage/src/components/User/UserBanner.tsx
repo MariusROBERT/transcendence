@@ -38,7 +38,7 @@ const UserBanner = ({ otherUser }: Props) => {
     };
   }, [socket, userBanner]);
 
-  const displayName = (userBanner.username.length || '') > 11 ?
+  const displayName = userBanner.username.length > 11 ?
     userBanner.username.slice(0, 11) + '...' :
     userBanner.username;
 

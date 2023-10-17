@@ -120,6 +120,16 @@ export interface NotificationBadgeProps {
   showBadge: boolean;
 }
 
+export interface NotifInfos {
+  id: number;
+  urlImg: string;
+  username: string;
+  channel_name: string;
+  content_msg: string;
+  sender: string,
+}
+
+
 // --------------------------- Notifs :
 
 // export interface PwdModif {

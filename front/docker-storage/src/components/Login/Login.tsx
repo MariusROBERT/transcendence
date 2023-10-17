@@ -1,8 +1,8 @@
-import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
+import { color, delay, Fetch, RedirectToHome, unsecureFetch, Viewport } from '../../utils';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
-import {API_URL} from '../../utils/Global';
+import { API_URL } from '../../utils/Global';
 
 const SIZE = 350;
 
@@ -171,7 +171,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     <div
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-                  flex_justifyContent={'space-around'} forceStyle={{padding: 0, margin: 0}}>
+        flex_justifyContent={'space-around'} forceStyle={{ padding: 0, margin: 0 }}>
 
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
@@ -187,7 +187,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             <div style={{ padding: '0 35px 0 0' }}>
               <form onSubmit={handleSubmit}>
                 <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px 30px 10px 10px'}
-                            forceStyle={{ overflow: '' }}>
+                  forceStyle={{ overflow: '' }}>
                   {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
                   <input
                     style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
@@ -240,10 +240,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         </Border>
       </Background>
       <TwoFA setIsVisible={setIs2fa}
-             isVisible={is2fa}
-             submit={OnConnect}
-             errorMessage={error2fa}
-             setErrorMessage={setError2fa}
+        isVisible={is2fa}
+        submit={OnConnect}
+        errorMessage={error2fa}
+        setErrorMessage={setError2fa}
       />
     </div>
   );

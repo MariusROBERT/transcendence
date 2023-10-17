@@ -117,14 +117,14 @@ export class UserController {
   // get last message
   @Get('get_last_msg')
   @UseGuards(JwtAuthGuard)
-  async GetLastMsg(@User() user: UserEntity) {
+  async GetLastMsg(@User() user: UserEntity): Promise<MessageEntity | null> {
     return await this.userService.getLastMsg(user);
   }
 
   // get_channels_of_user
   @Get('get_channels')
   @UseGuards(JwtAuthGuard)
-  async GetChannels(@User() user: UserEntity) {
+  async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
     return await this.userService.getChannels(user);
   }
 

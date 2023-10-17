@@ -240,10 +240,7 @@ export class UserService {
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.ChannelRepository.createQueryBuilder('channels')
-      .leftJoinAndSelect('channels.users', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .getMany();
+    return await this.ChannelRepository.find();
   }
 
   async isInChannel(id: number) {
