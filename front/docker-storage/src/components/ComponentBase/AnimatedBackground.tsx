@@ -23,6 +23,15 @@ export function AnimatedBackground(props: Props) {
   }, [props.viewport.width, props.viewport.height]);
 
   let mouseBall;
+
+  function magnetballs(p5: p5Types) {
+    balls.forEach(ball => {
+      ball.dir.x += (p5.mouseX - ball.pos.x) / 10;
+      ball.dir.y += (p5.mouseY - ball.pos.y) / 10;
+      ball.speed += 10;
+    });
+  }
+
   function setup(p5: p5Types, canvasParentRef: Element) {
     const canvas = p5.createCanvas(size.width, size.height);
     try {
@@ -68,7 +77,7 @@ export function AnimatedBackground(props: Props) {
   }
 
   return (
-    <Sketch draw={draw} setup={setup}
+    <Sketch draw={draw} setup={setup} mouseClicked={magnetballs}
             style={{ position: 'absolute', top: 0, left: 0, height: '100vh', width: '100vw', ...props.style }} />
   );
 }
