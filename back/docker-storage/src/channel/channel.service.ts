@@ -80,10 +80,7 @@ export class ChannelService {
    @param {UserEntity} user - The user that create the private channel
    @return {ChannelENtity} - Public channel data
    */
-  async joinPrivate(
-    second_user: any,
-    user: UserEntity,
-  ) {
+  async joinPrivate(second_user: any, user: UserEntity) {
     const user_two = await this.userService.getUserById(second_user.id);
     let channel = await this.ChannelRepository.createQueryBuilder('channel')
       .innerJoin('channel.users', 'user')
@@ -115,7 +112,7 @@ export class ChannelService {
     dto: EditChannelDto,
     id: number,
   ): Promise<PublicChannelDto> {
-    let channel = await this.getChannelById(id);
+    const channel = await this.getChannelById(id);
 
     if (!channel) throw new NotFoundException(`channel ${id} does not exist`);
     channel.password = null;
@@ -362,7 +359,7 @@ export class ChannelService {
       channel.admins = this.removeFrom(admins, userid);
     }
     await this.ChannelRepository.save(channel);
-    return (channel);
+    return channel;
   }
 
   removeFrom(users: UserEntity[], id) {

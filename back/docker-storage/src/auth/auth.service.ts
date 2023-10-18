@@ -5,17 +5,17 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {JwtService} from '@nestjs/jwt';
-import {UserEntity} from '../database/entities/user.entity';
-import {Repository} from 'typeorm';
-import {UserSubDto} from './dtos/user-sub.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { UserEntity } from '../database/entities/user.entity';
+import { Repository } from 'typeorm';
+import { UserSubDto } from './dtos/user-sub.dto';
 import * as bcrypt from 'bcrypt';
-import {LoginCreditDto} from './dtos/login-credit.dto';
-import {UserStateEnum} from '../utils/enums/user.enum';
-import {ftLoginDto} from './dtos/ft-login.dto';
-import {authenticator} from 'otplib';
-import {API_URL} from '../utils/Globals';
+import { LoginCreditDto } from './dtos/login-credit.dto';
+import { UserStateEnum } from '../utils/enums/user.enum';
+import { ftLoginDto } from './dtos/ft-login.dto';
+import { authenticator } from 'otplib';
+import { API_URL } from '../utils/Globals';
 
 @Injectable()
 export class AuthService {
@@ -58,10 +58,10 @@ export class AuthService {
   }
 
   async login(creditentials: LoginCreditDto) {
-    const {username, password} = creditentials;
+    const { username, password } = creditentials;
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :username', {username})
+      .where('user.username = :username', { username })
       .getOne();
     if (!user) {
       throw new NotFoundException('username not found');
@@ -94,7 +94,7 @@ export class AuthService {
       user.user_status = UserStateEnum.ON;
       await this.userRepository.save(user);
       const jwt = this.jwtService.sign(payload);
-      return {'access-token': jwt};
+      return { 'access-token': jwt };
     }
     throw new NotFoundException('wrong password');
   }
@@ -103,10 +103,10 @@ export class AuthService {
     //console.log(userData.username);
 
     userData.username = userData.username + '_42';
-    const {username, urlImg} = userData;
+    const { username, urlImg } = userData;
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :username', {username})
+      .where('user.username = :username', { username })
       .getOne();
     if (!user) {
       const user2 = this.userRepository.create({
@@ -128,7 +128,7 @@ export class AuthService {
     }
     const user2 = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :username', {username})
+      .where('user.username = :username', { username })
       .getOne();
     // JWT
     if (user2.is2fa_active) {
@@ -153,7 +153,7 @@ export class AuthService {
     }
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :ftLogin', {ftLogin})
+      .where('user.username = :ftLogin', { ftLogin })
       .getOne();
     if (!user) {
       throw new NotFoundException('user not found');
@@ -172,7 +172,7 @@ export class AuthService {
         role: user.role,
       };
       const jwt = this.jwtService.sign(payload);
-      return {'access-token': jwt};
+      return { 'access-token': jwt };
       // return this.jwtService.sign(payload);
     }
     throw new UnauthorizedException('2fa not active');

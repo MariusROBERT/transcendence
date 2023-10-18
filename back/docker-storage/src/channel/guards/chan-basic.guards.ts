@@ -206,8 +206,7 @@ export class IsProtected implements CanActivate {
     if (channel?.password === null) return true;
     if (body.password && channel.salt)
       if (await bcrypt.compare(body?.password, channel.password)) return true;
-      else
-        throw new BadRequestException('No password given');
+      else throw new BadRequestException('No password given');
     throw new BadRequestException('This channel is protected by a password');
   }
 }

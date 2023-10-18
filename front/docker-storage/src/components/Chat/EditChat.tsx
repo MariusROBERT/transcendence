@@ -52,37 +52,37 @@ export default function EditChat({ data, isVisible, setIsVisible }: Props) {
   return (
     <Popup isVisible={isVisible} setIsVisible={setIsVisible}>
       <div style={createChatStyle}>
-      <div style={{ visibility: errVisible ? 'inherit' : 'hidden' }}>
-        <ErrorPanel text={error}></ErrorPanel>
+        <div style={{ visibility: errVisible ? 'inherit' : 'hidden' }}>
+          <ErrorPanel text={error}></ErrorPanel>
+        </div>
+        <h2>Edit Channel</h2>
+
+        <p style={{ textAlign: 'center', fontSize: '14px' }}>
+          <input
+            placeholder='New password'
+            style={inputStyle}
+            value={password}
+            maxLength={300}
+            onChange={(evt) => {
+              setPassword(evt.target.value);
+            }}
+          ></input>
+          <br />
+          leave empty to remove password
+        </p>
+
+        <Flex flex_direction={'row'}>
+          <p>Private Channel:</p>
+          <SwitchToggle
+            onChange={() => {
+              setChecked(!checked);
+            }}
+            checked={checked}
+          ></SwitchToggle>
+        </Flex>
+
+        <Button onClick={OnSave}>Save</Button>
       </div>
-      <h2>Edit Channel</h2>
-
-      <p style={{ textAlign: 'center', fontSize: '14px' }}>
-        <input
-          placeholder='New password'
-          style={inputStyle}
-          value={password}
-          maxLength={300}
-          onChange={(evt) => {
-            setPassword(evt.target.value);
-          }}
-        ></input>
-        <br />
-        leave empty to remove password
-      </p>
-
-      <Flex flex_direction={'row'}>
-        <p>Private Channel:</p>
-        <SwitchToggle
-          onChange={() => {
-            setChecked(!checked);
-          }}
-          checked={checked}
-        ></SwitchToggle>
-      </Flex>
-
-      <Button onClick={OnSave}>Save</Button>
-    </div>
     </Popup>
   );
 }

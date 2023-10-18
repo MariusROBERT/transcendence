@@ -59,16 +59,18 @@ export class UserGateway {
 
   @SubscribeMessage('block_user')
   async blockAUser(@MessageBody() msg: { receiver: number; sender: number }) {
-    const sender =  await this.userService.getUserById(msg.sender);
+    const sender = await this.userService.getUserById(msg.sender);
     const receiver = await this.userService.getUserById(msg.receiver);
     if (!sender || !receiver) return;
     await this.userService.blockAUser(sender, receiver);
-    this.server.to('user' + msg.receiver).emit('blocked', { sender: msg.sender, receiver: msg.receiver });
+    this.server
+      .to('user' + msg.receiver)
+      .emit('blocked', { sender: msg.sender, receiver: msg.receiver });
   }
 
   @SubscribeMessage('unblock_user')
   async unblockAUser(@MessageBody() msg: { receiver: number; sender: number }) {
-    const sender =  await this.userService.getUserById(msg.sender);
+    const sender = await this.userService.getUserById(msg.sender);
     if (!sender) return;
     await this.userService.unblockAUser(sender, msg.receiver);
   }

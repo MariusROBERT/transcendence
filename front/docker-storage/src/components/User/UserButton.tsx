@@ -57,11 +57,15 @@ export function UserButton({ otherUser }: Props) {
         }
         {!blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_block.png')}
-                       onClick={() => {blockUser(otherUser.id);}} />
+                       onClick={() => {
+                         blockUser(otherUser.id);
+                       }} />
         }
         {blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_unblock.png')}
-                       onClick={() => {unblockUser(otherUser.id);}} />
+                       onClick={() => {
+                         unblockUser(otherUser.id);
+                       }} />
         }
       </Flex>
     </div>

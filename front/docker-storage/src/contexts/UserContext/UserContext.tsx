@@ -9,7 +9,7 @@ import {
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { IUser } from '../../utils/interfaces';
-import {API_URL} from '../../utils/Global';
+import { API_URL } from '../../utils/Global';
 
 type UserContextType = {
   id: number;
@@ -94,6 +94,7 @@ export function UserContextProvider({ children }: Props) {
       socket?.close();
     };
   }
+
 
   return (
     <>

@@ -118,7 +118,7 @@ export function FriendsRequestProvider({ children }: Props) {
 
   function unblockUser(to: number) {
     setBlocked(blocked.filter((id) => id !== to));
-    socket?.emit('unblock_user', { sender: id, receiver: to});
+    socket?.emit('unblock_user', { sender: id, receiver: to });
   }
 
   // Invites -- Event reception ------------------------------------------------

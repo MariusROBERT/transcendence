@@ -96,7 +96,8 @@ const Navbar: React.FC = () => {
               onClick={() => {
                 if (settingsVisible)
                   setSettingsVisible(false);
-                setProfileVisible(!profileVisible)}}
+                setProfileVisible(!profileVisible);
+              }}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_setting.png')}
@@ -104,7 +105,8 @@ const Navbar: React.FC = () => {
               onClick={() => {
                 if (profileVisible)
                   setProfileVisible(false);
-                setSettingsVisible(!settingsVisible)}}
+                setSettingsVisible(!settingsVisible);
+              }}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_logout.png')}
@@ -120,7 +122,7 @@ const Navbar: React.FC = () => {
             </div>}
         </div>
       </div>
-      <GameInvites/>
+      <GameInvites />
       <Settings isVisible={settingsVisible} setIsVisible={setSettingsVisible} />
       <Profil otherUser={user} isVisible={profileVisible} setIsVisible={setProfileVisible} />
     </>

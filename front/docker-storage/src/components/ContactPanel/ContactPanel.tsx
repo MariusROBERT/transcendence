@@ -28,7 +28,8 @@ export function ContactPanel({ viewport }: Props) {
           </ GroupItems>
           <GroupItems heading={'Channels'} duration_ms={900}>
             {channelList.map((channel: ChannelInfos) =>
-              <div key={'channel' + channel.id}><ChannelBanner id={channel.id} name={channel.name} type={channel.type} /></div>)}
+              <div key={'channel' + channel.id}><ChannelBanner id={channel.id} name={channel.name}
+                                                               type={channel.type} /></div>)}
           </ GroupItems>
           <Border
             borderSize={0}

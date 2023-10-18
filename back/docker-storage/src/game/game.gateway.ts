@@ -19,7 +19,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number, sockets: Socket[] }[] = [];
+  clients: { id: number; sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
