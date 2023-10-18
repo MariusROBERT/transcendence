@@ -1,5 +1,4 @@
 import { CSSProperties } from 'react';
-import { Flex } from '../ComponentBase/FlexBox';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
@@ -45,8 +44,6 @@ export default function ChannelElement({
     socket?.emit('join', { channel: data.channel_name });
   }
 
-  const mobile = window.innerWidth < 500;
-
   const ChannelElementStyle: CSSProperties = {
     //width: mobile ? 320 : 520,
     margin: '5px 0',
@@ -58,11 +55,6 @@ export default function ChannelElement({
     borderRadius: '10px',
     justifyContent: 'space-between',
     width: '100%',
-  };
-
-  const ChannelBannerContainer = {
-    display: 'flex',
-    alignItems: 'center',
   };
 
   return (

@@ -1,17 +1,15 @@
 import { Background, Border, ChannelBanner, ChatMenu, GroupItems, UserBanner } from '..';
-import { color, Fetch, Viewport } from '../../utils';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { color, Viewport } from '../../utils';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
-import { useEffect, useState } from 'react';
-import { subscribe } from '../../utils/event';
+import { useState } from 'react';
 
 interface Props {
   viewport: Viewport;
 }
 
 export function ContactPanel({ viewport }: Props) {
-  const [friendList, setFriendList] = useState<IUser[]>([]);
-  const [channelList, setChannelList] = useState<ChannelInfos[]>([]);
+  const [friendList] = useState<IUser[]>([]);
+  const [channelList] = useState<ChannelInfos[]>([]);
   const mobile = viewport.width < 500;
 
   return (

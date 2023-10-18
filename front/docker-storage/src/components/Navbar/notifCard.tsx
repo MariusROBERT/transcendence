@@ -1,11 +1,10 @@
 import { IUser, UserInfos } from '../../utils/interfaces';
 import './stylenavbar.css';
 import { RoundButton } from '../ComponentBase/RoundButton';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts';
 
 const NotifCard = ({ notif, otherUser }: { notif: UserInfos, otherUser: IUser }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
-  const { id } = useUserContext();
 
   if (recvInvitesFrom.includes(otherUser.id)) {
     return (

@@ -1,5 +1,3 @@
-import { channel } from 'diagnostics_channel';
-import { useUserContext } from '../contexts';
 import { Fetch } from './SecureFetch';
 import {
   SetCurrChan,

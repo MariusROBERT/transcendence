@@ -6,7 +6,6 @@ import SwitchToggle from '../ComponentBase/SwitchToggle';
 import { Flex } from '../ComponentBase/FlexBox';
 import { Fetch } from '../../utils';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { channel } from 'diagnostics_channel';
 import { Popup } from '../index';
 
 interface Props {

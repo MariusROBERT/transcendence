@@ -10,7 +10,6 @@ import { useUserContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
 import Popup from '../ComponentBase/Popup';
 import Profil from '../Profil/Profil';
-import { UserButton } from '../User/UserButton';
 
 interface Props {
   data: IChatUser | undefined;
