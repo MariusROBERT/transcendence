@@ -8,6 +8,7 @@ export async function UpdateChannelMessage(id: number) {
   publish('enter_chan', {
     detail: {
       value: msgs,
+      id: id,
     },
   });
 }

@@ -20,6 +20,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
   const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
+  const [id, setId] = useState<number>(-1);
   const { socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
@@ -46,12 +47,14 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('join', updateUsers);
     };
-  });
+  }, []);
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
       //console.log(event.detail.value)
       setMessage(event.detail.value);
+      console.log(event.detail.id);
+      setId(event.detail.id);
     });
   }, []);
 
@@ -189,10 +192,7 @@ export function ChatPanel({ viewport, width }: Props) {
   return (
     <Background flex_justifyContent={'space-evenly'}>
       <div style={{ minHeight: '60px', paddingTop: 60 }} />
-      <ChanUserList
-        onClick={OnUserClick}
-        chan_id={msg.at(0)?.channel_id ? Number(msg.at(0)?.channel_id) : -1}
-      />
+      <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
         style={{
           height: viewport.height - 125 + 'px',

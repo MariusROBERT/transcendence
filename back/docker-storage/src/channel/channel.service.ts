@@ -360,7 +360,7 @@ export class ChannelService {
       channel.admins = this.removeFrom(admins, userid);
     }
     await this.ChannelRepository.save(channel);
-    return this.returnPublicData(channel);
+    return (channel);
   }
 
   removeFrom(users: UserEntity[], id) {
