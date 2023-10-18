@@ -8,7 +8,7 @@ import {RoundButton} from '..';
 import {useNavigate} from 'react-router-dom';
 import ReactFullscreen from 'react-easyfullscreen';
 
-export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' }) {
+export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN' }) {
   const navigate = useNavigate();
   const {id, socket} = useUserContext();
   const {leaveGame, isInGameWith} = useGameContext();

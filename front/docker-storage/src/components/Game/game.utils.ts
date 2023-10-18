@@ -78,7 +78,7 @@ export class Ball {
 
   getColor(
     size: Size,
-    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B',
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
   ): [number, number, number] {
     if (theme === 'R/B Gradient') {
       const red = 255 - (this.pos.x * 255) / size.width;
@@ -91,13 +91,16 @@ export class Ball {
     if (theme === 'WHITE') {
       return [200, 200, 200];
     }
+    if (theme === 'GREEN') {
+      return [0, 255, 0];
+    }
     return [0, 0, 0];
   }
 
   draw(
     p5: p5Types,
     size: Size,
-    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B',
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
   ) {
     // Particles
     for (const particle of this.particles) {
@@ -125,7 +128,7 @@ export class GuidedBall extends Ball {
   update(
     vec: { x: number; y: number },
     size: Size,
-    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B',
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
   ) {
     while (this.particles.length > size.ball - 1) this.particles.shift();
     for (const particle of this.particles) {
@@ -167,7 +170,7 @@ export class AutonomousBall extends Ball {
 
   getColor(
     size: Size,
-    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B',
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
   ): [number, number, number] {
     if (theme === 'R/B') {
       if (this.dir.x > 0) return [255, 0, 0];
@@ -221,7 +224,7 @@ export class AutonomousBall extends Ball {
     size: Size,
     balls: AutonomousBall[],
     p5: p5Types,
-    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B',
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
   ) {
     while (this.particles.length > size.ball - 1) this.particles.shift();
     for (const particle of this.particles) {
