@@ -62,7 +62,7 @@ export class UserGateway {
     const receiver = await this.userService.getUserById(msg.receiver);
     if (!sender || !receiver) return;
     await this.userService.blockAUser(sender, receiver);
-    this.server.to('user' + msg.receiver).emit('block_user', { sender: msg.sender, receiver: msg.receiver });
+    this.server.to('user' + msg.receiver).emit('blocked', { sender: msg.sender, receiver: msg.receiver });
   }
 
   @SubscribeMessage('unblock_user')

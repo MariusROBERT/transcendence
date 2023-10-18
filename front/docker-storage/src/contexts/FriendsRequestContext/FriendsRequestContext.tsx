@@ -63,9 +63,9 @@ export function FriendsRequestProvider({ children }: Props) {
   const [friends, setFriends] = useState<number[]>([]);
   const [blocked, setBlocked] = useState<number[]>([]);
 
-  useEffect(() => {
-    return;
-  }, [friends, recvInvitesFrom, sendInvitesTo]);
+  // useEffect(() => {
+  //   console.log('invite From: ', recvInvitesFrom, 'invite To:', sendInvitesTo,'friends:', friends, 'blocked: ', blocked);
+  // }, [recvInvitesFrom, sendInvitesTo, friends, blocked]);
 
   async function fetchFriendsRequestContext(): Promise<void> {
     const user = (await Fetch('user', 'GET'))?.json;
@@ -134,17 +134,15 @@ export function FriendsRequestProvider({ children }: Props) {
   }
 
   function onAcceptFriendRequest(body: { receiver: number, sender: number }) {
-    setFriends([...friends, body.receiver]);
-    setRecvInvitesFrom(sendInvitesTo.filter((id) => id !== body.sender));
+    setFriends([...friends, body.sender]);
+    setSendInvitesTo(sendInvitesTo.filter((id) => id !== body.sender));
   }
 
   function onDeclineFriendRequest(body: { sender: number, receiver: number }) {
-    setRecvInvitesFrom(sendInvitesTo.filter((id) => id !== body.receiver));
+    setSendInvitesTo(sendInvitesTo.filter((id) => id !== body.sender));
   }
 
   function onCancelFriendRequest(body: { sender: number, receiver: number }) {
-    if (body.receiver !== id)
-      console.log('cancelFriendRequest: wrong receiver');
     setRecvInvitesFrom(recvInvitesFrom.filter((id) => id !== body.sender));
   }
 
@@ -160,14 +158,14 @@ export function FriendsRequestProvider({ children }: Props) {
     socket?.on('accept_friend_request', onAcceptFriendRequest);
     socket?.on('decline_friend_request', onDeclineFriendRequest);
     socket?.on('cancel_friend_request', onCancelFriendRequest);
-    socket?.on('block_received', onBlockReceived);
+    socket?.on('blocked', onBlockReceived);
 
     return () => {
       socket?.off('send_friend_request', onReceiveFriendRequest);
       socket?.off('accept_friend_request', onAcceptFriendRequest);
       socket?.off('decline_friend_request', onDeclineFriendRequest);
       socket?.off('cancel_friend_request', onCancelFriendRequest);
-      socket?.off('block_received', onBlockReceived);
+      socket?.off('blocked', onBlockReceived);
     };
     // eslint-disable-next-line
   }, [socket, friends, recvInvitesFrom, sendInvitesTo, blocked]);

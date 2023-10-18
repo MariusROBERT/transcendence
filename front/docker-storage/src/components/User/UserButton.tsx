@@ -1,7 +1,8 @@
 import { Flex, RoundButton } from '..';
 import { IUser } from '../../utils/interfaces';
-import { lookGame, openChat } from '../../utils/user_functions';
+import { openChat } from '../../utils/user_functions';
 import { useFriendsRequestContext, useGameContext, useUserContext } from '../../contexts';
+import { useEffect } from 'react';
 
 interface Props {
   otherUser: IUser;
@@ -21,10 +22,6 @@ export function UserButton({ otherUser }: Props) {
     friends,
     blocked,
   } = useFriendsRequestContext();
-  const { id } = useUserContext();
-
-  const isFriend = friends?.includes(otherUser.id);
-  const isBlocked = blocked?.includes(otherUser.id);
 
   return (
     <div style={{
@@ -34,19 +31,19 @@ export function UserButton({ otherUser }: Props) {
       minWidth: '100px',
     }}>
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
-        {isFriend && !isBlocked &&
+        {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
                        onClick={() => openChat()} />
         }
-        {isFriend && otherUser.user_status === 'on' &&
+        {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
           <RoundButton icon={require('../../assets/imgs/icon_play.png')}
                        onClick={() => sendGameInvite(otherUser.id, 'normal')} />
         }
-        {!isFriend && !isBlocked && !sendInvitesTo?.includes(otherUser.id) && !recvInvitesFrom?.includes(otherUser.id) &&
+        {!friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) && !recvInvitesFrom?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')}
                        onClick={() => sendFriendRequest(otherUser.id)} />
         }
-        {recvInvitesFrom?.includes(otherUser.id) && !isFriend && !isBlocked && !sendInvitesTo?.includes(otherUser.id) &&
+        {recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
           <div style={askStyle}>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
                          onClick={() => acceptFriendRequest(otherUser.id)} />
@@ -58,11 +55,11 @@ export function UserButton({ otherUser }: Props) {
           <RoundButton icon={require('../../assets/imgs/icon_close.png')}
                        onClick={() => cancelFriendRequest(otherUser.id)} />
         }
-        {!isBlocked &&
+        {!blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_block.png')}
                        onClick={() => {blockUser(otherUser.id);}} />
         }
-        {isBlocked &&
+        {blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_unblock.png')}
                        onClick={() => {unblockUser(otherUser.id);}} />
         }
