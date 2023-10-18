@@ -31,14 +31,13 @@ export function ChanUserList({ chan_id, onClick }: Props) {
     return (
       <div
         style={{
-          border: '1px solid red',
-          width: '100%', // Assurez-vous que le conteneur a une largeur définie
+          width: '100%',
           display: 'flex',
           justifyContent: 'space-around',
           alignItems: 'center',
           overflowX: 'auto',
           marginBottom: '10px',
-          flexWrap:'nowrap'
+          flexWrap: 'nowrap',
         }}
       >
         {unique.map((item, idx) => (
@@ -47,7 +46,6 @@ export function ChanUserList({ chan_id, onClick }: Props) {
       </div>
     );
   }
-  
 
   return (
     <div style={{ overflow: 'hidden' }}>
