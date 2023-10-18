@@ -28,7 +28,8 @@ import * as bcrypt from 'bcrypt';
 //  Check For private message
 @Injectable()
 export class PrivateGuard implements CanActivate {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -45,7 +46,9 @@ export class PrivateGuard implements CanActivate {
 //  Check if user is in channel
 @Injectable()
 export class SelfInChannelGuard implements CanActivate {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
@@ -63,7 +66,8 @@ export class InChannelGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -83,7 +87,8 @@ export class IsNotBannedGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -103,7 +108,8 @@ export class IsBannedGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -124,7 +130,8 @@ export class SelfBannedGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -142,7 +149,8 @@ export class SelfBannedGuard implements CanActivate {
 //  Check if user try to use command on him
 @Injectable()
 export class SelfCommand implements CanActivate {
-  constructor() {}
+  constructor() {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -179,7 +187,8 @@ export class IsProtected implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -197,8 +206,8 @@ export class IsProtected implements CanActivate {
     if (channel?.password === null) return true;
     if (body.password && channel.salt)
       if (await bcrypt.compare(body?.password, channel.password)) return true;
-    else
-      throw new BadRequestException('No password given');
+      else
+        throw new BadRequestException('No password given');
     throw new BadRequestException('This channel is protected by a password');
   }
 }

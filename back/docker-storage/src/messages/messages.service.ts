@@ -10,9 +10,10 @@ export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
     private messageRepository: Repository<MessageEntity>, // private authService: AuthService,
-  ) {}
+  ) {
+  }
 
-  async delete(msgs : MessageEntity[]) {
+  async delete(msgs: MessageEntity[]) {
     return this.messageRepository.remove(msgs);
   }
 
@@ -27,10 +28,10 @@ export class MessagesService {
 
   async getIds(channelId: number) {
     return await this.messageRepository
-    .createQueryBuilder('message')
-    .leftJoinAndSelect('message.channel', 'channel')
-    .where('channel.id = :channelId', { channelId })
-    .getMany();
+      .createQueryBuilder('message')
+      .leftJoinAndSelect('message.channel', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .getMany();
   }
 
   async getMsg(channelId: number) {

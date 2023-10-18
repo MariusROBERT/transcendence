@@ -42,7 +42,8 @@ import {
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)

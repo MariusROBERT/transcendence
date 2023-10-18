@@ -14,12 +14,12 @@ interface Props {
 }
 
 export function SidePanel({
-  children,
-  viewport,
-  width,
-  isLeftPanel,
-  duration_ms = 1000,
-}: Props) {
+                            children,
+                            viewport,
+                            width,
+                            isLeftPanel,
+                            duration_ms = 1000,
+                          }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);

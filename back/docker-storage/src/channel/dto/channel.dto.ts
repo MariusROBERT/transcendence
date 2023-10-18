@@ -59,7 +59,7 @@ export class EditChannelDto {
 
   @IsNotEmpty()
   @IsEnum(ChanStateEnum)
-  chan_status: ChanStateEnum
+  chan_status: ChanStateEnum;
 }
 
 // GET CHANNEL AND DISPLAY INFO

@@ -19,10 +19,10 @@ interface Props {
 }
 
 export default function ChannelElement({
-  data,
-  setVisible,
-  setCurrent,
-}: Props) {
+                                         data,
+                                         setVisible,
+                                         setCurrent,
+                                       }: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {

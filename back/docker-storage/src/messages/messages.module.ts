@@ -10,4 +10,5 @@ import { MessageEntity } from '../database/entities/message.entity';
   controllers: [MessagesController],
   providers: [MessagesService],
 })
-export class MessagesModule {}
+export class MessagesModule {
+}

@@ -3,7 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, SwitchToggle } from '..';
-import {API_URL} from '../../utils/Global';
+import { API_URL } from '../../utils/Global';
 
 interface Props {
   isVisible: boolean;

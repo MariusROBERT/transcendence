@@ -41,7 +41,8 @@ export function UserButton({ otherUser }: Props) {
       }}>
         <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
           {friends?.includes(otherUser.id) &&
-            <RoundButton icon={require('../../assets/imgs/icon_chat.png')} onClick={() => openChat(otherUser, socket)} />}
+            <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
+                         onClick={() => openChat(otherUser, socket)} />}
           {friends?.includes(otherUser.id) && <RoundButton icon={require('../../assets/imgs/icon_play.png')}
                                                            onClick={() => sendGameInvite(otherUser.id, 'normal')} />}
           {friends?.includes(otherUser.id) &&

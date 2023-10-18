@@ -62,14 +62,14 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
           type === 'owner'
             ? color.green
             : type === 'admin'
-            ? color.red
-            : color.grey,
+              ? color.red
+              : color.grey,
         height: '25px',
       }}
     >
       <Flex
         zIndex={'10'}
-        flex_direction="row"
+        flex_direction='row'
         flex_justifyContent={'space-evenly'}
       >
         <RoundButton
