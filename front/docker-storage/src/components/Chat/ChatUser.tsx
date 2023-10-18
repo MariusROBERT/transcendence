@@ -165,10 +165,10 @@ export default function ChatUser({ data, visibility }: Props) {
         icon_size={100}
         icon={String(data?.sender_urlImg)}
         onClick={() => setProfilVisible(true)}
-      ></RoundButton>
+      />
       {type === 'perm' ? showAdmin() : <></>}
       <Popup setIsVisible={setProfilVisible} isVisible={profilVisible}>
-        <Profil otherUser={currentUser} />
+        <Profil otherUser={currentUser} isVisible={profilVisible} setIsVisible={setProfilVisible}/>
       </Popup>
     </div>
   );
