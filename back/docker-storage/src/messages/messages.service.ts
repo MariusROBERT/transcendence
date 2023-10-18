@@ -9,12 +9,10 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
-    private messageRepository: Repository<MessageEntity>,
-  ) // private authService: AuthService,
-  {}
+    private messageRepository: Repository<MessageEntity>, // private authService: AuthService,
+  ) {}
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
-    const id = chan?.id;
     const newMsg = this.messageRepository.create({
       content: message,
       sender: user,
@@ -24,15 +22,13 @@ export class MessagesService {
   }
 
   async getMsg(channelId: number) {
-    //var msgs = await this.messageRepository.find({
-    //  where: {c: channelId},
-    //})
-    var msgs = await this.messageRepository
+    return await this.messageRepository
       .createQueryBuilder('message')
       .leftJoinAndSelect('message.channel', 'channel')
       .leftJoinAndSelect('message.sender', 'sender')
       .where('channel.id = :channelId', { channelId })
       .select([
+        'channel.id',
         'message.content',
         'message.createdAt',
         'sender.username',
@@ -40,6 +36,5 @@ export class MessagesService {
         'sender.urlImg',
       ])
       .getRawMany();
-    return msgs;
   }
 }

@@ -1,6 +1,8 @@
-import React, { ReactNode, useState } from 'react';
-import { delay, Viewport } from '../../utils';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
+import { useUserContext } from '../../contexts';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -23,9 +25,32 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
+  const { socket, id } = useUserContext();
+
+  const Remove = async (uid: number) => {
+    if (!isLeftPanel && uid === id) Close();
+  };
+
+  useEffect(() => {
+    socket?.on('remove', Remove);
+    return () => {
+      socket?.off('remove', Remove);
+    };
+  });
+
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (!isLeftPanel) Open();
+    });
+    return () => {
+      unsubscribe('open_chat', () => null);
+    };
+    // eslint-disable-next-line
+  }, [isLeftPanel, isMoving, duration_ms]);
 
   async function Close() {
     if (isMoving) return;
+    if (!isLeftPanel) socket?.emit('leave');
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
@@ -41,14 +66,14 @@ export function SidePanel({
     await delay(duration_ms);
     setIsShowing(true);
     setIsAnim(false);
-    await delay(duration_ms);
+    await delay(duration_ms / 4);
     setIsOpen(true);
     setIsShowing(false);
   }
 
   function getStyle(): React.CSSProperties {
-    let style: React.CSSProperties = {
-      zIndex: '100',
+    const style: React.CSSProperties = {
+      zIndex: 110,
       width: width + 'px',
       height: '100%',
       position: 'absolute',
@@ -85,7 +110,7 @@ export function SidePanel({
   if (!isMoving && !isOpen) {
     return (
       <div
-        style={{ position: 'absolute', height: '100%', left: getStyle().left }}
+        style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
           <RoundButton

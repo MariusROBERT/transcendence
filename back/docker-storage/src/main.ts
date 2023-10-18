@@ -4,10 +4,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'; // importer dotenv qui permet de recuperer les var d'env m'importe ou // ==> npm i dotenv
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
+import * as express from 'express';
 import { json, urlencoded } from 'express';
 import { join } from 'path';
-import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { FRONT_URL } from './utils/Globals';
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ async function bootstrap() {
   // CORS, ou Cross-Origin Resource Sharing, est un mécanisme de sécurité mis en place par les navigateurs web
   // pour contrôler les requêtes HTTP entre différentes origines
   app.enableCors({
-    origin: 'http://localhost:3000', // Remplacez par l'URL de votre application React
+    origin: FRONT_URL, // Remplacez par l'URL de votre application React
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Permettre les cookies, si nécessaire
   });

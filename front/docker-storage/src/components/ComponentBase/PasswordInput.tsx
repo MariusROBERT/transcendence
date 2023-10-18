@@ -42,7 +42,7 @@ export function PasswordInput(props: Props) {
   const popUpStyle: React.CSSProperties = {
     backgroundColor: errorColor,
     position: 'absolute',
-    zIndex: 1000,
+    zIndex: 131,
     top: -8,
     padding: 5,
     borderRadius: '5px 0 5px 5px',
@@ -64,7 +64,7 @@ export function PasswordInput(props: Props) {
         );
       return;
     }
-    let errors: string[] = [];
+    const errors: string[] = [];
     if (!minMin.test(props.password))
       errors.push('min');
     if (!minMaj.test(props.password))

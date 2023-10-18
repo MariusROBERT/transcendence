@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import {API_URL} from './Global';
 
 export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | {
   response: Response,
@@ -6,7 +7,7 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
 }> {
   const jwtToken = Cookies.get('jwtToken');
   try {
-    const response = await fetch('http://localhost:3001/api/' + url_end, {
+    const response = await fetch(API_URL + '/api/' + url_end, {
       method: method,
       headers: {
         'Content-Type': 'application/json',
@@ -17,10 +18,13 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
     if (response.ok) {
       const rep_json = await response.json();
       return { response: response, json: rep_json };
-    } else {
-      console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-      window.location.href = '/login';
     }
+    const rep_json = await response.json();
+    if (rep_json.statusCode !== 401) {
+      return { response: response, json: rep_json };
+    }
+    console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
+    window.location.href = '/login';
   } catch (e) {
     console.log(e);
     console.error('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
@@ -35,7 +39,7 @@ export async function unsecureFetch(
 ): Promise<undefined | Response> {
   let response;
   try {
-    response = await fetch('http://localhost:3001/api/' + url_end, {
+    response = await fetch(API_URL + '/api/' + url_end, {
       method: method,
       headers: {
         'Content-Type': 'application/json',

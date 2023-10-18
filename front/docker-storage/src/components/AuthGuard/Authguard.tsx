@@ -11,11 +11,10 @@ interface AuthGuardProps {
 
 const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
   const ft_token = new URLSearchParams(window.location.search).get('access-token');
-  const intraToken = new URLSearchParams(window.location.search).get('ftToken');
   const [error2fa, setError2fa] = React.useState<string>('');
-  const [is2fa, setIs2fa] = React.useState<boolean>(!!intraToken);
+  const [is2fa, setIs2fa] = React.useState<boolean>(ft_token === 'missing 2fa code');
 
-  if (ft_token !== '' && ft_token) {
+  if (ft_token && ft_token !== 'missing 2fa code' && ft_token !== '') {
     Cookies.set('jwtToken', ft_token, {
       expires: 7, // 7 jours
     });
@@ -29,14 +28,7 @@ const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
     if (!auth && !is2fa) {
       navigate('/login');
     }
-  }, [is2fa, auth, navigate]);
-
-  useEffect(() => {
-    // if (!auth) {
-    if (!auth && !intraToken) {
-      navigate('/login');
-    }
-  }, [auth, navigate, intraToken]);
+  }, [auth, navigate]);
 
   if (auth)
     return (children);
@@ -44,12 +36,10 @@ const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
   async function submitTwoFA(code2fa: string) {
     const credits = {
       code2fa: code2fa,
-      ftToken: intraToken,
     };
 
     const response = await unsecureFetch('auth/2fa/42', 'POST',
       JSON.stringify(credits));
-    console.log('response: ', response);
     if (response?.ok) {
       const json = await response.json();
       Cookies.set('jwtToken', json['access-token'], {
@@ -60,12 +50,12 @@ const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
     } else if (response?.statusText === 'Invalid 2fa code') {
       setError2fa(response.statusText);
     } else {
-      console.log(response?.statusText);
+      console.error(response?.statusText);
       setError2fa('Error');
     }
   }
 
-  if (intraToken)
+  if (ft_token === 'missing 2fa code')
     return (
       <TwoFA isVisible={is2fa}
              errorMessage={error2fa}

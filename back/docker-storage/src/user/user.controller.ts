@@ -9,9 +9,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
   UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
@@ -20,15 +20,13 @@ import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
 import {
-  GetUserIdFromSocketIdDto,
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
   UserGameStatus,
 } from './dto/user.dto';
-import { Express, Request } from 'express';
+import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
-import { UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -89,7 +87,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async GetAllPublicProfile(
     @User() user: UserEntity,
-    @Req() request: Request,
   ): Promise<PublicProfileDto[]> {
     return await this.userService.getAllProfile(user);
   }
@@ -131,34 +128,6 @@ export class UserController {
     return await this.userService.getChannels(user);
   }
 
-  // ask_friend
-  @Patch('demand/:id') // id of friend
-  @UseGuards(JwtAuthGuard)
-  async FriendsDemand(
-    @User() user: UserEntity,
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserEntity> {
-    return await this.userService.askFriend(user, id);
-  }
-
-  // accept_or_denied_aks
-  @Patch('handle_ask/:id/:bool') // bool envoyé en param : 0 invite refusé, 1 invite accepté
-  @UseGuards(JwtAuthGuard)
-  async responseAsks(
-    @User() user: UserEntity,
-    @Param('id', ParseIntPipe) id: number,
-    @Param('bool') bool: boolean,
-  ): Promise<UserEntity> {
-    return await this.userService.handleAsk(user, id, bool);
-  }
-
-  // logout
-  @Patch('/logout')
-  @UseGuards(JwtAuthGuard)
-  async Delog(@User() user: UserEntity) {
-    await this.userService.logout(user);
-  }
-
   @Get('/:id')
   async GetUserById(
     @Param('id', ParseIntPipe) id: number,
@@ -168,7 +137,6 @@ export class UserController {
   }
 
   // --------- BLOCK --------- :
-
   @Patch('/block/:id')
   @UseGuards(JwtAuthGuard)
   async BlockAUser(
@@ -179,18 +147,13 @@ export class UserController {
 
     return await this.userService.blockAUser(id, user);
   }
-  // Sockets -------------------------------------------------------------------------------------------------------- //
-
-  @Get('/from_socket_id')
-  @UseGuards(JwtAuthGuard)
-  async GetUserFromSocketId(@Body() socketId: GetUserIdFromSocketIdDto) {
-    return this.userService.getUserFromSocketId(socketId);
-  }
 
   // Game ----------------------------------------------------------------------------------------------------------- //
   @Get('/game_status/:id')
   @UseGuards(JwtAuthGuard)
-  async GetGameStatusWithId(@Param('id', ParseIntPipe) id: number): Promise<UserGameStatus> {
+  async GetGameStatusWithId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserGameStatus> {
     //console.log('fetch user game infos')
     return await this.userService.getGameStatusWithId(id);
   }
