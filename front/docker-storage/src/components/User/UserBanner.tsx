@@ -53,6 +53,8 @@ const UserBanner = ({ otherUser }: Props) => {
     height: '25px',
     marginTop: 5,
     width: mobile ? 200 : 400,
+    alignSelf: 'center',
+    margin: '0 10px',
   };
 
   const statusStyle: CSSProperties = {
