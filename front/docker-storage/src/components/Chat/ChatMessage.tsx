@@ -14,7 +14,6 @@ interface Props {
 export function ChatMessage({ children, data, last, onClick }: Props) {
   const { id } = useUserContext();
   const [isMe] = useState<boolean>(data.sender_id === id);
-  // const isMe = data.sender_id === id;
 
   return (
     <div style={{
