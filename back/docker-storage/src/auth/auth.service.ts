@@ -30,8 +30,8 @@ export class AuthService {
     // on veut crypter le pwd avec la bibliotheque bcrypt
     // Create User
     //DEV: comment these 2 lines for dev
-    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/.test(userData.password))
-      throw new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
+      throw new BadRequestException('Password must contain between 8 and 50 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
     if (!/[a-zA-Z0-9\-_+.]{1,10}/.test(userData.username))
       throw new BadRequestException('Username must contain between 1 and 10 characters, only letters, numbers and -_+. are allowed');
     const user = this.userRepository.create({
