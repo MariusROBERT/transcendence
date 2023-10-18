@@ -2,10 +2,13 @@ import { IUser } from '../../utils/interfaces';
 import React from 'react';
 import { UserButton } from '../User/UserButton';
 import { useUserContext } from '../../contexts';
+import { Popup } from '../index';
 
 export interface ProfilProps {
   otherUser: IUser | undefined | null;
   onClose?: () => void;
+  isVisible: boolean;
+  setIsVisible: (value: boolean) => void;
 }
 
 export default function Profil(props: ProfilProps) {
@@ -28,7 +31,7 @@ export default function Profil(props: ProfilProps) {
 
   if (!props.otherUser)
     return (<div style={profilContainer}>
-      <p>Utilisateur introuvable.</p>
+      <p>User not found</p>
     </div>);
 
   const isMe = props.otherUser?.id === user?.id;
@@ -49,26 +52,27 @@ export default function Profil(props: ProfilProps) {
   };
 
   return (
-    <div style={profilContainer}>
-      {mobile ?
-        <h3>{displayName}</h3> :
-        <h2>{displayName}</h2>
-      }
-      <p>ID : {props.otherUser?.id}</p>
-      <img style={imgStyle} src={props.otherUser?.urlImg} alt={'user'} />
-      <img style={isMe ? statusStyle : (props.otherUser?.user_status ? statusStyle : imgStyle)}
-           src={props.otherUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
-             require('../../assets/imgs/icon_red_disconnect.png')}
-           alt={props.otherUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
-      <hr style={{ width: '100%' }} />
-      <p>LAST MATCHS</p>
-      <p>--------------</p>
-      <p>--------------</p>
-      <p>LAST MATCHS</p>
-      <p>Winrate : {props.otherUser?.winrate}</p>
-      {!isMe && <UserButton otherUser={props.otherUser} />}
-
-    </div>
+    <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
+      <div style={profilContainer}>
+        {mobile ?
+          <h3>{displayName}</h3> :
+          <h2>{displayName}</h2>
+        }
+        <p>ID : {props.otherUser?.id}</p>
+        <img style={imgStyle} src={props.otherUser?.urlImg} alt={'user'} />
+        <img style={isMe ? statusStyle : (props.otherUser?.user_status ? statusStyle : imgStyle)}
+             src={props.otherUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
+               require('../../assets/imgs/icon_red_disconnect.png')}
+             alt={props.otherUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
+        <hr style={{ width: '100%' }} />
+        <p>LAST MATCHS</p>
+        <p>--------------</p>
+        <p>--------------</p>
+        <p>LAST MATCHS</p>
+        <p>Winrate : {props.otherUser?.winrate}</p>
+        {!isMe && <UserButton otherUser={props.otherUser} />}
+      </div>
+    </Popup>
   );
 
 }
