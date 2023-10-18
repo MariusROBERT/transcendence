@@ -39,14 +39,12 @@ export class UserEntity {
   @Column({ default: false })
   is2fa_active!: boolean;
 
+  //
   @Column({ default: 'ta gueule' })
   secret2fa?: string;
 
   @Column({ type: 'enum', enum: UserStateEnum })
   user_status!: UserStateEnum;
-
-  @Column({ default: -1 })
-  id42!: number;
 
   // CHANNEL :
 
@@ -87,18 +85,15 @@ export class UserEntity {
   friends: number[];
 
   @Column('integer', { array: true, nullable: true })
-  invites: number[];
+  recvInvitesFrom: number[];
 
   @Column('integer', { array: true, nullable: true })
-  invited: number[];
+  sentInvitesTo: number[];
 
   @Column('integer', { array: true, nullable: true })
   blocked: number[];
 
   // GAME :
-
-  @Column({ default: '' })
-  socketId: string;
 
   @Column({ default: 0 })
   winrate: number;
@@ -114,15 +109,11 @@ export class UserEntity {
 
   // Game Invites:
   @Column({ default: -1 })
-  isInGameWith: number;
-
-  @Column({ default: -1 })
   gameInvitationTo: number;
 
   @Column({ default: -1 })
   gameInvitationFrom: number;
 
-  @Column( { default: 'none' })
+  @Column({ default: 'none' })
   gameInvitationType: 'none' | 'normal' | 'special';
-
 }

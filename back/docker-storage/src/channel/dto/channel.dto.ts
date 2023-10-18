@@ -36,6 +36,12 @@ export class CreateChannelDto {
   priv_msg: boolean;
 }
 
+export class PassChannelDto {
+  @IsOptional()
+  @IsString()
+  password: string;
+}
+
 // GET CHANNEL AND DISPLAY INFO
 export class ChannelDto {
   @IsNumber()

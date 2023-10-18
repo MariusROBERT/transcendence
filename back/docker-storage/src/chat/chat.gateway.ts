@@ -5,21 +5,28 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Injectable, UseGuards } from '@nestjs/common';
 import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { SelfBannedGuard } from 'src/channel/guards/chan-basic.guards';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import { ChatCheckGuard } from './guards/chat.guards';
+import { FRONT_URL } from '../utils/Globals';
+
+export interface ChannelMessage {
+  sender_id: number;
+  sender_urlImg: string;
+  sender_username: string;
+  message_content: string;
+  channel_id: number;
+}
 
 @Injectable()
 @WebSocketGateway({
   cors: {
     credentials: true,
-    origin: ['http://localhost:3000'],
+    origin: [FRONT_URL],
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -37,49 +44,49 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     this.clients.push(client);
-
-    // console.log(
-    //   `Server co id:${client.id} | clients: ${this.clients.length}\n`,
-    // );
     this.server.emit('connect_ok');
   }
 
   async handleDisconnect(client: Socket) {
     const id = this.clients.indexOf(client);
     this.clients.splice(id);
-    // console.log(
-    //   `Server deco id:${client.id} | clients: ${this.clients.length}\n`,
-    // );
-    //console.log(client.handshake);
     this.server.emit('disconnect_ok');
   }
 
-  //  @SubscribeMessage('JoinChat')
-  //  async joinChatRoom(client: Socket, room_id: number) {
-  //    console.log(`Client:${client} join chat room id ${room_id}`);
-  //    try {
-  //      const chatEnt = this.chanService.getChannelById(room_id);
-  //      //  Find a way to get UserEntity
-  //      this.chanService.addUserInChannel(null, room_id);
-  //      this.server.emit('joinChat');
-  //    } catch {
-  //      console.log('Channel does not exist');
-  //      this.server.emit('joinNewChat');
-  //    }
-  //  }
-  //
-  //  @SubscribeMessage('leaveChat')
-  //  async leaveChatRoom(client: Socket, room_id: number) {
-  //    console.log(`Client:${client} leave chat room id ${room_id}`);
-  //    this.server.emit('leaveChat');
-  //  }
+  @SubscribeMessage('join')
+  async handleJoin(client: Socket, body: any) {
+    const { channel } = body;
+    const chan = await this.chanService.getChannelByName(channel);
+
+    client.rooms.forEach((room) => {
+      if (room !== client.id) {
+        client.leave(room);
+      }
+    });
+    client.join(channel);
+    this.server.to(channel).emit('join', chan.id);
+  }
+
+  @SubscribeMessage('leave')
+  async handleLeave(client: Socket) {
+    client.rooms.forEach((room) => {
+      if (room !== client.id) {
+        client.leave(room);
+      }
+    });
+  }
+
+  @SubscribeMessage('remove')
+  async handleRemove(client: Socket, body: any) {
+    const { user } = body;
+    this.server.emit('remove', user);
+  }
 
   @UseGuards(ChatCheckGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
-    var chanE;
-    var userE;
+    let chanE;
 
     if (channel < 0) {
       console.log('error chan < 0');
@@ -95,10 +102,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const payload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
-    userE = await this.userService.getUserByUsername(payload.username);
+    const userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
-    const data = { id: chanE.id, name: chanE.channel_name };
-    this.server.emit('message', data);
+    const data: ChannelMessage = {
+      sender_id: userE.id,
+      sender_urlImg: userE.urlImg,
+      sender_username: userE.username,
+      message_content: message,
+      channel_id: chanE.id,
+    };
+    this.server.to(channel).emit('message', data);
   }
 }

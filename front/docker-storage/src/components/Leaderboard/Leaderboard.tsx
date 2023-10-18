@@ -2,79 +2,93 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { UserBanner } from '..';
 import { IUser, LeaderboardProps } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { useUserContext } from '../../contexts';
-import Cookies from 'js-cookie';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 
-export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    window.location.replace('/login');
-    alert('Vous avez été déconnecté');
-  }
+export function Leaderboard({ searchTerm }: LeaderboardProps) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { fetchContext } = useUserContext();
-
-  const getAllProfil = async () => {
-    let cancelled = false;
-    const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-    if (cancelled) { // todo : voir si cest utile ici
-      return;
-    } else {
-      if (users && Array.isArray(users) && users.length === 0)
-        setErrorMessage('Aucun utilisateur trouvé.');
-      else setAllUsers(users);
-    }
-    return () => {
-      cancelled = true;
-    };
-  };
+  const { fetchContext, user } = useUserContext();
+  const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  useEffect(() => {
+    setMobile(window.innerWidth < 650);
+  }, [window.innerWidth]);
 
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
   }, []);
 
-
   useEffect(() => {
-    const getUserInfos = async () => {
-      getAllProfil();
-      const user = (await Fetch('user', 'GET'))?.json;
-      if (!user) return;
+    const getAllProfil = async () => {
+      await fetchFriendsRequestContext();
+      let cancelled = false;
+      const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
+      if (cancelled) { // todo : voir si cest utile ici
+        return;
+      }
+      if (users && Array.isArray(users) && users.length === 0)
+        setErrorMessage('Aucun utilisateur trouvé.');
+      else setAllUsers(users);
+
+      return () => {
+        cancelled = true;
+      };
     };
-    getUserInfos(); // appel de la fonction si le jwt est good
-  }, [jwtToken]);
-
-  useEffect(() => {
-    //console.log('meUser in Leaderboard', meUser);
-  }, [meUser]);
+    getAllProfil();
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
-    const displayAllProfil = () => {
+    function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase()),
         )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // alphabetic. Change to winrate sort
-      let count = 1;
+        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // TODO: sort by ELO
+
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{count++}</p> {/* TO CHANGE */}
-          {meUser ? <UserBanner otherUser={user} meUser={meUser} /> : <></>}
-          <>
-            <p>SCORE %</p>
-          </>
+          <p>{'RANK'}</p> {/* TO CHANGE */}
+          {<UserBanner otherUser={user} />}
+          <p>ELO pt</p>
         </div>
       ));
       setUserElements(elements);
-    };
+    }
 
-    displayAllProfil();
-  }, [searchTerm, allUsers, jwtToken, meUser]);
+    filterAndSortUsers();
+  }, [searchTerm, allUsers, user]);
+
+  const container: CSSProperties = {
+    background: 'grey',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    maxHeight: '500px',
+    overflowY: 'scroll',
+    // width: mobile ? 200 : 700,
+  };
+
+  const userElementStyle: CSSProperties = {
+    maxWidth: mobile ? 500 : 600,
+    border: '1px solid white',
+    flexWrap: 'nowrap',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignContent: 'center',
+    background: '#646464',
+    color: 'white',
+    margin: '10px 0',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: '10px',
+  };
+
 
   return (
     <div style={container}>
@@ -82,33 +96,15 @@ export function Leaderboard({ meUser, searchTerm }: LeaderboardProps) {
         <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
       )}
       <div className='container'>{userElements}</div>
+      {userElements.length === 0 && !errorMessage && (
+        <div style={{ color: 'white', marginTop: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <p>No user found.</p>
+          </div>
+          <div style={{ ...userElementStyle, visibility: 'hidden' }} />
+        </div>
+      )
+      }
     </div>
   );
 }
-
-
-const container: CSSProperties = {
-  minWidth: '500px',
-  background: 'grey',
-  display: 'flex',
-  justifyContent: 'center',
-  alignContent: 'center',
-  maxHeight: '500px',
-  overflowY: 'scroll',
-};
-
-const userElementStyle: CSSProperties = {
-  width: '600px',
-  border: '1px solid white',
-  flexWrap: 'wrap',
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignContent: 'center',
-  background: '#646464',
-  color: 'white',
-  margin: '10px',
-  padding: '10px',
-  cursor: 'pointer',
-  borderRadius: '10px',
-
-};

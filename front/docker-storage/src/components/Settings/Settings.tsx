@@ -1,21 +1,15 @@
 import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, SwitchToggle } from '..';
+import {API_URL} from '../../utils/Global';
 
 interface Props {
   isVisible: boolean;
 }
 
 export default function Settings(props: Props) {
-  const navigate = useNavigate();
-  const jwtToken = Cookies.get('jwtToken');
-  if (!jwtToken) {
-    navigate('/login');
-    alert('Vous avez été déconnecté');
-  }
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
@@ -36,8 +30,7 @@ export default function Settings(props: Props) {
         if (user) {
           setUserInfosSettings(user);
         } else {
-          window.location.replace('http://localhost:3001/api/auth/login');
-          // alert('Vous avez été déconnecté');
+          window.location.replace(API_URL + '/api/auth/login');
         }
       };
       getUserInfos();
@@ -52,10 +45,6 @@ export default function Settings(props: Props) {
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
-    if (!jwtToken) {
-      window.location.replace('http://localhost:3001/api/auth/login');
-      alert('You have been disconnected \n(your Authorisation Cookie has been modified or deleted)');
-    }
     if (
       confirmPassword === '' &&
       password === '' &&
@@ -69,26 +58,21 @@ export default function Settings(props: Props) {
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
       if (password !== confirmPassword)
         return setErrorMessage('passwords doesn\'t match !');
-      else {
-        const user = await (fetch('http://localhost:3001/api/user/update_password', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          body: JSON.stringify({ newPassword: password, oldPassword: oldPassword }),
-        }))
-          .then(r => r.json());
 
-        if (user.message === 'Wrong password')
-          return setErrorMessage(user.message);
-        if (user.message)
-          return setErrorMessage(user.message);
-        setUserInfosSettings(user);
-        setOldPassword('');
-        setPassword('');
-        setConfirmPassword('');
-      }
+      const user = (await Fetch('user/update_password', 'PATCH', JSON.stringify({
+        newPassword: password,
+        oldPassword: oldPassword,
+      })))?.json;
+      if (!user)
+        return;
+      if (user.message === 'Wrong password')
+        return setErrorMessage(user.message);
+      if (user.message)
+        return setErrorMessage(user.message);
+      setUserInfosSettings(user);
+      setOldPassword('');
+      setPassword('');
+      setConfirmPassword('');
     }
 
     // IMG :
@@ -97,7 +81,7 @@ export default function Settings(props: Props) {
       formData.append('file', newImage || '');
 
       const user = await fetch(
-        'http://localhost:3001/api/user/update_picture',
+        API_URL + '/api/user/update_picture',
         {
           method: 'POST',
           headers: {
@@ -136,10 +120,19 @@ export default function Settings(props: Props) {
     setErrorMessage('');
   };
 
+  const mobile = window.innerWidth < 500;
+
+  const displayName = (userInfosSettings?.username.length || '') > 11 ?
+    userInfosSettings?.username.slice(0, 11) + '...' :
+    userInfosSettings?.username;
+
   return (
     <div>
       <form onSubmit={saveModifications} style={settingsStyle}>
-        <p>{userInfosSettings?.username}</p>
+        {mobile ?
+          <h3>{displayName}</h3> :
+          <h2>{displayName}</h2>
+        }
         <div>
           <div style={modifContainerImage}>
             <img style={{
@@ -188,7 +181,7 @@ export default function Settings(props: Props) {
                            setHidePassword={setHidePassword}
                            password={password}
                            setPassword={setPassword}
-              noVerify /* DEV: uncomment this line for dev */
+                           noVerify /* DEV: uncomment this line for dev */
             />
             <PasswordInput hidePassword={hidePassword}
                            setHidePassword={setHidePassword}
@@ -196,7 +189,7 @@ export default function Settings(props: Props) {
                            setPassword={setConfirmPassword}
                            placeholder={'Confirm password'}
                            confirmPassword={password}
-              noVerify /* DEV: uncomment this line for dev */
+                           noVerify /* DEV: uncomment this line for dev */
             />
             <br />
           </div>
@@ -216,12 +209,17 @@ export default function Settings(props: Props) {
           position: 'fixed',
           top: 0,
           left: 0,
-          zIndex: 999,
+          zIndex: 130,
           backgroundColor: 'rgba(70,70,70,0.5)',
           height: '100vh',
           width: '100vw',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', alignContent: 'space-evenly', flexDirection: 'column' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            alignContent: 'space-evenly',
+            flexDirection: 'column',
+          }}>
             <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
               Scan this QrCode in your favorite 2fa application
             </p>
@@ -289,7 +287,7 @@ const modifContainerPwd: React.CSSProperties = {
   justifyContent: 'space-around',
 };
 
-const Btn: React.CSSProperties = {
+export const Btn: React.CSSProperties = {
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',

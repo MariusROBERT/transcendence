@@ -23,8 +23,7 @@ export interface UserAndInvites {
   urlImg: string;
   user_status: string;
   winrate: number;
-  is_friend: boolean;
-  invites: number;
+  recvInvitesFrom: number;
 }
 
 // --------------------------- Channels :
@@ -46,6 +45,14 @@ export interface ChannelMessage {
   sender_urlImg: string;
   sender_username: string;
   message_content: string;
+  channel_id: number;
+}
+
+export interface IChatUser {
+  sender_id: number;
+  sender_urlImg: string;
+  sender_username: string;
+  channel_id: number;
 }
 
 export interface ChannelUsers {
@@ -60,14 +67,28 @@ export interface SocketMessage {
   id: number;
 }
 
+export interface ChannelPublic {
+  channel_id: number,
+  channel_name: string,
+  channel_status: string,
+  channel_priv_msg: boolean,
+  owner_id: number
+}
+
+export interface ChannelPublicPass {
+  id: number,
+  channel_name: string,
+  chan_status: string,
+  priv_msg: boolean,
+  has_password: boolean
+}
+
 // --------------------------- LeaderBoard & Profil :
 
 export interface UserInfos {
   id: number;
   urlImg: string;
-  is2fa_active: boolean;
   username: string;
-  invited: number[];
 }
 
 export interface IUser {
@@ -76,21 +97,8 @@ export interface IUser {
   urlImg: string;
   user_status: string;
   winrate: number;
-  is_friend: boolean;
-  invited: number[];
-  invites: number[];
-}
-
-export interface IUserComplete {
-  id: number;
-  username: string;
-  urlImg: string;
-  user_status: string;
-  role: string;
-  winrate: number;
-  is_friend: boolean;
-  invited: number[];
-  invites: number[];
+  sentInvitesTo: number[];
+  recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
 }
@@ -99,7 +107,6 @@ export interface LeaderboardProps {
   //isVisible: boolean;
   //setIsVisible: (b: boolean) => void;
   searchTerm: string;
-  meUser?: IUserComplete;
 }
 
 

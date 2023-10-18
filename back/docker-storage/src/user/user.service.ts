@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,7 +9,6 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
-  GetUserIdFromSocketIdDto,
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
@@ -21,9 +19,9 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { validate } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { Express } from 'express';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { API_URL } from '../utils/Globals';
 
 @Injectable()
 export class UserService {
@@ -39,35 +37,32 @@ export class UserService {
   // --------- PROFILE --------- :
   // -- Private -- :
 
-  async updateProfile(
-    profil: UpdateUserDto,
-    user: UserEntity,
-  ) {
+  async updateProfile(profile: UpdateUserDto, user: UserEntity) {
     const id: number = user.id;
-    const errors = await validate(profil);
+    const errors = await validate(profile);
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    //console.log('modifications apportées: ', profil);
+    //console.log('modifications apportées: ', profile);
 
-    const newProfil = await this.UserRepository.preload({
+    const newProfile = await this.UserRepository.preload({
       id, // search user == id
-      ...profil, // modif seulement les differences
+      ...profile, // modif seulement les differences
     });
-    if (!newProfil) {
+    if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
-    if (profil.is2fa_active) {
-      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfil);
+    if (profile.is2fa_active) {
+      const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
 
       return {
-        ...await this.UserRepository.save(newProfil),
+        ...(await this.UserRepository.save(newProfile)),
         qrCode: await toDataURL(otpauthUrl),
-        code2fa: secret ? secret[1]: '',
+        code2fa: secret ? secret[1] : '',
       };
     }
-    return await this.UserRepository.save(newProfil);
+    return await this.UserRepository.save(newProfile);
   }
 
   async updatePassword(updatePwdDto: UpdatePwdDto, user: UserEntity) {
@@ -78,16 +73,19 @@ export class UserService {
     const currentUser = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
       .where('user.username = :name', { name })
       .getOne();
-    if (currentUser.id42 > 0)
-      throw new UnauthorizedException('Oauth42 user can\'t change password')
-    const oldHash = await bcrypt.hash(updatePwdDto.oldPassword, currentUser.salt);
+    if (currentUser.username.endsWith('_42'))
+      throw new UnauthorizedException("Oauth42 user can't change password");
+    const oldHash = await bcrypt.hash(
+      updatePwdDto.oldPassword,
+      currentUser.salt,
+    );
     if (oldHash !== currentUser.password) {
-      throw new UnauthorizedException(`Wrong password`);
+      throw new UnauthorizedException('Wrong password');
     }
 
     //DEV: comment these 2 lines for dev
-    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/.test(updatePwdDto.newPassword))
-      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/.test(updatePwdDto.newPassword))
+    //   return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
 
     const newPassword = await bcrypt.hash(
       updatePwdDto.newPassword,
@@ -100,14 +98,17 @@ export class UserService {
     return await this.UserRepository.save(newProfil);
   }
 
+  // Log IN / OUT -------------------------------------------------------------------------------- //
+  async login(user: UserEntity) {
+    user.user_status = UserStateEnum.ON;
+    await this.UserRepository.save(user);
+  }
+
   async logout(user: UserEntity) {
     // pas testé
     const lastMsg = await this.getLastMsg(user);
-    if (lastMsg)
-      user.last_msg_date = lastMsg.createdAt;
+    if (lastMsg) user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
-    user.socketId = '';
-    user.isInGameWith = -1;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
     await this.UserRepository.save(user);
@@ -141,13 +142,6 @@ export class UserService {
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
 
-    if (user && user.friends && Array.isArray(user.friends)) {
-      PublicProfile.is_friend = user.friends.some(
-        (friend) => friend === profile.id,
-      );
-    } else {
-      PublicProfile.is_friend = false;
-    }
     return PublicProfile;
   }
 
@@ -164,76 +158,83 @@ export class UserService {
 
   // FRIEND'S DEMAND :
 
-  async askFriend(user: UserEntity, id: number): Promise<UserEntity> {
-    // check si le user demandé est connecté
+  async askFriend(user: UserEntity, id: number) {
     const userAsked = await this.UserRepository.findOne({ where: { id } });
-    if (!userAsked)
+    if (!userAsked) {
       throw new NotFoundException(`le user d'id ${id} n'existe pas`);
-    // if (userAsked.user_status == UserStateEnum.ON)
-    //     // passer par les socket
-    // else {
-    if (!user.invited) user.invited = [];
-    if (!userAsked.invited) userAsked.invites = [];
-    if (Array.isArray(user.invited) && Array.isArray(userAsked.invites)) {
-      // secu en + :
-      const invitedExist = user.invited.indexOf(userAsked.id);
-      const invitesExist = userAsked.invites.indexOf(user.id);
-      if (invitesExist != -1 || invitedExist != -1)
-        throw new ConflictException(`Vous avez déjà demandé le user ${id}.`);
-      user.invited.push(userAsked.id);
-      userAsked.invites.push(user.id);
     }
-    // }
+
+    if (userAsked.blocked.includes(user.id)) return;
+
+    if (!user.sentInvitesTo.includes(id)) user.sentInvitesTo.push(id);
+    if (!userAsked.recvInvitesFrom.includes(user.id))
+      userAsked.recvInvitesFrom.push(user.id);
+
     await this.UserRepository.save(user);
     await this.UserRepository.save(userAsked);
-    return userAsked;
   }
 
   async handleAsk(
-    user: UserEntity, // usr1
-    id: number, // usr2
+    user: UserEntity, // receiver
+    id: number, // sender
     bool: boolean,
   ) {
-    const userInvites = await this.UserRepository.findOne({
-      where: { id },
-    }); // search le user d'id :id
-    if (!userInvites)
+    const sender = await this.UserRepository.findOne({ where: { id } });
+    if (!sender) {
       throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
-    if (!user.invites) {
+    }
+    const indexSenderInInvites = user.recvInvitesFrom.indexOf(id);
+    if (indexSenderInInvites === -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites`,
+        `le sender d'id ${id} ne fait parti de la liste d'recvInvitesFrom du user (receiver) d'id ${user.id}`,
       );
     }
-    const friendsExist = user.friends.indexOf(userInvites.id);
-    if (friendsExist != -1) {
-      throw new ConflictException(
-        `le user d'id ${id} est fait déjà de vos friends`,
-      );
-    }
-    const indexToRemove = user.invites.indexOf(user.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemove !== -1) {
+    const indexReceiverInInvited = sender.sentInvitesTo.indexOf(user.id);
+    if (indexReceiverInInvited === -1) {
       throw new NotFoundException(
-        `le user d'id ${id} ne fait partit de la liste d'invites du user d'id ${user.id}`,
+        `Vous ne ne faite pas parti de la liste d'sentInvitesTo du sender d'id ${id}`,
       );
     }
-    const indexToRemoveusr = userInvites.invited.indexOf(userInvites.id); // get l'index du usr2 dans la liste d'invites de usr1
-    if (indexToRemoveusr !== -1) {
-      throw new NotFoundException(
-        `le user d'id ${user.id} ne fait partit de la liste d'invited du user d'id ${id}`,
-      );
+
+    if (user.blocked.includes(id) && !bool) return;
+    if (user.blocked.includes(id) && bool) {
+      const index = user.blocked.indexOf(id);
+      if (index !== -1) {
+        user.blocked.splice(index, 1);
+        await this.UserRepository.save(user);
+      }
     }
-    user.invites.splice(indexToRemove, 1); // remove usr1 dans liste d'invites de usr2
-    userInvites.invited.splice(indexToRemoveusr, 1); // remove usr1 dans liste d'invited de usr2
-    if (bool == true) {
-      // si il a été accepter, on ajoute dans la liste friends des deux cotés
-      if (!user.friends) user.friends = [];
-      user.friends = [...user.friends, userInvites.id]; // ajout usr2 dans list friends de usr1
-      if (!userInvites.friends) userInvites.friends = [];
-      userInvites.friends = [...userInvites.friends, user.id]; // ajout usr1 dans list friends de usr2
+
+    sender.sentInvitesTo.splice(indexSenderInInvites, 1);
+    user.recvInvitesFrom.splice(indexReceiverInInvited, 1);
+
+    if (bool) {
+      user.friends = [...user.friends, sender.id];
+      sender.friends = [...sender.friends, user.id];
     }
+
+    if (sender.blocked.includes(user.id)) {
+      const index = sender.blocked.indexOf(user.id);
+      if (index !== -1) {
+        sender.blocked.splice(index, 1);
+      }
+    }
+
     this.UserRepository.save(user);
-    this.UserRepository.save(userInvites);
-    return user
+    this.UserRepository.save(sender);
+  }
+
+  async blockAUser(id: number, user: UserEntity) {
+    user.blocked = [...user.blocked, id];
+    await this.UserRepository.save(user);
+  }
+
+  async unblockAUser(id: number, user: UserEntity) {
+    const index = user.blocked.indexOf(id);
+    if (index !== -1) {
+      user.blocked.splice(index, 1);
+    }
+    await this.UserRepository.save(user);
   }
 
   // CHANNEL & MESSAGE :
@@ -245,7 +246,7 @@ export class UserService {
       .getMany();
   }
 
-  async isInChannel(id: number, channel: ChannelEntity) {
+  async isInChannel(id: number) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
   }
@@ -270,48 +271,46 @@ export class UserService {
       //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'member';
       return data;
     });
     const fadmin = admin.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'admin';
       return data;
     });
     const fowner = owner.map((d) => {
-      var data = { ...d };
+      const data = { ...d };
       data['type'] = 'owner';
       return data;
     });
-    const all = fusers.concat(fadmin, fowner);
-    return all;
+    return fusers.concat(fadmin, fowner);
   }
 
   async getFullAdminInChannels(channelId: number) {
-    const admin = await this.UserRepository.createQueryBuilder('user')
+    return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .getMany();
-    return admin;
   }
 
   async getBannedInChannels(channelId: number) {
-    const users = await this.UserRepository.createQueryBuilder('user')
+    return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.baned', 'baned')
       .where('baned.id = :channelId', { channelId })
       .getMany();
-    return users;
   }
 
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
-    const users = this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.channels', 'channel')
-      .where('channel.id = :channelId', { channelId })
-      .getMany();
-    //console.log("USER: " + users);
-    return users;
+    return (
+      this.UserRepository.createQueryBuilder('user')
+        .innerJoin('user.channels', 'channel')
+        .where('channel.id = :channelId', { channelId })
+        // .select(['user.id', 'user.username', 'user.urlImg'])
+        .getMany()
+    );
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
@@ -319,7 +318,7 @@ export class UserService {
     // est ce quil a des new msg et si oui de quel cahnnel
     const userChannels = await this.getChannels(user);
     const lastMsg = await this.getLastMsg(user);
-    let channelsWithNewMsg: ChannelEntity[];
+    const channelsWithNewMsg: ChannelEntity[] = [];
     if (lastMsg.createdAt > user.last_msg_date) {
       // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
       // pour chaque channel aller voir s'il y a des new msg;
@@ -334,7 +333,8 @@ export class UserService {
           channelsWithNewMsg.push(channel);
       }
       return channelsWithNewMsg;
-    } else return null;
+    }
+    return null;
   }
 
   async getLastMsg(user: UserEntity): Promise<MessageEntity> {
@@ -371,40 +371,8 @@ export class UserService {
     const channel = await this.ChannelRepository.findOne({ where: { id } });
     if (!channel)
       throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
-    if (this.isInChannel(user.id, channel)) return channel.messages;
-    else
-      throw new NotFoundException(
-        `le user ${id} n'appartient pas a ce channel`,
-      );
-  }
-
-  async blockAUser(
-    id: number,
-    user: UserEntity
-  ) {
-    try {
-      const userToBlock = await this.UserRepository.findOne({ where: {id} });
-      if (!userToBlock)
-        throw new ConflictException(`user ${id} does not exist`);
-      const isHeInBlocked = this.UserRepository.createQueryBuilder('user');
-      let userId = user.id;
-      isHeInBlocked
-        .where('user.id = :userId', { userId })
-        .andWhere(':id = ANY(user.blocked)', { id });
-      const result = await isHeInBlocked.getOne();
-      console.log("user.blocked : ", user.blocked);
-      console.log("idToBlock : ", id);
-
-      if (!result)
-      {
-        user.blocked = [...user.blocked, userToBlock.id];
-        await this.UserRepository.save(user);
-      } else {
-        throw new ConflictException(`user ${id} already in blocked`);
-      }
-    } catch (e) {
-      throw new ConflictException(`user ${id} already in blocked`);
-    }
+    if (await this.isInChannel(user.id)) return channel.messages;
+    throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`);
   }
 
   // UTILS :
@@ -423,54 +391,26 @@ export class UserService {
     return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 
-
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (
       user.urlImg != '' &&
       !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
-      user.urlImg !== 'http://localhost:3001/public/default.png'
+      user.urlImg !== API_URL + '/public/default.png'
     ) {
-      fs.rm(user.urlImg.replace('http://localhost:3001/', ''), (err) => {
+      fs.rm(user.urlImg.replace(API_URL + '/', ''), (err) => {
         if (err) console.error('remove old: ', err);
       });
     }
-    user.urlImg = 'http://localhost:3001/' + file.path;
+    user.urlImg = API_URL + '/' + file.path;
     await this.UserRepository.save(user);
     return user;
-  }
-
-  async getUserFromSocketId(socketId: GetUserIdFromSocketIdDto) {
-    return await this.UserRepository.findOne({
-      where: { socketId: socketId.socketId },
-    });
-  }
-
-  async setUserSocketId(id: number, socketId: string) {
-    const user = await this.UserRepository.findOne({ where: { id: id } });
-    if (!user) {
-      console.error('user not found in setUserSocketId');
-      return;
-    }
-    user.socketId = socketId;
-    user.user_status = UserStateEnum.ON; // todo : virer ca
-
-    return await this.UserRepository.save(user);
-  }
-
-  async getSocketIdFromUser(id: number) {
-    const user = await this.UserRepository.findOne({ where: { id: id } });
-    if (!user) {
-      console.error('user not found in setUserSocketId');
-      return;
-    }
-    return user.socketId;
   }
 
   async getUserById(id: number): Promise<UserEntity> {
     const user = await this.UserRepository.findOne({
       where: { id },
     });
-    if (!user) throw new NotFoundException(`No User found for id ${id}`);
+    if (!user) return;
     return user;
   }
 
@@ -485,29 +425,37 @@ export class UserService {
 
   async generateTwoFactorSecret(user: UserEntity) {
     const secret = authenticator.generateSecret();
-    const otpauthUrl = authenticator.keyuri(user.username, 'Transcendence', secret);
+    const otpauthUrl = authenticator.keyuri(
+      user.username,
+      'Transcendence',
+      secret,
+    );
     user.secret2fa = secret;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
-  async setUserSendInvitationTo(user: UserEntity, otherUserId: number | undefined) {
+  async setUserSendInvitationTo(
+    user: UserEntity,
+    otherUserId: number | undefined,
+  ) {
     user.gameInvitationTo = otherUserId ? otherUserId : -1;
     return await this.UserRepository.save(user);
   }
 
-  async setUserReceivedInvitationFrom(user: UserEntity, otherUserId: number | undefined) {
+  async setUserReceivedInvitationFrom(
+    user: UserEntity,
+    otherUserId: number | undefined,
+  ) {
     user.gameInvitationFrom = otherUserId ? otherUserId : -1;
     return await this.UserRepository.save(user);
   }
 
-  async setUserInGameStatus(user: UserEntity, otherUserId: number | undefined) {
-    user.isInGameWith = otherUserId ? otherUserId : -1;
-    return await this.UserRepository.save(user);
-  }
-
-  async setUserInvitationType(user: UserEntity, gameType: 'none' | 'normal' | 'special') {
+  async setUserInvitationType(
+    user: UserEntity,
+    gameType: 'none' | 'normal' | 'special',
+  ) {
     user.gameInvitationType = gameType;
     return await this.UserRepository.save(user);
   }
@@ -517,8 +465,7 @@ export class UserService {
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
-      isInGameWith: user.isInGameWith,
-      gameInviteType: user.gameInvitationType
-    }
+      gameInviteType: user.gameInvitationType,
+    };
   }
 }

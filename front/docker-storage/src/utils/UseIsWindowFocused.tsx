@@ -1,30 +1,33 @@
 import { useState, useEffect } from 'react';
+import { delay } from './UtilityFunctions';
 
 export function useIsWindowFocused(): boolean {
   const [windowIsActive, setWindowIsActive] = useState(true);
-  const _ = require('lodash.debounce');
+  let inFetch = false;
 
   useEffect(() => {
-    function handleActivity() {
-      _(
-        (e: { type: string }) => {
-          if (e?.type === 'focus') {
-            return setWindowIsActive(true);
-          }
-          if (e?.type === 'blur') {
-            return setWindowIsActive(false);
-          }
-          if (e?.type === 'visibilitychange') {
-            if (document.hidden) {
-              return setWindowIsActive(false);
-            } else {
-              return setWindowIsActive(true);
-            }
-          }
-        },
-        100,
-        { leading: false },
-      );
+    async function resetFetch() {
+      await delay(100);
+      // eslint-disable-next-line
+      inFetch = false;
+    }
+
+    function handleActivity(e: { type: string }) {
+      if (inFetch) return;
+      inFetch = true;
+      resetFetch();
+      if (e?.type === 'focus') {
+        return setWindowIsActive(true);
+      }
+      if (e?.type === 'blur') {
+        return setWindowIsActive(false);
+      }
+      if (e?.type === 'visibilitychange') {
+        if (document.hidden) {
+          return setWindowIsActive(false);
+        }
+        return setWindowIsActive(true);
+      }
     }
 
     document.addEventListener('visibilitychange', handleActivity);
@@ -40,7 +43,7 @@ export function useIsWindowFocused(): boolean {
       document.removeEventListener('focus', handleActivity);
       document.removeEventListener('visibilitychange', handleActivity);
     };
-  }, [_]);
+  }, [inFetch]);
 
   return windowIsActive;
 }

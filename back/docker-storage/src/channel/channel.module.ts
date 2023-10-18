@@ -12,11 +12,15 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 import { JwtService } from '@nestjs/jwt';
 import { MutedService } from 'src/muted/muted.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
-import { MutedModule } from 'src/muted/muted.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChannelEntity, UserEntity, MessageEntity, MutedEntity]),
+    TypeOrmModule.forFeature([
+      ChannelEntity,
+      UserEntity,
+      MessageEntity,
+      MutedEntity,
+    ]),
     AuthModule,
   ],
   controllers: [ChannelController],
