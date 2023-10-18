@@ -31,7 +31,8 @@ export class ChannelService {
     private userService: UserService,
     private msgService: MessagesService,
     private mutedService: MutedService,
-  ) {}
+  ) {
+  }
 
   async returnPublicData(channel: ChannelEntity): Promise<PublicChannelDto> {
     const publicData: PublicChannelDto = {
@@ -47,12 +48,12 @@ export class ChannelService {
   }
 
   /**
-    @description Create a channel
-    @param {CreateChannelDto} channel - The channel to create Dto
-    @param {UserEntity} user - User that create the channel
-    @return {PublicChannelDto} - Public channel data
-    @throw {ConflictException} - If channel already exist
-  */
+   @description Create a channel
+   @param {CreateChannelDto} channel - The channel to create Dto
+   @param {UserEntity} user - User that create the channel
+   @return {PublicChannelDto} - Public channel data
+   @throw {ConflictException} - If channel already exist
+   */
   async createChannel(
     channel: CreateChannelDto,
     user: UserEntity,
@@ -74,11 +75,11 @@ export class ChannelService {
   }
 
   /**
-    @description Join a private channel if exist, else create it
-    @param {any} second_user - The second user to join the private channel
-    @param {UserEntity} user - The user that create the private channel
-    @return {ChannelENtity} - Public channel data
-  */
+   @description Join a private channel if exist, else create it
+   @param {any} second_user - The second user to join the private channel
+   @param {UserEntity} user - The user that create the private channel
+   @return {ChannelENtity} - Public channel data
+   */
   async joinPrivate(
     second_user: any,
     user: UserEntity,
@@ -100,16 +101,16 @@ export class ChannelService {
       });
       await this.ChannelRepository.save(channel);
     }
-    return {id: channel.id, channel_name: channel.channel_name};
+    return { id: channel.id, channel_name: channel.channel_name };
   }
 
   /**
-    @description Edit chan_status and password in channel
-    @param {EditChannelDto} dto - The channel Dto to edit
-    @param {number} id - The channel id to edit
-    @return {PublicChannelDto} - Public channel data
-    @throw {NotFoundException} - If channel not found
-  */
+   @description Edit chan_status and password in channel
+   @param {EditChannelDto} dto - The channel Dto to edit
+   @param {number} id - The channel id to edit
+   @return {PublicChannelDto} - Public channel data
+   @throw {NotFoundException} - If channel not found
+   */
   async editChannel(
     dto: EditChannelDto,
     id: number,
@@ -129,11 +130,11 @@ export class ChannelService {
   }
 
   /**
-    @description Get a channel entity by id
-    @param {number} id - The channel id
-    @return {ChannelEntity} - The channel entity
-    @throw {NotFoundException} - If channel not found
-  */
+   @description Get a channel entity by id
+   @param {number} id - The channel id
+   @return {ChannelEntity} - The channel entity
+   @throw {NotFoundException} - If channel not found
+   */
   async getChannelById(id: number): Promise<ChannelEntity> {
     //console.log(id);
     const channel = await this.ChannelRepository.findOne({
@@ -145,11 +146,11 @@ export class ChannelService {
   }
 
   /**
-    @description Get channel public data entity by id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-    @throw {NotFoundException} - If channel not found
-  */
+   @description Get channel public data entity by id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   @throw {NotFoundException} - If channel not found
+   */
   async getPublicChannelById(id: number): Promise<PublicChannelDto> {
     const channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoin('channel.owner', 'owner')
@@ -168,10 +169,10 @@ export class ChannelService {
   }
 
   /**
-    @description Get all public channels where user is not banned
-    @param {UserEntity} user - The user that request the channels
-    @return {PublicChannelDto[]} - Public channels data
-  */
+   @description Get all public channels where user is not banned
+   @param {UserEntity} user - The user that request the channels
+   @return {PublicChannelDto[]} - Public channels data
+   */
   async getPublicChannelsData(user: UserEntity) {
     const banned = await this.ChannelRepository.createQueryBuilder('channel')
       .innerJoin('channel.baned', 'user', 'user.id = :userId', {
@@ -207,11 +208,11 @@ export class ChannelService {
   }
 
   /**
-    @description Get a channel entity by name
-    @param {string} channel_name - The channel name
-    @return {ChannelEntity} - The channel entity
-    @throw {NotFoundException} - If channel not found
-  */
+   @description Get a channel entity by name
+   @param {string} channel_name - The channel name
+   @return {ChannelEntity} - The channel entity
+   @throw {NotFoundException} - If channel not found
+   */
   async getChannelByName(channel_name: string) {
     const channel = await this.ChannelRepository.findOne({
       where: { channel_name },
@@ -223,11 +224,11 @@ export class ChannelService {
   }
 
   /**
-    @description Get a channel id by name
-    @param {string} channel_name - The channel name
-    @return {ChannelEntity} - The channel entity
-    @throw {NotFoundException} - If channel not found
-  */
+   @description Get a channel id by name
+   @param {string} channel_name - The channel name
+   @return {ChannelEntity} - The channel entity
+   @throw {NotFoundException} - If channel not found
+   */
   async getChannelIdByName(channel_name: string) {
     const channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoin('channel.owner', 'owner')
@@ -240,30 +241,30 @@ export class ChannelService {
   }
 
   /**
-    @description Get channel messages
-    @param {number} id - The channel id
-    @return {MessageEntity[]} - The channel messages
-  */
+   @description Get channel messages
+   @param {number} id - The channel id
+   @return {MessageEntity[]} - The channel messages
+   */
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
     if (!id) throw new NotFoundException('Channel Not Found');
     return await this.msgService.getMsg(id);
   }
 
   /**
-    @description Get channel users
-    @param {number} - The channel id
-    @return {UserEntity[]} - The channel users
-  */
+   @description Get channel users
+   @param {number} - The channel id
+   @return {UserEntity[]} - The channel users
+   */
   async getChannelUsers(id: number): Promise<UserEntity[]> {
     return await this.userService.getUsersInChannels(id);
   }
 
   /**
-    @description Get channel user with rights
-    @param {number} id - The channel id
-    @param {UserEntity} user - The user that request the channel
-    @return {any} - The channel users
-  */
+   @description Get channel user with rights
+   @param {number} id - The channel id
+   @param {UserEntity} user - The user that request the channel
+   @return {any} - The channel users
+   */
   async getChannelUserRights(id: number, user: UserEntity) {
     const usersInChannel = await this.userService.getUsersInChannels(id);
     for (const currentUser of usersInChannel) {
@@ -276,11 +277,11 @@ export class ChannelService {
   }
 
   /**
-    @description Get channels of user by type
-    @param {string} type - The type of user {users, admins, owner}
-    @param {number} id - The user id
-    @return {ChannelEntity[]} - The channels user with type
-  */
+   @description Get channels of user by type
+   @param {string} type - The type of user {users, admins, owner}
+   @param {number} id - The user id
+   @return {ChannelEntity[]} - The channels user with type
+   */
   async getChannelOfUserByType(type: string, id: number) {
     const channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.' + type, type)
@@ -295,10 +296,10 @@ export class ChannelService {
   }
 
   /**
-    @description Get channels of user
-    @param {number} id - The user id
-    @return {ChannelEntity[]} - The channels user
-  */
+   @description Get channels of user
+   @param {number} id - The user id
+   @return {ChannelEntity[]} - The channels user
+   */
   async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
     const chans = await this.getChannelOfUserByType('users', id);
     const admchans = await this.getChannelOfUserByType('admins', id);
@@ -307,12 +308,12 @@ export class ChannelService {
   }
 
   /**
-    @description Enter in channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-    @throw {ConflictException} - If user already in channel
-  */
+   @description Enter in channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   @throw {ConflictException} - If user already in channel
+   */
   async addUserInChannel(
     userid: number,
     id: number,
@@ -330,11 +331,11 @@ export class ChannelService {
   }
 
   /**
-    @description Leave channel, if owner give admin to first user or give owner to first admin, else give owner to first user, else delete channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description Leave channel, if owner give admin to first user or give owner to first admin, else give owner to first user, else delete channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async leaveChannel(userid: number, id: number) {
     const channel = await this.getChannelById(id);
     const users = await this.userService.getFullUsersInChannels(id);
@@ -371,11 +372,11 @@ export class ChannelService {
   }
 
   /**
-    @description set user as admin in channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description set user as admin in channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async addAdminInChannel(
     userid: number,
     id: number,
@@ -396,11 +397,11 @@ export class ChannelService {
   }
 
   /**
-    @description Remove user as admin in channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description Remove user as admin in channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async remAdminInChannel(
     userid: number,
     id: number,
@@ -421,11 +422,11 @@ export class ChannelService {
   }
 
   /**
-    @description Kick user from channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description Kick user from channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async KickUserFromChannel(
     userid: number,
     id: number,
@@ -450,13 +451,13 @@ export class ChannelService {
   }
 
   /**
-    @description Mute user from channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @param {number} sec - The time in second
-    @return {PublicChannelDto} - Public channel data
-    @throw {BadRequestException} - If time in second is inferior or equal to zero
-  */
+   @description Mute user from channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @param {number} sec - The time in second
+   @return {PublicChannelDto} - Public channel data
+   @throw {BadRequestException} - If time in second is inferior or equal to zero
+   */
   async MuteUserFromChannel(
     userid: number,
     id: number,
@@ -474,11 +475,11 @@ export class ChannelService {
   }
 
   /**
-    @description Unmute user from channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description Unmute user from channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async UnMuteUserFromChannel(
     userid: number,
     id: number,
@@ -491,12 +492,12 @@ export class ChannelService {
   }
 
   /**
-    @description Ban user from channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-    @throw {BadRequestException} - If channel is a private message channel
-  */
+   @description Ban user from channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   @throw {BadRequestException} - If channel is a private message channel
+   */
   async BanUserFromChannel(
     userid: number,
     id: number,
@@ -521,11 +522,11 @@ export class ChannelService {
   }
 
   /**
-    @description Unban user from channel
-    @param {number} userid - The user id
-    @param {number} id - The channel id
-    @return {PublicChannelDto} - Public channel data
-  */
+   @description Unban user from channel
+   @param {number} userid - The user id
+   @param {number} id - The channel id
+   @return {PublicChannelDto} - Public channel data
+   */
   async UnBanUserFromChannel(
     userid: number,
     id: number,
@@ -544,12 +545,12 @@ export class ChannelService {
   }
 
   /**
-    @description Add message in channel
-    @param {string} message - The message
-    @param {UserEntity} user - The user that send the message
-    @param {ChannelEntity} chan - The channel where the message is send
-    @return {MessageEntity} - The message entity
-  */
+   @description Add message in channel
+   @param {string} message - The message
+   @param {UserEntity} user - The user that send the message
+   @param {ChannelEntity} chan - The channel where the message is send
+   @return {MessageEntity} - The message entity
+   */
   AddMessageToChannel(message: string, user: UserEntity, chan: ChannelEntity) {
     this.msgService.addMsg(message, user, chan);
   }

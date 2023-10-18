@@ -22,7 +22,7 @@ export const baseSize = {
   height: 720,
   width: 1280,
   ball: 50,
-  bar: {x: 25, y: 144},
+  bar: { x: 25, y: 144 },
   halfBar: 72,
   halfBall: 25,
   p1X: 25,
@@ -33,7 +33,7 @@ export const start: GameState = {
   balls: [],
   p1: baseSize.height / 2,
   p2: baseSize.height / 2,
-  score: {p1: 0, p2: 0},
+  score: { p1: 0, p2: 0 },
 };
 
 export interface gameRoom {
@@ -126,7 +126,7 @@ export class GuidedBall extends Ball {
     }
     this.pos.x = vec.x;
     this.pos.y = vec.y;
-    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
+    this.particles.push(new Particle({ ...this.pos }, this.getColor(size)));
   }
 }
 
@@ -208,7 +208,7 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
-    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
+    this.particles.push(new Particle({ ...this.pos }, this.getColor(size)));
   }
 
 }

@@ -116,14 +116,14 @@ export default function ChatUser({ data, visibility }: Props) {
     if (id !== data?.sender_id) {
       return (
         <>
-          <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+          <Flex flex_direction='row' flex_justifyContent={'space-evenly'}>
             <Button onClick={OnKick}> Kick </Button>
             <Button onClick={OnBan}> Ban </Button>
             <Button onClick={OnUnBan}> UnBan </Button>
           </Flex>
           <p>
             <input
-              placeholder="Time in second"
+              placeholder='Time in second'
               style={inputStyle}
               value={muteTime}
               onChange={(evt) => {
@@ -139,11 +139,11 @@ export default function ChatUser({ data, visibility }: Props) {
               justifyContent: 'space-around',
             }}
           >
-            <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+            <Flex flex_direction='row' flex_justifyContent={'space-evenly'}>
               <Button onClick={OnMute}> Mute </Button>
               <Button onClick={OnUnMute}> UnMute </Button>
             </Flex>
-            <Flex flex_direction="row" flex_justifyContent={'space-evenly'}>
+            <Flex flex_direction='row' flex_justifyContent={'space-evenly'}>
               <Button onClick={OnAddAdmin}> Add as Admin </Button>
               <Button onClick={OnRemAdmin}> Rem as Admin </Button>
             </Flex>

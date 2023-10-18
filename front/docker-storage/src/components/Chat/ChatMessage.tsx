@@ -1,8 +1,8 @@
-import {color} from '../../utils';
-import {Background, RoundButton} from '..';
-import {useUserContext} from '../../contexts';
-import {ChannelMessage} from '../../utils/interfaces';
-import {useState} from 'react';
+import { color } from '../../utils';
+import { Background, RoundButton } from '..';
+import { useUserContext } from '../../contexts';
+import { ChannelMessage } from '../../utils/interfaces';
+import { useState } from 'react';
 
 interface Props {
   children: string;
@@ -11,8 +11,8 @@ interface Props {
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChatMessage({children, data, last, onClick}: Props) {
-  const {id} = useUserContext();
+export function ChatMessage({ children, data, last, onClick }: Props) {
+  const { id } = useUserContext();
   const [isMe] = useState<boolean>(data.sender_id === id);
 
   return (
@@ -22,18 +22,18 @@ export function ChatMessage({children, data, last, onClick}: Props) {
     }}>
       {
         last !== data.sender_id &&
-          <div
-              style={{
-                display: 'flex',
-                flexDirection: isMe ? 'row-reverse' : 'row',
-              }}
-          >
-            <RoundButton
-                icon={data.sender_urlImg}
-                onClick={() => onClick(data)}
-            />
-            <p style={{fontSize: '15px'}}> {data.sender_username} </p>
-          </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: isMe ? 'row-reverse' : 'row',
+          }}
+        >
+          <RoundButton
+            icon={data.sender_urlImg}
+            onClick={() => onClick(data)}
+          />
+          <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
+        </div>
       }
       <div
         style={{

@@ -37,7 +37,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
 
   function List() {
     return (
-      <div style={{ height: '400px', overflow: 'scroll', width: '100%', padding:'5px' }}>
+      <div style={{ height: '400px', overflow: 'scroll', width: '100%', padding: '5px' }}>
         {filteredChannels.length === 0 ? (
           <p style={{ textAlign: 'center' }}>
             Found nothing...
