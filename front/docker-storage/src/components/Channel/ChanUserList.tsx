@@ -27,15 +27,21 @@ export function ChanUserList({ chan_id, onClick }: Props) {
     });
   }, []);
 
-  function chat() {
-    return (
+  return (
+    <div
+      style={{
+        minWidth: '400px',
+        width: '90%',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
       <div
         style={{
-          width: '100%',
+          maxWidth: '100%',
           display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          overflowX: 'auto',
+          padding: '5px',
+          overflowX: 'scroll',
           marginBottom: '10px',
           flexWrap: 'nowrap',
         }}
@@ -44,13 +50,6 @@ export function ChanUserList({ chan_id, onClick }: Props) {
           <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>
-    );
-  }
-
-  return (
-    <div style={{ overflow: 'hidden' }}>
-      {chat()}
-      <div style={{ display: 'flex', justifyContent: 'center' }}></div>
     </div>
   );
 }
