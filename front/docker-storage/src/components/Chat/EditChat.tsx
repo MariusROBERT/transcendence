@@ -7,28 +7,29 @@ import { Flex } from '../ComponentBase/FlexBox';
 import { Fetch } from '../../utils';
 import { ErrorPanel } from '../Error/ErrorPanel';
 import { channel } from 'diagnostics_channel';
+import { Popup } from '../index';
 
 interface Props {
   data: ChannelPublic | undefined;
-  visibility: boolean;
-  setVisible: (b: boolean) => void;
+  isVisible: boolean;
+  setIsVisible: (value: boolean) => void;
 }
 
-export default function EditChat({ data, visibility, setVisible }: Props) {
+export default function EditChat({ data, isVisible, setIsVisible }: Props) {
   const [password, setPassword] = useState<string>('');
   const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [errVisible, setErrVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    if (visibility) {
+    if (isVisible) {
       if (data?.channel_status === 'private') setChecked(true);
       else setChecked(false);
     } else {
       setPassword('');
       setErrVisible(false);
     }
-  }, [visibility, data?.channel_status]);
+  }, [isVisible, data?.channel_status]);
 
   async function OnSave() {
     if (password.length > 300) {
@@ -45,11 +46,12 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
         chan_status: checked ? 'private' : 'public',
       }),
     );
-    setVisible(false);
+    setIsVisible(false);
   }
 
   return (
-    <div style={createChatStyle}>
+    <Popup isVisible={isVisible} setIsVisible={setIsVisible}>
+      <div style={createChatStyle}>
       <div style={{ visibility: errVisible ? 'inherit' : 'hidden' }}>
         <ErrorPanel text={error}></ErrorPanel>
       </div>
@@ -81,5 +83,6 @@ export default function EditChat({ data, visibility, setVisible }: Props) {
 
       <Button onClick={OnSave}>Save</Button>
     </div>
+    </Popup>
   );
 }

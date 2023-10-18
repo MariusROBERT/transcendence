@@ -49,12 +49,12 @@ export function PasswordInput(props: Props) {
     right: -25,
   };
 
-  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\-+=[\]\\/`'";:?.,<>~]).{8,})$/;
+  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/;
   const minMaj = /[A-Z]/;
   const minMin = /[a-z]/;
   const minDigit = /[0-9]/;
   const minSpecial = /[!@#\-+=[\]\\/`'";:?.,<>~]/;
-  const minLen = /.{8,}/;
+  const len = /.{8,50}/;
 
   function errorsInfo() {
     if (props.confirmPassword) {
@@ -73,7 +73,7 @@ export function PasswordInput(props: Props) {
       errors.push('digit');
     if (!minSpecial.test(props.password))
       errors.push('special');
-    if (!minLen.test(props.password))
+    if (!len.test(props.password))
       errors.push('len');
     return (
       <p style={popUpStyle}>

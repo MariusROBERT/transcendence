@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { color, useEffectViewport, Viewport } from './utils';
-import { AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage } from './components';
-import { Route, Routes } from 'react-router-dom';
-import { Contexts } from './contexts';
-import { AnimatedBackground } from './components/ComponentBase/AnimatedBackground';
+import React, {useEffect, useState} from 'react';
+import {color, useEffectViewport, Viewport} from './utils';
+import {AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage} from './components';
+import {Route, Routes} from 'react-router-dom';
+import {Contexts} from './contexts';
+import {AnimatedBackground} from './components/ComponentBase/AnimatedBackground';
 
 
 function App() {
@@ -18,6 +18,29 @@ function App() {
   };
   const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
+  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN'>('RGB');
+
+  useEffect(() => {
+    document.addEventListener('keydown', changeTheme);
+      return () => document.removeEventListener('keydown', changeTheme);
+  }, []);
+
+  function changeTheme(e: KeyboardEvent) {
+    if (e.key === '1') {
+      setTheme('RGB');
+    } else if (e.key === '2') {
+      setTheme('R/B Gradient');
+    } else if (e.key === '3') {
+      setTheme('WHITE');
+    } else if (e.key === '4') {
+      setTheme('BLACK');
+    } else if (e.key === '5') {
+      setTheme('R/B');
+    } else if (e.key === '6') {
+      setTheme('GREEN');
+    }
+  }
+
 
   const appStyle: React.CSSProperties = {
     height: '100%',
@@ -33,7 +56,7 @@ function App() {
         className={'cursor_perso'}
         style={appStyle}
       >
-        <AnimatedBackground viewport={viewport} ballNumber={10} style={{ zIndex: '-1' }} />
+        <AnimatedBackground viewport={viewport} ballNumber={10} style={{zIndex: '-1'}} theme={theme}/>
         <Routes>
           <Route path='/login' element={
             <Login viewport={viewport}></Login>}>
@@ -45,7 +68,7 @@ function App() {
           </Route>
           <Route path='/game' element={
             <AuthGuard isAuthenticated>
-              <Game viewport={viewport}></Game>
+              <Game viewport={viewport} theme={theme}/>
             </AuthGuard>}>
           </Route>
           <Route path='/game/score' element={

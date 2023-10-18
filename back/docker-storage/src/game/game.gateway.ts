@@ -53,6 +53,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(userSocket: Socket) {
     const client = this.clients.find((c) => c.sockets.includes(userSocket));
+    if (!client) return;
     userSocket.leave('user' + client.id);
 
     client.sockets = client.sockets.filter((s) => s !== userSocket);
@@ -75,7 +76,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (this.clients.find((c) => c.id === clientId)) return; // the client reconnect in the 2 seconds.
 
     const user = await this.userService.getUserById(clientId);
-    if (!user) console.error('disconnect: no such User');
+    if (!user) return console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
     if (user?.gameInvitationTo > 0)
       await this.cancelInvite({

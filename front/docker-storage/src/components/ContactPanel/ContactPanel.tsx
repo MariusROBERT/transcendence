@@ -1,11 +1,17 @@
-import { Background, Border, ChatMenu, GroupItems } from '..';
-import { color, Viewport } from '../../utils';
+import { Background, Border, ChannelBanner, ChatMenu, GroupItems, UserBanner } from '..';
+import { color, Fetch, Viewport } from '../../utils';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { ChannelInfos, IUser } from '../../utils/interfaces';
+import { useEffect, useState } from 'react';
+import { subscribe } from '../../utils/event';
 
 interface Props {
   viewport: Viewport;
 }
 
 export function ContactPanel({ viewport }: Props) {
+  const [friendList, setFriendList] = useState<IUser[]>([]);
+  const [channelList, setChannelList] = useState<ChannelInfos[]>([]);
   const mobile = viewport.width < 500;
 
   return (
@@ -17,10 +23,13 @@ export function ContactPanel({ viewport }: Props) {
           flex_justifyContent={'flex-start'}
         >
           <GroupItems heading={'Friends'} duration_ms={900}>
-
-          </GroupItems>
-          <GroupItems heading={'Users'} duration_ms={900} />
-          <GroupItems heading={'Channels'} duration_ms={900} />
+            {friendList.map((friend: IUser) =>
+              <div key={'friend' + friend.id}><UserBanner otherUser={friend} /></div>)}
+          </ GroupItems>
+          <GroupItems heading={'Channels'} duration_ms={900}>
+            {channelList.map((channel: ChannelInfos) =>
+              <div key={'channel' + channel.id}><ChannelBanner id={channel.id} name={channel.name} type={channel.type} /></div>)}
+          </ GroupItems>
           <Border
             borderSize={0}
             height={50}

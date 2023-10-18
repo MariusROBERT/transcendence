@@ -22,7 +22,7 @@ export const baseSize = {
   height: 720,
   width: 1280,
   ball: 50,
-  bar: { x: 25, y: 144 },
+  bar: {x: 25, y: 144},
   halfBar: 72,
   halfBall: 25,
   p1X: 25,
@@ -33,7 +33,7 @@ export const start: GameState = {
   balls: [],
   p1: baseSize.height / 2,
   p2: baseSize.height / 2,
-  score: { p1: 0, p2: 0 },
+  score: {p1: 0, p2: 0},
 };
 
 export interface gameRoom {
@@ -59,14 +59,12 @@ class Particle {
   }
 
   draw(p5: p5Types, size: number) {
-    p5.fill(...this.color, 255 - (this.age) * 15);
+    p5.fill(...this.color, 255 - this.age * 15);
     p5.noStroke();
     p5.circle(this.pos.x, this.pos.y, size - this.age);
     p5.fill(255, 255, 255);
   }
 }
-
-const THEME: 'RED/BLUE' | 'RGB' | 'white' = 'RGB';
 
 export class Ball {
   pos: p5Types.Vector;
@@ -78,30 +76,39 @@ export class Ball {
     this.particles = [];
   }
 
-  getColor(size: Size): [number, number, number] {
-    if (THEME === 'RED/BLUE') {
-      const red = 255 - (this.pos.x * 255 / size.width);
-      const blue = this.pos.x * 255 / size.width;
+  getColor(
+    size: Size,
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
+  ): [number, number, number] {
+    if (theme === 'R/B Gradient') {
+      const red = 255 - (this.pos.x * 255) / size.width;
+      const blue = (this.pos.x * 255) / size.width;
       return [red, 0, blue];
     }
-    if (THEME === 'RGB') {
+    if (theme === 'RGB') {
       return this.rainbow.next();
     }
-    if (THEME === 'white') {
+    if (theme === 'WHITE') {
       return [200, 200, 200];
     }
+    if (theme === 'GREEN') {
+      return [0, 255, 0];
+    }
     return [0, 0, 0];
-
   }
 
-  draw(p5: p5Types, size: Size) {
+  draw(
+    p5: p5Types,
+    size: Size,
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
+  ) {
     // Particles
     for (const particle of this.particles) {
       particle.draw(p5, size.ball);
     }
     // Neon
     p5.noStroke();
-    p5.fill(...this.getColor(size), 25);
+    p5.fill(...this.getColor(size, theme), 25);
     for (let i = 0; i < 30; i += 5) {
       p5.circle(this.pos.x, this.pos.y, size.ball + i);
     }
@@ -118,18 +125,25 @@ export class GuidedBall extends Ball {
     this.id = id;
   }
 
-  update(vec: { x: number, y: number }, size: Size) {
-    while (this.particles.length > size.ball - 1)
-      this.particles.shift();
+  update(
+    vec: { x: number; y: number },
+    size: Size,
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
+  ) {
+    while (this.particles.length > size.ball - 1) this.particles.shift();
     for (const particle of this.particles) {
       particle.update();
     }
+    let color: [number, number, number];
+    if (theme === 'R/B') {
+      if (this.pos.x < vec.x) color = [255, 0, 0];
+      else color = [0, 0, 255];
+    } else color = this.getColor(size, theme);
     this.pos.x = vec.x;
     this.pos.y = vec.y;
-    this.particles.push(new Particle({ ...this.pos }, this.getColor(size)));
+    this.particles.push(new Particle({ ...this.pos }, color));
   }
 }
-
 
 export class AutonomousBall extends Ball {
   readonly minSpeed = 5;
@@ -154,6 +168,17 @@ export class AutonomousBall extends Ball {
     vec.sub(p5Types.Vector.mult(normal, 2 * dot));
   }
 
+  getColor(
+    size: Size,
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
+  ): [number, number, number] {
+    if (theme === 'R/B') {
+      if (this.dir.x > 0) return [255, 0, 0];
+      return [0, 0, 255];
+    }
+    return super.getColor(size, theme);
+  }
+
   bounceWithWall(size: Size) {
     if (this.pos.x - (size.ball / 2) < 5)
       this.dir.x = Math.abs(this.dir.x);
@@ -169,7 +194,9 @@ export class AutonomousBall extends Ball {
   bounceWithBall(size: Size, ball: AutonomousBall, p5: p5Types) {
     if (Math.abs(this.pos.x - ball.pos.x) > size.ball) return;
     if (Math.abs(this.pos.y - ball.pos.y) > size.ball) return;
-    const len = Math.sqrt((this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2);
+    const len = Math.sqrt(
+      (this.pos.x - ball.pos.x) ** 2 + (this.pos.y - ball.pos.y) ** 2,
+    );
     if (len > size.ball) return;
     const normal = p5.createVector(
       (ball.pos.x - this.pos.x) / len,
@@ -193,9 +220,13 @@ export class AutonomousBall extends Ball {
     }
   }
 
-  update(size: Size, balls: AutonomousBall[], p5: p5Types) {
-    while (this.particles.length > size.ball - 1)
-      this.particles.shift();
+  update(
+    size: Size,
+    balls: AutonomousBall[],
+    p5: p5Types,
+    theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN',
+  ) {
+    while (this.particles.length > size.ball - 1) this.particles.shift();
     for (const particle of this.particles) {
       particle.update();
     }
@@ -208,9 +239,8 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
-    this.particles.push(new Particle({ ...this.pos }, this.getColor(size)));
+    this.particles.push(new Particle({...this.pos}, this.getColor(size, theme)));
   }
-
 }
 
 export class MouseBall extends AutonomousBall {
