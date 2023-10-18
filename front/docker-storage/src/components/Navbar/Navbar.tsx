@@ -3,15 +3,15 @@ import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
-import { IUser, NotifInfos } from '../../utils/interfaces';
+import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 
 const Navbar: React.FC = () => {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
   const [profileVisible, setProfileVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
-  const [notifs, setNotifs] = useState<Array<NotifInfos>>([]);
-  const [notifsMsg, setNotifsMsg] = useState<Array<NotifInfos>>([]);
+  const [notifs, setNotifs] = useState<Array<IUser>>([]);
+  const [notifsMsg, setNotifsMsg] = useState<Array<NotifMsg>>([]);
   const { user, socket } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
 
@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
 
   // get msgs on login
   const getNotifMsg = async () => {
-    const MsgsUnread: NotifInfos[] = [];
+    const MsgsUnread: NotifMsg[] = [];
     const channels = (await Fetch('channel/public_all', 'GET'))?.json;
     if (!channels) return;
 
@@ -45,7 +45,8 @@ const Navbar: React.FC = () => {
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = (data: any) => {
-      setNotifsMsg([...notifsMsg, data]);
+      if (user?.id !== data.sender_id)
+        setNotifsMsg([...notifsMsg, data]);
     }
     socket?.on('notifMsg', onNotifMsg);
     return (() => {
@@ -64,16 +65,16 @@ const Navbar: React.FC = () => {
           return;
         }
         const res = await Promise.all(tmp);
-        setNotifs(res as NotifInfos[]);
-        const msgs = await getNotifMsg();
-        if (msgs)
-          setNotifsMsg(msgs)
+        setNotifs(res);
+        // const msgs = await getNotifMsg();
+        // if (msgs)
+        // setNotifsMsg(msgs)
       } catch (e) {
         console.log(e);
       }
     };
     setNotif();
-  }, [recvInvitesFrom.length]);
+  }, [recvInvitesFrom.length, socket]);
 
   const mobile = window.innerWidth < 500;
 
@@ -142,10 +143,10 @@ const Navbar: React.FC = () => {
           {notifsVisible &&
             <div style={notifstyle}>
               {notifs.map((notif) => (
-                <div key={notif.id}><NotifCard notif={notif} otherUserId={notif.id} /></div>
+                <div key={notif.id}><NotifCard notifFriends={notif} otherUserId={notif.id} /></div>
               ))}
-              {notifsMsg.map((notif) => (
-                <div key={notif.id}><NotifCard notif={notif} otherUserId={notif.id} /></div>
+              {notifsMsg.map((notifmsg) => (
+                <div key={notifmsg.id+'a'}><NotifCard notifMsg={notifmsg} otherUserId={notifmsg.id} /></div>
               ))}
             </div>}
         </div>

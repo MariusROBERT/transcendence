@@ -20,6 +20,7 @@ export interface ChannelMessage {
   sender_username: string;
   message_content: string;
   channel_id: number;
+  channel_name: string;
 }
 
 @Injectable()
@@ -35,7 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -98,6 +99,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(error);
       return;
     }
+
     const token = String(client.handshake.query.token);
     const payload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
@@ -111,14 +113,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sender_username: userE.username,
       message_content: message,
       channel_id: chanE.id,
+      channel_name: chanE.channel_name
     };
-    
     this.server.to(channel).emit('message', data);
-    let usersList = await this.userService.getFullUsersInChannels(channel.id);
-    let tmp = await this.userService.getFullAdminInChannels(channel.id)
-    usersList.concat(tmp, chanE.owner);
-    usersList.forEach(user => {
-      this.server.to('user' + user).emit('notifMsg', data);
+
+    let usersList = await this.userService.getFullUsersInChannels(chanE.id);
+    let tmp = await this.userService.getFullAdminInChannels(chanE.id);
+    usersList.concat(tmp);
+    usersList = [...usersList, chanE.owner];
+    usersList.forEach(usr => {
+      if (userE.id !== usr.id) {
+        const userRoom = 'user' + usr.id;
+        client.join(userRoom);
+        console.log('usr: ', userE.id, usr.id);
+        this.server.to(userRoom).emit('notifMsg', data);
+      }
     });
   }
 }

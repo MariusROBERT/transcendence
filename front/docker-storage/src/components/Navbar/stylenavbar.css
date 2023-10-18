@@ -26,6 +26,7 @@
 .notif .container .username {
     margin: 0;
     width: 90%;
+    display: flex;
 }
 
 .notif .container .btn {

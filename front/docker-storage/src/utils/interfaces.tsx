@@ -121,13 +121,14 @@ export interface NotificationBadgeProps {
   showBadge: boolean;
 }
 
-export interface NotifInfos {
+export interface NotifMsg {
   id: number;
-  urlImg: string;
-  username: string;
+  sender_id: number,
+  channel_id: number,
   channel_name: string;
-  content_msg: string;
-  sender: string,
+  message_content: string;
+  sender_username: string,
+  sender_urlImg: string
 }
 
 
