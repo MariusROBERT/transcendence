@@ -8,7 +8,7 @@ interface Props {
   viewport: Viewport;
   style?: React.CSSProperties;
   ballNumber?: number;
-  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK';
+  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B';
 }
 
 export function AnimatedBackground(props: Props) {
