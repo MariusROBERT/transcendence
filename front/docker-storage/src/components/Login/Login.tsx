@@ -44,13 +44,11 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             username: username,
             password: password,
           }));
-          if (registerResponse?.ok) {
+          if (registerResponse?.ok)
             return OnConnect();
-          } else {
-            const error = await registerResponse?.json().then((data) => data.message);
-            setErrorMessage(error || 'Error');
-            console.error('register failure. Error:', registerResponse?.status);
-          }
+          const error = await registerResponse?.json().then((data) => data.message);
+          setErrorMessage(error || 'Error');
+          console.error('register failure. Error:', registerResponse?.status);
         } else {
           setErrorMessage('username can\'t be ended with _42');
         }
