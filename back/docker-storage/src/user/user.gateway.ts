@@ -13,7 +13,8 @@ export class UserGateway {
   @WebSocketServer() server;
   controller: UserController;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+  }
 
   @SubscribeMessage('send_friend_request')
   async handleSendFriendRequest(
