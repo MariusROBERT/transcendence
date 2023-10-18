@@ -18,12 +18,11 @@ function App() {
   };
   const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
-  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK'>('RGB');
+  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN'>('RGB');
 
   useEffect(() => {
-    document.addEventListener('keydown', (e) => {
-      changeTheme(e);
-    });
+    document.addEventListener('keydown', changeTheme);
+      return () => document.removeEventListener('keydown', changeTheme);
   }, []);
 
   function changeTheme(e: KeyboardEvent) {
@@ -35,6 +34,10 @@ function App() {
       setTheme('WHITE');
     } else if (e.key === '4') {
       setTheme('BLACK');
+    } else if (e.key === '5') {
+      setTheme('R/B');
+    } else if (e.key === '6') {
+      setTheme('GREEN');
     }
   }
 
