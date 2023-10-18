@@ -53,7 +53,7 @@ export function ChatPanel({ viewport, width }: Props) {
     subscribe('enter_chan', async (event: any) => {
       //console.log(event.detail.value)
       setMessage(event.detail.value);
-      console.log(event.detail.id);
+      //console.log(event.detail.id);
       setId(event.detail.id);
     });
   }, []);

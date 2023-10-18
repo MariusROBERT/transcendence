@@ -35,7 +35,7 @@ export function ChannelPannel({ id, name, type }: ChannelInfos) {
         value: res?.json?.channel_name,
       },
     });
-    console.log(res?.json?.channel_name + ' ' + current_chan);
+    //console.log(res?.json?.channel_name + ' ' + current_chan);
     if (res?.json?.channel_name === current_chan) {
       publish('close_chat', {
         detail: {
