@@ -10,7 +10,6 @@ interface Props {
 
 export function ChanUserList({ chan_id, onClick }: Props) {
   const [usrs, setUsers] = useState<ChannelUsers[]>([]);
-  const [scrollIndex, setScrollIndex] = useState(0);
 
   const uniqueIds = new Set();
 
@@ -32,9 +31,14 @@ export function ChanUserList({ chan_id, onClick }: Props) {
     return (
       <div
         style={{
+          border: '1px solid red',
+          width: '100%', // Assurez-vous que le conteneur a une largeur définie
           display: 'flex',
-          transition: 'transform 0.5s',
-          transform: `translateX(-${scrollIndex * usrs.length}%)`,
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          overflowX: 'auto',
+          marginBottom: '10px',
+          flexWrap:'nowrap'
         }}
       >
         {unique.map((item, idx) => (
@@ -43,28 +47,12 @@ export function ChanUserList({ chan_id, onClick }: Props) {
       </div>
     );
   }
-
-  const scrollLeft = () => {
-    setScrollIndex(Math.max(scrollIndex - 1, -Math.floor(usrs.length / 10)));
-  };
-
-  const scrollRight = () => {
-    const maxScrollIndex = Math.max(0, usrs.length / 10);
-    setScrollIndex(Math.min(scrollIndex + 1, maxScrollIndex));
-  };
+  
 
   return (
     <div style={{ overflow: 'hidden' }}>
       {chat()}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button onClick={scrollLeft} disabled={scrollIndex <= 0}>L</button>
-        <button
-          onClick={scrollRight}
-          disabled={scrollIndex >= usrs.length / 10}
-        >
-          R
-        </button>
-      </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}></div>
     </div>
   );
 }

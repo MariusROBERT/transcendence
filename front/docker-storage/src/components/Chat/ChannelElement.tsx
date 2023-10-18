@@ -49,6 +49,7 @@ export default function ChannelElement({
 
   const ChannelElementStyle: CSSProperties = {
     //width: mobile ? 320 : 520,
+    margin: '5px 0',
     border: '1px solid white',
     display: 'flex',
     background: '#646464',
