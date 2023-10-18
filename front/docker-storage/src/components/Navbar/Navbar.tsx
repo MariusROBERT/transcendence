@@ -56,6 +56,8 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const setNotif = async () => {
+      if (!recvInvitesFrom)
+        return;
       const tmp = recvInvitesFrom.map(async (from) => {
         return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
       });

@@ -66,8 +66,6 @@ class Particle {
   }
 }
 
-const THEME: 'RED/BLUE' | 'RGB' | 'white' = 'RGB';
-
 export class Ball {
   pos: p5Types.Vector;
   particles: Particle[];
@@ -78,30 +76,29 @@ export class Ball {
     this.particles = [];
   }
 
-  getColor(size: Size): [number, number, number] {
-    if (THEME === 'RED/BLUE') {
+  getColor(size: Size, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK'): [number, number, number] {
+    if (theme === 'R/B Gradient') {
       const red = 255 - (this.pos.x * 255 / size.width);
       const blue = this.pos.x * 255 / size.width;
       return [red, 0, blue];
     }
-    if (THEME === 'RGB') {
+    if (theme === 'RGB') {
       return this.rainbow.next();
     }
-    if (THEME === 'white') {
+    if (theme === 'WHITE') {
       return [200, 200, 200];
     }
     return [0, 0, 0];
-
   }
 
-  draw(p5: p5Types, size: Size) {
+  draw(p5: p5Types, size: Size, theme : 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK') {
     // Particles
     for (const particle of this.particles) {
       particle.draw(p5, size.ball);
     }
     // Neon
     p5.noStroke();
-    p5.fill(...this.getColor(size), 25);
+    p5.fill(...this.getColor(size, theme), 25);
     for (let i = 0; i < 30; i += 5) {
       p5.circle(this.pos.x, this.pos.y, size.ball + i);
     }
@@ -118,7 +115,7 @@ export class GuidedBall extends Ball {
     this.id = id;
   }
 
-  update(vec: { x: number, y: number }, size: Size) {
+  update(vec: { x: number, y: number }, size: Size, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK') {
     while (this.particles.length > size.ball - 1)
       this.particles.shift();
     for (const particle of this.particles) {
@@ -126,7 +123,7 @@ export class GuidedBall extends Ball {
     }
     this.pos.x = vec.x;
     this.pos.y = vec.y;
-    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
+    this.particles.push(new Particle({...this.pos}, this.getColor(size, theme)));
   }
 }
 
@@ -193,7 +190,7 @@ export class AutonomousBall extends Ball {
     }
   }
 
-  update(size: Size, balls: AutonomousBall[], p5: p5Types) {
+  update(size: Size, balls: AutonomousBall[], p5: p5Types, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK') {
     while (this.particles.length > size.ball - 1)
       this.particles.shift();
     for (const particle of this.particles) {
@@ -208,7 +205,7 @@ export class AutonomousBall extends Ball {
     this.dir.normalize();
     this.pos.add(p5Types.Vector.mult(this.dir, this.speed));
 
-    this.particles.push(new Particle({...this.pos}, this.getColor(size)));
+    this.particles.push(new Particle({...this.pos}, this.getColor(size, theme)));
   }
 
 }
