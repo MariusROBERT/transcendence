@@ -8,7 +8,7 @@ import {RoundButton} from '..';
 import {useNavigate} from 'react-router-dom';
 import ReactFullscreen from 'react-easyfullscreen';
 
-export function Game({viewport}: { viewport: Viewport }) {
+export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' }) {
   const navigate = useNavigate();
   const {id, socket} = useUserContext();
   const {leaveGame, isInGameWith} = useGameContext();
@@ -176,8 +176,8 @@ export function Game({viewport}: { viewport: Viewport }) {
     for (let i = 0; i < gameState.balls.length; i++) {
       const ballState = gameState.balls[i];
       const ball = balls.find(b => b.id === ballState.id);
-      ball?.update(ballState.pos, size);
-      ball?.draw(p5, size);
+      ball?.update(ballState.pos, size, theme);
+      ball?.draw(p5, size, theme);
     }
 
     p5.fill(255);

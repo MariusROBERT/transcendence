@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {color, useEffectViewport, Viewport} from './utils';
 import {AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage} from './components';
 import {Route, Routes} from 'react-router-dom';
@@ -18,6 +18,26 @@ function App() {
   };
   const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
+  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK'>('RGB');
+
+  useEffect(() => {
+    document.addEventListener('keydown', (e) => {
+      changeTheme(e);
+    });
+  }, []);
+
+  function changeTheme(e: KeyboardEvent) {
+    if (e.key === '1') {
+      setTheme('RGB');
+    } else if (e.key === '2') {
+      setTheme('R/B Gradient');
+    } else if (e.key === '3') {
+      setTheme('WHITE');
+    } else if (e.key === '4') {
+      setTheme('BLACK');
+    }
+  }
+
 
   const appStyle: React.CSSProperties = {
     height: '100%',
@@ -33,7 +53,7 @@ function App() {
         className={'cursor_perso'}
         style={appStyle}
       >
-        <AnimatedBackground viewport={viewport} ballNumber={10} style={{zIndex: '-1'}}/>
+        <AnimatedBackground viewport={viewport} ballNumber={10} style={{zIndex: '-1'}} theme={theme}/>
         <Routes>
           <Route path="/login" element={
             <Login viewport={viewport}></Login>}>
@@ -45,7 +65,7 @@ function App() {
           </Route>
           <Route path="/game" element={
             <AuthGuard isAuthenticated>
-              <Game viewport={viewport}></Game>
+              <Game viewport={viewport} theme={theme}/>
             </AuthGuard>}>
           </Route>
           <Route path="/game/score" element={
