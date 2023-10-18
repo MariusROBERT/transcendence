@@ -2,6 +2,7 @@ import {color} from '../../utils';
 import {Background, RoundButton} from '..';
 import {useUserContext} from '../../contexts';
 import {ChannelMessage} from '../../utils/interfaces';
+import {useState} from 'react';
 
 interface Props {
   children: string;
@@ -12,7 +13,8 @@ interface Props {
 
 export function ChatMessage({children, data, last, onClick}: Props) {
   const {id} = useUserContext();
-  const isMe = data.sender_id === id;
+  const [isMe] = useState<boolean>(data.sender_id === id);
+  // const isMe = data.sender_id === id;
 
   return (
     <div style={{
