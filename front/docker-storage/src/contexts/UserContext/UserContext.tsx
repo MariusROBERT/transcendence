@@ -44,7 +44,6 @@ export function UserContextProvider({ children }: Props) {
   const [user, setUser] = useState<IUser>();
 
   async function fetchContext(): Promise<void> {
-    setId(0);
     const user = (await Fetch('user', 'GET'))?.json;
     if (!user) {
       setIsOnline(false);

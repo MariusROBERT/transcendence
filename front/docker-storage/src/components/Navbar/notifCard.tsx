@@ -17,9 +17,9 @@ const NotifCard = ({ notif, otherUser }: { notif: UserInfos, otherUser: IUser })
           </p>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-                         onClick={() => acceptFriendRequest(id, otherUser.id)} />
+                         onClick={() => acceptFriendRequest(otherUser.id)} />
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-                         onClick={() => declineFriendRequest(id, otherUser.id)} />
+                         onClick={() => declineFriendRequest(otherUser.id)} />
           </div>
         </div>
       </div>
