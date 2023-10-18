@@ -42,6 +42,50 @@ export default function Settings(props: Props) {
     }
   }, [props.isVisible]);
 
+  // IMG
+
+  function setImage(isValid: boolean, files: FileList) {
+    if (!isValid) {
+      setPictureError('File is not an image!');
+    } else {
+      setPictureError('');
+      if (files && files.length !== 0) {
+        setNewImage(files[0]);
+        setNewImageUrl(URL.createObjectURL(files[0]));
+      }
+    }
+  }
+
+  function isImage(e: ChangeEvent<HTMLInputElement>, files: FileList) {
+    const file = e.target.files?.[0] || null;
+    const reader = new FileReader();
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      const bytes = new Uint8Array(arrayBuffer);
+      const jpgMagic = [0xFF, 0xD8, 0xFF];
+      const pngMagic = [0x89, 0x50, 0x4E, 0x47];
+      let isValid = true;
+
+      for (let i = 0; i < jpgMagic.length; i++) {
+        if (bytes[i] !== jpgMagic[i]) {
+          isValid = false;
+          break;
+        }
+      }
+      if (isValid)
+        return setImage(isValid, files);
+      isValid = true;
+      for (let i = 0; i < pngMagic.length; i++) {
+        if (bytes[i] !== pngMagic[i]) {
+          isValid = false;
+          break;
+        }
+      }
+      setImage(isValid, files);
+    };
+    reader.readAsArrayBuffer(file as Blob);
+  }
+
   // MODIFICATIONS
 
   const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
