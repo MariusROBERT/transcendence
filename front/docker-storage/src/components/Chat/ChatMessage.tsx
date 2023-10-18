@@ -1,7 +1,7 @@
-import { color } from '../../utils';
-import { Background, RoundButton } from '..';
-import { useUserContext } from '../../contexts';
-import { ChannelMessage } from '../../utils/interfaces';
+import {color} from '../../utils';
+import {Background, RoundButton} from '..';
+import {useUserContext} from '../../contexts';
+import {ChannelMessage} from '../../utils/interfaces';
 
 interface Props {
   children: string;
@@ -10,30 +10,30 @@ interface Props {
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChatMessage({ children, data, last, onClick }: Props) {
-  const { id } = useUserContext();
-
-  function User() {
-    if (last === data.sender_id) return;
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: data.sender_id === id ? 'row' : 'row-reverse',
-        }}
-      >
-        <RoundButton
-          icon={data.sender_urlImg}
-          onClick={() => onClick(data)}
-        ></RoundButton>
-        <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
-      </div>
-    );
-  }
+export function ChatMessage({children, data, last, onClick}: Props) {
+  const {id} = useUserContext();
+  const isMe = data.sender_id === id;
 
   return (
-    <div>
-      {User()}
+    <div style={{
+      paddingRight: isMe ? 5 : 20,
+      paddingLeft: isMe ? 20 : 5,
+    }}>
+      {
+        last !== data.sender_id &&
+          <div
+              style={{
+                display: 'flex',
+                flexDirection: isMe ? 'row-reverse' : 'row',
+              }}
+          >
+            <RoundButton
+                icon={data.sender_urlImg}
+                onClick={() => onClick(data)}
+            />
+            <p style={{fontSize: '15px'}}> {data.sender_username} </p>
+          </div>
+      }
       <div
         style={{
           flex: 'auto',
@@ -46,12 +46,17 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         }}
       >
         <Background
-          bg_color={data.sender_id === id ? color.white2 : color.white}
+          bg_color={isMe ? color.white2 : color.white}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
-          flex_justifyContent={true ? 'flex-start' : 'flex-end'}
+          flex_justifyContent={'flex-start'}
         >
-          <p style={{ margin: '10px', color: color.black, textShadow: 'none', wordWrap: 'break-word' }}>
+          <p style={{
+            margin: '10px',
+            color: color.black,
+            textShadow: 'none',
+            wordWrap: 'break-word',
+          }}>
             {children}
           </p>
         </Background>
