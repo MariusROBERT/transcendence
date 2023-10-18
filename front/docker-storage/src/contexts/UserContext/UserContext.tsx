@@ -9,6 +9,7 @@ import {
 import io, { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { IUser } from '../../utils/interfaces';
+import {API_URL} from '../../utils/Global';
 
 type UserContextType = {
   id: number;
@@ -81,7 +82,7 @@ export function UserContextProvider({ children }: Props) {
   function initSocket() {
     const token = Cookies.get('jwtToken');
     setSocket(
-      io('http://localhost:3001', {
+      io(API_URL, {
         withCredentials: true,
         reconnectionAttempts: 1,
         transports: ['websocket'],
