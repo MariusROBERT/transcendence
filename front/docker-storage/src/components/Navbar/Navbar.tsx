@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
+import { GameInvites, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
@@ -26,6 +26,8 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const setNotif = async () => {
+      if (!recvInvitesFrom)
+        return;
       const tmp = recvInvitesFrom.map(async (from) => {
         return (await Fetch(`user/get_public_profile_by_id/${from}`, 'GET'))?.json;
       });
