@@ -23,6 +23,7 @@ export function AnimatedBackground(props: Props) {
   }, [props.viewport.width, props.viewport.height]);
 
   let mouseBall;
+
   function setup(p5: p5Types, canvasParentRef: Element) {
     const canvas = p5.createCanvas(size.width, size.height);
     try {
