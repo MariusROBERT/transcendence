@@ -22,7 +22,7 @@ export interface ChannelMessage {
   message_content: string;
   channel_id: number;
   channel_name: string;
-  chan_status: ChanStateEnum
+  priv_msg: boolean
 }
 
 @Injectable()
@@ -120,7 +120,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       message_content: message,
       channel_id: chanE.id,
       channel_name: chanE.channel_name,
-      chan_status: chanE.ChanStateEnum
+      priv_msg: chanE.priv_msg
     };
     this.server.to(channel).emit('message', data);
 
@@ -132,6 +132,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (userE.id !== usr.id) {
         const userRoom = 'user' + usr.id;
         client.join(userRoom);
+        console.log('chanE.priv_msg: ', chanE.priv_msg);
+        
         this.server.to(userRoom).emit('notifMsg', data);
       }
     });

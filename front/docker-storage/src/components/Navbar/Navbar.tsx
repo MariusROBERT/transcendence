@@ -15,14 +15,14 @@ const Navbar: React.FC = () => {
   const { user, socket } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
 
-  const showNotif = () => {
-    setNotifsVisible(!notifsVisible);
-  };
-
   const logout = async () => {
     socket?.disconnect();
     Cookies.remove('jwtToken');
     window.location.replace('/login');
+  };
+
+  const showNotif = () => {
+    setNotifsVisible(!notifsVisible);
   };
 
   // get msgs on login
@@ -34,9 +34,9 @@ const Navbar: React.FC = () => {
     channels.forEach(async (chan: any) => {
       console.log('chan : ', chan);
       const msgs = (await Fetch('channel/msg/' + chan.id, 'GET'))?.json;
-        console.log('msg: ', msgs[msgs.length-1]?.message_createdAt);
-        console.log('lastmsg: ', user?.last_msg_date);
-      if (user?.last_msg_date && msgs[msgs.length-1]?.message_createdAt > user?.last_msg_date)
+      console.log('msg: ', msgs[msgs.length - 1]?.message_createdAt);
+      console.log('lastmsg: ', user?.last_msg_date);
+      if (user?.last_msg_date && msgs[msgs.length - 1]?.message_createdAt > user?.last_msg_date)
         MsgsUnread.push(msgs[msgs.length]);
     });
     return MsgsUnread;
@@ -44,9 +44,17 @@ const Navbar: React.FC = () => {
 
   // recv msg instant
   useEffect(() => {
-    const onNotifMsg = (data: any) => {
-      if (user?.id !== data.sender_id)
-        setNotifsMsg([...notifsMsg, data]);
+    const onNotifMsg = (data: NotifMsg) => {
+      if (user?.id !== data.sender_id) {
+        if (notifsMsg.length === 0) {
+          notifsMsg.push(data);
+        } else {
+          let bool = true;
+          notifsMsg.forEach((el) => { if (el.sender_id === data.sender_id) bool = false ; })
+          if (bool) notifsMsg.push(data);
+        }
+        setNotifsMsg(notifsMsg);
+      }
     }
     socket?.on('notifMsg', onNotifMsg);
     return (() => {
@@ -70,7 +78,7 @@ const Navbar: React.FC = () => {
         setNotifs(res);
         // const msgs = await getNotifMsg();
         // if (msgs)
-        // setNotifsMsg(msgs)
+        //   setNotifsMsg(msgs)
       } catch (e) {
         console.log(e);
       }
@@ -120,7 +128,7 @@ const Navbar: React.FC = () => {
       <div style={navbarStyle}>
         <div>
           <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
-            {notifs.length > 0 && <div style={notifbadge}>{notifs.length + notifsMsg.length}</div>}
+            {(notifs.length > 0 || notifsMsg.length > 0) && <div style={notifbadge}>{notifs.length + notifsMsg.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
               icon_size={50}
@@ -152,11 +160,11 @@ const Navbar: React.FC = () => {
           </div>
           {notifsVisible &&
             <div style={notifstyle}>
-              {notifs.map((notif) => (
-                <div key={notif.id}><NotifCard notifFriends={notif} otherUserId={notif.id} /></div>
+              {notifs.map((notif, index) => (
+                <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
               ))}
-              {notifsMsg.map((notifmsg) => (
-                <div key={notifmsg.id+'a'}><NotifCard notifMsg={notifmsg} otherUserId={notifmsg.id} /></div>
+              {notifsMsg.map((notifmsg, index) => (
+                <div key={index}><NotifCard notifMsg={notifmsg} setNotifsMsg={setNotifsMsg} notifsMsg={notifsMsg} otherUserId={notifmsg?.sender_id} /></div>
               ))}
             </div>}
         </div>

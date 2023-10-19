@@ -129,7 +129,7 @@ export interface NotifMsg {
   message_content: string;
   sender_username: string,
   sender_urlImg: string,
-  chan_status: string
+  priv_msg: boolean
 }
 
 
