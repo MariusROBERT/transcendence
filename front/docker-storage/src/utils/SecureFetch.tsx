@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import {API_URL} from './Global';
+import { API_URL } from './Global';
 
 export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | {
   response: Response,

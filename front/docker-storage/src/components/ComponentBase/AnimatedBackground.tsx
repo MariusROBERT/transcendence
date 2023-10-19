@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import {AutonomousBall, baseSize, MouseBall, Size} from '../Game/game.utils';
-import {Viewport} from '../../utils';
+import { AutonomousBall, baseSize, MouseBall, Size } from '../Game/game.utils';
+import { Viewport } from '../../utils';
 
 interface Props {
   viewport: Viewport;
   style?: React.CSSProperties;
   ballNumber?: number;
-  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK';
+  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN';
 }
 
 export function AnimatedBackground(props: Props) {
-  const [size, setSize] = useState<Size>({...baseSize, ball: 30});
+  const [size, setSize] = useState<Size>({ ...baseSize, ball: 30 });
   const [balls] = useState<AutonomousBall[]>([]);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function AnimatedBackground(props: Props) {
           y: Math.random() - 0.5,
         }));
     }
-    mouseBall = new MouseBall(p5, {x: p5.mouseX, y: p5.mouseY}, {x: 0, y: 0});
+    mouseBall = new MouseBall(p5, { x: p5.mouseX, y: p5.mouseY }, { x: 0, y: 0 });
     balls.push(mouseBall);
   }
 

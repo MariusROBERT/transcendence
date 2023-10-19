@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
+import { SetCurrChan } from '../../utils/channel_functions';
 import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
@@ -45,12 +46,25 @@ export function SidePanel({
     return () => {
       unsubscribe('open_chat', () => null);
     };
-    // eslint-disable-next-line
-  }, [isLeftPanel, isMoving, duration_ms]);
+  }, [isLeftPanel]);
+
+  useEffect(() => {
+    subscribe('close_chat', () => {
+      if (!isLeftPanel) Close();
+    });
+    return () => {
+      unsubscribe('close_chat', () => {
+        console.log('unsubscribe close_chat');
+      });
+    };
+  }, [isLeftPanel]);
 
   async function Close() {
     if (isMoving) return;
-    if (!isLeftPanel) socket?.emit('leave');
+    if (!isLeftPanel) {
+      socket?.emit('leave');
+      SetCurrChan('');
+    }
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);

@@ -4,12 +4,22 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Length,
 } from 'class-validator';
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { UserEntity } from '../../database/entities/user.entity';
 
-// CHANNEL :
+export class PublicChannelDto {
+  id: number;
+  channel_name: string;
+  chan_status: ChanStateEnum;
+  priv_msg: boolean;
+  has_password: boolean;
+  owner_id: number;
+  owner_username: string;
+}
 
+// CHANNEL :
 export class ChannelNameDto {
   @IsNotEmpty()
   @IsString()
@@ -40,6 +50,16 @@ export class PassChannelDto {
   @IsOptional()
   @IsString()
   password: string;
+}
+
+export class EditChannelDto {
+  @IsString()
+  @Length(0, 300)
+  password: string;
+
+  @IsNotEmpty()
+  @IsEnum(ChanStateEnum)
+  chan_status: ChanStateEnum;
 }
 
 // GET CHANNEL AND DISPLAY INFO

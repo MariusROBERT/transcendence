@@ -8,6 +8,7 @@ export async function UpdateChannelMessage(id: number) {
   publish('enter_chan', {
     detail: {
       value: msgs,
+      id: id,
     },
   });
 }
@@ -32,7 +33,7 @@ export async function UpdateChannels() {
   });
 }
 
-let current_chan = '';
+export let current_chan = '';
 
 export async function SetCurrChan(chan: string) {
   current_chan = chan;

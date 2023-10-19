@@ -2,11 +2,12 @@ import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput, SwitchToggle } from '..';
-import {API_URL} from '../../utils/Global';
+import { PasswordInput, Popup, SwitchToggle } from '..';
+import { API_URL } from '../../utils/Global';
 
 interface Props {
   isVisible: boolean;
+  setIsVisible: (value: boolean) => void;
 }
 
 export default function Settings(props: Props) {
@@ -171,117 +172,119 @@ export default function Settings(props: Props) {
     userInfosSettings?.username;
 
   return (
-    <div>
-      <form onSubmit={saveModifications} style={settingsStyle}>
-        {mobile ?
-          <h3>{displayName}</h3> :
-          <h2>{displayName}</h2>
-        }
-        <div>
-          <div style={modifContainerImage}>
-            <img style={{
-              ...imgStyle,
-              borderColor: newImageUrl === '' ? 'green' : 'orange',
-            }} // green = synced with back, orange = not uploaded yet
-                 src={newImageUrl || userInfosSettings?.urlImg}
-                 alt='user profile pic'
-            />
-            <input
-              id={'image'}
-              type='file'
-              accept={'image/png, image/jpeg, image/jpg'}
-              onChange={async (event: ChangeEvent) => {
-                const { files } = event.target as HTMLInputElement;
-                if (files && files.length !== 0) {
-                  if (files[0].size > 1024 * 1024 * 5) {
-                    setPictureError('File is too big!');
-                    setNewImage(undefined);
-                  } else {
-                    isImage(event as ChangeEvent<HTMLInputElement>, files);
+    <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
+      <div>
+        <form onSubmit={saveModifications} style={settingsStyle}>
+          {mobile ?
+            <h3>{displayName}</h3> :
+            <h2>{displayName}</h2>
+          }
+          <div>
+            <div style={modifContainerImage}>
+              <img style={{
+                ...imgStyle,
+                borderColor: newImageUrl === '' ? 'green' : 'orange',
+              }} // green = synced with back, orange = not uploaded yet
+                   src={newImageUrl || userInfosSettings?.urlImg}
+                   alt='user profile pic'
+              />
+              <input
+                id={'image'}
+                type='file'
+                accept={'image/png, image/jpeg, image/jpg'}
+                onChange={(event: ChangeEvent) => {
+                  const { files } = event.target as HTMLInputElement;
+                  if (files && files.length !== 0) {
+                    if (files[0].size > 1024 * 1024 * 5) {
+                      setPictureError('File is too big!');
+                      setNewImage(undefined);
+                    } else {
+                      isImage(event as ChangeEvent<HTMLInputElement>, files);
+                    }
                   }
                 }
-              }
-              }
-              style={{ display: 'none' }}
-            />
-            <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
+                }
+                style={{ display: 'none' }}
+              />
+              <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
+            </div>
+            <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
-        </div>
-        {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
-          //hide password change for 42 users
-          <div style={modifContainerPwd}>
-            <PasswordInput hidePassword={hidePassword}
-                           setHidePassword={setHidePassword}
-                           password={oldPassword}
-                           setPassword={setOldPassword}
-                           placeholder={'Current password'}
-                           noVerify
+          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
+            //hide password change for 42 users
+            <div style={modifContainerPwd}>
+              <PasswordInput hidePassword={hidePassword}
+                             setHidePassword={setHidePassword}
+                             password={oldPassword}
+                             setPassword={setOldPassword}
+                             placeholder={'Current password'}
+                             noVerify
+              />
+              <br />
+              <PasswordInput hidePassword={hidePassword}
+                             setHidePassword={setHidePassword}
+                             password={password}
+                             setPassword={setPassword}
+                             noVerify /* DEV: uncomment this line for dev */
+              />
+              <PasswordInput hidePassword={hidePassword}
+                             setHidePassword={setHidePassword}
+                             password={confirmPassword}
+                             setPassword={setConfirmPassword}
+                             placeholder={'Confirm password'}
+                             confirmPassword={password}
+                             noVerify /* DEV: uncomment this line for dev */
+              />
+              <br />
+            </div>
+          }
+          <div style={modifContainer2FA}>
+            <p>2FA</p>
+            <SwitchToggle
+              onChange={(change) => setIs2fa(change)}
+              checked={!!userInfosSettings?.is2fa_active}
             />
-            <br />
-            <PasswordInput hidePassword={hidePassword}
-                           setHidePassword={setHidePassword}
-                           password={password}
-                           setPassword={setPassword}
-                           noVerify /* DEV: uncomment this line for dev */
-            />
-            <PasswordInput hidePassword={hidePassword}
-                           setHidePassword={setHidePassword}
-                           password={confirmPassword}
-                           setPassword={setConfirmPassword}
-                           placeholder={'Confirm password'}
-                           confirmPassword={password}
-                           noVerify /* DEV: uncomment this line for dev */
-            />
-            <br />
+          </div>
+          <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
+          <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
+        </form>
+        {qrCode2fa &&
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 130,
+            backgroundColor: 'rgba(70,70,70,0.5)',
+            height: '100vh',
+            width: '100vw',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              alignContent: 'space-evenly',
+              flexDirection: 'column',
+            }}>
+              <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
+                Scan this QrCode in your favorite 2fa application
+              </p>
+              <img src={qrCode2fa} alt='qrCode2fa' />
+              <p style={{
+                backgroundColor: 'lightgrey',
+                padding: '.7em',
+                borderRadius: 5,
+                color: 'black',
+                fontSize: '1.75em',
+                textShadow: 'none',
+              }}>{code2fa}</p>
+              <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }} />
+              <label htmlFor={'2faDone'}>
+                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
+              </label>
+            </div>
           </div>
         }
-        <div style={modifContainer2FA}>
-          <p>2FA</p>
-          <SwitchToggle
-            onChange={(change) => setIs2fa(change)}
-            checked={!!userInfosSettings?.is2fa_active}
-          />
-        </div>
-        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
-        <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
-      </form>
-      {qrCode2fa &&
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 130,
-          backgroundColor: 'rgba(70,70,70,0.5)',
-          height: '100vh',
-          width: '100vw',
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            alignContent: 'space-evenly',
-            flexDirection: 'column',
-          }}>
-            <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
-              Scan this QrCode in your favorite 2fa application
-            </p>
-            <img src={qrCode2fa} alt='qrCode2fa' />
-            <p style={{
-              backgroundColor: 'lightgrey',
-              padding: '.7em',
-              borderRadius: 5,
-              color: 'black',
-              fontSize: '1.75em',
-              textShadow: 'none',
-            }}>{code2fa}</p>
-            <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }} />
-            <label htmlFor={'2faDone'}>
-              <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
-            </label>
-          </div>
-        </div>
-      }
-    </div>
+      </div>
+    </Popup>
   );
 }
 

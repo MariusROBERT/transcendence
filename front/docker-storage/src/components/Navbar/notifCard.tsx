@@ -21,13 +21,13 @@ const NotifCard = ({ notifFriends, otherUserId, notifMsg }: { notifFriends?: IUs
           </p>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-              onClick={() => acceptFriendRequest(id, otherUserId)} />
+                         onClick={() => acceptFriendRequest(otherUserId)} />
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-              onClick={() => declineFriendRequest(id, otherUserId)} />
+                         onClick={() => declineFriendRequest(otherUserId)} />
           </div>
         </div>
         <Popup isVisible={visible} setIsVisible={setVisible}>
-          <Profil otherUser={notifFriends} />
+          <Profil otherUser={notifFriends} isVisible={visible} setIsVisible={setVisible}/>
         </Popup>
       </div>
     );
@@ -43,8 +43,6 @@ const NotifCard = ({ notifFriends, otherUserId, notifMsg }: { notifFriends?: IUs
       </div>
     </div>
   );
-  return null;
-
 };
 
 export default NotifCard;

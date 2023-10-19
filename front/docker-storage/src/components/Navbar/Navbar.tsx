@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { GameInvites, Popup, Profil, RoundButton, Settings } from '..';
+import { GameInvites, Profil, RoundButton, Settings } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
@@ -129,12 +129,20 @@ const Navbar: React.FC = () => {
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
               icon_size={50}
-              onClick={() => setProfileVisible(!profileVisible)}
+              onClick={() => {
+                if (settingsVisible)
+                  setSettingsVisible(false);
+                setProfileVisible(!profileVisible);
+              }}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_setting.png')}
               icon_size={50}
-              onClick={() => setSettingsVisible(!settingsVisible)}
+              onClick={() => {
+                if (profileVisible)
+                  setProfileVisible(false);
+                setSettingsVisible(!settingsVisible);
+              }}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_logout.png')}
@@ -154,12 +162,8 @@ const Navbar: React.FC = () => {
         </div>
       </div>
       <GameInvites />
-      <Popup isVisible={settingsVisible} setIsVisible={setSettingsVisible}>
-        <Settings isVisible={settingsVisible} />
-      </Popup>
-      <Popup isVisible={profileVisible} setIsVisible={setProfileVisible}>
-        <Profil otherUser={user} />
-      </Popup>
+      <Settings isVisible={settingsVisible} setIsVisible={setSettingsVisible} />
+      <Profil otherUser={user} isVisible={profileVisible} setIsVisible={setProfileVisible} />
     </>
   );
 };

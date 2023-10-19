@@ -1,17 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {baseSize, GameState, GuidedBall, Size, start} from './game.utils';
-import {useGameContext, useUserContext} from '../../contexts';
-import {Viewport} from '../../utils';
+import React, { useEffect, useState } from 'react';
+import { baseSize, GameState, GuidedBall, Size, start } from './game.utils';
+import { useGameContext, useUserContext } from '../../contexts';
+import { Viewport } from '../../utils';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import {RoundButton} from '..';
-import {useNavigate} from 'react-router-dom';
+import { RoundButton } from '..';
+import { useNavigate } from 'react-router-dom';
 import ReactFullscreen from 'react-easyfullscreen';
 
-export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' }) {
+export function Game({ viewport, theme }: {
+  viewport: Viewport,
+  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN'
+}) {
   const navigate = useNavigate();
-  const {id, socket} = useUserContext();
-  const {leaveGame, isInGameWith} = useGameContext();
+  const { id, socket } = useUserContext();
+  const { leaveGame, isInGameWith } = useGameContext();
   const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [gameState, setGameState] = useState<GameState>(start);
   const [size, setSize] = useState<Size>(baseSize);
@@ -26,7 +29,7 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
     if (!isInGameWith)
       return navigate('/');
     // console.log('[', id, '] emit start_game', { id: id });
-    socket?.emit('start_game', {id: id});
+    socket?.emit('start_game', { id: id });
     socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
       setUsernames([body.p1, body.p2]);
     });
@@ -69,7 +72,7 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
   // In Game -- Event emission -------------------------------------------------------------------------------------- //
   function move() {
     const isMoving = (upPressed && !downPressed) || (!upPressed && downPressed);
-    socket?.emit('move_player', {id: id, isMoving: isMoving, moveUp: upPressed});
+    socket?.emit('move_player', { id: id, isMoving: isMoving, moveUp: upPressed });
   }
 
   // In Game -- Event reception ------------------------------------------------------------------------------------- //
@@ -87,11 +90,11 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
 
       setGameState({
         balls: updatedState.balls.map(ball => {
-          return {id: ball.id, pos: {x: ball.pos.x * factor, y: ball.pos.y * factor}};
+          return { id: ball.id, pos: { x: ball.pos.x * factor, y: ball.pos.y * factor } };
         }),
         p1: updatedState.p1 * factor,
         p2: updatedState.p2 * factor,
-        score: {p1: updatedState.score.p1, p2: updatedState.score.p2},
+        score: { p1: updatedState.score.p1, p2: updatedState.score.p2 },
       });
     }
 
@@ -112,7 +115,7 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
       height: baseSize.height * newFactor,
       width: baseSize.width * newFactor,
       ball: baseSize.ball * newFactor,
-      bar: {x: baseSize.bar.x * newFactor, y: baseSize.bar.y * newFactor},
+      bar: { x: baseSize.bar.x * newFactor, y: baseSize.bar.y * newFactor },
       halfBar: baseSize.halfBar * newFactor,
       halfBall: baseSize.halfBall * newFactor,
       p1X: baseSize.p1X * newFactor,
@@ -188,7 +191,7 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
 
   return (
     <ReactFullscreen>
-      {({onRequest, onExit}) => (
+      {({ onRequest, onExit }) => (
         <div id={'container'} style={containerStyle}>
           <div style={{
             display: 'flex',
@@ -197,25 +200,25 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
             width: size.width,
             position: 'absolute',
             zIndex: 3,
-            top: (viewport.height - size.height) / 2
+            top: (viewport.height - size.height) / 2,
           }}>
-            <p style={{fontSize: '1.25em'}}>{usernames[0]}</p>
-            <p style={{fontSize: '1.25em'}}>{usernames[1]}</p>
+            <p style={{ fontSize: '1.25em' }}>{usernames[0]}</p>
+            <p style={{ fontSize: '1.25em' }}>{usernames[1]}</p>
           </div>
           {id && socket && isInGameWith &&
-              <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
-                      style={{position: 'relative', top: '0'}}/>}
+            <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}
+                    style={{ position: 'relative', top: '0' }} />}
           <div style={{
             position: 'absolute',
             left: (viewport.width - size.width) / 2,
             top: (viewport.height - size.height) / 2,
             display: 'flex',
             flexDirection: 'row',
-            zIndex: 3
+            zIndex: 3,
           }}>
             <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
               leaveGame();
-            }}/>
+            }} />
             <RoundButton
               icon={fullScreen ? require('../../assets/imgs/icon_not_full_screen.png') : require('../../assets/imgs/icon_full_screen.png')}
               onClick={() => {
@@ -224,7 +227,7 @@ export function Game({viewport, theme}: { viewport: Viewport, theme: 'RGB' | 'R/
                 else
                   onRequest();
                 setFullScreen(!fullScreen);
-              }}/>
+              }} />
           </div>
         </div>
       )}

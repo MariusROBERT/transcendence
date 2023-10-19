@@ -9,7 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto, UpdateChannelDto } from './dto/channel.dto';
+import {
+  CreateChannelDto,
+  EditChannelDto,
+  PublicChannelDto,
+  UpdateChannelDto,
+} from './dto/channel.dto';
 import { UserChanDto } from 'src/user/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import {
@@ -37,19 +42,17 @@ import {
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService) {
+  }
 
-  //  Only get the public data
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChannelEntity> {
-    // ==> Send all public info
+  ): Promise<PublicChannelDto> {
     return await this.channelService.getPublicChannelById(id);
   }
 
-  //  Only get the public data for all public channels
   @Get('/public_all')
   @UseGuards(JwtAuthGuard)
   async GetPublicChannelsData(@User() user: UserEntity) {
@@ -101,11 +104,31 @@ export class ChannelController {
   async CreateChannel(
     @Body() createChannelDto: CreateChannelDto,
     @User() user: UserEntity,
-  ): Promise<ChannelEntity> {
+  ): Promise<PublicChannelDto> {
     return await this.channelService.createChannel(createChannelDto, user);
   }
 
-  //todo check why old users are removed
+  //  Join private channel if exist, else create it
+  @Post('/join_private')
+  @UseGuards(JwtAuthGuard)
+  async JoinPrivate(
+    @Body() second_user: any, // Create private user dto
+    @User() user: UserEntity,
+  ) {
+    return await this.channelService.joinPrivate(second_user, user);
+  }
+
+  @Patch('/edit/:id')
+  @UseGuards(AdminGuard, PrivateGuard)
+  @UseGuards(JwtAuthGuard)
+  async EditChannel(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() editChannelDto: EditChannelDto,
+  ) {
+    return this.channelService.editChannel(editChannelDto, id);
+  }
+
   @Post('/add_user/:id')
   @UseGuards(PrivateGuard, SelfBannedGuard, IsProtected)
   @UseGuards(JwtAuthGuard)
@@ -115,6 +138,17 @@ export class ChannelController {
   ) {
     const chat = this.channelService.addUserInChannel(user.id, id);
     return chat;
+  }
+
+  //  Quit channel
+  @Patch('leave/:id')
+  @UseGuards(PrivateGuard, SelfInChannelGuard)
+  @UseGuards(JwtAuthGuard)
+  async leaveChannel(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.channelService.leaveChannel(user.id, id);
   }
 
   @Post('/add_admin/:id')
@@ -235,19 +269,5 @@ export class ChannelController {
   ): Promise<ChannelEntity> {
     // ==> renvoi toutes les infos channels
     return await this.channelService.getChannelById(id);
-  }
-
-  @Patch('/:id') // id_chan
-  @UseGuards(JwtAuthGuard)
-  async UpdateChannel(
-    @Body() updateChannelDto: UpdateChannelDto,
-    @Param('id', ParseIntPipe) id: number,
-    @User() user: UserChanDto,
-  ): Promise<ChannelEntity> {
-    return await this.channelService.updateChannel(
-      id,
-      updateChannelDto,
-      user.id,
-    );
   }
 }

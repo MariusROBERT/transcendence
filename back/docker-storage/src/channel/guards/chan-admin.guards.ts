@@ -27,13 +27,15 @@ export class AdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     const params = request.params;
 
+    //console.log(params);
     const channel = await this.channelService.getChannelById(params.id);
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
     const has_perm = findPerm(user.username, users_of_chan, ['owner', 'admin']);
@@ -48,7 +50,8 @@ export class TargetIsAdminGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -70,7 +73,8 @@ export class OwnerGuard implements CanActivate {
   constructor(
     private channelService: ChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -81,6 +85,6 @@ export class OwnerGuard implements CanActivate {
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
     const has_perm = findPerm(user.username, users_of_chan, ['owner']);
     if (has_perm) return true;
-    throw new BadRequestException('User is not Owner');
+    throw new BadRequestException('User is Owner');
   }
 }

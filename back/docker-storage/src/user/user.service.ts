@@ -32,7 +32,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -74,7 +75,7 @@ export class UserService {
       .where('user.username = :name', { name })
       .getOne();
     if (currentUser.username.endsWith('_42'))
-      throw new UnauthorizedException("Oauth42 user can't change password");
+      throw new UnauthorizedException('Oauth42 user can\'t change password');
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
       currentUser.salt,
@@ -166,76 +167,74 @@ export class UserService {
     }
 
     if (userAsked.blocked.includes(user.id)) return;
+    if (user.blocked.includes(userAsked.id)) return;
 
-    if (!user.sentInvitesTo.includes(id)) user.sentInvitesTo.push(id);
+    if (!user.sentInvitesTo.includes(id))
+      user.sentInvitesTo = [...user.sentInvitesTo, id];
     if (!userAsked.recvInvitesFrom.includes(user.id))
-      userAsked.recvInvitesFrom.push(user.id);
+      userAsked.recvInvitesFrom = [...userAsked.recvInvitesFrom, user.id];
 
     await this.UserRepository.save(user);
     await this.UserRepository.save(userAsked);
   }
 
   async handleAsk(
-    user: UserEntity, // receiver
-    id: number, // sender
-    bool: boolean,
+    receiver: UserEntity, // receiver
+    sender: UserEntity, // sender
+    accept: boolean,
   ) {
-    const sender = await this.UserRepository.findOne({ where: { id } });
-    if (!sender) {
-      throw new NotFoundException(`le user d'id: ${id} n'existe pas`);
-    }
-    const indexSenderInInvites = user.recvInvitesFrom.indexOf(id);
-    if (indexSenderInInvites === -1) {
-      throw new NotFoundException(
-        `le sender d'id ${id} ne fait parti de la liste d'recvInvitesFrom du user (receiver) d'id ${user.id}`,
-      );
-    }
-    const indexReceiverInInvited = sender.sentInvitesTo.indexOf(user.id);
-    if (indexReceiverInInvited === -1) {
-      throw new NotFoundException(
-        `Vous ne ne faite pas parti de la liste d'sentInvitesTo du sender d'id ${id}`,
-      );
-    }
+    if (!receiver.sentInvitesTo.includes(sender.id)) return;
+    if (!sender.recvInvitesFrom.includes(receiver.id)) return;
 
-    if (user.blocked.includes(id) && !bool) return;
-    if (user.blocked.includes(id) && bool) {
-      const index = user.blocked.indexOf(id);
-      if (index !== -1) {
-        user.blocked.splice(index, 1);
-        await this.UserRepository.save(user);
-      }
+    receiver.sentInvitesTo = receiver.sentInvitesTo.filter(
+      (id) => id !== sender.id,
+    );
+    sender.recvInvitesFrom = sender.recvInvitesFrom.filter(
+      (id) => id !== receiver.id,
+    );
+
+    if (receiver.blocked.includes(sender.id)) return;
+    if (sender.blocked.includes(receiver.id)) return;
+
+    if (accept) {
+      receiver.friends = [...receiver.friends, sender.id];
+      sender.friends = [...sender.friends, receiver.id];
     }
-
-    sender.sentInvitesTo.splice(indexSenderInInvites, 1);
-    user.recvInvitesFrom.splice(indexReceiverInInvited, 1);
-
-    if (bool) {
-      user.friends = [...user.friends, sender.id];
-      sender.friends = [...sender.friends, user.id];
-    }
-
-    if (sender.blocked.includes(user.id)) {
-      const index = sender.blocked.indexOf(user.id);
-      if (index !== -1) {
-        sender.blocked.splice(index, 1);
-      }
-    }
-
-    this.UserRepository.save(user);
+    this.UserRepository.save(receiver);
     this.UserRepository.save(sender);
   }
 
-  async blockAUser(id: number, user: UserEntity) {
-    user.blocked = [...user.blocked, id];
-    await this.UserRepository.save(user);
+  async blockAUser(sender: UserEntity, receiver: UserEntity) {
+    if (sender.friends.includes(receiver.id)) {
+      sender.friends = sender.friends.filter((id) => id !== receiver.id);
+      await this.UserRepository.save(sender);
+    }
+    if (receiver.friends.includes(sender.id)) {
+      receiver.friends = receiver.friends.filter((id) => id !== sender.id);
+      await this.UserRepository.save(receiver);
+    }
+
+    if (sender.blocked.includes(receiver.id)) return;
+    sender.blocked = [...sender.blocked, receiver.id];
+    await this.UserRepository.save(sender);
   }
 
-  async unblockAUser(id: number, user: UserEntity) {
-    const index = user.blocked.indexOf(id);
-    if (index !== -1) {
-      user.blocked.splice(index, 1);
-    }
-    await this.UserRepository.save(user);
+  async unblockAUser(sender: UserEntity, receiver: number) {
+    if (!sender.blocked.includes(receiver)) return;
+    sender.blocked = sender.blocked.filter((id) => id !== receiver);
+    await this.UserRepository.save(sender);
+  }
+
+  async cancelFriendRequest(sender: UserEntity, receiver: UserEntity) {
+    sender.sentInvitesTo = sender.sentInvitesTo.filter(
+      (id) => id !== receiver.id,
+    );
+    receiver.recvInvitesFrom = receiver.recvInvitesFrom.filter(
+      (id) => id !== sender.id,
+    );
+
+    await this.UserRepository.save(sender);
+    await this.UserRepository.save(receiver);
   }
 
   // CHANNEL & MESSAGE :
@@ -254,19 +253,16 @@ export class UserService {
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };
@@ -293,22 +289,19 @@ export class UserService {
       .getMany();
   }
 
+  //  The diff here is that full data are sent
+  async getFullUsersInChannels(channelId: number) {
+    return this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.channels', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .getMany();
+  }
+
   async getBannedInChannels(channelId: number) {
     return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.baned', 'baned')
       .where('baned.id = :channelId', { channelId })
       .getMany();
-  }
-
-  //  The diff here is that full data are sent
-  async getFullUsersInChannels(channelId: number) {
-    return (
-      this.UserRepository.createQueryBuilder('user')
-        .innerJoin('user.channels', 'channel')
-        .where('channel.id = :channelId', { channelId })
-        // .select(['user.id', 'user.username', 'user.urlImg'])
-        .getMany()
-    );
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message

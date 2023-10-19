@@ -42,6 +42,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
         chan_status: checked ? 'private' : 'public',
       }),
     );
+    //console.log(rep?.json);
     if (rep?.json.statusCode === 409 || rep?.json.statusCode === 400) {
       seterrorMessage(rep?.json.message);
       setErrorVisible(true);

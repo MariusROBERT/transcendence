@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {color, useEffectViewport, Viewport} from './utils';
-import {AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage} from './components';
-import {Route, Routes} from 'react-router-dom';
-import {Contexts} from './contexts';
-import {AnimatedBackground} from './components/ComponentBase/AnimatedBackground';
+import React, { useEffect, useState } from 'react';
+import { color, useEffectViewport, Viewport } from './utils';
+import { AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage } from './components';
+import { Route, Routes } from 'react-router-dom';
+import { Contexts } from './contexts';
+import { AnimatedBackground } from './components/ComponentBase/AnimatedBackground';
 
 
 function App() {
@@ -18,12 +18,11 @@ function App() {
   };
   const [viewport, setViewport] = useState<Viewport>(start);
   useEffectViewport(viewport, SIZE, setViewport);
-  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK'>('RGB');
+  const [theme, setTheme] = useState<'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN'>('RGB');
 
   useEffect(() => {
-    document.addEventListener('keydown', (e) => {
-      changeTheme(e);
-    });
+    document.addEventListener('keydown', changeTheme);
+    return () => document.removeEventListener('keydown', changeTheme);
   }, []);
 
   function changeTheme(e: KeyboardEvent) {
@@ -35,6 +34,10 @@ function App() {
       setTheme('WHITE');
     } else if (e.key === '4') {
       setTheme('BLACK');
+    } else if (e.key === '5') {
+      setTheme('R/B');
+    } else if (e.key === '6') {
+      setTheme('GREEN');
     }
   }
 
@@ -53,27 +56,27 @@ function App() {
         className={'cursor_perso'}
         style={appStyle}
       >
-        <AnimatedBackground viewport={viewport} ballNumber={10} style={{zIndex: '-1'}} theme={theme}/>
+        <AnimatedBackground viewport={viewport} ballNumber={10} style={{ zIndex: '-1' }} theme={theme} />
         <Routes>
-          <Route path="/login" element={
+          <Route path='/login' element={
             <Login viewport={viewport}></Login>}>
           </Route>
-          <Route path="/" element={
+          <Route path='/' element={
             <AuthGuard isAuthenticated>
               <MainPage panelWidth={SIZE} viewport={viewport}></MainPage>
             </AuthGuard>}>
           </Route>
-          <Route path="/game" element={
+          <Route path='/game' element={
             <AuthGuard isAuthenticated>
-              <Game viewport={viewport} theme={theme}/>
+              <Game viewport={viewport} theme={theme} />
             </AuthGuard>}>
           </Route>
-          <Route path="/game/score" element={
+          <Route path='/game/score' element={
             <AuthGuard isAuthenticated>
               <GameScore viewport={viewport}></GameScore>
             </AuthGuard>}>
           </Route>
-          <Route path="*" element={<NotFoundPage/>}/>
+          <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </div>
     </Contexts>
