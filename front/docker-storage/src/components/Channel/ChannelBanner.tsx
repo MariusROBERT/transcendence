@@ -5,6 +5,7 @@ import {
   UpdateChannelMessage,
   UpdateChannelUsers,
   SetCurrChan,
+  current_chan,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
 import EditChat from '../Chat/EditChat';
@@ -28,10 +29,27 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     publish('open_chat', undefined);
   }
 
+  async function OnLeave() {
+    const res = await Fetch('channel/leave/' + id, 'PATCH');
+    publish('fetch_chan', {
+      detail: {
+        value: res?.json?.channel_name,
+      },
+    });
+    //console.log(res?.json?.channel_name + ' ' + current_chan);
+    if (res?.json?.channel_name === current_chan) {
+      publish('close_chat', {
+        detail: {
+          value: null,
+        },
+      });
+    }
+  }
+
   async function OnSetting() {
-    setEditVisible(true);
     const res = await Fetch('channel/public/' + id, 'GET');
-    setPublicData(res?.json);
+    await setPublicData(res?.json);
+    setEditVisible(true);
   }
 
   return (
@@ -73,8 +91,8 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
       >
         <RoundButton
           icon={require('../../assets/imgs/icon_leave.png')}
-          onClick={() => void 0}
-        />
+          onClick={OnLeave}
+        ></RoundButton>
         <RoundButton
           icon={require('../../assets/imgs/icon_options.png')}
           onClick={OnSetting}

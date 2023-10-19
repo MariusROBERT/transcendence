@@ -43,7 +43,7 @@ const UserBanner = ({ otherUser }: Props) => {
     userBanner.username.slice(0, 11) + '...' :
     userBanner.username;
 
-  const userBannerStyle : React.CSSProperties = {
+  const userBannerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',

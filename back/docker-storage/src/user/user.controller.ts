@@ -30,7 +30,8 @@ import { userPictureFileInterception } from './utils/user.picture.fileIntercepto
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
   // --------- PROFILE --------- :
   // -- PRIVATE -- :
@@ -66,7 +67,7 @@ export class UserController {
         fileIsRequired: true,
       }),
     )
-    file?: Express.Multer.File,
+      file?: Express.Multer.File,
   ): Promise<UserEntity> {
     return await this.userService.updatePicture(user, file);
   }

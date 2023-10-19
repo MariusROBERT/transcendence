@@ -10,7 +10,12 @@ export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
     private messageRepository: Repository<MessageEntity>, // private authService: AuthService,
-  ) {}
+  ) {
+  }
+
+  async delete(msgs: MessageEntity[]) {
+    return this.messageRepository.remove(msgs);
+  }
 
   async addMsg(message: string, user: UserEntity, chan: ChannelEntity) {
     const newMsg = this.messageRepository.create({
@@ -19,6 +24,14 @@ export class MessagesService {
       channel: chan,
     });
     return await this.messageRepository.save(newMsg);
+  }
+
+  async getIds(channelId: number) {
+    return await this.messageRepository
+      .createQueryBuilder('message')
+      .leftJoinAndSelect('message.channel', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .getMany();
   }
 
   async getMsg(channelId: number) {

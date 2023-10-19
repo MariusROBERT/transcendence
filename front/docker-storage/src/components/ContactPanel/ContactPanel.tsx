@@ -1,14 +1,13 @@
+
 import { Background, Border, ChannelBanner, ChatMenu, GroupItems, UserBanner } from '..';
 import { color, Fetch, Viewport } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useEffect, useState } from 'react';
 import { subscribe } from '../../utils/event';
-
 interface Props {
   viewport: Viewport;
 }
-
 export function ContactPanel({ viewport }: Props) {
   const { socket } = useUserContext();
   const { friends } = useFriendsRequestContext();
@@ -23,7 +22,6 @@ export function ContactPanel({ viewport }: Props) {
         return setFriendList([]);
       setFriendList(users.filter((u: IUser) => friends.includes(u.id)));
     };
-
     getFriends();
   }, [friends]);
 

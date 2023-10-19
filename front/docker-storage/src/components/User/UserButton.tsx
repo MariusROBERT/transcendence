@@ -2,13 +2,13 @@ import { Flex, RoundButton } from '..';
 import { IUser } from '../../utils/interfaces';
 import { openChat } from '../../utils/user_functions';
 import { useFriendsRequestContext, useGameContext, useUserContext } from '../../contexts';
-import { useEffect } from 'react';
 
 interface Props {
   otherUser: IUser;
 }
 
 export function UserButton({ otherUser }: Props) {
+  const { socket } = useUserContext();
   const { sendGameInvite } = useGameContext();
   const {
     sendFriendRequest,
@@ -33,7 +33,7 @@ export function UserButton({ otherUser }: Props) {
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
-                       onClick={() => openChat()} />
+                       onClick={() => openChat(otherUser, socket)} />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
           <RoundButton icon={require('../../assets/imgs/icon_play.png')}
@@ -57,11 +57,15 @@ export function UserButton({ otherUser }: Props) {
         }
         {!blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_block.png')}
-                       onClick={() => {blockUser(otherUser.id);}} />
+                       onClick={() => {
+                         blockUser(otherUser.id);
+                       }} />
         }
         {blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_unblock.png')}
-                       onClick={() => {unblockUser(otherUser.id);}} />
+                       onClick={() => {
+                         unblockUser(otherUser.id);
+                       }} />
         }
       </Flex>
     </div>

@@ -32,7 +32,8 @@ export class UserService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(MessageEntity)
     private MessageRepository: Repository<MessageEntity>,
-  ) {}
+  ) {
+  }
 
   // --------- PROFILE --------- :
   // -- Private -- :
@@ -74,7 +75,7 @@ export class UserService {
       .where('user.username = :name', { name })
       .getOne();
     if (currentUser.username.endsWith('_42'))
-      throw new UnauthorizedException("Oauth42 user can't change password");
+      throw new UnauthorizedException('Oauth42 user can\'t change password');
     const oldHash = await bcrypt.hash(
       updatePwdDto.oldPassword,
       currentUser.salt,
@@ -168,7 +169,7 @@ export class UserService {
     if (user.blocked.includes(userAsked.id)) return;
 
     if (!user.sentInvitesTo.includes(id))
-      user.sentInvitesTo = [...user.sentInvitesTo, id]
+      user.sentInvitesTo = [...user.sentInvitesTo, id];
     if (!userAsked.recvInvitesFrom.includes(user.id))
       userAsked.recvInvitesFrom = [...userAsked.recvInvitesFrom, user.id];
 
@@ -184,8 +185,12 @@ export class UserService {
     if (!receiver.sentInvitesTo.includes(sender.id)) return;
     if (!sender.recvInvitesFrom.includes(receiver.id)) return;
 
-    receiver.sentInvitesTo = receiver.sentInvitesTo.filter((id) => id !== sender.id);
-    sender.recvInvitesFrom = sender.recvInvitesFrom.filter((id) => id !== receiver.id);
+    receiver.sentInvitesTo = receiver.sentInvitesTo.filter(
+      (id) => id !== sender.id,
+    );
+    sender.recvInvitesFrom = sender.recvInvitesFrom.filter(
+      (id) => id !== receiver.id,
+    );
 
     if (receiver.blocked.includes(sender.id)) return;
     if (sender.blocked.includes(receiver.id)) return;
@@ -215,17 +220,22 @@ export class UserService {
 
   async unblockAUser(sender: UserEntity, receiver: number) {
     if (!sender.blocked.includes(receiver)) return;
-    sender.blocked = sender.blocked.filter((id) => id !== receiver)
+    sender.blocked = sender.blocked.filter((id) => id !== receiver);
     await this.UserRepository.save(sender);
   }
 
   async cancelFriendRequest(sender: UserEntity, receiver: UserEntity) {
-    sender.sentInvitesTo = sender.sentInvitesTo.filter((id) => id !== receiver.id);
-    receiver.recvInvitesFrom = receiver.recvInvitesFrom.filter((id) => id !== sender.id);
+    sender.sentInvitesTo = sender.sentInvitesTo.filter(
+      (id) => id !== receiver.id,
+    );
+    receiver.recvInvitesFrom = receiver.recvInvitesFrom.filter(
+      (id) => id !== sender.id,
+    );
 
     await this.UserRepository.save(sender);
     await this.UserRepository.save(receiver);
   }
+
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
@@ -245,19 +255,16 @@ export class UserService {
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
       .select(['user.id', 'user.username', 'user.urlImg'])
-      //.addSelect('true AS data')
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };
@@ -284,22 +291,19 @@ export class UserService {
       .getMany();
   }
 
+  //  The diff here is that full data are sent
+  async getFullUsersInChannels(channelId: number) {
+    return this.UserRepository.createQueryBuilder('user')
+      .innerJoin('user.channels', 'channel')
+      .where('channel.id = :channelId', { channelId })
+      .getMany();
+  }
+
   async getBannedInChannels(channelId: number) {
     return await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.baned', 'baned')
       .where('baned.id = :channelId', { channelId })
       .getMany();
-  }
-
-  //  The diff here is that full data are sent
-  async getFullUsersInChannels(channelId: number) {
-    return (
-      this.UserRepository.createQueryBuilder('user')
-        .innerJoin('user.channels', 'channel')
-        .where('channel.id = :channelId', { channelId })
-        // .select(['user.id', 'user.username', 'user.urlImg'])
-        .getMany()
-    );
   }
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message

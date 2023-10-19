@@ -3,8 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
-import {API_URL} from '../../utils/Global';
-import { isVisible } from '@testing-library/user-event/utils/misc/isVisible';
+import { API_URL } from '../../utils/Global';
 
 interface Props {
   isVisible: boolean;
@@ -200,10 +199,8 @@ export default function Settings(props: Props) {
                       setPictureError('File is too big!');
                       setNewImage(undefined);
                     } else {
-                      setNewImageUrl(URL.createObjectURL(files[0]));
-                      setPictureError('');
-                      setNewImage(files[0]);
-                    } //TODO: when too big file is upload, then settings are closed and you re-open the same file, it doesn't show the error
+                      isImage(event as ChangeEvent<HTMLInputElement>, files);
+                    }
                   }
                 }
                 }
