@@ -128,7 +128,8 @@ export interface NotifMsg {
   channel_name: string;
   message_content: string;
   sender_username: string,
-  sender_urlImg: string
+  sender_urlImg: string,
+  chan_status: string
 }
 
 

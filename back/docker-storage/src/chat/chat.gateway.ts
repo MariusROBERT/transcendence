@@ -13,6 +13,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
+import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -21,6 +22,7 @@ export interface ChannelMessage {
   message_content: string;
   channel_id: number;
   channel_name: string;
+  chan_status: ChanStateEnum
 }
 
 @Injectable()
@@ -117,7 +119,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sender_username: userE.username,
       message_content: message,
       channel_id: chanE.id,
-      channel_name: chanE.channel_name
+      channel_name: chanE.channel_name,
+      chan_status: chanE.ChanStateEnum
     };
     this.server.to(channel).emit('message', data);
 
@@ -129,7 +132,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (userE.id !== usr.id) {
         const userRoom = 'user' + usr.id;
         client.join(userRoom);
-        console.log('usr: ', userE.id, usr.id);
         this.server.to(userRoom).emit('notifMsg', data);
       }
     });
