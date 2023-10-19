@@ -28,17 +28,18 @@ const Navbar: React.FC = () => {
   // get msgs on login
   const getNotifMsg = async () => {
     const MsgsUnread: NotifMsg[] = [];
-    const channels = (await Fetch('channel/public_all', 'GET'))?.json;
+    const channels = (await Fetch('user/get_channels', 'GET'))?.json;
     if (!channels) return;
 
     channels.forEach(async (chan: any) => {
-      console.log('chan : ', chan);
+      // console.log('chan : ', chan);
       const msgs = (await Fetch('channel/msg/' + chan.id, 'GET'))?.json;
-      console.log('msg: ', msgs[msgs.length - 1]?.message_createdAt);
-      console.log('lastmsg: ', user?.last_msg_date);
+      // console.log('msg: ', msgs[msgs.length - 1]?.message_createdAt);
+      // console.log('lastmsg: ', user?.last_msg_date);
       if (user?.last_msg_date && msgs[msgs.length - 1]?.message_createdAt > user?.last_msg_date)
-        MsgsUnread.push(msgs[msgs.length]);
+        MsgsUnread.push(msgs[msgs.length - 1]);
     });
+    // console.log('msgunread: ', MsgsUnread);
     return MsgsUnread;
   }
 
@@ -50,7 +51,7 @@ const Navbar: React.FC = () => {
           notifsMsg.push(data);
         } else {
           let bool = true;
-          notifsMsg.forEach((el) => { if (el.sender_id === data.sender_id) bool = false ; })
+          notifsMsg.forEach((el) => { if (el.sender_id === data.sender_id) bool = false; })
           if (bool) notifsMsg.push(data);
         }
         setNotifsMsg(notifsMsg);
@@ -76,9 +77,11 @@ const Navbar: React.FC = () => {
         }
         const res = await Promise.all(tmp);
         setNotifs(res);
-        // const msgs = await getNotifMsg();
-        // if (msgs)
-        //   setNotifsMsg(msgs)
+        const msgs = await getNotifMsg();
+        if (msgs) {
+          setNotifsMsg([...notifsMsg, ...msgs])
+        }
+        console.log('notifsMsg: ', notifsMsg);
       } catch (e) {
         console.log(e);
       }

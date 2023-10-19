@@ -108,7 +108,7 @@ export class UserService {
   async logout(user: UserEntity) {
     const lastMsg = await this.getLastMsg(user);
     console.log('putute');
-    
+
     if (lastMsg) user.last_msg_date = lastMsg;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
@@ -240,224 +240,225 @@ export class UserService {
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.ChannelRepository.find();
-  }
+    return this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.users', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .getMany();
+}
 
   async isInChannel(id: number) {
-    const user = await this.ChannelRepository.findOne({ where: { id } });
-    return !!user;
-  }
+  const user = await this.ChannelRepository.findOne({ where: { id } });
+  return !!user;
+}
 
   async getUsersInChannels(channelId: number) {
-    const users = await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.channels', 'channel')
-      .where('channel.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
-      .getMany();
-    const admin = await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.admin', 'admin')
-      .where('admin.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
-      .getMany();
-    const owner = await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.own', 'own')
-      .where('own.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
-      .getMany();
-    const fusers = users.map((d) => {
-      const data = { ...d };
-      data['type'] = 'member';
-      return data;
-    });
-    const fadmin = admin.map((d) => {
-      const data = { ...d };
-      data['type'] = 'admin';
-      return data;
-    });
-    const fowner = owner.map((d) => {
-      const data = { ...d };
-      data['type'] = 'owner';
-      return data;
-    });
-    return fusers.concat(fadmin, fowner);
-  }
+  const users = await this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.channels', 'channel')
+    .where('channel.id = :channelId', { channelId })
+    .select(['user.id', 'user.username', 'user.urlImg'])
+    .getMany();
+  const admin = await this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.admin', 'admin')
+    .where('admin.id = :channelId', { channelId })
+    .select(['user.id', 'user.username', 'user.urlImg'])
+    .getMany();
+  const owner = await this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.own', 'own')
+    .where('own.id = :channelId', { channelId })
+    .select(['user.id', 'user.username', 'user.urlImg'])
+    .getMany();
+  const fusers = users.map((d) => {
+    const data = { ...d };
+    data['type'] = 'member';
+    return data;
+  });
+  const fadmin = admin.map((d) => {
+    const data = { ...d };
+    data['type'] = 'admin';
+    return data;
+  });
+  const fowner = owner.map((d) => {
+    const data = { ...d };
+    data['type'] = 'owner';
+    return data;
+  });
+  return fusers.concat(fadmin, fowner);
+}
 
   async getFullAdminInChannels(channelId: number) {
-    return await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.admin', 'admin')
-      .where('admin.id = :channelId', { channelId })
-      .getMany();
-  }
+  return await this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.admin', 'admin')
+    .where('admin.id = :channelId', { channelId })
+    .getMany();
+}
 
   //  The diff here is that full data are sent
   async getFullUsersInChannels(channelId: number) {
-    return this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.channels', 'channel')
-      .where('channel.id = :channelId', { channelId })
-      .getMany();
-  }
+  return this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.channels', 'channel')
+    .where('channel.id = :channelId', { channelId })
+    .getMany();
+}
 
   async getBannedInChannels(channelId: number) {
-    return await this.UserRepository.createQueryBuilder('user')
-      .innerJoin('user.baned', 'baned')
-      .where('baned.id = :channelId', { channelId })
-      .getMany();
-  }
+  return await this.UserRepository.createQueryBuilder('user')
+    .innerJoin('user.baned', 'baned')
+    .where('baned.id = :channelId', { channelId })
+    .getMany();
+}
 
   // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
   async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
-    // est ce quil a des new msg et si oui de quel cahnnel
-    const userChannels = await this.getChannels(user);
-    const lastMsg = await this.getLastMsg(user);
-    const channelsWithNewMsg: ChannelEntity[] = [];
-    if (lastMsg > user.last_msg_date) {
-      // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
-      // pour chaque channel aller voir s'il y a des new msg;
-      for (const channel of userChannels) {
-        const messagesInChannel = await this.MessageRepository.find({
-          where: { channel: { id: channel.id } },
-          order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-          take: 1, // Récupérez seulement le premier (le plus récent) message
-        });
-        if (messagesInChannel[0].createdAt > user.last_msg_date)
-          // stocker les channel et les retourner
-          channelsWithNewMsg.push(channel);
-      }
-      return channelsWithNewMsg;
-    }
-    return null;
-  }
-
-  async getLastMsg(user: UserEntity): Promise<Date> {
-    console.log('pute');
-    
-    const userChannels = await this.getChannels(user);
-    if (!userChannels || userChannels.length === 0) return null;
-    let latestMessage: MessageEntity | null = null;
-
+  // est ce quil a des new msg et si oui de quel cahnnel
+  const userChannels = await this.getChannels(user);
+  const lastMsg = await this.getLastMsg(user);
+  const channelsWithNewMsg: ChannelEntity[] = [];
+  if (lastMsg > user.last_msg_date) {
+    // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
+    // pour chaque channel aller voir s'il y a des new msg;
     for (const channel of userChannels) {
       const messagesInChannel = await this.MessageRepository.find({
         where: { channel: { id: channel.id } },
         order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
         take: 1, // Récupérez seulement le premier (le plus récent) message
       });
-      if (messagesInChannel && messagesInChannel.length > 0) {
-        const lastMessageInChannel = messagesInChannel[0];
-        if (
-          !latestMessage ||
-          lastMessageInChannel.createdAt > latestMessage.createdAt
-        ) {
-          latestMessage = lastMessageInChannel;
-        }
-      }
+      if (messagesInChannel[0].createdAt > user.last_msg_date)
+        // stocker les channel et les retourner
+        channelsWithNewMsg.push(channel);
     }
-    return latestMessage.createdAt;
+    return channelsWithNewMsg;
+  }
+  return null;
+}
+
+  async getLastMsg(user: UserEntity): Promise < Date > {
+  const userChannels = await this.getChannels(user);
+  if(!userChannels || userChannels.length === 0) return null;
+let latestMessage: MessageEntity | null = null;
+
+for (const channel of userChannels) {
+  const messagesInChannel = await this.MessageRepository.find({
+    where: { channel: { id: channel.id } },
+    order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
+    take: 1, // Récupérez seulement le premier (le plus récent) message
+  });
+  if (messagesInChannel && messagesInChannel.length > 0) {
+    const lastMessageInChannel = messagesInChannel[0];
+    if (
+      !latestMessage ||
+      lastMessageInChannel.createdAt > latestMessage.createdAt
+    ) {
+      latestMessage = lastMessageInChannel;
+    }
+  }
+}
+return latestMessage.createdAt;
   }
 
   async getMsgsByChannel(
-    // pas testé
-    user: UserEntity,
-    channels: ChannelEntity[],
-    id: number,
-  ): Promise<MessageEntity[]> {
-    const channel = await this.ChannelRepository.findOne({ where: { id } });
-    if (!channel)
+  // pas testé
+  user: UserEntity,
+  channels: ChannelEntity[],
+  id: number,
+): Promise < MessageEntity[] > {
+  const channel = await this.ChannelRepository.findOne({ where: { id } });
+  if(!channel)
       throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
-    if (await this.isInChannel(user.id)) return channel.messages;
-    throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`);
-  }
+  if(await this.isInChannel(user.id)) return channel.messages;
+  throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`);
+}
 
-  // UTILS :
+// UTILS :
 
-  isOwner(objet: any, user: UserEntity): boolean {
-    return objet.user && user.id === objet.user.id;
-  }
+isOwner(objet: any, user: UserEntity): boolean {
+  return objet.user && user.id === objet.user.id;
+}
 
-  isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
-    return channel.owner.id == user.id;
-  }
+isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
+  return channel.owner.id == user.id;
+}
 
-  isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
-    if (!channel.admins) return false;
-    // Vérifiez si l'utilisateur existe dans la liste des administrateurs
-    return channel.admins.some((adminUser) => adminUser.id === user.id);
-  }
+isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
+  if (!channel.admins) return false;
+  // Vérifiez si l'utilisateur existe dans la liste des administrateurs
+  return channel.admins.some((adminUser) => adminUser.id === user.id);
+}
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
-    if (
-      user.urlImg != '' &&
-      !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
-      user.urlImg !== API_URL + '/public/default.png'
-    ) {
-      fs.rm(user.urlImg.replace(API_URL + '/', ''), (err) => {
-        if (err) console.error('remove old: ', err);
-      });
-    }
-    user.urlImg = API_URL + '/' + file.path;
-    await this.UserRepository.save(user);
-    return user;
-  }
-
-  async getUserById(id: number): Promise<UserEntity> {
-    const user = await this.UserRepository.findOne({
-      where: { id },
+  if (
+    user.urlImg != '' &&
+    !user.urlImg.startsWith('https://cdn.intra.42.fr') &&
+    user.urlImg !== API_URL + '/public/default.png'
+  ) {
+    fs.rm(user.urlImg.replace(API_URL + '/', ''), (err) => {
+      if (err) console.error('remove old: ', err);
     });
-    if (!user) return;
-    return user;
   }
+  user.urlImg = API_URL + '/' + file.path;
+  await this.UserRepository.save(user);
+  return user;
+}
 
-  async getUserByUsername(username: string): Promise<UserEntity> {
-    const user = await this.UserRepository.findOne({
-      where: { username },
-    });
-    if (!user)
+  async getUserById(id: number): Promise < UserEntity > {
+  const user = await this.UserRepository.findOne({
+    where: { id },
+  });
+  if(!user) return;
+  return user;
+}
+
+  async getUserByUsername(username: string): Promise < UserEntity > {
+  const user = await this.UserRepository.findOne({
+    where: { username },
+  });
+  if(!user)
       throw new NotFoundException(`No User found for username ${username}`);
-    return user;
-  }
+  return user;
+}
 
   async generateTwoFactorSecret(user: UserEntity) {
-    const secret = authenticator.generateSecret();
-    const otpauthUrl = authenticator.keyuri(
-      user.username,
-      'Transcendence',
-      secret,
-    );
-    user.secret2fa = secret;
-    await this.UserRepository.save(user);
-    return { secret, otpauthUrl };
-  }
+  const secret = authenticator.generateSecret();
+  const otpauthUrl = authenticator.keyuri(
+    user.username,
+    'Transcendence',
+    secret,
+  );
+  user.secret2fa = secret;
+  await this.UserRepository.save(user);
+  return { secret, otpauthUrl };
+}
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
   async setUserSendInvitationTo(
-    user: UserEntity,
-    otherUserId: number | undefined,
-  ) {
-    user.gameInvitationTo = otherUserId ? otherUserId : -1;
-    return await this.UserRepository.save(user);
-  }
+  user: UserEntity,
+  otherUserId: number | undefined,
+) {
+  user.gameInvitationTo = otherUserId ? otherUserId : -1;
+  return await this.UserRepository.save(user);
+}
 
   async setUserReceivedInvitationFrom(
-    user: UserEntity,
-    otherUserId: number | undefined,
-  ) {
-    user.gameInvitationFrom = otherUserId ? otherUserId : -1;
-    return await this.UserRepository.save(user);
-  }
+  user: UserEntity,
+  otherUserId: number | undefined,
+) {
+  user.gameInvitationFrom = otherUserId ? otherUserId : -1;
+  return await this.UserRepository.save(user);
+}
 
   async setUserInvitationType(
-    user: UserEntity,
-    gameType: 'none' | 'normal' | 'special',
-  ) {
-    user.gameInvitationType = gameType;
-    return await this.UserRepository.save(user);
-  }
+  user: UserEntity,
+  gameType: 'none' | 'normal' | 'special',
+) {
+  user.gameInvitationType = gameType;
+  return await this.UserRepository.save(user);
+}
 
-  async getGameStatusWithId(id: number): Promise<UserGameStatus> {
-    const user = await this.getUserById(id);
-    return {
-      gameInvitationFrom: user.gameInvitationFrom,
-      gameInvitationTo: user.gameInvitationTo,
-      gameInviteType: user.gameInvitationType,
-    };
-  }
+  async getGameStatusWithId(id: number): Promise < UserGameStatus > {
+  const user = await this.getUserById(id);
+  return {
+    gameInvitationFrom: user.gameInvitationFrom,
+    gameInvitationTo: user.gameInvitationTo,
+    gameInviteType: user.gameInvitationType,
+  };
+}
 }

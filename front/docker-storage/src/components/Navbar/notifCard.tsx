@@ -31,9 +31,9 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       <div className='notif'>
         <div className='bar' />
         <div className='container'>
-          <p className='username'>
-            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}{notifFriends?.username} vous a demande en ami
-          </p>
+          <div className='username'>
+            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p>{notifFriends?.username} vous a demande en ami</p>
+          </div>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
               onClick={() => acceptFriendRequest(otherUserId)} />
@@ -51,10 +51,10 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     <div className='notif'>
       <div className='bar' />
       <div className='container'>
-        <p className='username'>
-          {!notifMsg?.priv_msg ? (<>{notifMsg?.channel_name}: Vous avez recu un message de {notifMsg?.sender_username} </>) :
-            (<> Vous avez recu un message de {notifMsg?.sender_username} </>)}
-        </p>
+        <div className='username'>
+          {!notifMsg?.priv_msg ? (<p>{notifMsg?.channel_name}: Vous avez recu un message de {notifMsg?.sender_username} </p>) :
+            (<p> Vous avez recu un message de {notifMsg?.sender_username} </p>)}
+        </div>
         <div onClick={() => {
           if (!usr) return;
           openChat(usr, socket);
