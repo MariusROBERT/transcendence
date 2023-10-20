@@ -31,8 +31,9 @@ export default function Profil(props: ProfilProps) {
     minWidth: '300px',
   };
   useEffect(() => {
-    getGames();
-  }, []);
+    if (user)
+      getGames();
+  }, [user]);
   
   if (!props.otherUser)
     return (<div style={profilContainer}>
