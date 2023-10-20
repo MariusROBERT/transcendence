@@ -8,6 +8,7 @@ interface Props {
   viewport: Viewport;
   style?: React.CSSProperties;
   ballNumber?: number;
+  theme: 'RGB' | 'R/B Gradient' | 'WHITE' | 'BLACK' | 'R/B' | 'GREEN';
 }
 
 export function AnimatedBackground(props: Props) {
@@ -23,6 +24,15 @@ export function AnimatedBackground(props: Props) {
   }, [props.viewport.width, props.viewport.height]);
 
   let mouseBall;
+
+  function magnetballs(p5: p5Types) {
+    balls.forEach(ball => {
+      ball.dir.x += (p5.mouseX - ball.pos.x) / 10;
+      ball.dir.y += (p5.mouseY - ball.pos.y) / 10;
+      ball.speed += 10;
+    });
+  }
+
   function setup(p5: p5Types, canvasParentRef: Element) {
     const canvas = p5.createCanvas(size.width, size.height);
     try {
@@ -59,16 +69,16 @@ export function AnimatedBackground(props: Props) {
     p5.fill(255, 0, 255);
     for (let i = 0; i < balls.length; i++) {
       if (i < balls.length - 1) {
-        balls[i].update(size, balls.slice(i + 1, balls.length), p5);
+        balls[i].update(size, balls.slice(i + 1, balls.length), p5, props.theme);
       } else {
-        balls[i].update(size, [], p5);
+        balls[i].update(size, [], p5, props.theme);
       }
-      balls[i].draw(p5, size);
+      balls[i].draw(p5, size, props.theme);
     }
   }
 
   return (
-    <Sketch draw={draw} setup={setup}
+    <Sketch draw={draw} setup={setup} mouseClicked={magnetballs}
             style={{ position: 'absolute', top: 0, left: 0, height: '100vh', width: '100vw', ...props.style }} />
   );
 }

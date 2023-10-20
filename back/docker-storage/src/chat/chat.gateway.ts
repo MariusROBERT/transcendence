@@ -11,7 +11,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { ChatCheckGuard } from './guards/chat.guards';
+import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
 
 export interface ChannelMessage {
@@ -35,7 +35,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   @WebSocketServer()
   server: Server;
@@ -82,16 +83,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('remove', user);
   }
 
-  @UseGuards(ChatCheckGuard)
+  @UseGuards(ChatCheckGuard, BlockGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
     const { message, channel } = body;
     let chanE;
 
+    if (message.length > 256) return;
     if (channel < 0) {
       console.log('error chan < 0');
       return;
     }
+    //  Check if socket is in room
+    const current_room = this.server.sockets.adapter.rooms.get(channel);
+    if (!current_room?.has(client.id)) return;
     try {
       chanE = await this.chanService.getChannelByName(channel);
     } catch (error) {

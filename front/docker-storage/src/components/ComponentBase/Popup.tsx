@@ -24,6 +24,7 @@ export default function Popup(props: Props) {
 
   React.useEffect(() => {
     document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
   }, []);
 
   return (
@@ -34,7 +35,6 @@ export default function Popup(props: Props) {
         top: 0,
         left: 0,
         zIndex: 110,
-        backgroundColor: 'rgba(70,70,70,0.5)',
         height: '100vh',
         width: '100vw',
         display: 'flex',
@@ -42,12 +42,21 @@ export default function Popup(props: Props) {
         justifyContent: 'center',
         ...props.mainDivStyle,
       }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          props.setIsVisible(false);
-        }
-      }}
     >
+      <div style={{
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        backdropFilter: 'blur(8px)',
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+      }}
+           onClick={(e) => {
+             if (e.target === e.currentTarget) {
+               props.setIsVisible(false);
+             }
+           }}></div>
       {
         props.isVisible &&
         (<div style={{ position: 'relative', ...props.style }}>

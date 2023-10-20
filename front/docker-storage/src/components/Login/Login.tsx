@@ -2,7 +2,7 @@ import { color, delay, RedirectToHome, unsecureFetch, Viewport } from '../../uti
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
-import {API_URL} from '../../utils/Global';
+import { API_URL } from '../../utils/Global';
 
 const SIZE = 350;
 
@@ -44,10 +44,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             username: username,
             password: password,
           }));
-          if (registerResponse?.ok) {
+          if (registerResponse?.ok)
             return OnConnect();
-          }
-          setErrorMessage('this username is already used');
+          const error = await registerResponse?.json().then((data) => data.message);
+          setErrorMessage(error || 'Error');
           console.error('register failure. Error:', registerResponse?.status);
         } else {
           setErrorMessage('username can\'t be ended with _42');
@@ -171,7 +171,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     <div
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-                  flex_justifyContent={'space-around'} forceStyle={{padding: 0, margin: 0}}>
+                  flex_justifyContent={'space-around'} forceStyle={{ padding: 0, margin: 0 }}>
 
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
@@ -196,7 +196,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     id={'username'}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder='login..'
+                    placeholder='login...'
+                    pattern={!signIn ? /[a-zA-Z0-9\-_+.]{1,10}/.source : undefined}
                     required
                   />
                   <PasswordInput

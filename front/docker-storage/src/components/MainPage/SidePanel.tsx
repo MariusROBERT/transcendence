@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
-import { subscribe, unsubscribe } from '../../utils/event';
+import { SetCurrChan } from '../../utils/channel_functions';
 
 interface Props {
   children: ReactNode;
@@ -10,8 +10,8 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
-  contextIsOpen?: boolean;
-  setContextIsOpen?: (isOpen: boolean) => void | undefined;
+  contextIsOpen: boolean;
+  setContextIsOpen: (isOpen: boolean) => void | undefined;
 }
 
 export function SidePanel({
@@ -20,36 +20,33 @@ export function SidePanel({
                             width,
                             isLeftPanel,
                             duration_ms = 1000,
-                            contextIsOpen = false,
-                            setContextIsOpen = undefined,
+                            contextIsOpen,
+                            setContextIsOpen,
                           }: Props) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const { socket, id } = useUserContext();
+  const { socket } = useUserContext();
 
   useEffect(() => {
     if (contextIsOpen)
       Open();
   }, [contextIsOpen]);
 
-  useEffect(() => {
-    if (setContextIsOpen)
-      setContextIsOpen(isOpen);
-  }, [isOpen, setContextIsOpen]);
-
   async function Close() {
     if (isMoving) return;
-    if (!isLeftPanel) socket?.emit('leave');
+    if (!isLeftPanel) {
+      socket?.emit('leave');
+      SetCurrChan('');
+    }
     setIsAnim(true);
     await delay(duration_ms / 3);
     setIsHiding(true);
     setIsAnim(false);
     await delay(duration_ms);
-    setIsOpen(false);
+    setContextIsOpen(false);
     setIsHiding(false);
   }
 
@@ -60,7 +57,7 @@ export function SidePanel({
     setIsShowing(true);
     setIsAnim(false);
     await delay(duration_ms / 4);
-    setIsOpen(true);
+    setContextIsOpen(true);
     setIsShowing(false);
   }
 
@@ -76,14 +73,14 @@ export function SidePanel({
     if (isAnim) {
       style.width = width + 50 + 'px';
       style.left = (isLeftPanel ? 0 : viewport.width - width - 50) + 'px';
-      style.transition = (isOpen ? duration_ms / 3 : duration_ms) + 'ms ease';
+      style.transition = (contextIsOpen ? duration_ms / 3 : duration_ms) + 'ms ease';
     } else if (isShowing) {
       style.left = (isLeftPanel ? 0 : viewport.width - width) + 'px';
       style.transition = duration_ms / 3 + 'ms ease';
     } else if (isHiding) {
       style.left = (isLeftPanel ? -width : viewport.width) + 'px';
       style.transition = duration_ms + 'ms ease';
-    } else if (isOpen) {
+    } else if (contextIsOpen) {
       style.left = (isLeftPanel ? 0 : viewport.width - width) + 'px';
     } else {
       style.left = (isLeftPanel ? -width : viewport.width) + 'px';
@@ -96,11 +93,11 @@ export function SidePanel({
     top: '50%',
     left: (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
     rotate:
-      ((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
+      ((isLeftPanel && contextIsOpen) || (!isLeftPanel && !contextIsOpen) ? -90 : 90) + 'deg',
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
-  if (!isMoving && !isOpen) {
+  if (!isMoving && !contextIsOpen) {
     return (
       <div
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
@@ -109,7 +106,7 @@ export function SidePanel({
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
-            onClick={isOpen ? Close : Open}
+            onClick={contextIsOpen ? Close : Open}
           />
         </div>
       </div>
@@ -122,7 +119,7 @@ export function SidePanel({
         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
-          onClick={isOpen ? Close : Open}
+          onClick={contextIsOpen ? Close : Open}
         />
       </div>
       <div style={{ overflow: 'hidden', display: 'flex', height: '100%' }}>

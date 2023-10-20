@@ -19,11 +19,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // game Controller
   controller: GameController;
   // list of clients connected
-  clients: { id: number, sockets: Socket[] }[] = [];
+  clients: { id: number; sockets: Socket[] }[] = [];
   // list of sockets waiting for a user id
   sockets: Socket[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+  }
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -52,6 +53,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(userSocket: Socket) {
     const client = this.clients.find((c) => c.sockets.includes(userSocket));
+    if (!client) return;
     userSocket.leave('user' + client.id);
 
     client.sockets = client.sockets.filter((s) => s !== userSocket);
@@ -74,7 +76,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (this.clients.find((c) => c.id === clientId)) return; // the client reconnect in the 2 seconds.
 
     const user = await this.userService.getUserById(clientId);
-    if (!user) console.error('disconnect: no such User');
+    if (!user) return console.error('disconnect: no such User');
     await this.leaveQueue({ sender: clientId });
     if (user?.gameInvitationTo > 0)
       await this.cancelInvite({
@@ -95,7 +97,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_invite')
   async sendInvite(
     @MessageBody()
-    msg: {
+      msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
@@ -120,7 +122,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('accept_invite')
   async acceptInvite(
     @MessageBody()
-    msg: {
+      msg: {
       sender: number;
       receiver: number;
       gameType: 'normal' | 'special';
