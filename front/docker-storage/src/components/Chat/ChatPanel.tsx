@@ -183,13 +183,14 @@ export function ChatPanel({ viewport, width }: Props) {
               paddingBottom: '10px',
               marginBottom: '5px',
               overflowWrap: 'break-word',
+              resize: 'none',
             }}
-          ></textarea>
+          />
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/icon_play.png')}
             onClick={onEnterPressed}
-          ></RoundButton>
+          />
         </>
       );
     }
