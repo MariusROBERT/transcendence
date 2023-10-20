@@ -1,5 +1,5 @@
 import { CSSProperties, useEffect, useState } from 'react';
-import { Flex, Popup, SearchBar, UserBanner } from '..';
+import { Popup, SearchBar, UserBanner } from '..';
 import { IUser } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';

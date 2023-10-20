@@ -1,4 +1,4 @@
-import { Leaderboard, Popup, SearchBar } from '..';
+import { SearchBar } from '..';
 import React, { useEffect } from 'react';
 import { IUser } from '../../utils/interfaces';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
