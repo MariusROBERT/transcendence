@@ -16,6 +16,15 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
+    notifsMsg?.forEach((el) => {
+      if (el.sender_id === otherUserId) {
+        console.log('coucoucccc');
+        return ;
+      }
+    });
+  }, [])
+
+  useEffect(() => {
     async function getOtherUser() {
       const usr = (await (Fetch(`user/get_public_profile_by_id/${otherUserId}`, 'GET')))?.json;
       setUsr(usr);
@@ -31,14 +40,14 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
     try {
       await fetch(`http://localhost:3001/api/msgsUnread/remove/${otherUserId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (e) {
-    console.log('que tchi');
-  }
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (e) {
+      console.log('que tchi');
+    }
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {

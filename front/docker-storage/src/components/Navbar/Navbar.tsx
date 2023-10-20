@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
       });
       const msgs = await response.json();
       const uniqueSenders = new Set();
-      const uniqueMsgs = msgs.filter((msg:any) => {
+      const uniqueMsgs = msgs.filter((msg: any) => {
         if (!uniqueSenders.has(msg.sender_id)) {
           uniqueSenders.add(msg.sender_id);
           return true;
@@ -47,11 +47,14 @@ const Navbar: React.FC = () => {
       setMsgs(uniqueMsgs);
     }
     getAllUnreadMsg();
+    console.log('eeewsh : ', msgs);
+
   }, [socket])
 
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = (data: NotifMsg) => {
+
       if (user?.id !== data.sender_id) {
         if (notifsMsg.length === 0) {
           notifsMsg.push(data);
@@ -133,12 +136,23 @@ const Navbar: React.FC = () => {
       <div style={navbarStyle}>
         <div>
           <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
-            {(notifs.length > 0 || msgs.length > 0) && <div style={notifbadge}>{notifs.length + msgs.length}</div>}
-            <RoundButton
-              icon={require('../../assets/imgs/icon_notif.png')}
-              icon_size={50}
-              onClick={() => showNotif()}
-            />
+            {(notifsMsg.length > 0 || notifs.length > 0 || msgs.length > 0) ? (
+              <div style={{ border: '3px solid green', borderRadius: '50%' }}>
+                <RoundButton
+                  icon={require('../../assets/imgs/icon_notif.png')}
+                  icon_size={50}
+                  onClick={() => showNotif()}
+                />
+              </div>
+            ) : (
+              <div style={{ border: '3px solid transparent', borderRadius: '50%' }}>
+                <RoundButton
+                  icon={require('../../assets/imgs/icon_notif.png')}
+                  icon_size={50}
+                  onClick={() => showNotif()}
+                />
+              </div>
+            )}
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
               icon_size={50}
@@ -168,12 +182,17 @@ const Navbar: React.FC = () => {
               {notifs.map((notif, index) => (
                 <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
               ))}
-              {/* {notifsMsg.map((notifmsg, index) => (
+              {notifsMsg.map((notifmsg, index) => (
                 <div key={index}><NotifCard notifMsg={notifmsg} setNotifsMsg={setNotifsMsg} notifsMsg={notifsMsg} otherUserId={notifmsg?.sender_id} /></div>
-              ))} */}
-              {msgs.map((msg, index) => (
-                <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
               ))}
+              {msgs.filter((msg) => {
+                notifsMsg.forEach((el) => {
+                  msg.sender_id === el.sender_id
+                })
+              })
+                .map((msg, index) => (
+                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
+                ))}
             </div>}
         </div>
       </div>
