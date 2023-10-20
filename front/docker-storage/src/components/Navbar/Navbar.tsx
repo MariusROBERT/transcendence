@@ -1,17 +1,17 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { GameInvites, Profil, RoundButton, Settings } from '..';
+import { GameInvites, RoundButton, } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { IUser } from '../../utils/interfaces';
 import NotifCard from './notifCard';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 const Navbar: React.FC = () => {
-  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
-  const [profileVisible, setProfileVisible] = useState<boolean>(false);
+  const { isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen } = useUIContext();
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
-  const { user, socket } = useUserContext();
+  const { user, socket, id } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
 
   const showNotif = () => {
@@ -94,18 +94,18 @@ const Navbar: React.FC = () => {
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
               icon_size={50}
               onClick={() => {
-                if (settingsVisible)
-                  setSettingsVisible(false);
-                setProfileVisible(!profileVisible);
+                if (isSettingsOpen)
+                  setIsSettingsOpen(false);
+                setIsProfileOpen(id);
               }}
             />
             <RoundButton
               icon={require('../../assets/imgs/icon_setting.png')}
               icon_size={50}
               onClick={() => {
-                if (profileVisible)
-                  setProfileVisible(false);
-                setSettingsVisible(!settingsVisible);
+                if (isProfileOpen)
+                  setIsProfileOpen(0);
+                setIsSettingsOpen(true);
               }}
             />
             <RoundButton
@@ -123,8 +123,6 @@ const Navbar: React.FC = () => {
         </div>
       </div>
       <GameInvites />
-      <Settings isVisible={settingsVisible} setIsVisible={setSettingsVisible} />
-      <Profil otherUser={user} isVisible={profileVisible} setIsVisible={setProfileVisible} />
     </>
   );
 };
