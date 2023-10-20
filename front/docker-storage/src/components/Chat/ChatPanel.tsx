@@ -219,7 +219,7 @@ export function ChatPanel({ viewport, width }: Props) {
         }}
       >
         {inputMessage()}
-        <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
+        <Popup isVisible={userVisible} onClose={() => setUserVisible(false)}>
           <ChatUser data={currUser} visibility={userVisible}></ChatUser>
         </Popup>
       </div>

@@ -45,7 +45,7 @@ export function ChatMenu() {
         OnClick={OnJoinChannel}
         OnEnter={() => void 0}
       />
-      <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
+      <Popup isVisible={joinChatVisible} onClose={() => setJoinChatVisible(false)}>
         <JoinChat
           input={inputValue}
           setInput={setInputValue}

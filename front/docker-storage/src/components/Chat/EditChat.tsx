@@ -49,7 +49,7 @@ export default function EditChat({ data, isVisible, setIsVisible }: Props) {
   }
 
   return (
-    <Popup isVisible={isVisible} setIsVisible={setIsVisible}>
+    <Popup isVisible={isVisible} onClose={() => setIsVisible(false)}>
       <div style={createChatStyle}>
         <div style={{ visibility: errVisible ? 'inherit' : 'hidden' }}>
           <ErrorPanel text={error}></ErrorPanel>

@@ -88,14 +88,14 @@ export default function JoinChat({ input, setInput, channels }: Props) {
           Create Channel
         </Button>
       </div>
-      <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
+      <Popup isVisible={createChatVisible} onClose={() => setCreChatVisible(false)}>
         <CreateChat
           name={''}
           visible={createChatVisible}
           setVisible={setCreChatVisible}
         />
       </Popup>
-      <Popup isVisible={enterPassword} setIsVisible={setEnterPassword}>
+      <Popup isVisible={enterPassword} onClose={() => setEnterPassword(false)}>
         <EnterPassword
           visible={enterPassword}
           setVisible={setEnterPassword}
