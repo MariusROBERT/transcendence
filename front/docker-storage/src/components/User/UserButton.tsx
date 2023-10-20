@@ -2,12 +2,14 @@ import { Flex, RoundButton } from '..';
 import { IUser } from '../../utils/interfaces';
 import { openChat } from '../../utils/user_functions';
 import { useFriendsRequestContext, useGameContext, useUserContext } from '../../contexts';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   otherUser: IUser;
 }
 
 export function UserButton({ otherUser }: Props) {
+  const { setIsChatOpen } = useUIContext();
   const { socket } = useUserContext();
   const { sendGameInvite } = useGameContext();
   const {
@@ -33,7 +35,8 @@ export function UserButton({ otherUser }: Props) {
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
           <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
-                       onClick={() => openChat(otherUser, socket)} />
+                       onClick={() => {openChat(otherUser, socket);
+                                      setIsChatOpen(true)}} />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
           <RoundButton icon={require('../../assets/imgs/icon_play.png')}

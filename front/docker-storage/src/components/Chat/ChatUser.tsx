@@ -8,8 +8,7 @@ import { UpdateChannelUsers } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
-import Popup from '../ComponentBase/Popup';
-import Profil from '../Profil/Profil';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   data: IChatUser | undefined;
@@ -17,9 +16,9 @@ interface Props {
 }
 
 export default function ChatUser({ data, visibility }: Props) {
+  const { setIsProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
   const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
   const { socket, id } = useUserContext();
@@ -164,12 +163,9 @@ export default function ChatUser({ data, visibility }: Props) {
       <RoundButton
         icon_size={100}
         icon={String(data?.sender_urlImg)}
-        onClick={() => setProfilVisible(true)}
+        onClick={() => setIsProfileOpen(currentUser?.id || 0)}
       />
       {type === 'perm' ? showAdmin() : <></>}
-      <Popup setIsVisible={setProfilVisible} isVisible={profilVisible}>
-        <Profil otherUser={currentUser} isVisible={profilVisible} setIsVisible={setProfilVisible}/>
-      </Popup>
     </div>
   );
 }
