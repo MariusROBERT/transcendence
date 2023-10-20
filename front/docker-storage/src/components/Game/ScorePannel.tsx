@@ -10,7 +10,7 @@ interface Props {
     user1: IUser;
     score1:number;
     score2:number;
-  }
+}
 
 const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
 

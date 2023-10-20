@@ -51,4 +51,9 @@ export class GameController {
   async getScore(@Param('id', ParseIntPipe) id: number) {
     return await this.matchmaking.getLastGame(id);
   }
+
+  @Get('/get_game/:id')
+  async getGamesById(@Param('id', ParseIntPipe) id:number){
+    return await this.service.getGames(id);
+  }
 }

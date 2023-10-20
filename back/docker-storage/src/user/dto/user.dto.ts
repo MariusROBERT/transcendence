@@ -83,6 +83,9 @@ export class PublicProfileDto {
   @IsNumber()
   @IsNotEmpty()
   elo: number;
+
+  @IsNotEmpty()
+  gamesId: number[];
 }
 
 export class UpdatePwdDto {

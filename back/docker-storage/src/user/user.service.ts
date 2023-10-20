@@ -144,6 +144,8 @@ export class UserService {
     PublicProfile.winrate = profile.winrate;
     PublicProfile.gamesPlayed = profile.gamesPlayed;
     PublicProfile.elo = profile.elo;
+    PublicProfile.gamesId = profile.gamesId;
+
 
     return PublicProfile;
   }

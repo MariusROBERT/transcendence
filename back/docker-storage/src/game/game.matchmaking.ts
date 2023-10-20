@@ -189,7 +189,6 @@ export class GameMatchmaking {
       order: { date: 'DESC' }, // Tri par date décroissante pour obtenir la dernière partie
       take: 1, // Limitation à une seule partie (la dernière)
     });
-    console.log(playerId, games)
     return {game:games[0]};
   }
 }

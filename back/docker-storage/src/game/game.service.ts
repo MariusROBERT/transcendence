@@ -9,11 +9,24 @@ import {
   Ball,
 } from './game.interfaces';
 import { GameController } from './game.controller';
+import { GameEntity } from 'src/database/entities/game.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PublicGameDto }  from './game.dto'
+import { PublicProfileDto } from 'src/user/dto/user.dto';
+import { UserEntity } from '../database/entities/user.entity';
 
 //rajout pour le matchmeking
 @Injectable()
 export class GameService {
   controller: GameController;
+
+  constructor(
+    @InjectRepository(GameEntity)
+    private gameRepository: Repository<GameEntity>,
+    @InjectRepository(UserEntity)
+    private UserRepository: Repository<UserEntity>,
+  ){}
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -159,7 +172,9 @@ export class GameService {
     }
   }
 
-  private startNewRoundNormal(state: State) {
+  private startNewRoundNormal(state: St @IsNumber()
+  @IsNotEmpty()
+  eloUser: number;ate) {
     state.balls.push(
       new Ball(
         new Vector2(size.width / 2, size.height / 2),
@@ -223,5 +238,56 @@ export class GameService {
     //place holder
     this.createNBalls(state, 4);
     state.player_speed = Math.max(state.player_speed - 2, 1);
+  }
+
+  async getGames(playerId: number) : Promise<{gameHist: PublicGameDto[]}> {
+    const gameHist: PublicGameDto[];
+    const games = await this.gameRepository.find({
+      where: [{ player1: playerId }, { player2: playerId }],
+      order: { date: 'DESC' },
+      take: 10, //limitation a 10 parties pour le moment
+    });
+    const user = await this.UserRepository.findOne({
+      where:{id:playerId}
+    });
+    games.forEach(element => {
+      const game:PublicGameDto;
+      if (element.player1 == playerId)
+      {
+        const opponent = await this.UserRepository.findOne({
+          where:{id:element.player2}
+        });
+        game.idUser = playerId;
+        game.user = user.username;
+        game.eloUser = element.elo1;
+        game.scoreUser = element.points1;
+        game.urlImgUser = user.urlImg;
+        game.idOpponent = opponent.id;
+        game.opponent = opponent.username;
+        game.urlImgOpponent = opponent.urlImg;
+        game.eloOpponent = element.elo2;
+        game.scoreOpponent = element.points2;
+      }
+      else
+      {
+        const opponent = await this.UserRepository.findOne({
+          where:{id:element.player1}
+        });
+        game.idUser = playerId;
+        game.user = user.username;
+        game.eloUser = element.elo2;
+        game.scoreUser = element.points2;
+        game.urlImgUser = user.urlImg;
+        game.idOpponent = opponent.id;
+        game.opponent = opponent.username;
+        game.urlImgOpponent = opponent.urlImg;
+        game.eloOpponent = element.elo1;
+        game.scoreOpponent = element.points1;
+      }
+      game.id = element.id;
+      game.date = element.date; 
+      gameHist.push(game);
+    });
+    return {gameHist};
   }
 }

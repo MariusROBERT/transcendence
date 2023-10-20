@@ -104,6 +104,22 @@ export interface IUser {
   recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
+  gamesId: number[];
+}
+
+export interface GameHistory{
+    id: number;
+    user: string;
+    idUser: number;
+    urlImgUser: string;
+    eloUser: number;
+    scoreUser: number;
+    opponent: string;
+    idOpponent: number;
+    urlImgOpponent: string;
+    eloOpponent: number;
+    scoreOpponent: number;
+    date: Date;
 }
 
 export interface LeaderboardProps {

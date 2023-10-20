@@ -1,8 +1,9 @@
-import { IUser } from '../../utils/interfaces';
-import React from 'react';
+import { GameHistory, IUser } from '../../utils/interfaces';
+import React, { useEffect, useState } from 'react';
 import { UserButton } from '../User/UserButton';
 import { useUserContext } from '../../contexts';
 import { Popup } from '../index';
+import { Fetch } from '../../utils';
 
 export interface ProfilProps {
   otherUser: IUser | undefined | null;
@@ -13,6 +14,7 @@ export interface ProfilProps {
 
 export default function Profil(props: ProfilProps) {
   const { user } = useUserContext();
+  const [games, setGames] = useState<GameHistory[]>([])
   const mobile = window.innerWidth < 500;
 
   const profilContainer: React.CSSProperties = {
@@ -28,7 +30,10 @@ export default function Profil(props: ProfilProps) {
     cursor: 'pointer',
     minWidth: '300px',
   };
-
+  useEffect(() => {
+    getGames();
+  }, []);
+  
   if (!props.otherUser)
     return (<div style={profilContainer}>
       <p>User not found</p>
@@ -51,6 +56,13 @@ export default function Profil(props: ProfilProps) {
     height: '10px',
   };
 
+  async function getGames()
+  {
+    const tmp: { gameHist: GameHistory[] } = (await Fetch('Game/get_game/' + user?.id, 'GET'))?.json;
+    setGames(tmp.gameHist);
+    console.log(tmp.gameHist);
+  }
+
   return (
     <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
       <div style={profilContainer}>
@@ -65,11 +77,12 @@ export default function Profil(props: ProfilProps) {
                require('../../assets/imgs/icon_red_disconnect.png')}
              alt={props.otherUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
         <hr style={{ width: '100%' }} />
-        <p>LAST MATCHS</p>
-        <p>--------------</p>
-        <p>--------------</p>
-        <p>LAST MATCHS</p>
-        <p>Winrate : {props.otherUser?.winrate}</p>
+        {/* <div style={MatchHistory}>
+          {games.map((game)=>(
+              <div key={game.id}><GameHistory user={user?.id} game={game}/> </div>
+          ))}
+        </div> */}
+        <p>Winrate : {props.otherUser?.winrate} %</p>
         {!isMe && <UserButton otherUser={props.otherUser} />}
       </div>
     </Popup>
