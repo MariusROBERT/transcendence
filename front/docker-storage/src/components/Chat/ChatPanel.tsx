@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Viewport, color, Fetch } from '../../utils';
-import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
+import { Background, RoundButton, ChatMessage, ChanUserList } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
 import {
@@ -219,9 +219,7 @@ export function ChatPanel({ viewport, width }: Props) {
         }}
       >
         {inputMessage()}
-        <Popup isVisible={userVisible} onClose={() => setUserVisible(false)}>
-          <ChatUser data={currUser} visibility={userVisible}></ChatUser>
-        </Popup>
+        <ChatUser data={currUser} visibility={userVisible} onClose={() => setUserVisible(false)}></ChatUser>
       </div>
     </Background>
   );

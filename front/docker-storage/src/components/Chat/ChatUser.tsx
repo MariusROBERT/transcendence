@@ -9,13 +9,15 @@ import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import Popup from '../ComponentBase/Popup';
 
 interface Props {
   data: IChatUser | undefined;
   visibility: boolean;
+  onClose: () => void;
 }
 
-export default function ChatUser({ data, visibility }: Props) {
+export default function ChatUser({ data, visibility, onClose }: Props) {
   const { setIsProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
@@ -153,19 +155,21 @@ export default function ChatUser({ data, visibility }: Props) {
   }
 
   return (
-    <div style={createChatStyle}>
-      <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
-        <ErrorPanel text={errorMessage}></ErrorPanel>
+    <Popup isVisible={visibility} onClose={onClose}>
+      <div style={createChatStyle}>
+        <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+          <ErrorPanel text={errorMessage}></ErrorPanel>
+        </div>
+        <h2>
+          {currentUser?.username}#{currentUser?.id}
+        </h2>
+        <RoundButton
+          icon_size={100}
+          icon={String(data?.sender_urlImg)}
+          onClick={() => setIsProfileOpen(currentUser?.id || 0)}
+        />
+        {type === 'perm' ? showAdmin() : <></>}
       </div>
-      <h2>
-        {currentUser?.username}#{currentUser?.id}
-      </h2>
-      <RoundButton
-        icon_size={100}
-        icon={String(data?.sender_urlImg)}
-        onClick={() => setIsProfileOpen(currentUser?.id || 0)}
-      />
-      {type === 'perm' ? showAdmin() : <></>}
-    </div>
+    </Popup>
   );
 }

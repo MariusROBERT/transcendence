@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { useUserContext } from '../UserContext/UserContext';
 import { current_chan, SetCurrChan } from '../../utils/channel_functions';
+import { ChannelPublicPass } from '../../utils/interfaces';
 
 type UIContextType = {
   theme: 'rainbow' | 'matrix';
@@ -15,6 +16,14 @@ type UIContextType = {
   setIsChatOpen: (value: boolean) => void;
   isContactOpen: boolean;
   setIsContactOpen: (value: boolean) => void;
+
+  // chat
+  isChatMenuOpen: boolean;
+  setIsChatMenuOpen: (value: boolean) => void;
+  inputValueChatMenu: string;
+  setInputValueChatMenu: (value: string) => void;
+  channels: ChannelPublicPass[] | undefined;
+  setChannels: (value: ChannelPublicPass[] | undefined) => void;
 
   saveUIContext: () => void
   loadUIContext: () => void
@@ -46,6 +55,20 @@ const UIContext = createContext<UIContextType>({
     void(value);
   },
 
+  // chat
+  isChatMenuOpen: false,
+  setIsChatMenuOpen: (value: boolean) => {
+    void(value);
+  },
+  inputValueChatMenu: '',
+  setInputValueChatMenu: (value: string) => {
+    void(value);
+  },
+  channels: undefined,
+  setChannels: (value: ChannelPublicPass[] | undefined) => {
+    void(value);
+  },
+
   saveUIContext: () => {
     return;
   },
@@ -70,6 +93,9 @@ export function UIContextProvider({ children }: Props) {
   const [isProfileOpen, setIsProfileOpen] = useState<number>(0);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
+  const [inputValueChatMenu, setInputValueChatMenu] = useState('');
+  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined);
 
   async function loadUIContext(): Promise<void> {
     if (id <= 0) return;
@@ -79,7 +105,7 @@ export function UIContextProvider({ children }: Props) {
     setTheme(localStorage.getItem('theme') as 'rainbow' | 'matrix');
     setIsSettingsOpen(localStorage.getItem('isSettingsOpen') === 'true');
     setIsProfileOpen(localStorage.getItem('isProfileOpen') ? parseInt(localStorage.getItem('isProfileOpen') as string) : 0);
-    SetCurrChan(localStorage.getItem('isChatOpen') !== '' ? localStorage.getItem('isChatOpen') as string : '');
+    await SetCurrChan(localStorage.getItem('isChatOpen') !== '' ? localStorage.getItem('isChatOpen') as string : '');
     setIsChatOpen(localStorage.getItem('isChatOpen') === 'true');
     setIsContactOpen(localStorage.getItem('isContactOpen') === 'true');
   }
@@ -115,6 +141,14 @@ export function UIContextProvider({ children }: Props) {
         setIsChatOpen,
         isContactOpen,
         setIsContactOpen,
+
+        // chat
+        isChatMenuOpen,
+        setIsChatMenuOpen,
+        inputValueChatMenu,
+        setInputValueChatMenu,
+        channels,
+        setChannels,
 
         saveUIContext,
         loadUIContext,

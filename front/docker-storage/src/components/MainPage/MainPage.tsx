@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import JoinChat from '../Chat/JoinChat';
 
 interface Props {
   panelWidth: number;
@@ -16,10 +17,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const {fetchContext, user} = useUserContext();
   const {fetchFriendsRequestContext} = useFriendsRequestContext();
   const { 
-    isChatOpen, 
-    setIsChatOpen, 
-    isContactOpen,
-    setIsContactOpen
+    isChatOpen, setIsChatOpen, 
+    isContactOpen, setIsContactOpen
   } = useUIContext();
 
   useEffect(() => {
@@ -63,6 +62,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
       <Navbar />
       <Profil />
       <Settings />
+      <JoinChat />
     </div>
   );
 }
