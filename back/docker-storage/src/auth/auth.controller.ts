@@ -15,6 +15,7 @@ import { LoginCreditDto } from './dtos/login-credit.dto';
 import { FtOAuthGuard } from './guards/ft-auth.guards';
 import { ftLoginDto } from './dtos/ft-login.dto';
 import { FtAuthFilter } from './filters/ftAuth.filter';
+import { FRONT_URL } from '../utils/Globals';
 
 @Controller('auth')
 export class AuthController {
@@ -49,7 +50,7 @@ export class AuthController {
     } as ftLoginDto);
 
     return res.redirect(
-      'http://localhost:3000?' + new URLSearchParams({ 'access-token': token }),
+      FRONT_URL + '?' + new URLSearchParams({ 'access-token': token }),
     );
   }
 

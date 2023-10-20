@@ -23,7 +23,6 @@ export interface UserAndInvites {
   urlImg: string;
   user_status: string;
   winrate: number;
-  is_friend: boolean;
   recvInvitesFrom: number;
 }
 

@@ -15,8 +15,6 @@ import { MutedEntity } from './muted.entity';
 
 @Entity('channel')
 export class ChannelEntity {
-  // BASICS :
-
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -25,6 +23,9 @@ export class ChannelEntity {
 
   @Column({ nullable: true })
   password?: string;
+
+  @Column({ nullable: true })
+  salt!: string;
 
   @Column({
     type: 'enum',

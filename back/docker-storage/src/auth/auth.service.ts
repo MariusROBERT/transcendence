@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -14,6 +15,7 @@ import { LoginCreditDto } from './dtos/login-credit.dto';
 import { UserStateEnum } from '../utils/enums/user.enum';
 import { ftLoginDto } from './dtos/ft-login.dto';
 import { authenticator } from 'otplib';
+import { API_URL } from '../utils/Globals';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +29,18 @@ export class AuthService {
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
     // Create User
+    //DEV: comment these 2 lines for dev
+    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
+    //   throw new BadRequestException('Password must contain between 8 and 50 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    // if (!/[a-zA-Z0-9\-_+.]{1,10}/.test(userData.username))
+    //   throw new BadRequestException('Username must contain between 1 and 10 characters, only letters, numbers and -_+. are allowed');
     const user = this.userRepository.create({
       ...userData,
     });
     user.salt = await bcrypt.genSalt(); // genere le salt
     user.password = await bcrypt.hash(user.password, user.salt);
     user.user_status = UserStateEnum.ON;
-    user.urlImg = 'http://localhost:3001/public/default.png';
+    user.urlImg = API_URL + '/public/default.png';
     user.friends = [];
     user.sentInvitesTo = [];
     user.recvInvitesFrom = [];
@@ -43,7 +50,7 @@ export class AuthService {
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
-      throw new ConflictException('username or password already used');
+      throw new ConflictException('Username already used');
     }
     return {
       id: user.id,

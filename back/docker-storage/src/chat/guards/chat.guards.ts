@@ -3,6 +3,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChannelService } from 'src/channel/channel.service';
 import { MutedService } from 'src/muted/muted.service';
+import { Socket } from 'socket.io-client';
 
 @Injectable()
 export class ChatCheckGuard implements CanActivate {
@@ -36,5 +37,26 @@ export class ChatCheckGuard implements CanActivate {
       return true;
     }
     throw new Error('You are not in channel');
+  }
+}
+
+@Injectable()
+export class BlockGuard implements CanActivate {
+  constructor(
+    private channelService: ChannelService,
+    private userService: UserService,
+  ) {
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const data = context.switchToWs().getData();
+    const channel = await this.channelService.getChannelByName(data.channel);
+    if (!channel.priv_msg) return true;
+    const users = await this.userService.getFullUsersInChannels(channel.id);
+    if (users.at(0)?.blocked.includes(users.at(1).id))
+      throw new Error('Blocked by ' + users.at(0).username);
+    if (users.at(1)?.blocked.includes(users.at(0).id))
+      throw new Error('Blocked by ' + users.at(1).username);
+    return true;
   }
 }

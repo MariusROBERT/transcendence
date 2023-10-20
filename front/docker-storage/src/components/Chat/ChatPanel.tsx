@@ -3,7 +3,11 @@ import { Viewport, color, Fetch } from '../../utils';
 import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
-import { GetCurrChan, UpdateChannelUsers } from '../../utils/channel_functions';
+import {
+  GetCurrChan,
+  UpdateChannelUsers,
+  current_chan,
+} from '../../utils/channel_functions';
 import { ChannelMessage, IChatUser } from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
@@ -16,6 +20,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
   const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
+  const [id, setId] = useState<number>(-1);
   const { socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
@@ -42,12 +47,14 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('join', updateUsers);
     };
-  });
+  }, []);
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
       //console.log(event.detail.value)
       setMessage(event.detail.value);
+      //console.log(event.detail.id);
+      setId(event.detail.id);
     });
   }, []);
 
@@ -114,7 +121,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function onEnterPressed() {
-    if (inputValue.length <= 0) return;
+    if (inputValue.length <= 0 || inputValue.length > 256) return;
     if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan });
@@ -149,13 +156,43 @@ export function ChatPanel({ viewport, width }: Props) {
     );
   }
 
+  function inputMessage() {
+    if (current_chan != '') {
+      return (
+        <>
+          <input
+            value={inputValue}
+            onChange={(evt) => {
+              setInputValue(evt.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.keyCode !== 13) return;
+              onEnterPressed();
+            }}
+            maxLength={256}
+            style={{
+              height: 50 + 'px',
+              flex: 'auto',
+              backgroundColor: color.grey,
+              borderRadius: '15px',
+              border: '0',
+            }}
+          ></input>
+          <RoundButton
+            icon_size={50}
+            icon={require('../../assets/imgs/icon_play.png')}
+            onClick={onEnterPressed}
+          ></RoundButton>
+        </>
+      );
+    }
+    return <></>;
+  }
+
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      <div style={{ minHeight: '60px' }} />
-      <ChanUserList
-        onClick={OnUserClick}
-        chan_id={msg.at(0)?.channel_id ? Number(msg.at(0)?.channel_id) : -1}
-      />
+      <div style={{ minHeight: '60px', paddingTop: 10 }} />
+      <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
         style={{
           height: viewport.height - 125 + 'px',
@@ -181,28 +218,7 @@ export function ChatPanel({ viewport, width }: Props) {
           width: width - 30 + 'px',
         }}
       >
-        <input
-          value={inputValue}
-          onChange={(evt) => {
-            setInputValue(evt.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.keyCode !== 13) return;
-            onEnterPressed();
-          }}
-          style={{
-            height: 50 + 'px',
-            flex: 'auto',
-            backgroundColor: color.grey,
-            borderRadius: '15px',
-            border: '0',
-          }}
-        ></input>
-        <RoundButton
-          icon_size={50}
-          icon={require('../../assets/imgs/icon_play.png')}
-          onClick={onEnterPressed}
-        ></RoundButton>
+        {inputMessage()}
         <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
           <ChatUser data={currUser} visibility={userVisible}></ChatUser>
         </Popup>

@@ -6,8 +6,9 @@ import {
 } from '@nestjs/websockets';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { FRONT_URL } from '../utils/Globals';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000'] } })
+@WebSocketGateway({ cors: { origin: [FRONT_URL] } })
 export class UserGateway {
   @WebSocketServer() server;
   controller: UserController;
@@ -20,6 +21,7 @@ export class UserGateway {
     @MessageBody() msg: { sender: number; receiver: number },
   ) {
     const sender = await this.userService.getUserById(msg.sender);
+    if (!sender) return;
     await this.userService.askFriend(sender, msg.receiver);
     this.server.to('user' + msg.receiver).emit('send_friend_request', {
       sender: msg.sender,
@@ -33,8 +35,9 @@ export class UserGateway {
   ) {
     const sender = await this.userService.getUserById(msg.sender);
     const receiver = await this.userService.getUserById(msg.receiver);
-    await this.userService.handleAsk(receiver, sender.id, true);
-    this.server.to('user' + msg.sender).emit('accept_friend_request', {
+    if (!sender || !receiver) return;
+    await this.userService.handleAsk(receiver, sender, true);
+    this.server.to('user' + receiver.id).emit('accept_friend_request', {
       sender: msg.sender,
       receiver: msg.receiver,
     });
@@ -46,8 +49,9 @@ export class UserGateway {
   ) {
     const receiver = await this.userService.getUserById(msg.receiver);
     const sender = await this.userService.getUserById(msg.sender);
-    await this.userService.handleAsk(receiver, sender.id, false);
-    this.server.to('user' + msg.sender).emit('decline_friend_request', {
+    if (!sender || !receiver) return;
+    await this.userService.handleAsk(receiver, sender, false);
+    this.server.to('user' + receiver.id).emit('decline_friend_request', {
       sender: msg.sender,
       receiver: msg.receiver,
     });
@@ -56,19 +60,30 @@ export class UserGateway {
   @SubscribeMessage('block_user')
   async blockAUser(@MessageBody() msg: { receiver: number; sender: number }) {
     const sender = await this.userService.getUserById(msg.sender);
-    await this.userService.blockAUser(msg.receiver, sender);
+    const receiver = await this.userService.getUserById(msg.receiver);
+    if (!sender || !receiver) return;
+    await this.userService.blockAUser(sender, receiver);
     this.server
-      .to('user' + msg.sender)
-      .emit('block_user', { sender: msg.sender, receiver: msg.receiver });
+      .to('user' + msg.receiver)
+      .emit('blocked', { sender: msg.sender, receiver: msg.receiver });
   }
 
   @SubscribeMessage('unblock_user')
   async unblockAUser(@MessageBody() msg: { receiver: number; sender: number }) {
-    await this.userService.getUserById(msg.sender);
+    const sender = await this.userService.getUserById(msg.sender);
+    if (!sender) return;
+    await this.userService.unblockAUser(sender, msg.receiver);
+  }
+
+  @SubscribeMessage('cancel_friend_request')
+  async cancelInvite(@MessageBody() msg: { sender: number; receiver: number }) {
+    const sender = await this.userService.getUserById(msg.sender);
     const receiver = await this.userService.getUserById(msg.receiver);
-    await this.userService.unblockAUser(msg.sender, receiver);
-    this.server
-      .to('user' + msg.sender)
-      .emit('unblock_user', { sender: msg.sender, receiver: msg.receiver });
+    if (!sender || !receiver) return;
+    await this.userService.cancelFriendRequest(sender, receiver);
+    this.server.to('user' + msg.receiver).emit('cancel_friend_request', {
+      sender: msg.sender,
+      receiver: msg.receiver,
+    });
   }
 }

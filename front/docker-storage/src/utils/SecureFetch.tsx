@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { API_URL } from './Global';
 
 export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | {
   response: Response,
@@ -6,7 +7,7 @@ export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', b
 }> {
   const jwtToken = Cookies.get('jwtToken');
   try {
-    const response = await fetch('http://localhost:3001/api/' + url_end, {
+    const response = await fetch(API_URL + '/api/' + url_end, {
       method: method,
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +39,7 @@ export async function unsecureFetch(
 ): Promise<undefined | Response> {
   let response;
   try {
-    response = await fetch('http://localhost:3001/api/' + url_end, {
+    response = await fetch(API_URL + '/api/' + url_end, {
       method: method,
       headers: {
         'Content-Type': 'application/json',

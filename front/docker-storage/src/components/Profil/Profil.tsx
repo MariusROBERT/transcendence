@@ -2,25 +2,62 @@ import { IUser } from '../../utils/interfaces';
 import React from 'react';
 import { UserButton } from '../User/UserButton';
 import { useUserContext } from '../../contexts';
+import { Popup } from '../index';
 
 export interface ProfilProps {
   otherUser: IUser | undefined | null;
   onClose?: () => void;
+  isVisible: boolean;
+  setIsVisible: (value: boolean) => void;
 }
 
 export default function Profil(props: ProfilProps) {
   const { user } = useUserContext();
+  const mobile = window.innerWidth < 500;
+
+  const profilContainer: React.CSSProperties = {
+    borderRadius: '10px',
+    padding: mobile ? 15 : 20,
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'grey',
+    height: '100%',
+    color: 'white',
+    margin: mobile ? 5 : 10,
+    cursor: 'pointer',
+    minWidth: '300px',
+  };
+
   if (!props.otherUser)
     return (<div style={profilContainer}>
-      <p>Utilisateur introuvable.</p>
+      <p>User not found</p>
     </div>);
 
   const isMe = props.otherUser?.id === user?.id;
+  const displayName = props.otherUser?.username.length > 11 ?
+    props.otherUser?.username.slice(0, 11) + '...' :
+    props.otherUser?.username;
+
+
+  const imgStyle = {
+    width: '200px',
+    borderRadius: '5px',
+    border: '2px solid',
+  };
+
+  const statusStyle = {
+    width: '10px',
+    height: '10px',
+  };
 
   return (
-    <div style={profilContainer}>
-      <>
-        <h2>{!isMe && 'Profil de '}{props.otherUser?.username}</h2>
+    <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
+      <div style={profilContainer}>
+        {mobile ?
+          <h3>{displayName}</h3> :
+          <h2>{displayName}</h2>
+        }
         <p>ID : {props.otherUser?.id}</p>
         <img style={imgStyle} src={props.otherUser?.urlImg} alt={'user'} />
         <img style={isMe ? statusStyle : (props.otherUser?.user_status ? statusStyle : imgStyle)}
@@ -34,34 +71,9 @@ export default function Profil(props: ProfilProps) {
         <p>LAST MATCHS</p>
         <p>Winrate : {props.otherUser?.winrate}</p>
         {!isMe && <UserButton otherUser={props.otherUser} />}
-      </>
-    </div>
+      </div>
+    </Popup>
   );
 
 }
 
-const profilContainer: React.CSSProperties = {
-
-  borderRadius: '10px',
-  padding: '20px',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  background: 'grey',
-  height: '100%',
-  color: 'white',
-  margin: '10px',
-  cursor: 'pointer',
-  minWidth: '300px',
-};
-
-const imgStyle = {
-  width: '200px',
-  borderRadius: '5px',
-  border: '2px solid',
-};
-
-const statusStyle = {
-  width: '10px',
-  height: '10px',
-};
