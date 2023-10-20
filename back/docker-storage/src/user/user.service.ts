@@ -468,7 +468,7 @@ export class UserService {
   async endOfGameUpdatingProfile(gameId:number, user:UserEntity, won:boolean){
   
     user.gamesPlayed += 1;
-    if (user.gamesId === undefined)
+    if (!user.gamesId)
       user.gamesId = [];
     user.gamesId.push(gameId);
     if(won)
