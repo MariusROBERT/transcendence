@@ -23,6 +23,7 @@ export function SidePanel({
                             contextIsOpen,
                             setContextIsOpen,
                           }: Props) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
   const [isAnim, setIsAnim] = useState<boolean>(false);
@@ -37,6 +38,7 @@ export function SidePanel({
 
   async function Close() {
     if (isMoving) return;
+    setContextIsOpen(false);
     if (!isLeftPanel) {
       socket?.emit('leave');
       SetCurrChan('');
@@ -46,18 +48,19 @@ export function SidePanel({
     setIsHiding(true);
     setIsAnim(false);
     await delay(duration_ms);
-    setContextIsOpen(false);
+    setIsOpen(false);
     setIsHiding(false);
   }
 
   async function Open() {
+    setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);
     await delay(duration_ms);
     setIsShowing(true);
     setIsAnim(false);
     await delay(duration_ms / 4);
-    setContextIsOpen(true);
+    setIsOpen(true);
     setIsShowing(false);
   }
 
@@ -73,14 +76,14 @@ export function SidePanel({
     if (isAnim) {
       style.width = width + 50 + 'px';
       style.left = (isLeftPanel ? 0 : viewport.width - width - 50) + 'px';
-      style.transition = (contextIsOpen ? duration_ms / 3 : duration_ms) + 'ms ease';
+      style.transition = (isOpen ? duration_ms / 3 : duration_ms) + 'ms ease';
     } else if (isShowing) {
       style.left = (isLeftPanel ? 0 : viewport.width - width) + 'px';
       style.transition = duration_ms / 3 + 'ms ease';
     } else if (isHiding) {
       style.left = (isLeftPanel ? -width : viewport.width) + 'px';
       style.transition = duration_ms + 'ms ease';
-    } else if (contextIsOpen) {
+    } else if (isOpen) {
       style.left = (isLeftPanel ? 0 : viewport.width - width) + 'px';
     } else {
       style.left = (isLeftPanel ? -width : viewport.width) + 'px';
@@ -93,7 +96,7 @@ export function SidePanel({
     top: '50%',
     left: (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
     rotate:
-      ((isLeftPanel && contextIsOpen) || (!isLeftPanel && !contextIsOpen) ? -90 : 90) + 'deg',
+      ((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
