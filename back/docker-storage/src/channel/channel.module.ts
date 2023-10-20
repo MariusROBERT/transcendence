@@ -12,6 +12,8 @@ import { ChatGateway } from 'src/chat/chat.gateway';
 import { JwtService } from '@nestjs/jwt';
 import { MutedService } from 'src/muted/muted.service';
 import { MutedEntity } from 'src/database/entities/muted.entity';
+import { MsgsUnreadService } from 'src/msgsUread/msgsunread.service';
+import { MsgsUnreadEntity } from 'src/database/entities/msgsunread.entity';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { MutedEntity } from 'src/database/entities/muted.entity';
       UserEntity,
       MessageEntity,
       MutedEntity,
+      MsgsUnreadEntity
     ]),
     AuthModule,
   ],
@@ -31,6 +34,7 @@ import { MutedEntity } from 'src/database/entities/muted.entity';
     JwtService,
     MutedService,
     ChatGateway,
+    MsgsUnreadService
   ],
 })
 export class ChannelModule {

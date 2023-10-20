@@ -12,6 +12,7 @@ import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { MutedService } from 'src/muted/muted.service';
 import { MutedEntity } from './entities/muted.entity';
+import { MsgsUnreadEntity } from './entities/msgsunread.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MutedEntity } from './entities/muted.entity';
       MessageEntity,
       UserEntity,
       MutedEntity,
+      MsgsUnreadEntity
     ]),
   ],
   controllers: [],

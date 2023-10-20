@@ -87,7 +87,7 @@ export function SidePanel({
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      zIndex: 110,
+      zIndex: 1,
       width: width + 'px',
       height: '100%',
       position: 'absolute',

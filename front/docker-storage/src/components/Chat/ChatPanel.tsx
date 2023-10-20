@@ -160,7 +160,7 @@ export function ChatPanel({ viewport, width }: Props) {
     if (current_chan != '') {
       return (
         <>
-          <input
+          <textarea
             value={inputValue}
             onChange={(evt) => {
               setInputValue(evt.target.value);
@@ -171,13 +171,20 @@ export function ChatPanel({ viewport, width }: Props) {
             }}
             maxLength={256}
             style={{
-              height: 50 + 'px',
+              outline: 'none',
+              height: '50px',
+              fontSize: '1.3em',
               flex: 'auto',
               backgroundColor: color.grey,
               borderRadius: '15px',
               border: '0',
+              paddingLeft: '15px',
+              paddingTop: '15px',
+              paddingBottom: '10px',
+              marginBottom: '5px',
+              overflowWrap: 'break-word',
             }}
-          ></input>
+          ></textarea>
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/icon_play.png')}

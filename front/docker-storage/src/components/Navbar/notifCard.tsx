@@ -1,7 +1,7 @@
 import { IUser, NotifMsg } from '../../utils/interfaces';
 import './stylenavbar.css';
 import { RoundButton } from '../ComponentBase/RoundButton';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useFriendsRequestContext } from '../../contexts';
 import Profil from '../Profil/Profil';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Popup from '../ComponentBase/Popup';
@@ -11,7 +11,6 @@ import { Socket } from 'socket.io-client';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
-  const { id } = useUserContext();
   const [visible, setVisible] = useState<boolean>(false);
   const [usr, setUsr] = useState<IUser>();
   const [socket, setSocket] = useState<Socket>();
@@ -25,6 +24,22 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     getOtherUser();
   }, [])
 
+  const onclick = async () => {
+    if (!usr) return;
+    openChat(usr, socket);
+    if (setNotifsMsg && notifsMsg)
+      setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
+    try {
+      await fetch(`http://localhost:3001/api/msgsUnread/remove/${otherUserId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (e) {
+    console.log('que tchi');
+  }
+  }
 
   if (recvInvitesFrom.includes(otherUserId)) {
     return (
@@ -55,12 +70,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
           {!notifMsg?.priv_msg ? (<p>{notifMsg?.channel_name}: Vous avez recu un message de {notifMsg?.sender_username} </p>) :
             (<p> Vous avez recu un message de {notifMsg?.sender_username} </p>)}
         </div>
-        <div onClick={() => {
-          if (!usr) return;
-          openChat(usr, socket);
-          if (setNotifsMsg && notifsMsg)
-            setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId))
-        }
+        <div onClick={() => onclick()
         }><button>Ouvrir la conversation</button></div>
       </div>
     </div>

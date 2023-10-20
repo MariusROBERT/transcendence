@@ -13,7 +13,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
-import { ChanStateEnum } from 'src/utils/enums/channel.enum';
+import { MsgsUnreadService } from 'src/msgsUread/msgsunread.service';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -23,6 +23,15 @@ export interface ChannelMessage {
   channel_id: number;
   channel_name: string;
   priv_msg: boolean
+}
+
+export interface MsgsUnreadDto {
+  sender_id: number;
+  receiver_id: number
+  channel_id: number;
+  channel_name: string;
+  sender_username: string;
+  priv_msg: boolean;
 }
 
 @Injectable()
@@ -38,6 +47,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
+    private msgsUnreadService: MsgsUnreadService,
   ) { }
 
   @WebSocketServer()
@@ -132,9 +142,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (userE.id !== usr.id) {
         const userRoom = 'user' + usr.id;
         client.join(userRoom);
-        console.log('chanE.priv_msg: ', chanE.priv_msg);
-        
         this.server.to(userRoom).emit('notifMsg', data);
+        const msg: MsgsUnreadDto = {
+          sender_id: userE.id,
+          receiver_id: usr.id,
+          channel_id: chanE.id,
+          channel_name: chanE.channel_name,
+          sender_username: userE.username,
+          priv_msg: chanE.priv_msg
+        };
+        this.msgsUnreadService.create(msg)
       }
     });
   }

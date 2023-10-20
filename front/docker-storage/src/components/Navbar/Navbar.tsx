@@ -12,8 +12,9 @@ const Navbar: React.FC = () => {
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
   const [notifsMsg, setNotifsMsg] = useState<Array<NotifMsg>>([]);
-  const { user, socket } = useUserContext();
+  const { user, socket, id } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
+  const [msgs, setMsgs] = useState<Array<NotifMsg>>([])
 
   const logout = async () => {
     socket?.disconnect();
@@ -25,23 +26,28 @@ const Navbar: React.FC = () => {
     setNotifsVisible(!notifsVisible);
   };
 
-  // get msgs on login
-  const getNotifMsg = async () => {
-    const MsgsUnread: NotifMsg[] = [];
-    const channels = (await Fetch('user/get_channels', 'GET'))?.json;
-    if (!channels) return;
-
-    channels.forEach(async (chan: any) => {
-      // console.log('chan : ', chan);
-      const msgs = (await Fetch('channel/msg/' + chan.id, 'GET'))?.json;
-      // console.log('msg: ', msgs[msgs.length - 1]?.message_createdAt);
-      // console.log('lastmsg: ', user?.last_msg_date);
-      if (user?.last_msg_date && msgs[msgs.length - 1]?.message_createdAt > user?.last_msg_date)
-        MsgsUnread.push(msgs[msgs.length - 1]);
-    });
-    // console.log('msgunread: ', MsgsUnread);
-    return MsgsUnread;
-  }
+  useEffect(() => {
+    const getAllUnreadMsg = async () => {
+      if (id !== user?.id) return
+      const response = await fetch(`http://localhost:3001/api/msgsUnread/user/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const msgs = await response.json();
+      const uniqueSenders = new Set();
+      const uniqueMsgs = msgs.filter((msg:any) => {
+        if (!uniqueSenders.has(msg.sender_id)) {
+          uniqueSenders.add(msg.sender_id);
+          return true;
+        }
+        return false;
+      });
+      setMsgs(uniqueMsgs);
+    }
+    getAllUnreadMsg();
+  }, [socket])
 
   // recv msg instant
   useEffect(() => {
@@ -63,6 +69,7 @@ const Navbar: React.FC = () => {
     })
   }, [socket])
 
+  // friends request
   useEffect(() => {
     const setNotif = async () => {
       if (!recvInvitesFrom)
@@ -77,17 +84,13 @@ const Navbar: React.FC = () => {
         }
         const res = await Promise.all(tmp);
         setNotifs(res);
-        const msgs = await getNotifMsg();
-        if (msgs) {
-          setNotifsMsg([...notifsMsg, ...msgs])
-        }
-        console.log('notifsMsg: ', notifsMsg);
       } catch (e) {
         console.log(e);
       }
     };
     setNotif();
   }, [recvInvitesFrom.length, socket]);
+
 
   const mobile = window.innerWidth < 500;
 
@@ -115,7 +118,6 @@ const Navbar: React.FC = () => {
   };
 
   const notifstyle: CSSProperties = {
-    border: '1px solid red',
     maxHeight: '500px',
     overflow: 'auto',
     display: 'flex',
@@ -131,7 +133,7 @@ const Navbar: React.FC = () => {
       <div style={navbarStyle}>
         <div>
           <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
-            {(notifs.length > 0 || notifsMsg.length > 0) && <div style={notifbadge}>{notifs.length + notifsMsg.length}</div>}
+            {(notifs.length > 0 || msgs.length > 0) && <div style={notifbadge}>{notifs.length + msgs.length}</div>}
             <RoundButton
               icon={require('../../assets/imgs/icon_notif.png')}
               icon_size={50}
@@ -166,8 +168,11 @@ const Navbar: React.FC = () => {
               {notifs.map((notif, index) => (
                 <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
               ))}
-              {notifsMsg.map((notifmsg, index) => (
+              {/* {notifsMsg.map((notifmsg, index) => (
                 <div key={index}><NotifCard notifMsg={notifmsg} setNotifsMsg={setNotifsMsg} notifsMsg={notifsMsg} otherUserId={notifmsg?.sender_id} /></div>
+              ))} */}
+              {msgs.map((msg, index) => (
+                <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
               ))}
             </div>}
         </div>

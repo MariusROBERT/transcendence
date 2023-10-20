@@ -104,6 +104,14 @@ export class UserController {
 
   // --------- MSG & CHANNEL --------- :
 
+  @Patch('remove_last_msg')
+  async removeLastMessage(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    await this.userService.removeLastMsg(id);
+  }
+
   // get_message_from_channel
   @Get('/get_msg/:id_chan')
   @UseGuards(JwtAuthGuard)
