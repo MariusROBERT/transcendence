@@ -26,7 +26,7 @@ const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
                         {user1.username}
                     </div>
                     <div>
-                    <RoundButton icon={user1.urlImg} icon_size={100} 
+                    <RoundButton icon={user1.urlImg} icon_size={130} 
                             onClick={() => setProfilVisible(true)} />
                     </div>
                 </Flex>
@@ -77,7 +77,7 @@ const ScorePannel = ({ user1, user2, score1, score2 }: Props) => {
                     <Flex flex_direction='column'>
                         <div style={{...nameStyle, color:'red'}}>{user2.username}</div>
                         <div>
-                        <RoundButton icon={user2.urlImg} icon_size={100} 
+                        <RoundButton icon={user2.urlImg} icon_size={130} 
                                 onClick={() => setProfilVisible(true)} />
                         </div>
                     </Flex>
