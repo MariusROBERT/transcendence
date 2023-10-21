@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+.btnContainer {
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 300px;
+}
+.btnContainer img {
+    /* margin-left: 20px; */
+    width: 100%;
+}
+.btnContainer{
+    padding: 25px 30px;
+    color: #0058aa;
+    transition: 0.5s;
+    overflow: hidden;
+   
+}
+.btnContainer:hover{
+    background: #0058aa;
+    color: #050801;
+    box-shadow: 0 0 5px #0058aa,
+                0 0 25px #0058aa,
+                0 0 50px #0058aa,
+                0 0 200px #0058aa;
+}
+.btnContainer span{
+    position: absolute;
+    display: block;
+}

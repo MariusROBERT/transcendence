@@ -27,10 +27,11 @@ export default function ChatInput({
         position: 'relative',
         display: 'flex',
         flexDirection: 'row',
+        
       }}
       className={'text cursor_pointer'}
     >
-      <img
+      {/* <img
         style={{
           height: mobile ? 50 : 80,
           width: mobile ? 50 : 80,
@@ -40,9 +41,10 @@ export default function ChatInput({
         }}
         src={require('../../assets/imgs/icon_search.png')}
         alt={'search'}
-      />
+      /> */}
       <input
         style={{
+          paddingLeft: '15px',
           outline: 'none',
           borderRadius: '10px',
           border: '0',

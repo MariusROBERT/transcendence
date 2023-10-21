@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Viewport, color, Fetch } from '../../utils';
+import { Viewport, Fetch } from '../../utils';
 import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
@@ -171,13 +171,13 @@ export function ChatPanel({ viewport, width }: Props) {
             }}
             maxLength={256}
             style={{
+              boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
+              background: 'white',
               outline: 'none',
               height: '50px',
               fontSize: '1.3em',
               flex: 'auto',
-              backgroundColor: color.grey,
               borderRadius: '15px',
-              border: '0',
               paddingLeft: '15px',
               paddingTop: '15px',
               paddingBottom: '10px',
@@ -205,7 +205,8 @@ export function ChatPanel({ viewport, width }: Props) {
         style={{
           height: viewport.height - 125 + 'px',
           width: width - 50 + 'px',
-          backgroundColor: color.grey,
+          margin: '30px',
+          // backgroundColor: color.grey,
           display: 'flex',
           flexDirection: 'column',
           gap: '5px 5px',
@@ -219,6 +220,8 @@ export function ChatPanel({ viewport, width }: Props) {
       </div>
       <div
         style={{
+          marginTop: '5px',
+          marginBottom: '20px',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',

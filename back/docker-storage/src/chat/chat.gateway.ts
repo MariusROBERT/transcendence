@@ -32,6 +32,7 @@ export interface MsgsUnreadDto {
   channel_name: string;
   sender_username: string;
   priv_msg: boolean;
+  socket: Socket
 }
 
 @Injectable()
@@ -138,19 +139,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let tmp = await this.userService.getFullAdminInChannels(chanE.id);
     usersList.concat(tmp);
     usersList = [...usersList, chanE.owner];
+    
     usersList.forEach(usr => {
       if (userE.id !== usr.id) {
+        // send notif Msg
         const userRoom = 'user' + usr.id;
         client.join(userRoom);
         this.server.to(userRoom).emit('notifMsg', data);
+        
         const msg: MsgsUnreadDto = {
           sender_id: userE.id,
           receiver_id: usr.id,
           channel_id: chanE.id,
           channel_name: chanE.channel_name,
           sender_username: userE.username,
-          priv_msg: chanE.priv_msg
+          priv_msg: chanE.priv_msg,
+          socket: chanE.socket
         };
+        // save notif msg in db
         this.msgsUnreadService.create(msg)
       }
     });

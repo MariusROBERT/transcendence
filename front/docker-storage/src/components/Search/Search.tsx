@@ -31,7 +31,7 @@ export function Search(props: Props) {
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
                  isVisible={!searchMode}
-                 style={{ top: mobile ? 80 : 0 }}
+                 style={{ top: mobile ? 80 : -200 }}
       >
         {props.placeHolder || ''}
       </SearchBar>

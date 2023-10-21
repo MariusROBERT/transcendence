@@ -1,5 +1,7 @@
 // --------------------------- Auth :
 
+import { Socket } from "socket.io-client";
+
 // --------------------------- Register :
 
 export interface FormDataRegister {
@@ -129,7 +131,8 @@ export interface NotifMsg {
   message_content: string;
   sender_username: string,
   sender_urlImg: string,
-  priv_msg: boolean
+  priv_msg: boolean,
+  socket: Socket
 }
 
 

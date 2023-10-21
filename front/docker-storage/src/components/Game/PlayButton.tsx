@@ -1,6 +1,7 @@
 import { Flex, RoundButton, SwitchToggle } from '..';
 import { useGameContext } from '../../contexts';
 import { useEffect, useState } from 'react';
+import './playBtn.css';
 
 export function PlayButton() {
   const { isInQueue, joinQueue } = useGameContext();
@@ -16,12 +17,17 @@ export function PlayButton() {
   return (
     <>
       <Flex>
-        <RoundButton
+        <div className='btnContainer' onClick={() => {
+            joinQueue(isSpecial ? 'special' : 'normal');
+          }}>
+          <img  src={require('../../assets/imgs/pngwing.com (3).png')} />
+        </div>
+        {/* <RoundButton
           icon_size={mobile ? 175 : 200}
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={() => {
             joinQueue(isSpecial ? 'special' : 'normal');
-          }} />
+          }} /> */}
         <Flex flex_direction={'row'}>
           <p>Special Mode: </p>
           <SwitchToggle onChange={() => {

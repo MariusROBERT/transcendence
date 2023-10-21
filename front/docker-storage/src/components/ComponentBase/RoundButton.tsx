@@ -40,11 +40,11 @@ export function RoundButton(
       : isHovered
         ? icon_size * 1.2
         : icon_size;
-    const borderColor = isClicked
-      ? color.white
-      : isHovered
-        ? color.beige
-        : color.grey;
+    // const borderColor = isClicked
+    //   ? color.white
+    //   : isHovered
+    //     ? color.beige
+    //     : color.grey;
 
     let opacity: number;
     isDisabled ? opacity = 0.2 : opacity = 1;
@@ -52,10 +52,11 @@ export function RoundButton(
 
     return {
       opacity: opacity,
-      backgroundImage: 'url(' + icon + ')',
-      backgroundPosition: 'center center',
-      backgroundSize: 'cover',
-      border: 'solid 2px' + borderColor,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: 'url(' + icon + ') center center / cover no-repeat',
+      border: 'solid 2px transparent',
       borderRadius: size / 2 + 'px',
       height: size + 'px',
       width: size + 'px',

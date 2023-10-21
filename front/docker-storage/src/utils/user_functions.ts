@@ -9,6 +9,8 @@ import { IUser } from './interfaces';
 import { Socket } from 'socket.io-client';
 
 export async function openChat(user: IUser, socket: Socket | undefined) {
+  console.log('user : ', user);
+  
   publish('open_chat', undefined);
   const res = await Fetch('channel/join_private', 'POST', JSON.stringify(user));
   const data = res?.json;

@@ -16,10 +16,9 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    notifsMsg?.forEach((el) => {
-      if (el.sender_id === otherUserId) {
-        console.log('coucoucccc');
-        return ;
+    notifsMsg?.filter((el) => {
+      if (el.sender_id !== otherUserId || el.channel_id !== otherUserId) {
+        return;
       }
     });
   }, [])
@@ -28,14 +27,17 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     async function getOtherUser() {
       const usr = (await (Fetch(`user/get_public_profile_by_id/${otherUserId}`, 'GET')))?.json;
       setUsr(usr);
-      setSocket(socket);
+      setSocket(usr.socket);
     }
     getOtherUser();
   }, [])
 
   const onclick = async () => {
     if (!usr) return;
-    openChat(usr, socket);
+    if (notifMsg?.priv_msg)
+      openChat(usr, socket);
+    else
+      openChat(usr, socket);
     if (setNotifsMsg && notifsMsg)
       setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
     try {
@@ -56,13 +58,13 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
         <div className='bar' />
         <div className='container'>
           <div className='username'>
-            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p>{notifFriends?.username} vous a demande en ami</p>
+            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{color: '#459DD3'}}>{notifFriends?.username}</span> vous a demande en ami</p>
           </div>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-              onClick={() => acceptFriendRequest(otherUserId)} />
+              onClick={() => {acceptFriendRequest(otherUserId)}} />
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-              onClick={() => declineFriendRequest(otherUserId)} />
+              onClick={() => {declineFriendRequest(otherUserId)}} />
           </div>
         </div>
         <Popup isVisible={visible} setIsVisible={setVisible}>
@@ -74,13 +76,12 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   return (
     <div className='notif'>
       <div className='bar' />
-      <div className='container'>
+      <div onClick={() => onclick()
+        } className='container'>
         <div className='username'>
-          {!notifMsg?.priv_msg ? (<p>{notifMsg?.channel_name}: Vous avez recu un message de {notifMsg?.sender_username} </p>) :
-            (<p> Vous avez recu un message de {notifMsg?.sender_username} </p>)}
+          {!notifMsg?.priv_msg ? (<p> <span style={{color: '#459DD3'}}>{notifMsg?.channel_name}</span>: Vous avez recu un message de {notifMsg?.sender_username} </p>) :
+            (<p> Vous avez recu un message de <span style={{color: '#459DD3'}} >{notifMsg?.sender_username} </span> </p>)}
         </div>
-        <div onClick={() => onclick()
-        }><button>Ouvrir la conversation</button></div>
       </div>
     </div>
   );

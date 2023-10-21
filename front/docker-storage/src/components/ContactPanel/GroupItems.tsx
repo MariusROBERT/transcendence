@@ -19,7 +19,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
   const mobile = window.innerWidth < 500;
 
   const groupStyle: React.CSSProperties = {
-    paddingTop: isOpen ? '15px' : '0px',
+    paddingTop: isOpen ? '25px' : '0px',
     paddingRight: '5px',
     display: 'flex',
     flexDirection: 'column',
@@ -29,7 +29,6 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     gap: '30px',
     transition: duration_ms + 'ms ease',
   };
-
 
   function openGroup() {
     setIsOpen(!isOpen);

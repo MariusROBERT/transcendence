@@ -11,7 +11,6 @@ const Navbar: React.FC = () => {
   const [profileVisible, setProfileVisible] = useState<boolean>(false);
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
-  // const [notifsMsg, setNotifsMsg] = useState<Array<NotifMsg>>([]);
   const { user, socket, id } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
   const [msgs, setMsgs] = useState<Array<NotifMsg>>([])
@@ -26,7 +25,6 @@ const Navbar: React.FC = () => {
     setNotifsVisible(!notifsVisible);
   };
 
-  
   useEffect(() => {
     const getAllUnreadMsg = async () => {
       if (id !== user?.id) return
@@ -39,8 +37,8 @@ const Navbar: React.FC = () => {
       const msgs = await response.json();
       const uniqueSenders = new Set();
       const uniqueMsgs = msgs.filter((msg: any) => {
-        if (!uniqueSenders.has(msg.sender_id)) {
-          uniqueSenders.add(msg.sender_id);
+        if (!uniqueSenders.has(msg.channel_id)) {
+          uniqueSenders.add(msg.channel_id);
           return true;
         }
         return false;
@@ -53,9 +51,13 @@ const Navbar: React.FC = () => {
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = async (data: NotifMsg) => {
-      if (msgs.some((msg) => msg.sender_id === data.sender_id)) return;
+      if (msgs.some((msg) => msg.channel_id === data.channel_id))
+        return;
+      if (id === data.sender_id)
+        return;
       setMsgs([...msgs, data]);
     }
+
     socket?.on('notifMsg', onNotifMsg);
     return (() => {
       socket?.off('notifMsg', onNotifMsg);
@@ -84,15 +86,14 @@ const Navbar: React.FC = () => {
     setNotif();
   }, [recvInvitesFrom.length, socket]);
 
-
-  const mobile = window.innerWidth < 500;
-
   const navbarStyle: CSSProperties = {
-    top: 0,
-    right: 0,
+    top: '150px',
+    right: '50%',
+    transform: 'translate(50%, 50%)',
+    width: '400px',
     position: 'fixed',
     display: 'flex',
-    flexDirection: 'row-reverse',
+    justifyContent: 'space-around',
     borderRadius: '30px',
     zIndex: 111,
   };
@@ -103,76 +104,70 @@ const Navbar: React.FC = () => {
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
-    right: mobile ? 0 : 200,
+    top: '120px',
     minHeight: '100%',
-    background: 'black',
+    background: 'transparent',
   };
 
   return (
     <>
       <div style={navbarStyle}>
-        <div>
-          <div style={{ display: 'flex', background: 'black', borderRadius: '0 0 0 30px' }}>
-            {(notifs.length > 0 || msgs.length > 0) ? (
-              <div style={{ border: '3px solid green', borderRadius: '50%' }}>
-                <RoundButton
-                  icon={require('../../assets/imgs/icon_notif.png')}
-                  icon_size={50}
-                  onClick={() => showNotif()}
-                />
-              </div>
-            ) : (
-              <div style={{ border: '3px solid transparent', borderRadius: '50%' }}>
-                <RoundButton
-                  icon={require('../../assets/imgs/icon_notif.png')}
-                  icon_size={50}
-                  onClick={() => showNotif()}
-                />
-              </div>
-            )}
-            <RoundButton
-              icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
-              icon_size={50}
-              onClick={() => {
-                if (settingsVisible)
-                  setSettingsVisible(false);
-                setProfileVisible(!profileVisible);
-              }}
-            />
-            <RoundButton
-              icon={require('../../assets/imgs/icon_setting.png')}
-              icon_size={50}
-              onClick={() => {
-                if (profileVisible)
-                  setProfileVisible(false);
-                setSettingsVisible(!settingsVisible);
-              }}
-            />
-            <RoundButton
-              icon={require('../../assets/imgs/icon_logout.png')}
-              icon_size={50}
-              onClick={() => logout()}
-            />
-          </div>
-          {notifsVisible &&
-            <div style={notifstyle}>
-              {notifs.map((notif, index) => (
-                <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
-              ))}
-              {/* {notifsMsg.map((notifmsg, index) => (
-                <div key={index}><NotifCard notifMsg={notifmsg} setNotifsMsg={setNotifsMsg} notifsMsg={notifsMsg} otherUserId={notifmsg?.sender_id} /></div>
-              ))} */}
-              {msgs
-              // .filter((msg) => {
-                // notifsMsg.forEach((el) => {
-                  // msg.sender_id === el.sender_id
-                // })
-              // })
-                .map((msg, index) => (
-                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
-                ))}
-            </div>}
+        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-around', borderRadius: '0 0 0 30px' }}>
+          <RoundButton
+            icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/profile-svgrepo-com.png')}
+            icon_size={70}
+            onClick={() => {
+              if (settingsVisible)
+                setSettingsVisible(false);
+              setProfileVisible(!profileVisible);
+            }}
+          />
+          {(notifs.length > 0 || msgs.length > 0) ? (
+            <div style={{ border: '3px solid green', borderRadius: '50%' }}>
+              <RoundButton
+                icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
+                icon_size={70}
+                onClick={() => showNotif()}
+              />
+            </div>
+          ) : (
+            <div style={{ border: '3px solid transparent', borderRadius: '50%' }}>
+              <RoundButton
+                icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
+                icon_size={70}
+                onClick={() => showNotif()}
+              />
+            </div>
+          )}
+          <RoundButton
+            icon={require('../../assets/imgs/settings-svgrepo-com.png')}
+            icon_size={70}
+            onClick={() => {
+              if (profileVisible)
+                setProfileVisible(false);
+              setSettingsVisible(!settingsVisible);
+            }}
+          />
+          <RoundButton
+            icon={require('../../assets/imgs/logout-svgrepo-com.png')}
+            icon_size={70}
+            onClick={() => logout()}
+          />
         </div>
+        {notifsVisible &&
+          <div style={notifstyle}>
+            {notifs.map((notif, index) => (
+              <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
+            ))}
+            {msgs
+              .map((msg, index) => (
+                msg.priv_msg ? (
+                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
+                ) : (
+                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.channel_id} /></div>
+                )
+              ))}
+          </div>}
       </div>
       <GameInvites />
       <Settings isVisible={settingsVisible} setIsVisible={setSettingsVisible} />
