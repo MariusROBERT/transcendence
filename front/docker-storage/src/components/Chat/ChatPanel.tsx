@@ -32,6 +32,8 @@ export function ChatPanel({ viewport, width }: Props) {
   };
 
   useEffect(() => {
+    document.getElementById('inpt')?.focus();
+    
     socket?.on('message', getMsg);
     return () => {
       socket?.off('message', getMsg);
@@ -160,7 +162,7 @@ export function ChatPanel({ viewport, width }: Props) {
     if (current_chan != '') {
       return (
         <>
-          <textarea
+          <textarea id='inpt'
             value={inputValue}
             onChange={(evt) => {
               setInputValue(evt.target.value);
@@ -184,6 +186,7 @@ export function ChatPanel({ viewport, width }: Props) {
               marginBottom: '5px',
               overflowWrap: 'break-word',
               resize: 'none',
+              
             }}
           />
           <RoundButton
