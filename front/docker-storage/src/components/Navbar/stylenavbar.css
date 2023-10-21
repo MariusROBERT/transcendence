@@ -8,12 +8,20 @@
     justify-content: center;
     align-items: center;
     align-content: center;
-    background: #d8e2e9;
+    /* background: #2b2b2b; */
     padding: 15px 10px;
     margin: 5px;
     border-radius: 6px;
-    border: 2px solid rgb(255, 255, 255);
-    color: #2d2d2d;
+    color: #e0e0e0;
+    /* color: #2d2d2d; */
+    transition: 0.3s ease-in-out; 
+    /* border-left: 0.5px solid grey; */
+    border-bottom: 0.5px solid grey;
+}
+
+.notif:hover {
+    background: linear-gradient(to left, #2b2b2b 10%, rgb(26, 26, 26) 90%);
+
 }
 
 .notif .container {

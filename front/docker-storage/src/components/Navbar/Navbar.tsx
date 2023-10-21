@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
             }}
           />
           {(notifs.length > 0 || msgs.length > 0) ? (
-            <div style={{ border: '3px solid green', borderRadius: '50%' }}>
+            <div style={{ border: '3px solid #0058aa', borderRadius: '50%' }}>
               <RoundButton
                 icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
                 icon_size={70}
