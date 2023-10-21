@@ -6,14 +6,12 @@ import CreateChat, { createChatStyle } from './CreateChat';
 import { Button } from '../ComponentBase/Button';
 import Popup from '../ComponentBase/Popup';
 import EnterPassword from './EnterPassword';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
-interface Props {
-  input: string;
-  setInput: (isVisible: string) => void;
-  channels: ChannelPublicPass[] | undefined;
-}
 
-export default function JoinChat({ input, setInput, channels }: Props) {
+export default function JoinChat() {
+  const { inputValueChatMenu, setInputValueChatMenu, isChatMenuOpen, setIsChatMenuOpen, channels } = useUIContext();
+
   const [channelStatus, SetChannelStatus] = useState<
     'all' | 'public' | 'protected'
   >('all');
@@ -27,7 +25,7 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     ? channels.filter((channel) => {
       const name = channel?.channel_name
         .toLowerCase()
-        .startsWith(input.toLowerCase());
+        .startsWith(inputValueChatMenu.toLowerCase());
 
       const status =
         channelStatus === 'all' || (channelStatus === 'public' && !channel.has_password) || (channelStatus === 'protected' && channel.has_password);
@@ -59,49 +57,53 @@ export default function JoinChat({ input, setInput, channels }: Props) {
     );
   }
 
+  if (!isChatMenuOpen) return (<></>);
+
   return (
-    <div style={createChatStyle}>
-      <ChatInput
-        input={input}
-        setInput={setInput}
-        OnClick={() => null}
-        OnEnter={() => null}
-      />
-      <select
-        value={channelStatus}
-        onChange={(e) =>
-          SetChannelStatus(e.target.value as 'all' | 'public' | 'protected')
-        }
-        style={{ borderRadius: '5px', margin: '10px' }}
-      >
-        <option value='all'>Tous</option>
-        <option value='public'>Public</option>
-        <option value='protected'>Protected</option>
-      </select>
-      {List()}
-      <div style={{ margin: '10px' }}>
-        <Button
-          onClick={() => {
-            setCreChatVisible(true);
-          }}
+    <Popup isVisible={isChatMenuOpen} onClose={() => setIsChatMenuOpen(false)}>
+      <div style={createChatStyle}>
+        <ChatInput
+          input={inputValueChatMenu}
+          setInput={setInputValueChatMenu}
+          OnClick={() => null}
+          OnEnter={() => null}
+        />
+        <select
+          value={channelStatus}
+          onChange={(e) =>
+            SetChannelStatus(e.target.value as 'all' | 'public' | 'protected')
+          }
+          style={{ borderRadius: '5px', margin: '10px' }}
         >
-          Create Channel
-        </Button>
+          <option value='all'>Tous</option>
+          <option value='public'>Public</option>
+          <option value='protected'>Protected</option>
+        </select>
+        {List()}
+        <div style={{ margin: '10px' }}>
+          <Button
+            onClick={() => {
+              setCreChatVisible(true);
+            }}
+          >
+            Create Channel
+          </Button>
+        </div>
+        <Popup isVisible={createChatVisible} onClose={() => setCreChatVisible(false)}>
+          <CreateChat
+            name={''}
+            visible={createChatVisible}
+            setVisible={setCreChatVisible}
+          />
+        </Popup>
+        <Popup isVisible={enterPassword} onClose={() => setEnterPassword(false)}>
+          <EnterPassword
+            visible={enterPassword}
+            setVisible={setEnterPassword}
+            current={currentChannel}
+          />
+        </Popup>
       </div>
-      <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
-        <CreateChat
-          name={''}
-          visible={createChatVisible}
-          setVisible={setCreChatVisible}
-        />
-      </Popup>
-      <Popup isVisible={enterPassword} setIsVisible={setEnterPassword}>
-        <EnterPassword
-          visible={enterPassword}
-          setVisible={setEnterPassword}
-          current={currentChannel}
-        />
-      </Popup>
-    </div>
+    </Popup>
   );
 }

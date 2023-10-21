@@ -1,16 +1,17 @@
-import { Flex, Profil, RoundButton } from '..';
+import { Flex, RoundButton } from '..';
 import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
 import { color } from '../../utils';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   otherUser: IUser;
 }
 
 const UserBanner = ({ otherUser }: Props) => {
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
+  const { setIsProfileOpen } = useUIContext();
   const { id, user, socket } = useUserContext();
   const isMe = otherUser.id === user?.id;
   const [userBanner, setUserBanner] = useState<IUser>(otherUser.id === id && user ? user : otherUser);
@@ -39,9 +40,7 @@ const UserBanner = ({ otherUser }: Props) => {
     };
   }, [socket, userBanner]);
 
-  const displayName = (userBanner.username.length || '') > 11 ?
-    userBanner.username.slice(0, 11) + '...' :
-    userBanner.username;
+  const displayName = userBanner.username;
 
   const userBannerStyle: React.CSSProperties = {
     display: 'flex',
@@ -73,12 +72,11 @@ const UserBanner = ({ otherUser }: Props) => {
                src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
                alt={userBanner.user_status ? 'connected' : 'disconnected'} />
           <RoundButton icon={userBanner.urlImg} icon_size={50}
-                       onClick={() => setProfilVisible(true)} />
-          <p onClick={() => setProfilVisible(true)}>{displayName}</p>
+                       onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
+          <p onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{displayName}</p>
         </Flex>
         {!isMe && !mobile && <UserButton otherUser={otherUser} />}
       </div>
-      {profilVisible && <Profil otherUser={otherUser} isVisible={profilVisible} setIsVisible={setProfilVisible} />}
     </>
   );
 };

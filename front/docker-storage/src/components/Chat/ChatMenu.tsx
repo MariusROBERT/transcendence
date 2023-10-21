@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Fetch } from '../../utils';
-import Popup from '../ComponentBase/Popup';
-import JoinChat from './JoinChat';
 import ChatInput from './ChatInput';
-import { ChannelPublicPass } from '../../utils/interfaces';
 import { subscribe, unsubscribe } from '../../utils/event';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 /*
   //  If channel exist just join it and open right pannel
@@ -15,17 +13,13 @@ import { subscribe, unsubscribe } from '../../utils/event';
     //  In channel creation you can set name, password, type, and directly add users/admin
 */
 export function ChatMenu() {
-  const [inputValue, setInputValue] = useState<string>('');
-  const [joinChatVisible, setJoinChatVisible] = useState<boolean>(false);
-  const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(
-    undefined,
-  );
+  const { inputValueChatMenu, setInputValueChatMenu, setIsChatMenuOpen, channels, setChannels } = useUIContext();
 
   //  TODO: clean here
   async function OnJoinChannel() {
     const res = await Fetch('channel/public_all', 'GET');
     setChannels(res?.json);
-    setJoinChatVisible(true);
+    setIsChatMenuOpen(true);
   }
 
   useEffect(() => {
@@ -40,18 +34,11 @@ export function ChatMenu() {
   return (
     <div>
       <ChatInput
-        input={inputValue}
-        setInput={setInputValue}
+        input={inputValueChatMenu}
+        setInput={setInputValueChatMenu}
         OnClick={OnJoinChannel}
         OnEnter={() => void 0}
       />
-      <Popup isVisible={joinChatVisible} setIsVisible={setJoinChatVisible}>
-        <JoinChat
-          input={inputValue}
-          setInput={setInputValue}
-          channels={channels}
-        />
-      </Popup>
     </div>
   );
 }

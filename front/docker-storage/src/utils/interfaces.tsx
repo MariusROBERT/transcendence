@@ -103,13 +103,6 @@ export interface IUser {
   blocked: number[];
 }
 
-export interface LeaderboardProps {
-  //isVisible: boolean;
-  //setIsVisible: (b: boolean) => void;
-  searchTerm: string;
-}
-
-
 export interface UserButtonsProps {
   id: number | undefined;
 }

@@ -1,19 +1,34 @@
 import { IUser } from '../../utils/interfaces';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserButton } from '../User/UserButton';
 import { useUserContext } from '../../contexts';
 import { Popup } from '../index';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { Fetch } from '../../utils';
 
-export interface ProfilProps {
-  otherUser: IUser | undefined | null;
-  onClose?: () => void;
-  isVisible: boolean;
-  setIsVisible: (value: boolean) => void;
-}
 
-export default function Profil(props: ProfilProps) {
-  const { user } = useUserContext();
+export default function Profil() {
+  const { isProfileOpen, setIsProfileOpen } = useUIContext();
+  const { id, user } = useUserContext();
   const mobile = window.innerWidth < 500;
+  const [profilUser, setProfilUser] = useState<IUser | undefined>(undefined);
+  
+
+
+  useEffect(() => {
+    async function setProfil() {
+      const profil = (await Fetch('user/get_public_profile_by_id/' + isProfileOpen, 'GET'))?.json;
+      if (profil)
+        return setProfilUser(profil);
+      return setProfilUser(undefined);
+    }
+
+    if (isProfileOpen === 0)
+      return setProfilUser(undefined);
+    if (isProfileOpen === id)
+      return setProfilUser(user);
+    setProfil();
+  }, [isProfileOpen]);
 
   const profilContainer: React.CSSProperties = {
     borderRadius: '10px',
@@ -29,17 +44,6 @@ export default function Profil(props: ProfilProps) {
     minWidth: '300px',
   };
 
-  if (!props.otherUser)
-    return (<div style={profilContainer}>
-      <p>User not found</p>
-    </div>);
-
-  const isMe = props.otherUser?.id === user?.id;
-  const displayName = props.otherUser?.username.length > 11 ?
-    props.otherUser?.username.slice(0, 11) + '...' :
-    props.otherUser?.username;
-
-
   const imgStyle = {
     width: '200px',
     borderRadius: '5px',
@@ -51,26 +55,29 @@ export default function Profil(props: ProfilProps) {
     height: '10px',
   };
 
+  if (isProfileOpen === 0)
+    return (<></>);
+
   return (
-    <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
+    <Popup isVisible={isProfileOpen !== 0} onClose={() => setIsProfileOpen(0)}>
       <div style={profilContainer}>
         {mobile ?
-          <h3>{displayName}</h3> :
-          <h2>{displayName}</h2>
+          <h3>{profilUser?.username}</h3> :
+          <h2>{profilUser?.username}</h2>
         }
-        <p>ID : {props.otherUser?.id}</p>
-        <img style={imgStyle} src={props.otherUser?.urlImg} alt={'user'} />
-        <img style={isMe ? statusStyle : (props.otherUser?.user_status ? statusStyle : imgStyle)}
-             src={props.otherUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
+        <p>ID : {profilUser?.id}</p>
+        <img style={imgStyle} src={profilUser?.urlImg} alt={'user'} />
+        <img style={isProfileOpen !== id ? statusStyle : (profilUser?.user_status ? statusStyle : imgStyle)}
+             src={profilUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
                require('../../assets/imgs/icon_red_disconnect.png')}
-             alt={props.otherUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
+             alt={profilUser?.user_status === 'on' ? 'connected' : 'disconnected'} />
         <hr style={{ width: '100%' }} />
         <p>LAST MATCHS</p>
         <p>--------------</p>
         <p>--------------</p>
         <p>LAST MATCHS</p>
-        <p>Winrate : {props.otherUser?.winrate}</p>
-        {!isMe && <UserButton otherUser={props.otherUser} />}
+        <p>Winrate : {profilUser?.winrate}</p>
+        {isProfileOpen !== id && profilUser && <UserButton otherUser={profilUser} />}
       </div>
     </Popup>
   );

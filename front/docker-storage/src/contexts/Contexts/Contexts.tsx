@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { GameContextProvider, UserContextProvider } from '..';
 import { FriendsRequestProvider } from '../FriendsRequestContext/FriendsRequestContext';
+import { UIContextProvider } from '../UIContext/UIContext';
 
 interface Props {
   children: ReactNode;
@@ -9,13 +10,15 @@ interface Props {
 export function Contexts({ children }: Props) {
   return (
     <>
-      <UserContextProvider>
-        <FriendsRequestProvider>
-          <GameContextProvider>
-            {children}
-          </GameContextProvider>
-        </FriendsRequestProvider>
-      </UserContextProvider>
+      <UIContextProvider>
+        <UserContextProvider>
+          <FriendsRequestProvider>
+            <GameContextProvider>
+              {children}
+            </GameContextProvider>
+          </FriendsRequestProvider>
+        </UserContextProvider>
+      </UIContextProvider>
     </>
   );
 }
