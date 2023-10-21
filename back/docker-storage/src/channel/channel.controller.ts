@@ -39,6 +39,7 @@ import {
   IsProtected,
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
+import { log } from 'console';
 
 @Controller('channel')
 export class ChannelController {
@@ -136,8 +137,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const chat = this.channelService.addUserInChannel(user.id, id);
-    return chat;
+    return this.channelService.addUserInChannel(user.id, id);
   }
 
   //  Quit channel
