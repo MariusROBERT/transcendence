@@ -49,8 +49,10 @@ export default function ChatInput({
           borderRadius: '10px',
           border: '0',
           position: 'relative',
-          width: mobile ? 180 : 315,
+          width: '100%',
+          // width: mobile ? 180 : '100%',
           backgroundColor: color.white,
+          boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
         }}
         placeholder='Search Channel'
         value={input}

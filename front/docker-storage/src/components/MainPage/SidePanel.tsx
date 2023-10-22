@@ -132,7 +132,7 @@ export function SidePanel({
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
             onClick={isOpen ? Close : Open}
-          />
+          />z
         </div>
       </div>
     );

@@ -16,17 +16,18 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     transition: duration_ms + 'ms ease',
   };
 
-  const mobile = window.innerWidth < 500;
+  // const mobile = window.innerWidth < 500;
 
   const groupStyle: React.CSSProperties = {
+    width: '100%',
     paddingTop: isOpen ? '25px' : '0px',
     paddingRight: '5px',
+    paddingLeft: '15px',
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: mobile ? 15 : 50,
+    // marginLeft: mobile ? 15 : 0,
     overflow: 'scroll',
     height: isOpen ? '100%' : '0px',
-    gap: '30px',
     transition: duration_ms + 'ms ease',
   };
 
@@ -50,6 +51,8 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
           <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
           <div style={buttonStyle}>
             <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {
+              console.log('wsshsh');
+              
               openGroup();
             }} /></div>
         </Background>

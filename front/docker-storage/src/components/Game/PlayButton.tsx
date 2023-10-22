@@ -1,4 +1,4 @@
-import { Flex, RoundButton, SwitchToggle } from '..';
+import { Flex, SwitchToggle } from '..';
 import { useGameContext } from '../../contexts';
 import { useEffect, useState } from 'react';
 import './playBtn.css';
@@ -20,7 +20,7 @@ export function PlayButton() {
         <div className='btnContainer' onClick={() => {
             joinQueue(isSpecial ? 'special' : 'normal');
           }}>
-          <img  src={require('../../assets/imgs/pngwing.com (3).png')} />
+          <img src={require('../../assets/imgs/pngwing.com (3).png')} />
         </div>
         {/* <RoundButton
           icon_size={mobile ? 175 : 200}

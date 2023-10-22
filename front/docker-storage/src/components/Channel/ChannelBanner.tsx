@@ -76,7 +76,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
       >
         <RoundButton
           icon_size={50}
-          icon={require('../../assets/imgs/icon_chat.png')}
+          icon={require('../../assets/imgs/icons8-chat-90.png')}
           onClick={OnJoinChannel}
         />
         <p style={{ fontSize: '20px' }}>
@@ -90,11 +90,13 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         flex_justifyContent={'flex-end'}
       >
         <RoundButton
-          icon={require('../../assets/imgs/icon_leave.png')}
+        icon_size={50}
+          icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
         ></RoundButton>
         <RoundButton
-          icon={require('../../assets/imgs/icon_options.png')}
+          icon_size={50}
+          icon={require('../../assets/imgs/icons8-option-96.png')}
           onClick={OnSetting}
         />
       </Flex>

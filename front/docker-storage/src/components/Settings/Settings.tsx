@@ -166,10 +166,12 @@ export default function Settings(props: Props) {
   };
 
   const mobile = window.innerWidth < 500;
-
-  const displayName = (userInfosSettings?.username.length || '') > 11 ?
+  let displayName = null;
+  if (userInfosSettings?.username) {
+    displayName = userInfosSettings?.username.length > 11 ?
     userInfosSettings?.username.slice(0, 11) + '...' :
     userInfosSettings?.username;
+  }
 
   return (
     <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>

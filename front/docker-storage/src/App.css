@@ -16,8 +16,8 @@ body {
 @font-face {
     font-family: 'title';
     src: local('techno_hideo'),
-    /* url('assets/fonts/techno_hideo.woff') format('woff'); */
-    url(' assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf') format('truetype');
+    url('assets/fonts/techno_hideo.woff') format('woff');
+    /* url(' assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf') format('truetype'); */
 }
 
 @font-face {

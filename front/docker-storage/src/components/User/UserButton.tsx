@@ -32,15 +32,15 @@ export function UserButton({ otherUser }: Props) {
     }}>
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-chat-90.png')}
             onClick={() => openChat(otherUser, socket)} />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
-          <RoundButton icon={require('../../assets/imgs/icon_play.png')}
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-play-64.png')}
             onClick={() => sendGameInvite(otherUser.id, 'normal')} />
         }
         {!friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) && !recvInvitesFrom?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')}
+          <RoundButton icon_size={40} icon={require('../../assets/imgs/icons8-add-friends-64 (1).png')}
             onClick={() => sendFriendRequest(otherUser.id)} />
         }
         {recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
@@ -52,17 +52,17 @@ export function UserButton({ otherUser }: Props) {
           </div>
         }
         {sendInvitesTo?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_close.png')}
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-cross-64.png')}
             onClick={() => cancelFriendRequest(otherUser.id)} />
         }
         {!blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_block.png')}
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-block-128.png')}
             onClick={() => {
               blockUser(otherUser.id);
             }} />
         }
         {blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_unblock.png')}
+          <RoundButton icon_size={40} icon={require('../../assets/imgs/icons8-cross-64.png')}
             onClick={() => {
               unblockUser(otherUser.id);
             }} />

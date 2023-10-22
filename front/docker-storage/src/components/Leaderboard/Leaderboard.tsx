@@ -65,7 +65,6 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   }, [searchTerm, allUsers, user]);
 
   const container: CSSProperties = {
-    background: 'grey',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
@@ -76,19 +75,20 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
 
   const userElementStyle: CSSProperties = {
     maxWidth: mobile ? 500 : 600,
-    border: '1px solid white',
+    borderBottom: '2px solid white',
     flexWrap: 'nowrap',
     display: 'flex',
     justifyContent: 'space-around',
     alignContent: 'center',
     background: '#646464',
+    // backgroundColor: '#001120',
+
     color: 'white',
     margin: '10px 0',
     padding: '10px',
     cursor: 'pointer',
     borderRadius: '10px',
   };
-
 
   return (
     <div style={container}>

@@ -26,24 +26,33 @@ export function Search(props: Props) {
     // eslint-disable-next-line
   }, [searchMode]);
 
+  const style: React.CSSProperties = {
+   position: 'absolute',
+   left: '48%',
+   transform: 'translate(-50%)', 
+   top: mobile ? 80 : 40,
+   border: '0',
+  }
+
   return (
-    <div style={{ zIndex: 2 }}>
+   <div style={{ zIndex: 2 }}>
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setSearchMode(true)}
                  isVisible={!searchMode}
-                 style={{ top: mobile ? 80 : -200 }}
+                 style={style}
       >
         {props.placeHolder || ''}
       </SearchBar>
       <Popup isVisible={searchMode} setIsVisible={setSearchMode}>
         <div style={{
+
           display: 'flex',
           minHeight: mobile ? 100 : '300px',
           flexDirection: 'column',
           alignItems: 'center',
           backgroundColor: 'grey',
           borderRadius: '10px',
-          padding: '10px',
+          padding: '15px',
         }}>
           <SearchBar setSearchTerm={props.setSearchTerm}
                      isVisible={searchMode}

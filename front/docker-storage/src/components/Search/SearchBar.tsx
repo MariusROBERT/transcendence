@@ -29,7 +29,6 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
         position: 'relative',
         display: 'flex',
         flexDirection: 'row',
-        paddingLeft: '10px',
         ...style,
       }}
       className={'text cursor_pointer'}
@@ -47,11 +46,14 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
       <input
         id={id}
         style={{
+          width: '100%',          
+          boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
+          paddingLeft: '10px',
           outline: 'none',
           borderRadius: '10px',
-          border: '0',
           position: 'relative',
-          width: mobile ? 200 : 315,
+          border: '0',
+          // width: mobile ? 200 : 315,
           backgroundColor: color.white,
         }}
         placeholder={children}
