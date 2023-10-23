@@ -8,12 +8,18 @@ import {
   UpdateChannelUsers,
   current_chan,
 } from '../../utils/channel_functions';
-import { ChannelMessage, IChatUser } from '../../utils/interfaces';
+import { ChannelCreate, ChannelMessage, IChatUser } from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
   viewport: Viewport;
   width: number;
+}
+
+interface PublicChannelDto {
+  id: number;
+  channel_name: string;
+  channel_priv_msg: boolean;
 }
 
 export function ChatPanel({ viewport, width }: Props) {
@@ -24,6 +30,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const { socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
+  const [channel, setChannel] = useState<PublicChannelDto>()
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
@@ -43,6 +50,17 @@ export function ChatPanel({ viewport, width }: Props) {
   const updateUsers = async (id: number) => {
     UpdateChannelUsers(id);
   };
+
+  const getChan = async() => {
+    const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
+    setChannel(chan);
+    console.log(chan);
+    
+  }
+
+  useEffect(() => {
+    getChan();
+  }, [id])
 
   useEffect(() => {
     socket?.on('join', updateUsers);
@@ -202,18 +220,21 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
+      {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
         style={{
+          border: '5px solid transparent',
+          borderTop: '5px solid rgba(0, 0, 0, 0.2)', 
+          paddingTop: '5px',
+          padding: '10px',
           height: viewport.height - 125 + 'px',
           width: width - 50 + 'px',
           margin: '30px',
           display: 'flex',
           flexDirection: 'column',
           gap: '5px 5px',
-          padding: '10px',
-          borderRadius: '15px',
           overflow: 'scroll',
         }}
         ref={msgsRef as React.RefObject<HTMLDivElement>}

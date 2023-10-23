@@ -5,11 +5,10 @@ import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import Profil from '../Profil/Profil';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Popup from '../ComponentBase/Popup';
-import { openChat } from '../../utils/user_functions';
 import { Fetch } from '../../utils';
-import { Socket } from 'socket.io-client';
 import { SetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
-import { publish } from '../../utils/event';
+import { publish, subscribe, unsubscribe } from '../../utils/event';
+import { openChat } from '../../utils/user_functions';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
@@ -36,7 +35,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   async function OnJoinChannel(name: string) {
     console.log('name: ', name);
     if (!usr) return ;
-    // openChat(usr, socket);
+    openChat(usr, socket);
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
