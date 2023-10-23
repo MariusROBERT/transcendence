@@ -122,6 +122,7 @@ const Navbar: React.FC = () => {
                   setIsSettingsOpen(false);
                 setIsProfileOpen(id);
               }}
+              hover
             />
             <div style={{
               border: (notifs.length > 0 || msgs.length > 0) ? '3px solid #0058aa' : '3px solid transparent',
@@ -131,6 +132,7 @@ const Navbar: React.FC = () => {
                 icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
                 icon_size={70}
                 onClick={showNotif}
+                hover
               />
             </div>
             <RoundButton
@@ -141,11 +143,13 @@ const Navbar: React.FC = () => {
                   setIsProfileOpen(0);
                 setIsSettingsOpen(true);
               }}
+              hover
             />
             <RoundButton
               icon={require('../../assets/imgs/logout-svgrepo-com.png')}
               icon_size={70}
               onClick={() => logout()}
+              hover
             />
           </div>
           {notifsVisible &&

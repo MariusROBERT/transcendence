@@ -9,21 +9,19 @@
     width: 100%;
 }
 .btnContainer{
-    color: #116abc;
-    transition: 0.5s;
+    color: #c50ce1;
     overflow: hidden;
-   
 }
-.btnContainer:hover{
-    background: #64aef2;
-    color: #050801;
-    box-shadow:
-                0 0 200px #b8dcfd;
-    box-shadow: 0 0 1px #b8dcfd,
-                0 0 25px #b8dcfd,
-                0 0 0px #b8dcfd,
-                0 0 200px #b8dcfd;
+
+.btnContainer > img{
+    transition: 0.5s;
 }
+
+.btnContainer:hover > img{
+    transition: 0.5s;
+    filter: drop-shadow(0 0 1px rgb(0, 180, 255));
+}
+
 .btnContainer span{
     position: absolute;
     display: block;

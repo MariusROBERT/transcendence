@@ -1,0 +1,7 @@
+.hover {
+    transition: .5s ease;
+}
+
+.hover:hover > button {
+    filter: drop-shadow(0 0 10px rgb(0, 180, 255));
+}
