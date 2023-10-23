@@ -20,14 +20,8 @@ export function PlayButton() {
         <div className='btnContainer' onClick={() => {
           joinQueue(isSpecial ? 'special' : 'normal');
         }}>
-          <img src={require('../../assets/imgs/pngwing.com (3).png')} />
+          <img src={require('../../assets/imgs/pngwing.com (3).png')}  alt={'Play'}/>
         </div>
-        {/* <RoundButton
-          icon_size={mobile ? 175 : 200}
-          icon={require('../../assets/imgs/icon_play.png')}
-          onClick={() => {
-            joinQueue(isSpecial ? 'special' : 'normal');
-          }} /> */}
         <Flex flex_direction={'row'}>
           <p>Special Mode: </p>
           <SwitchToggle onChange={() => {

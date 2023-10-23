@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { color, delay } from '../../utils';
+import { delay } from '../../utils';
+import './RoundButton.css'
 
 interface Props {
   icon: string;
@@ -7,6 +8,7 @@ interface Props {
   transition_duration_ms?: number;
   onClick: () => void;
   isDisabled?: boolean;
+  hover?: boolean;
 }
 
 export function RoundButton(
@@ -16,6 +18,7 @@ export function RoundButton(
     transition_duration_ms = 200,
     onClick,
     isDisabled,
+    hover = false,
   }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -40,11 +43,6 @@ export function RoundButton(
       : isHovered
         ? icon_size * 1.2
         : icon_size;
-    // const borderColor = isClicked
-    //   ? color.white
-    //   : isHovered
-    //     ? color.beige
-    //     : color.grey;
 
     let opacity: number;
     isDisabled ? opacity = 0.2 : opacity = 1;
@@ -73,6 +71,7 @@ export function RoundButton(
         justifyContent: 'center',
         alignItems: 'center',
       }}
+      className={hover ? 'hover' : ''}
     >
       <button disabled={isDisabled}
               style={getIconStyle()}
