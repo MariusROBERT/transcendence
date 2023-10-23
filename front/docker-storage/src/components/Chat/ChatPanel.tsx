@@ -52,6 +52,7 @@ export function ChatPanel({ viewport, width }: Props) {
   };
 
   const getChan = async() => {
+    if (id === -1) return ;
     const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
     setChannel(chan);
     console.log(chan);
@@ -204,7 +205,6 @@ export function ChatPanel({ viewport, width }: Props) {
               marginBottom: '5px',
               overflowWrap: 'break-word',
               resize: 'none',
-
             }}
           />
           <RoundButton

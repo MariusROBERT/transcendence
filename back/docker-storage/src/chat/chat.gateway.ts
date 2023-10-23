@@ -163,5 +163,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.msgsUnreadService.create(msg)
       }
     });
+
   }
 }

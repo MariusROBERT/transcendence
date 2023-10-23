@@ -1,19 +1,21 @@
-import React, {CSSProperties, useEffect, useState} from 'react';
-import {GameInvites, RoundButton,} from '..';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { GameInvites, RoundButton, } from '..';
 import Cookies from 'js-cookie';
-import {Fetch} from '../../utils';
-import {useFriendsRequestContext, useUserContext} from '../../contexts';
-import {IUser, NotifMsg} from '../../utils/interfaces';
+import { Fetch } from '../../utils';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
-import {useUIContext} from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { channel } from 'diagnostics_channel';
 
 const Navbar: React.FC = () => {
-  const {isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen} = useUIContext();
+  const { isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen } = useUIContext();
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
-  const {user, socket, id} = useUserContext();
-  const {recvInvitesFrom} = useFriendsRequestContext();
+  const { user, socket, id } = useUserContext();
+  const { recvInvitesFrom } = useFriendsRequestContext();
   const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
+  const [channelName, setChannelName] = useState<string>('');
 
   const logout = async () => {
     socket?.disconnect();
@@ -51,6 +53,16 @@ const Navbar: React.FC = () => {
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = async (data: NotifMsg) => {
+      const chan_name = localStorage.getItem('isChatOpen');
+      if (chan_name)
+        setChannelName(chan_name)
+      console.log('data.channel_name: ', data.channel_name);
+      console.log('chan_name: ', chan_name);
+      if (chan_name === data.channel_name) {
+        console.log('a quand meme ');
+        setMsgs(msgs.filter((el) => el.channel_name !== chan_name));
+        return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
+      }
       if (msgs.some((msg) => msg.channel_id === data.channel_id))
         return;
       if (id === data.sender_id)
@@ -62,7 +74,7 @@ const Navbar: React.FC = () => {
     return (() => {
       socket?.off('notifMsg', onNotifMsg);
     });
-  }, [socket, msgs]);
+  }, [socket, msgs, localStorage]);
 
   // friends request
   useEffect(() => {
@@ -113,7 +125,7 @@ const Navbar: React.FC = () => {
     <>
       <div style={navbarStyle}>
         <div>
-          <div style={{display: 'flex', width: '100%', justifyContent: 'space-around', borderRadius: '0 0 0 30px'}}>
+          <div style={{ display: 'flex', width: '100%', justifyContent: 'space-around', borderRadius: '0 0 0 30px' }}>
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/profile-svgrepo-com.png')}
               icon_size={70}
@@ -153,26 +165,26 @@ const Navbar: React.FC = () => {
             />
           </div>
           {notifsVisible &&
-              <div style={notifstyle}>
-                {notifs.map((notif, index) => (
-                  <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id || 0}/></div>
+            <div style={notifstyle}>
+              {notifs.map((notif, index) => (
+                <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id || 0} /></div>
+              ))}
+              {msgs
+                .map((msg, index) => (
+                  msg.priv_msg ? (
+                    <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
+                      otherUserId={msg?.sender_id || 0} />
+                    </div>
+                  ) : (
+                    <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
+                      otherUserId={msg?.channel_id || 0} />
+                    </div>
+                  )
                 ))}
-                {msgs
-                  .map((msg, index) => (
-                    msg.priv_msg ? (
-                      <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
-                                                  otherUserId={msg?.sender_id || 0}/>
-                      </div>
-                    ) : (
-                      <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
-                                                  otherUserId={msg?.channel_id || 0}/>
-                      </div>
-                    )
-                  ))}
-              </div>
+            </div>
           }
         </div>
-        <GameInvites/>
+        <GameInvites />
       </div>
     </>
   );

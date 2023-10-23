@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Popup from '../ComponentBase/Popup';
 import { Fetch } from '../../utils';
 import { SetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
-import { publish, subscribe, unsubscribe } from '../../utils/event';
+import { publish } from '../../utils/event';
 import { openChat } from '../../utils/user_functions';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
@@ -33,7 +33,6 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   }, [])
 
   async function OnJoinChannel(name: string) {
-    console.log('name: ', name);
     if (!usr) return ;
     openChat(usr, socket);
     UpdateChannelMessage(id);
@@ -46,8 +45,9 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const onclick = async () => {
     if (!usr || !notifMsg) return;
     OnJoinChannel(notifMsg.channel_name);
-    if (setNotifsMsg && notifsMsg)
+    if (setNotifsMsg && notifsMsg) {
       setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
+    }
     try {
       await fetch(`http://localhost:3001/api/msgsUnread/remove/${otherUserId}`, {
         method: 'DELETE',

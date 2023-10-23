@@ -48,6 +48,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
   }
 
   async function OnSetting() {
+    if (id == -1) return ;
     const res = await Fetch('channel/public/' + id, 'GET');
     await setPublicData(res?.json);
     setEditVisible(true);
