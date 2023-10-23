@@ -4,13 +4,11 @@ import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
 import { API_URL } from '../../utils/Global';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
-interface Props {
-  isVisible: boolean;
-  setIsVisible: (value: boolean) => void;
-}
 
-export default function Settings(props: Props) {
+export default function Settings() {
+  const { isSettingsOpen, setIsSettingsOpen } = useUIContext();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
@@ -25,7 +23,7 @@ export default function Settings(props: Props) {
   const [is2fa, setIs2fa] = useState<boolean>(false);
 
   useEffect(() => {
-    if (props.isVisible) {
+    if (isSettingsOpen) {
       const getUserInfos = async () => {
         const user = (await Fetch('user', 'GET'))?.json;
         if (user) {
@@ -39,7 +37,7 @@ export default function Settings(props: Props) {
       setErrorMessage('');
       setPictureError('');
     }
-  }, [props.isVisible]);
+  }, [isSettingsOpen]);
 
   // IMG
 
@@ -166,20 +164,14 @@ export default function Settings(props: Props) {
   };
 
   const mobile = window.innerWidth < 500;
-  let displayName = null;
-  if (userInfosSettings?.username) {
-    displayName = userInfosSettings?.username.length > 11 ?
-    userInfosSettings?.username.slice(0, 11) + '...' :
-    userInfosSettings?.username;
-  }
 
   return (
-    <Popup isVisible={props.isVisible} setIsVisible={props.setIsVisible}>
+    <Popup isVisible={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}>
       <div>
         <form onSubmit={saveModifications} style={settingsStyle}>
           {mobile ?
-            <h3>{displayName}</h3> :
-            <h2>{displayName}</h2>
+            <h3>{userInfosSettings?.username}</h3> :
+            <h2>{userInfosSettings?.username}</h2>
           }
           <div>
             <div style={modifContainerImage}>

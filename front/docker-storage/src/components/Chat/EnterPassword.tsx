@@ -6,6 +6,7 @@ import { ChannelPublicPass } from '../../utils/interfaces';
 import {
   UpdateChannelMessage,
   UpdateChannelUsers,
+  current_chan,
 } from '../../utils/channel_functions';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
@@ -24,6 +25,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
+    if (current?.channel_name === current_chan) return;
     const res = await Fetch(
       'channel/add_user/' + current?.id,
       'POST',

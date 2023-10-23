@@ -3,7 +3,6 @@ import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
 import { SetCurrChan } from '../../utils/channel_functions';
-import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -11,6 +10,8 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
+  contextIsOpen: boolean;
+  setContextIsOpen: (isOpen: boolean) => void | undefined;
 }
 
 export function SidePanel({
@@ -19,6 +20,8 @@ export function SidePanel({
                             width,
                             isLeftPanel,
                             duration_ms = 1000,
+                            contextIsOpen,
+                            setContextIsOpen,
                           }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -26,41 +29,16 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const { socket, id } = useUserContext();
-
-  const Remove = async (uid: number) => {
-    if (!isLeftPanel && uid === id) Close();
-  };
+  const { socket } = useUserContext();
 
   useEffect(() => {
-    socket?.on('remove', Remove);
-    return () => {
-      socket?.off('remove', Remove);
-    };
-  });
-
-  useEffect(() => {
-    subscribe('open_chat', () => {
-      if (!isLeftPanel) Open();
-    });
-    return () => {
-      unsubscribe('open_chat', () => null);
-    };
-  }, [isLeftPanel]);
-
-  useEffect(() => {
-    subscribe('close_chat', () => {
-      if (!isLeftPanel) Close();
-    });
-    return () => {
-      unsubscribe('close_chat', () => {
-        console.log('unsubscribe close_chat');
-      });
-    };
-  }, [isLeftPanel]);
+    if (contextIsOpen)
+      Open();
+  }, [contextIsOpen]);
 
   async function Close() {
     if (isMoving) return;
+    setContextIsOpen(false);
     if (!isLeftPanel) {
       socket?.emit('leave');
       SetCurrChan('');
@@ -75,6 +53,7 @@ export function SidePanel({
   }
 
   async function Open() {
+    setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);
     await delay(duration_ms);
@@ -122,7 +101,7 @@ export function SidePanel({
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
-  if (!isMoving && !isOpen) {
+  if (!isMoving && !contextIsOpen) {
     return (
       <div
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
@@ -131,8 +110,8 @@ export function SidePanel({
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
-            onClick={isOpen ? Close : Open}
-          />z
+            onClick={contextIsOpen ? Close : Open}
+          />
         </div>
       </div>
     );
@@ -144,7 +123,7 @@ export function SidePanel({
         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
-          onClick={isOpen ? Close : Open}
+          onClick={contextIsOpen ? Close : Open}
         />
       </div>
       <div style={{ overflow: 'hidden', display: 'flex', height: '100%' }}>

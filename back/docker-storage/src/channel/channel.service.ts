@@ -318,8 +318,10 @@ export class ChannelService {
     const channel = await this.getChannelById(id);
     const user = await this.userService.getUserById(userid);
     const allusers = await this.userService.getUsersInChannels(id);
-    if (allusers.some((u) => u.id === userid))
-      throw new ConflictException('User already in channel');
+    if (allusers.some((u) => u.id === userid)){
+      // throw new ConflictException('User already in channel');
+      return this.returnPublicData(channel);
+    }
     const currentUsers = await this.userService.getFullUsersInChannels(id);
     currentUsers.push(user);
     channel.users = currentUsers;

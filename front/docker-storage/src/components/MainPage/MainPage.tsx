@@ -1,8 +1,10 @@
-import { color, useIsWindowFocused, Viewport } from '../../utils';
-import { Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel } from '..';
-import React, { useEffect, useState } from 'react';
-import { Search } from '../Search/Search';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import {color, useIsWindowFocused, Viewport} from '../../utils';
+import {Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel, Profil, Settings, Leaderboard} from '..';
+import React, {useEffect, useState} from 'react';
+import {Search} from '../Search/Search';
+import {useFriendsRequestContext, useUserContext} from '../../contexts';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
+import JoinChat from '../Chat/JoinChat';
 
 interface Props {
   panelWidth: number;
@@ -12,8 +14,12 @@ interface Props {
 export function MainPage({ panelWidth, viewport }: Props) {
   const focused = useIsWindowFocused();
   const [searchTerm, setSearchTerm] = useState('');
-  const { fetchContext, user } = useUserContext();
-  const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const {fetchContext, user} = useUserContext();
+  const {fetchFriendsRequestContext} = useFriendsRequestContext();
+  const { 
+    isChatOpen, setIsChatOpen, 
+    isContactOpen, setIsContactOpen
+  } = useUIContext();
 
   useEffect(() => {
     if (focused) {
@@ -37,7 +43,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                   flex_alignItems={'stretch'} forceStyle={{ zIndex: 2 }}>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} contextIsOpen={isContactOpen} setContextIsOpen={setIsContactOpen}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel viewport={viewport} />
           </Background>
@@ -46,13 +52,17 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <PlayButton />
         </Background>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen}>
           <Background>
             <ChatPanel viewport={viewport} width={panelWidth} />
           </Background>
         </SidePanel>
       </Background>
+      <Leaderboard searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Navbar />
+      <Profil />
+      <Settings />
+      <JoinChat />
     </div>
   );
 }

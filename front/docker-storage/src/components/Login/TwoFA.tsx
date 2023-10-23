@@ -20,7 +20,7 @@ export default function TwoFA(props: Props) {
   }, [props.isVisible]);
 
   return (
-    <Popup setIsVisible={props.setIsVisible}
+    <Popup onClose={() => props.setIsVisible(false)}
            isVisible={props.isVisible}
            style={{
              display: 'flex',

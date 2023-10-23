@@ -1,19 +1,19 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { GameInvites, Profil, RoundButton, Settings } from '..';
+import React, {CSSProperties, useEffect, useState} from 'react';
+import {GameInvites, RoundButton,} from '..';
 import Cookies from 'js-cookie';
-import { Fetch } from '../../utils';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
-import { IUser, NotifMsg } from '../../utils/interfaces';
+import {Fetch} from '../../utils';
+import {useFriendsRequestContext, useUserContext} from '../../contexts';
+import {IUser, NotifMsg} from '../../utils/interfaces';
 import NotifCard from './notifCard';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 const Navbar: React.FC = () => {
-  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
-  const [profileVisible, setProfileVisible] = useState<boolean>(false);
+  const {isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen} = useUIContext();
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
-  const { user, socket, id } = useUserContext();
-  const { recvInvitesFrom } = useFriendsRequestContext();
-  const [msgs, setMsgs] = useState<Array<NotifMsg>>([])
+  const {user, socket, id} = useUserContext();
+  const {recvInvitesFrom} = useFriendsRequestContext();
+  const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
 
   const logout = async () => {
     socket?.disconnect();
@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const getAllUnreadMsg = async () => {
-      if (id !== user?.id) return
+      if (id !== user?.id) return;
       const response = await fetch(`http://localhost:3001/api/msgsUnread/user/${id}`, {
         method: 'GET',
         headers: {
@@ -44,9 +44,9 @@ const Navbar: React.FC = () => {
         return false;
       });
       setMsgs(uniqueMsgs);
-    }
+    };
     getAllUnreadMsg();
-  }, [socket])
+  }, [socket]);
 
   // recv msg instant
   useEffect(() => {
@@ -56,13 +56,13 @@ const Navbar: React.FC = () => {
       if (id === data.sender_id)
         return;
       setMsgs([...msgs, data]);
-    }
+    };
 
     socket?.on('notifMsg', onNotifMsg);
     return (() => {
       socket?.off('notifMsg', onNotifMsg);
-    })
-  }, [socket, msgs])
+    });
+  }, [socket, msgs]);
 
   // friends request
   useEffect(() => {
@@ -112,66 +112,64 @@ const Navbar: React.FC = () => {
   return (
     <>
       <div style={navbarStyle}>
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-around', borderRadius: '0 0 0 30px' }}>
-          <RoundButton
-            icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/profile-svgrepo-com.png')}
-            icon_size={70}
-            onClick={() => {
-              if (settingsVisible)
-                setSettingsVisible(false);
-              setProfileVisible(!profileVisible);
-            }}
-          />
-          {(notifs.length > 0 || msgs.length > 0) ? (
-            <div style={{ border: '3px solid #0058aa', borderRadius: '50%' }}>
+        <div>
+          <div style={{display: 'flex', width: '100%', justifyContent: 'space-around', borderRadius: '0 0 0 30px'}}>
+            <RoundButton
+              icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/profile-svgrepo-com.png')}
+              icon_size={70}
+              onClick={() => showNotif()}
+            />
+            <div style={{
+              border: (notifs.length > 0 || msgs.length > 0) ? '3px solid #0058aa' : '3px solid transparent',
+              borderRadius: '50%'
+            }}>
               <RoundButton
-                icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
-                icon_size={70}
-                onClick={() => showNotif()}
+                icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
+                icon_size={50}
+                onClick={() => {
+                  if (isSettingsOpen)
+                    setIsSettingsOpen(false);
+                  setIsProfileOpen(id);
+                }}
               />
             </div>
-          ) : (
-            <div style={{ border: '3px solid transparent', borderRadius: '50%' }}>
-              <RoundButton
-                icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
-                icon_size={70}
-                onClick={() => showNotif()}
-              />
-            </div>
-          )}
-          <RoundButton
-            icon={require('../../assets/imgs/settings-svgrepo-com.png')}
-            icon_size={70}
-            onClick={() => {
-              if (profileVisible)
-                setProfileVisible(false);
-              setSettingsVisible(!settingsVisible);
-            }}
-          />
-          <RoundButton
-            icon={require('../../assets/imgs/logout-svgrepo-com.png')}
-            icon_size={70}
-            onClick={() => logout()}
-          />
+            <RoundButton
+              icon={require('../../assets/imgs/icon_setting.png')}
+              icon_size={50}
+              onClick={() => {
+                if (isProfileOpen)
+                  setIsProfileOpen(0);
+                setIsSettingsOpen(true);
+              }}
+            />
+            <RoundButton
+              icon={require('../../assets/imgs/icon_logout.png')}
+              icon_size={50}
+              onClick={() => logout()}
+            />
+          </div>
+          {notifsVisible &&
+              <div style={notifstyle}>
+                {notifs.map((notif, index) => (
+                  <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id}/></div>
+                ))}
+                {msgs
+                  .map((msg, index) => (
+                    msg.priv_msg ? (
+                      <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
+                                                  otherUserId={msg?.sender_id}/>
+                      </div>
+                    ) : (
+                      <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
+                                                  otherUserId={msg?.channel_id}/>
+                      </div>
+                    )
+                  ))}
+              </div>
+          }
         </div>
-        {notifsVisible &&
-          <div style={notifstyle}>
-            {notifs.map((notif, index) => (
-              <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id} /></div>
-            ))}
-            {msgs
-              .map((msg, index) => (
-                msg.priv_msg ? (
-                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.sender_id} /></div>
-                ) : (
-                  <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs} otherUserId={msg?.channel_id} /></div>
-                )
-              ))}
-          </div>}
+        <GameInvites/>
       </div>
-      <GameInvites />
-      <Settings isVisible={settingsVisible} setIsVisible={setSettingsVisible} />
-      <Profil otherUser={user} isVisible={profileVisible} setIsVisible={setProfileVisible} />
     </>
   );
 };
