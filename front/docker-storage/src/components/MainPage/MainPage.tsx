@@ -42,7 +42,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
             <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
-        <Background bg_color={color.clear} flex_justifyContent={'space-around'}>
+        <Background bg_color={color.clear} >
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <PlayButton />
         </Background>
@@ -58,7 +58,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
 }
 
 const MainPageStyle: React.CSSProperties = {
-  //border: '4px solid red',
   position: 'relative',
   width: '100%',
   height: '100%',
