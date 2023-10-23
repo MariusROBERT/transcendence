@@ -33,7 +33,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     document.getElementById('inpt')?.focus();
-    
+
     socket?.on('message', getMsg);
     return () => {
       socket?.off('message', getMsg);
@@ -126,7 +126,7 @@ export function ChatPanel({ viewport, width }: Props) {
     if (inputValue.length <= 0 || inputValue.length > 256) return;
     if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
-    socket?.emit('message', { message: inputValue, channel: chan });
+    socket?.emit('message', { message: inputValue, channel: chan } as any);
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
@@ -186,7 +186,7 @@ export function ChatPanel({ viewport, width }: Props) {
               marginBottom: '5px',
               overflowWrap: 'break-word',
               resize: 'none',
-              
+
             }}
           />
           <RoundButton
@@ -209,7 +209,6 @@ export function ChatPanel({ viewport, width }: Props) {
           height: viewport.height - 125 + 'px',
           width: width - 50 + 'px',
           margin: '30px',
-          // backgroundColor: color.grey,
           display: 'flex',
           flexDirection: 'column',
           gap: '5px 5px',
@@ -233,9 +232,7 @@ export function ChatPanel({ viewport, width }: Props) {
         }}
       >
         {inputMessage()}
-        <Popup isVisible={userVisible} setIsVisible={setUserVisible}>
-          <ChatUser data={currUser} visibility={userVisible}></ChatUser>
-        </Popup>
+        <ChatUser data={currUser} visibility={userVisible} onClose={() => setUserVisible(false)}></ChatUser>
       </div>
     </Background>
   );

@@ -29,6 +29,7 @@ interface Props {
   margin?: string;
 
   fixed?: boolean;
+  onClick?: () => void;
 
   forceStyle?: React.CSSProperties;
 }
@@ -46,6 +47,7 @@ function Background({
                       margin = '0',
                       fixed = false,
                       forceStyle = {},
+                      onClick = () => void 0,
                     }: Props) {
   const style = {
     overflow: 'hidden',
@@ -67,7 +69,7 @@ function Background({
     ...forceStyle,
   };
 
-  return <div style={style}>{children}</div>;
+  return <div style={style} onClick={onClick}>{children}</div>;
 }
 
 export default Background;

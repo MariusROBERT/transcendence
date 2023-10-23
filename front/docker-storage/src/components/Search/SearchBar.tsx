@@ -26,7 +26,6 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
         backgroundColor: color.white,
         height: mobile ? 40 : 60,
         width: mobile ? 250 : 400,
-        position: 'relative',
         display: 'flex',
         flexDirection: 'row',
         ...style,

@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {
   children: React.ReactNode;
   isVisible: boolean;
-  setIsVisible: (isVisible: boolean) => void;
+  onClose: () => void;
   style?: React.CSSProperties;
   mainDivStyle?: React.CSSProperties;
 }
@@ -19,7 +19,7 @@ export default function Popup(props: Props) {
 
   function escape(e: KeyboardEvent) {
     if (e.key === 'Escape' && props.isVisible)
-      props.setIsVisible(false);
+      props.onClose();
   }
 
   React.useEffect(() => {
@@ -54,13 +54,13 @@ export default function Popup(props: Props) {
       }}
            onClick={(e) => {
              if (e.target === e.currentTarget) {
-               props.setIsVisible(false);
+               props.onClose();
              }
            }}></div>
       {
         props.isVisible &&
         (<div style={{ position: 'relative', ...props.style }}>
-          <p onClick={() => props.setIsVisible(false)}
+          <p onClick={() => props.onClose()}
              style={{
                position: 'absolute',
                top: '15px',

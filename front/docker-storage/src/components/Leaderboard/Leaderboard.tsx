@@ -1,16 +1,18 @@
 import { CSSProperties, useEffect, useState } from 'react';
-import { UserBanner } from '..';
-import { IUser, LeaderboardProps } from '../../utils/interfaces';
+import { Popup, SearchBar, UserBanner } from '..';
+import { IUser } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
-export function Leaderboard({ searchTerm }: LeaderboardProps) {
+export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string, setSearchTerm: (value: string) => void }) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  const { isLeaderboardOpen, setIsLeaderboardOpen } = useUIContext();
+
   useEffect(() => {
     setMobile(window.innerWidth < 650);
   }, [window.innerWidth]);
@@ -23,18 +25,10 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   useEffect(() => {
     const getAllProfil = async () => {
       await fetchFriendsRequestContext();
-      let cancelled = false;
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-      if (cancelled) { // todo : voir si cest utile ici
+      if (!users)
         return;
-      }
-      if (users && Array.isArray(users) && users.length === 0)
-        setErrorMessage('Aucun utilisateur trouvé.');
-      else setAllUsers(users);
-
-      return () => {
-        cancelled = true;
-      };
+      setAllUsers(users);
     };
     getAllProfil();
     // eslint-disable-next-line
@@ -65,11 +59,15 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   }, [searchTerm, allUsers, user]);
 
   const container: CSSProperties = {
+    background: 'grey',
+    padding: '10px',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
     maxHeight: '500px',
     overflowY: 'scroll',
+    borderRadius: '15px',
     // width: mobile ? 200 : 700,
   };
 
@@ -81,8 +79,6 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
     justifyContent: 'space-around',
     alignContent: 'center',
     background: '#646464',
-    // backgroundColor: '#001120',
-
     color: 'white',
     margin: '10px 0',
     padding: '10px',
@@ -90,21 +86,31 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
     borderRadius: '10px',
   };
 
+  if (!isLeaderboardOpen)
+    return (<></>);
+
   return (
-    <div style={container}>
-      {errorMessage && (
-        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
-      )}
-      <div className='container'>{userElements}</div>
-      {userElements.length === 0 && !errorMessage && (
-        <div style={{ color: 'white', marginTop: '5px' }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <p>No user found.</p>
-          </div>
-          <div style={{ ...userElementStyle, visibility: 'hidden' }} />
+    <Popup isVisible={isLeaderboardOpen} onClose={() => {setIsLeaderboardOpen(false)}}>
+
+      <div style={container}>
+        <div style={{display:'flex', justifyContent:'center'}}>
+          <SearchBar setSearchTerm={setSearchTerm}
+                      isVisible={isLeaderboardOpen}
+                      id={'searchBar'}>
+                      {'search for a user...'}
+          </SearchBar>
         </div>
-      )
-      }
-    </div>
+        {userElements}
+        {userElements.length === 0 && (
+          <div style={{ color: 'white', marginTop: '5px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <p>No user found.</p>
+            </div>
+            <div style={{ ...userElementStyle, visibility: 'hidden' }} />
+          </div>
+        )
+        }
+      </div>
+    </Popup>
   );
 }

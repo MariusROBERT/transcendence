@@ -25,8 +25,8 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
     paddingLeft: '15px',
     display: 'flex',
     flexDirection: 'column',
-    // marginLeft: mobile ? 15 : 0,
     overflow: 'scroll',
+    overflowX: 'hidden',
     height: isOpen ? '100%' : '0px',
     transition: duration_ms + 'ms ease',
   };
@@ -47,6 +47,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
           bg_color={color.grey}
           flex_direction={'row'}
           flex_justifyContent={'flex-end'}
+          onClick={openGroup}
         >
           <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
           <div style={buttonStyle}>

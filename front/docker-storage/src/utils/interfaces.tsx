@@ -106,13 +106,6 @@ export interface IUser {
   last_msg_date: Date;
 }
 
-export interface LeaderboardProps {
-  //isVisible: boolean;
-  //setIsVisible: (b: boolean) => void;
-  searchTerm: string;
-}
-
-
 export interface UserButtonsProps {
   id: number | undefined;
 }

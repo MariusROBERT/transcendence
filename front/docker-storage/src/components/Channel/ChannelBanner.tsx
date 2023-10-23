@@ -11,8 +11,10 @@ import { useUserContext } from '../../contexts';
 import EditChat from '../Chat/EditChat';
 import { useEffect, useState } from 'react';
 import { publish } from '../../utils/event';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 export function ChannelBanner({ id, name, type }: ChannelInfos) {
+  const { setIsChatOpen } = useUIContext();
   const { socket } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined);
@@ -25,7 +27,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
-    socket?.emit('join', { channel: name });
+    socket?.emit('join', { channel: name } as any);
     publish('open_chat', undefined);
   }
 
@@ -77,7 +79,10 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/icons8-chat-90.png')}
-          onClick={OnJoinChannel}
+          onClick={() => {
+            OnJoinChannel();
+            setIsChatOpen(true);
+          }}
         />
         <p style={{ fontSize: '20px' }}>
           {name.slice(0, 25)}
@@ -93,10 +98,10 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         icon_size={50}
           icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
-        ></RoundButton>
+        />
         <RoundButton
           icon_size={50}
-          icon={require('../../assets/imgs/icons8-option-96.png')}
+          icon={require('../../assets/imgs/settings-svgrepo-com.png')}
           onClick={OnSetting}
         />
       </Flex>
