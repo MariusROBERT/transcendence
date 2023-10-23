@@ -15,8 +15,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
   const [visible, setVisible] = useState<boolean>(false);
   const [usr, setUsr] = useState<IUser>();
-  const [socket, setSocket] = useState<Socket>();
-  const { id } = useUserContext()
+  const { id, socket } = useUserContext()
 
   useEffect(() => {
     notifsMsg?.filter((el) => {
@@ -30,14 +29,14 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     async function getOtherUser() {
       const usr = (await (Fetch(`user/get_public_profile_by_id/${otherUserId}`, 'GET')))?.json;
       setUsr(usr);
-      setSocket(usr.socket);
     }
     getOtherUser();
   }, [])
 
   async function OnJoinChannel(name: string) {
     console.log('name: ', name);
-    
+    if (!usr) return ;
+    // openChat(usr, socket);
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);

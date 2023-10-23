@@ -16,7 +16,7 @@ export function ContactPanel({ viewport }: Props) {
   const [friendList, setFriendList] = useState<IUser[]>([]);
   const [channelList, setChannelList] = useState<ChannelInfos[]>([]);
   const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
-
+  
   const mobile = viewport.width < 500;
 
   useEffect(() => {
@@ -52,33 +52,6 @@ export function ContactPanel({ viewport }: Props) {
     // eslint-disable-next-line
   }, [socket]);
 
-  const [hoveredStatesFriends, setHoveredStatesFriends] = useState(friendList.map(() => false));
-  const [hoveredStatesChannels, setHoveredStatesChannels] = useState(channelList.map(() => false));
-
-  const handleMouseEnter = (index: number, type: string) => {
-    if (type === 'friends') {
-      const updatedHoveredStates = [...hoveredStatesFriends];
-      updatedHoveredStates[index] = true;
-      setHoveredStatesFriends(updatedHoveredStates);
-    } else if (type === 'channels') {
-      const updatedHoveredStates = [...hoveredStatesChannels];
-      updatedHoveredStates[index] = true;
-      setHoveredStatesChannels(updatedHoveredStates);
-    }
-  };
-
-  const handleMouseLeave = (index: number, type: string) => {
-    if (type === 'friends') {
-      const updatedHoveredStates = [...hoveredStatesFriends];
-      updatedHoveredStates[index] = false;
-      setHoveredStatesFriends(updatedHoveredStates);
-    } else if (type === 'channels') {
-      const updatedHoveredStates = [...hoveredStatesChannels];
-      updatedHoveredStates[index] = false;
-      setHoveredStatesChannels(updatedHoveredStates);
-    }
-  };
-
   const onclick = () => {
     setCreChatVisible(true)
   }
@@ -106,12 +79,9 @@ export function ContactPanel({ viewport }: Props) {
                   alignContent: 'center',
                   marginLeft: '10px',
                   transition: 'transform 0.2s',
-                  transform: hoveredStatesFriends[index] ? 'translateY(6px)' : 'none',
                   borderBottom: '2px solid #C2D0D3',
                 }
               }
-                onMouseEnter={() => handleMouseEnter(index, 'friends')}
-                onMouseLeave={() => handleMouseLeave(index, 'friends')}
                 key={'friend' + friend.id}><UserBanner otherUser={friend} /></div>
             )}
           </ GroupItems>
@@ -145,12 +115,9 @@ export function ContactPanel({ viewport }: Props) {
                   alignContent: 'center',
                   marginLeft: '10px',
                   transition: 'transform 0.2s',
-                  transform: hoveredStatesChannels[index] ? 'translateY(6px)' : 'none',
                   borderBottom: '2px solid #C2D0D3',
                 }
               }
-                onMouseEnter={() => handleMouseEnter(index, 'channels')}
-                onMouseLeave={() => handleMouseLeave(index, 'channels')}
                 key={'channel' + channel.id}><ChannelBanner id={channel.id} name={channel.name} type={channel.type} /></div>
             )}
           </ GroupItems >

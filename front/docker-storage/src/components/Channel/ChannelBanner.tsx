@@ -1,5 +1,5 @@
 import { ChannelInfos, ChannelPublic } from '../../utils/interfaces';
-import { Flex, RoundButton } from '..';
+import { Flex, Popup, RoundButton } from '..';
 import { Fetch, color } from '../../utils';
 import {
   UpdateChannelMessage,
@@ -38,7 +38,6 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         value: res?.json?.channel_name,
       },
     });
-    //console.log(res?.json?.channel_name + ' ' + current_chan);
     if (res?.json?.channel_name === current_chan) {
       publish('close_chat', {
         detail: {

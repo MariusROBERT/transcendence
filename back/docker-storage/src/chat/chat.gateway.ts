@@ -101,8 +101,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, body: any) {
     
     const { message, channel } = body;
-    console.log('message: ', message);
-    console.log('channel: ', channel);
     let chanE;
 
     if (message.length > 256) return;
@@ -127,7 +125,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     
     const userE = await this.userService.getUserByUsername(payload.username);
-    console.log('userE: ', userE);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     const data: ChannelMessage = {

@@ -3,6 +3,7 @@ import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
 import { SetCurrChan } from '../../utils/channel_functions';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -35,6 +36,26 @@ export function SidePanel({
     if (contextIsOpen)
       Open();
   }, [contextIsOpen]);
+
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (!isLeftPanel) Open();
+    });
+    return () => {
+      unsubscribe('open_chat', () => null);
+    };
+  }, [isLeftPanel]);
+
+  useEffect(() => {
+    subscribe('close_chat', () => {
+      if (!isLeftPanel) Close();
+    });
+    return () => {
+      unsubscribe('close_chat', () => {
+        console.log('unsubscribe close_chat');
+      });
+    };
+  }, [isLeftPanel]);
 
   async function Close() {
     if (isMoving) return;
