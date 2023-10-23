@@ -51,8 +51,6 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
           <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
           <div style={buttonStyle}>
             <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {
-              console.log('wsshsh');
-              
               openGroup();
             }} /></div>
         </Background>

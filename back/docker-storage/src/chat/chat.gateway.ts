@@ -99,7 +99,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @UseGuards(ChatCheckGuard, BlockGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
+    
     const { message, channel } = body;
+    console.log('message: ', message);
+    console.log('channel: ', channel);
     let chanE;
 
     if (message.length > 256) return;
@@ -107,6 +110,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('error chan < 0');
       return;
     }
+
     //  Check if socket is in room
     const current_room = this.server.sockets.adapter.rooms.get(channel);
     if (!current_room?.has(client.id)) return;
@@ -121,7 +125,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const payload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
+    
     const userE = await this.userService.getUserByUsername(payload.username);
+    console.log('userE: ', userE);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     const data: ChannelMessage = {
