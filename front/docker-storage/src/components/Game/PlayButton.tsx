@@ -16,10 +16,10 @@ export function PlayButton() {
 
   return (
     <>
-      <Flex>
+      <div style={{height: '350px' }}>
         <div className='btnContainer' onClick={() => {
-            joinQueue(isSpecial ? 'special' : 'normal');
-          }}>
+          joinQueue(isSpecial ? 'special' : 'normal');
+        }}>
           <img src={require('../../assets/imgs/pngwing.com (3).png')} />
         </div>
         {/* <RoundButton
@@ -34,8 +34,8 @@ export function PlayButton() {
             setIsSpecial(!isSpecial);
           }} checked={isSpecial}></SwitchToggle>
         </Flex>
-      </Flex>
-      <div style={{ height: mobile ? 38 : 56 }} />
+        <div style={{ height: mobile ? 38 : 56 }} />
+      </div>
     </>
   );
 }
