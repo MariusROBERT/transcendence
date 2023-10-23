@@ -67,8 +67,8 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
               onClick={() => {declineFriendRequest(otherUserId)}} />
           </div>
         </div>
-        <Popup isVisible={visible} setIsVisible={setVisible}>
-          <Profil otherUser={notifFriends} isVisible={visible} setIsVisible={setVisible} />
+        <Popup isVisible={visible} onClose={() => setVisible(false)}>
+          <Profil />
         </Popup>
       </div>
     );

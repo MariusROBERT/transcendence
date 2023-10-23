@@ -27,7 +27,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
-    socket?.emit('join', { channel: name });
+    socket?.emit('join', { channel: name } as any);
     publish('open_chat', undefined);
   }
 
@@ -98,10 +98,10 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         icon_size={50}
           icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
-        ></RoundButton>
+        />
         <RoundButton
           icon_size={50}
-          icon={require('../../assets/imgs/icons8-option-96.png')}
+          icon={require('../../assets/imgs/settings-svgrepo-com.png')}
           onClick={OnSetting}
         />
       </Flex>

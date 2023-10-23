@@ -85,7 +85,6 @@ export function ContactPanel({ viewport }: Props) {
 
   return (
     <>
-
       <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 }}>
         <Background
           flex_gap={'1px 0px'}
@@ -118,21 +117,13 @@ export function ContactPanel({ viewport }: Props) {
           </ GroupItems>
           <GroupItems heading={'Channels'} duration_ms={900}>
             <div style={{ margin: '10px' }}>
-              {/* <Button
-                onClick={() => {
-                  setCreChatVisible(true);
-                }}
-              >
-                Create Channel
-              </Button>
-                 */}
               <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-plus-100.png')} onClick={onclick}
               ></RoundButton>
 
             </div>
             <div>
 
-              <Popup isVisible={createChatVisible} setIsVisible={setCreChatVisible}>
+              <Popup isVisible={createChatVisible} onClose={() => setCreChatVisible(false)}>
                 <CreateChat
                   name={''}
                   visible={createChatVisible}

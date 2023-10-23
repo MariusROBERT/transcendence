@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
     display: 'flex',
     justifyContent: 'space-around',
     borderRadius: '30px',
-    zIndex: 111,
+    zIndex: 0,
   };
 
   const notifstyle: CSSProperties = {
@@ -117,25 +117,25 @@ const Navbar: React.FC = () => {
             <RoundButton
               icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/profile-svgrepo-com.png')}
               icon_size={70}
-              onClick={() => showNotif()}
+              onClick={() => {
+                if (isSettingsOpen)
+                  setIsSettingsOpen(false);
+                setIsProfileOpen(id);
+              }}
             />
             <div style={{
               border: (notifs.length > 0 || msgs.length > 0) ? '3px solid #0058aa' : '3px solid transparent',
               borderRadius: '50%'
             }}>
               <RoundButton
-                icon={user?.urlImg ? user.urlImg : require('../../assets/imgs/icon_user.png')}
-                icon_size={50}
-                onClick={() => {
-                  if (isSettingsOpen)
-                    setIsSettingsOpen(false);
-                  setIsProfileOpen(id);
-                }}
+                icon={require('../../assets/imgs/notification-13-svgrepo-com.png')}
+                icon_size={70}
+                onClick={showNotif}
               />
             </div>
             <RoundButton
-              icon={require('../../assets/imgs/icon_setting.png')}
-              icon_size={50}
+              icon={require('../../assets/imgs/settings-svgrepo-com.png')}
+              icon_size={70}
               onClick={() => {
                 if (isProfileOpen)
                   setIsProfileOpen(0);
@@ -143,25 +143,25 @@ const Navbar: React.FC = () => {
               }}
             />
             <RoundButton
-              icon={require('../../assets/imgs/icon_logout.png')}
-              icon_size={50}
+              icon={require('../../assets/imgs/logout-svgrepo-com.png')}
+              icon_size={70}
               onClick={() => logout()}
             />
           </div>
           {notifsVisible &&
               <div style={notifstyle}>
                 {notifs.map((notif, index) => (
-                  <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id}/></div>
+                  <div key={index}><NotifCard notifFriends={notif} otherUserId={notif?.id || 0}/></div>
                 ))}
                 {msgs
                   .map((msg, index) => (
                     msg.priv_msg ? (
                       <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
-                                                  otherUserId={msg?.sender_id}/>
+                                                  otherUserId={msg?.sender_id || 0}/>
                       </div>
                     ) : (
                       <div key={index}><NotifCard notifMsg={msg} setNotifsMsg={setMsgs} notifsMsg={msgs}
-                                                  otherUserId={msg?.channel_id}/>
+                                                  otherUserId={msg?.channel_id || 0}/>
                       </div>
                     )
                   ))}
