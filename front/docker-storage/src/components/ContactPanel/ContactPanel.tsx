@@ -127,13 +127,6 @@ export function ContactPanel({ viewport }: Props) {
             borderColor={color.black}
             borderRadius={0}
           >
-            {/* <Background
-              bg_color={color.grey}
-              flex_direction={'row'}
-              flex_justifyContent={'flex-end'}
-            >
-              <h2 style={{ position: 'absolute', left: '5px' }}>Contacts</h2>
-            </Background> */}
           </Border>
         </Background >
       </div >
