@@ -1,5 +1,5 @@
 import React, { ReactNode, useState } from 'react';
-import { Background, Border, RoundButton } from '..';
+import { Background, Border } from '..';
 import { color } from '../../utils';
 
 interface Props {
@@ -10,13 +10,6 @@ interface Props {
 
 export function GroupItems({ children, heading, duration_ms }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const buttonStyle: React.CSSProperties = {
-    rotate: (isOpen ? 0 : 180) + 'deg',
-    transition: duration_ms + 'ms ease',
-  };
-
-  // const mobile = window.innerWidth < 500;
 
   const groupStyle: React.CSSProperties = {
     width: '100%',

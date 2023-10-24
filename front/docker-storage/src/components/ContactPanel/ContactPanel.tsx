@@ -65,7 +65,7 @@ export function ContactPanel({ viewport }: Props) {
           flex_justifyContent={'flex-start'}
         >
           <GroupItems heading={'Friends'} duration_ms={900}>
-            {friendList.map((friend: IUser, index: number) =>
+            {friendList.map((friend: IUser) =>
               <div style={
                 {
                   paddingBottom: '10px',
@@ -102,7 +102,7 @@ export function ContactPanel({ viewport }: Props) {
               </Popup>
             </div >
 
-            {channelList.map((channel: ChannelInfos, index: number) =>
+            {channelList.map((channel: ChannelInfos) =>
               <div style={
                 {
                   paddingBottom: '10px',

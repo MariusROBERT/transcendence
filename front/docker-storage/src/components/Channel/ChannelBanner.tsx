@@ -1,5 +1,5 @@
 import { ChannelInfos, ChannelPublic } from '../../utils/interfaces';
-import { Flex, Popup, RoundButton } from '..';
+import { Flex, RoundButton } from '..';
 import { Fetch, color } from '../../utils';
 import {
   UpdateChannelMessage,
