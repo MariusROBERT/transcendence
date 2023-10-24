@@ -1,5 +1,15 @@
 import {color, useIsWindowFocused, Viewport} from '../../utils';
-import {Background, ChatPanel, ContactPanel, Navbar, PlayButton, SidePanel, Profil, Settings, Leaderboard} from '..';
+import {
+  Background,
+  ChatPanel,
+  ContactPanel,
+  Navbar,
+  PlayButton,
+  SidePanel,
+  Profil,
+  Settings,
+  Leaderboard,
+} from '..';
 import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
@@ -16,8 +26,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const {fetchContext, user} = useUserContext();
   const {fetchFriendsRequestContext} = useFriendsRequestContext();
-  const { 
-    isChatOpen, setIsChatOpen, 
+  const {
+    isChatOpen, setIsChatOpen,
     isContactOpen, setIsContactOpen
   } = useUIContext();
 
@@ -42,16 +52,22 @@ export function MainPage({ panelWidth, viewport }: Props) {
   return (
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
-                  flex_alignItems={'stretch'} forceStyle={{ zIndex: 2 }}>
+                  flex_alignItems={'stretch'} forceStyle={{ zIndex: 2, position:'relative' }}>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} contextIsOpen={isContactOpen} setContextIsOpen={setIsContactOpen}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel viewport={viewport} />
           </Background>
         </SidePanel>
-        <Background bg_color={color.clear} >
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          margin: 'auto',
+        }}>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
+          <Navbar />
           <PlayButton />
-        </Background>
+          <div style={{height: 210}} />
+        </div>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen}>
           <Background>
             <ChatPanel viewport={viewport} width={panelWidth} />
@@ -59,7 +75,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
         </SidePanel>
       </Background>
       <Leaderboard searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <Navbar />
       <Profil />
       <Settings />
       <JoinChat />
