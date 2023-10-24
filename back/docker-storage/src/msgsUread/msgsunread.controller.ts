@@ -35,10 +35,8 @@ export class MsgsUnreadController {
       await this.msgsUnreadService.removeMsgsUnreadByChan(channel_id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        // Gérer le cas où aucun message non lu n'a été trouvé pour le channel_id spécifié
         throw new NotFoundException('No unread messages found for the specified sender');
       } else {
-        // Gérer d'autres erreurs potentielles
         throw error;
       }
     }
@@ -50,10 +48,8 @@ export class MsgsUnreadController {
       await this.msgsUnreadService.removeMsgsUnreadBySender(sender_id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        // Gérer le cas où aucun message non lu n'a été trouvé pour le sender_id spécifié
         throw new NotFoundException('No unread messages found for the specified sender');
       } else {
-        // Gérer d'autres erreurs potentielles
         throw error;
       }
     }

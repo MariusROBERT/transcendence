@@ -71,7 +71,6 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
           console.log(e);
         }
     }
-    
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {

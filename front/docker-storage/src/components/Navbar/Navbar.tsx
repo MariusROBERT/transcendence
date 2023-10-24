@@ -6,6 +6,7 @@ import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { current_chan } from '../../utils/channel_functions';
 
 const Navbar: React.FC = () => {
   const { isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen } = useUIContext();
@@ -28,6 +29,7 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const getAllUnreadMsg = async () => {
       if (id !== user?.id) return;
+      
       const response = await fetch(`http://localhost:3001/api/msgsUnread/user/${id}`, {
         method: 'GET',
         headers: {
@@ -51,13 +53,40 @@ const Navbar: React.FC = () => {
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = async (data: NotifMsg) => {
-      // if the chat is open : don't save the msg as unread
-      const chan_name = localStorage.getItem('isChatOpen');
-      if (chan_name === data.channel_name) {
-        setMsgs(msgs.filter((el) => el.channel_name !== chan_name));
-        return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
-      }
 
+      // if the chat is open : don't save the msg as unread
+      setMsgs(msgs.filter((el) => el.channel_name !== current_chan));
+      console.log('current_chan ', current_chan);
+      console.log('data.channel_name ', data.channel_name);
+      if (current_chan === data.channel_name) {
+
+        // return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
+        // if (data.priv_msg) {
+
+          // try {
+          //   return (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${data.channel_id}`, {
+          //     method: 'DELETE',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //     },
+          //   }))
+          // } catch (e) {
+          //   console.log(e);
+          // }
+        // }
+        // else {
+        //   try {
+        //     return  (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${data.channel_id}`, {
+        //       method: 'DELETE',
+        //       headers: {
+        //         'Content-Type': 'application/json',
+        //       },
+        //     }))
+        //   } catch (e) {
+        //     console.log(e);
+        //   }
+        // }
+      }
       if (msgs.some((msg) => msg.channel_id === data.channel_id))
         return;
       if (id === data.sender_id)
@@ -69,7 +98,7 @@ const Navbar: React.FC = () => {
     return (() => {
       socket?.off('notifMsg', onNotifMsg);
     });
-  }, [socket, msgs, localStorage]);
+  }, [socket, msgs]);
 
   // friends request
   useEffect(() => {
