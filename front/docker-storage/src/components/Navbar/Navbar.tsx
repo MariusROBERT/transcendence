@@ -6,7 +6,6 @@ import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
-import { channel } from 'diagnostics_channel';
 
 const Navbar: React.FC = () => {
   const { isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen } = useUIContext();
@@ -15,7 +14,6 @@ const Navbar: React.FC = () => {
   const { user, socket, id } = useUserContext();
   const { recvInvitesFrom } = useFriendsRequestContext();
   const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
-  const [channelName, setChannelName] = useState<string>('');
 
   const logout = async () => {
     socket?.disconnect();
@@ -55,8 +53,6 @@ const Navbar: React.FC = () => {
     const onNotifMsg = async (data: NotifMsg) => {
       // if the chat is open : don't save the msg as unread
       const chan_name = localStorage.getItem('isChatOpen');
-      if (chan_name)
-        setChannelName(chan_name);
       if (chan_name === data.channel_name) {
         setMsgs(msgs.filter((el) => el.channel_name !== chan_name));
         return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
