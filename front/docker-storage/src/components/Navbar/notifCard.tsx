@@ -33,10 +33,10 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   }, [])
 
   async function OnJoinChannel(name: string) {
-    if (!usr) return ;
-    openChat(usr, socket);
-    UpdateChannelMessage(id);
-    UpdateChannelUsers(id);
+    if (!usr || !notifMsg) return;
+    const chan_id = notifMsg?.channel_id;
+    UpdateChannelMessage(chan_id);
+    UpdateChannelUsers(chan_id);
     SetCurrChan(name);
     socket?.emit('join', { channel: name });
     publish('open_chat', undefined);
@@ -45,19 +45,40 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const onclick = async () => {
     if (!usr || !notifMsg) return;
     OnJoinChannel(notifMsg.channel_name);
-    if (setNotifsMsg && notifsMsg) {
-      setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
+    if (setNotifsMsg && notifsMsg) {      
+      if (notifMsg.priv_msg) {
+        setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
+        try {
+          const rep = (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${otherUserId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }))
+          console.log(rep.ok)
+          console.log('coucou pelo');
+    
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      else
+        setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== otherUserId));
+        try {
+          const rep = (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${otherUserId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }))
+          console.log(rep.ok)
+          console.log('coucou pelo');
+    
+        } catch (e) {
+          console.log(e);
+        }
     }
-    try {
-      await fetch(`http://localhost:3001/api/msgsUnread/remove/${otherUserId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-    } catch (e) {
-      console.log('que tchi');
-    }
+    
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {
@@ -66,13 +87,13 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
         <div className='bar' />
         <div className='container'>
           <div className='username'>
-            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{fontWeight: 'bold', color: '#459DD3'}}>{notifFriends?.username}</span> vous a demande en ami</p>
+            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifFriends?.username}</span> vous a demande en ami</p>
           </div>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-              onClick={() => {acceptFriendRequest(otherUserId)}} />
+              onClick={() => { acceptFriendRequest(otherUserId) }} />
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-              onClick={() => {declineFriendRequest(otherUserId)}} />
+              onClick={() => { declineFriendRequest(otherUserId) }} />
           </div>
         </div>
         <Popup isVisible={visible} onClose={() => setVisible(false)}>
@@ -81,14 +102,15 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       </div>
     );
   }
+
   return (
     <div className='notif'>
       <div className='bar' />
       <div onClick={() => onclick()
-        } className='container'>
+      } className='container'>
         <div className='username'>
-          {!notifMsg?.priv_msg ? (<p>Vous avez recu un message sur <span style={{fontWeight: 'bold', color: '#459DD3'}}>{notifMsg?.channel_name}</span></p>) :
-            (<p> Vous avez recu un message de <span style={{fontWeight: 'bold', color: '#459DD3'}} >{notifMsg?.sender_username} </span> </p>)}
+          {!notifMsg?.priv_msg ? (<p>Vous avez recu un message sur <span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifMsg?.channel_name}</span></p>) :
+            (<p> Vous avez recu un message de <span style={{ fontWeight: 'bold', color: '#459DD3' }} >{notifMsg?.sender_username} </span> </p>)}
         </div>
       </div>
     </div>

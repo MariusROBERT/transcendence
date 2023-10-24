@@ -362,7 +362,6 @@ export class UserService {
 
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
-    // Vérifiez si l'utilisateur existe dans la liste des administrateurs
     return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 

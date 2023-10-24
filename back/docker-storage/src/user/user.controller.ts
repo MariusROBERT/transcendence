@@ -27,10 +27,15 @@ import {
 } from './dto/user.dto';
 import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    @InjectRepository(ChannelEntity)
+    private readonly channelRepository: Repository<ChannelEntity>,) {
   }
 
   // --------- PROFILE --------- :

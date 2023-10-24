@@ -29,13 +29,28 @@ export class MsgsUnreadController {
 		return this.msgsUnreadService.remove(id);
 	}
 
-	@Delete('remove/:senderId')
-  async removeMsgsUnreadBySender(@Param('senderId') senderId: number): Promise<void> {
+	@Delete('remove_chan_by_chan_id/:channel_id')
+  async removeMsgsUnreadByChan(@Param('channel_id') channel_id: number): Promise<void> {
     try {
-      await this.msgsUnreadService.removeMsgsUnreadBySender(senderId);
+      await this.msgsUnreadService.removeMsgsUnreadByChan(channel_id);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        // Gérer le cas où aucun message non lu n'a été trouvé pour le senderId spécifié
+        // Gérer le cas où aucun message non lu n'a été trouvé pour le channel_id spécifié
+        throw new NotFoundException('No unread messages found for the specified sender');
+      } else {
+        // Gérer d'autres erreurs potentielles
+        throw error;
+      }
+    }
+  }
+
+  @Delete('remove_chan_by_sender_id/:sender_id')
+  async removeMsgsUnreadBySender(@Param('sender_id') sender_id: number): Promise<void> {
+    try {
+      await this.msgsUnreadService.removeMsgsUnreadBySender(sender_id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        // Gérer le cas où aucun message non lu n'a été trouvé pour le sender_id spécifié
         throw new NotFoundException('No unread messages found for the specified sender');
       } else {
         // Gérer d'autres erreurs potentielles

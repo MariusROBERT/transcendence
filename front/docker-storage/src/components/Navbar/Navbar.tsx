@@ -53,16 +53,15 @@ const Navbar: React.FC = () => {
   // recv msg instant
   useEffect(() => {
     const onNotifMsg = async (data: NotifMsg) => {
+      // if the chat is open : don't save the msg as unread
       const chan_name = localStorage.getItem('isChatOpen');
       if (chan_name)
-        setChannelName(chan_name)
-      console.log('data.channel_name: ', data.channel_name);
-      console.log('chan_name: ', chan_name);
+        setChannelName(chan_name);
       if (chan_name === data.channel_name) {
-        console.log('a quand meme ');
         setMsgs(msgs.filter((el) => el.channel_name !== chan_name));
         return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
       }
+
       if (msgs.some((msg) => msg.channel_id === data.channel_id))
         return;
       if (id === data.sender_id)

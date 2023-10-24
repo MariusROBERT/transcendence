@@ -32,9 +32,18 @@ export class MsgsUnreadService {
 		}
 	}
 
-	async removeMsgsUnreadBySender(senderId: number): Promise<void> {
+	async removeMsgsUnreadByChan(channel_id: number): Promise<void> {
 		try {
-			const msgsUnread = await this.msgsUnreadRepository.find({ where: { sender_id: senderId } });
+			const msgsUnread = await this.msgsUnreadRepository.find({ where: { channel_id: channel_id } });
+			await this.msgsUnreadRepository.remove(msgsUnread);
+		} catch (e) {
+			throw new NotFoundException('No unread messages found for the specified sender');
+		}
+	}
+
+	async removeMsgsUnreadBySender(sender_id: number): Promise<void> {
+		try {
+			const msgsUnread = await this.msgsUnreadRepository.find({ where: { sender_id: sender_id } });
 			await this.msgsUnreadRepository.remove(msgsUnread);
 		} catch (e) {
 			throw new NotFoundException('No unread messages found for the specified sender');
