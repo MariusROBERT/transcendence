@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Viewport, Fetch } from '../../utils';
-import { Background, RoundButton, ChatMessage, ChanUserList, Popup } from '..';
+import { Background, RoundButton, ChatMessage, ChanUserList } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
 import {
@@ -8,7 +8,7 @@ import {
   UpdateChannelUsers,
   current_chan,
 } from '../../utils/channel_functions';
-import { ChannelCreate, ChannelMessage, IChatUser } from '../../utils/interfaces';
+import { ChannelMessage, IChatUser } from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
@@ -55,8 +55,7 @@ export function ChatPanel({ viewport, width }: Props) {
     if (id === -1) return ;
     const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
     setChannel(chan);
-    console.log(chan);
-    
+    // console.log(chan);
   }
 
   useEffect(() => {

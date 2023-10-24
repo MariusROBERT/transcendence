@@ -8,13 +8,12 @@ import Popup from '../ComponentBase/Popup';
 import { Fetch } from '../../utils';
 import { SetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
 import { publish } from '../../utils/event';
-import { openChat } from '../../utils/user_functions';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
   const [visible, setVisible] = useState<boolean>(false);
   const [usr, setUsr] = useState<IUser>();
-  const { id, socket } = useUserContext()
+  const { socket } = useUserContext()
 
   useEffect(() => {
     notifsMsg?.filter((el) => {
@@ -49,15 +48,12 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       if (notifMsg.priv_msg) {
         setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
         try {
-          const rep = (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${otherUserId}`, {
+          (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${otherUserId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
           }))
-          console.log(rep.ok)
-          console.log('coucou pelo');
-    
         } catch (e) {
           console.log(e);
         }
@@ -65,15 +61,12 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       else
         setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== otherUserId));
         try {
-          const rep = (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${otherUserId}`, {
+          (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${otherUserId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
           }))
-          console.log(rep.ok)
-          console.log('coucou pelo');
-    
         } catch (e) {
           console.log(e);
         }
