@@ -468,26 +468,35 @@ export class UserService {
   }
 
   // GAME SAVING 
-  async endOfGameUpdatingProfile(gameId:number, user:UserEntity, won:boolean){
+  async endOfGameUpdatingProfile(gameId:number, user1:UserEntity, user2:UserEntity, won:boolean){
   
-    user.gamesPlayed += 1;
-    if (!user.gamesId)
-      user.gamesId = [];
-    user.gamesId.push(gameId);
-    if(won)
-    {
-      user.gamesWon += 1;
-      user.elo += 15;
-    }
-    else
-    {
-      user.gamesLost += 1;
-      user.elo -= 15;
-      if (user.elo < 0)
-        user.elo = 0;
-    }
-    user.winrate = user.gamesWon / user.gamesPlayed * 100;
-    return await this.UserRepository.save(user);
+    user1.gamesPlayed += 1;
+    user2.gamesPlayed += 1;
+    let winner = user1;
+    let loser = user2;
+    won? 1 : (winner = user2, loser = user1);
+    winner.gamesWon += 1;
+    loser.gamesLost += 1;
+    const K = 50; // ponderation factor
+    const expectedOutcomeWinner = 1 / (1 + 10 ** ((loser.elo - winner.elo) / 400));
+    const expectedOutcomeLoser = 1 - expectedOutcomeWinner;
+
+    const newEloWinner = winner.elo + K * (1 - expectedOutcomeWinner);
+    const newEloLoser = loser.elo + K * (0 - expectedOutcomeLoser);
+
+    winner.elo = Math.round(newEloWinner);
+    loser.elo = Math.round(newEloLoser);
+    if (!loser.gamesId)
+      loser.gamesId = [];
+    loser.gamesId.push(gameId);
+    if (!winner.gamesId)
+      winner.gamesId = [];
+    winner.gamesId.push(gameId)
+    loser.winrate = loser.gamesWon / loser.gamesPlayed * 100;
+    winner.winrate = winner.gamesWon / winner.gamesPlayed * 100;
+    await this.UserRepository.save(loser);
+    await this.UserRepository.save(winner);
+    return ;
   }
 
 

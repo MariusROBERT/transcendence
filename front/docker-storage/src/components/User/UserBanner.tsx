@@ -48,7 +48,7 @@ const UserBanner = ({ otherUser }: Props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: '12.5px',
-    backgroundColor: color.grey,
+    background: 'rgba(255,102,0,1)',
     height: '25px',
     marginTop: 5,
     width: mobile ? 200 : 400,

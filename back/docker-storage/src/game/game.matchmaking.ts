@@ -166,8 +166,7 @@ export class GameMatchmaking {
 
     let gameId = await this.addGame(user1, user2, game.state.score.p1, game.state.score.p2);
     let player1Won = game.state.score.p1 > game.state.score.p2;
-    await this.service.endOfGameUpdatingProfile(gameId, user1, player1Won);
-    await this.service.endOfGameUpdatingProfile(gameId, user2, !player1Won);
+    await this.service.endOfGameUpdatingProfile(gameId, user1, user2, player1Won);
     // console.log(user1);
     await this.service.rankUpdate(user1.id);
     await this.service.rankUpdate(user2.id);

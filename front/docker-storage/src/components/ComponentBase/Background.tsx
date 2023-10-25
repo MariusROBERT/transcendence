@@ -54,7 +54,7 @@ function Background({
     backgroundImage: 'url(' + image + ')',
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
-    backgroundColor: bg_color,
+    // backgroundColor: bg_color,
     margin: margin,
     padding: padding,
     height: '100%',

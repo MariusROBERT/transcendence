@@ -1,8 +1,8 @@
 import {GameHistory, IUser} from '../../utils/interfaces';
-import React, {useEffect, useState} from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import {UserButton} from '../User/UserButton';
 import {useUserContext} from '../../contexts';
-import {Flex, Popup} from '../index';
+import {Flex, Popup, RoundButton} from '../index';
 import {useUIContext} from '../../contexts/UIContext/UIContext';
 import {Fetch} from '../../utils';
 import GameHistoryBanner from './GameHistoryBanner';
@@ -73,12 +73,12 @@ export default function Profil() {
     <Popup isVisible={isProfileOpen !== 0} onClose={() => setIsProfileOpen(0)}>
       <div style={profilContainer}>
         {mobile ?
-          <h3>{profilUser?.username}</h3> :
-          <h2>{profilUser?.username}</h2>
+          <h3 style={nameStyle}>{profilUser?.username}</h3> :
+          <h2 style={nameStyle}>{profilUser?.username}</h2>
         }
         <Flex flex_direction="row">
           <div style={{alignItems: 'center'}}>
-            <img style={imgStyle} src={profilUser?.urlImg} alt={'user'}/>
+            {profilUser ? <RoundButton icon={profilUser.urlImg} icon_size={250} onClick={() => null}/> : <p>No Image</p>}
             <img style={isProfileOpen !== id ? statusStyle : (profilUser?.user_status ? statusStyle : imgStyle)}
                  src={profilUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
                    require('../../assets/imgs/icon_red_disconnect.png')}
@@ -86,16 +86,16 @@ export default function Profil() {
           </div>
           <div style={{marginLeft: '50px'}}>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={{minWidth: '13ch'}}>Rank </p> <p> : {user?.rank}</p>
+              <p style={ProfilStyle}>Rank </p> <p style={ProfilStyle}> : {user?.rank}</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={{minWidth: '13ch'}}>Elo </p><p>: {user?.elo}</p>
+              <p style={ProfilStyle}>Elo </p><p style={ProfilStyle}>: {user?.elo}</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={{minWidth: '13ch'}}>Winrate</p><p> : {user?.winrate} %</p>
+              <p style={ProfilStyle}>Winrate</p><p style={ProfilStyle}> : {user?.winrate} %</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={{minWidth: '13ch'}}>Games played </p><p> : {user?.gamesPlayed}</p>
+              <p style={ProfilStyle}>Games played </p><p style={ProfilStyle}> : {user?.gamesPlayed}</p>
             </div>
           </div>
         </Flex>
@@ -106,7 +106,7 @@ export default function Profil() {
             justifyContent: 'space-evenly',
             margin: '10px 0',
             padding: '1px 0',
-            fontSize: '40px'
+            fontSize: '60px'
           }}>MATCH HISTORY</p>
           {
             games.length === 0 ?
@@ -153,3 +153,11 @@ export default function Profil() {
 
 }
 
+const ProfilStyle: CSSProperties = {
+  minWidth: '13ch',
+  fontSize:'20px'
+};
+
+const nameStyle: CSSProperties = {
+  fontSize:'80px'
+};

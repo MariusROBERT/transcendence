@@ -235,7 +235,7 @@ export class GameService {
     const games = await this.gameRepository.find({
       where: [{player1: playerId}, {player2: playerId}],
       order: {date: 'DESC'},
-      take: 10, //limitation a 10 parties pour le moment
+      // take: 10, //limitation a 10 parties pour le moment
     });
     const user = await this.UserRepository.findOne({
       where: {id: playerId}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { RoundButton } from './RoundButton';
 
 interface Props {
   children: React.ReactNode;
@@ -60,16 +61,17 @@ export default function Popup(props: Props) {
       {
         props.isVisible &&
         (<div style={{ position: 'relative', ...props.style }}>
-          <p onClick={() => props.onClose()}
-             style={{
+          <div style={{
                position: 'absolute',
-               top: '15px',
-               left: '15px',
+               top: '2%',
+               left: '3%',
                fontSize: '1.5em',
                padding: '5px',
                margin: 0,
-             }}>X
-          </p>
+             }}>
+          <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
+            props.onClose();}}/>
+            </div>
           {props.children}
         </div>)
       }

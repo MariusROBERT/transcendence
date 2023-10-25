@@ -48,10 +48,10 @@ export function GameScore({viewport}: { viewport: Viewport }) {
   return (
     <Background flex_direction={viewport.isLandscape ? 'row' : 'column'}>
       <Flex flex_justifyContent={'center'} flex_direction={'column'} flex_alignItems={'center'} flex_gap={'0'}>
-        <p style={{fontSize: 30, margin: 10}}>You {won ? 'win' : 'lose'}</p>
+        <p style={{fontSize: 80, margin: 10}}>You {won ? 'won' : 'lost'}</p>
         {
           profil1 && profil2 &&
-            <ScorePannel user1={profil1} user2={profil2} score1={game.points1} score2={game.points2}/>
+            <ScorePannel user1={profil1} user2={profil2} score1={game.points1} score2={game.points2} won={won}/>
         }
         <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
           navigate('/');
