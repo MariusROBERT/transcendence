@@ -67,7 +67,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     alignContent: 'center',
     maxHeight: '500px',
     overflowY: 'scroll',
-    borderRadius: '15px',
+    borderRadius: '50px',
     // width: mobile ? 200 : 700,
   };
 
@@ -83,7 +83,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     margin: '10px 0',
     padding: '10px',
     cursor: 'pointer',
-    borderRadius: '10px',
+    borderRadius: '50px',
   };
 
   if (!isLeaderboardOpen)

@@ -27,14 +27,11 @@ export function GameScore({viewport}: { viewport: Viewport }) {
       return;
     }
     const user1 = (await (Fetch('user', 'GET')))?.json;
-    console.log(g);
     const user2 = (g.player1 === id) ? (await (Fetch('user/get_public_profile_by_id/' + g.player2, 'GET')))?.json :
       (await (Fetch('user/get_public_profile_by_id/' + g.player1, 'GET')))?.json;
 
     setProfil1(user1);
     setProfil2(user2);
-    console.log(user1);
-    console.log(user2);
     (id === g.winner ? setWon(true) : setWon(false));
   }
 

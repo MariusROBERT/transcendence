@@ -145,6 +145,7 @@ export class UserService {
     PublicProfile.gamesPlayed = profile.gamesPlayed;
     PublicProfile.elo = profile.elo;
     PublicProfile.gamesId = profile.gamesId;
+    PublicProfile.rank = profile.rank;
 
 
     return PublicProfile;
@@ -487,5 +488,57 @@ export class UserService {
     }
     user.winrate = user.gamesWon / user.gamesPlayed * 100;
     return await this.UserRepository.save(user);
+  }
+
+
+  async rankUpdate(id:number){
+    let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
+    // users.forEach(element => {
+    //   element.rank = 0;
+    //   element.elo = 1000;
+    //   this.UserRepository.save(element);
+    // });
+    // return ;
+    users = users.filter(user=> (user.rank !== 0 || user.id === id));
+    let position = users.findIndex((user) => user.id === id);
+    // console.log("NEW");
+    // console.log(position);
+    if (users[position].rank === 0)
+    {
+      users[position].rank = position + 1;
+      await this.UserRepository.save(users[position]);
+      let length = users.length;
+      position += 1;
+      while (position < length)
+      {
+        users[position].rank = position + 1;
+        await this.UserRepository.save(users[position]);
+        // console.log(users[position]);
+        position += 1;
+      }
+      return ;
+    }
+    let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
+    // console.log("rank");
+    // console.log(users.map(u=>u.rank));
+    // console.log(position);
+    if (diff === 0 )
+      return ;
+    users[position].rank = position + 1;
+    await this.UserRepository.save(users[position]);
+    let i = 0;
+    diff > 0 ? i = -1 : i = 1;
+    let j = 0;
+    while (j !== -diff)
+    {
+      j += i;
+      // console.log(users.map(u=>u.rank));
+      // console.log(position);
+      // console.log(j);
+      // console.log(diff);
+      users[position + j].rank += i;
+      await this.UserRepository.save(users[position + j]);
+    }
+    return ;
   }
 }

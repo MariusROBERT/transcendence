@@ -122,6 +122,9 @@ export class UserEntity {
   @Column({ default: 0 })
   elo: number;
 
+  @Column({ default: 0 })
+  rank: number;
+
   // Game Invites:
   @Column({ default: -1 })
   gameInvitationTo: number;

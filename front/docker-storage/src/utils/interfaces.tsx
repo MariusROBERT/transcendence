@@ -99,6 +99,7 @@ export interface IUser {
   winrate: number;
   elo: number;
   gamesPlayed:number;
+  rank:number;
   is_friend: boolean;
   sentInvitesTo: number[];
   recvInvitesFrom: number[];

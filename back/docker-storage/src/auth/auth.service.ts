@@ -47,6 +47,7 @@ export class AuthService {
     user.blocked = [];
     user.gamesId = [];
     user.elo = 1000;
+    user.rank = 0;
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {

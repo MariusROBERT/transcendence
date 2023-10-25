@@ -32,7 +32,7 @@ export default function Profil() {
   }, [isProfileOpen]);
 
   const profilContainer: React.CSSProperties = {
-    borderRadius: '10px',
+    borderRadius: '50px',
     padding: mobile ? 15 : 20,
     alignItems: 'center',
     display: 'flex',
@@ -64,7 +64,6 @@ export default function Profil() {
   async function getGames() {
     const tmp: { gameHist: GameHistory[] } = (await Fetch('Game/get_game/' + user?.id, 'GET'))?.json;
     setGames(tmp.gameHist);
-    console.log(tmp.gameHist);
   }
 
   if (isProfileOpen === 0)
@@ -87,7 +86,7 @@ export default function Profil() {
           </div>
           <div style={{marginLeft: '50px'}}>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={{minWidth: '13ch'}}>Rank </p> <p> : {user?.elo}</p>
+              <p style={{minWidth: '13ch'}}>Rank </p> <p> : {user?.rank}</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
               <p style={{minWidth: '13ch'}}>Elo </p><p>: {user?.elo}</p>

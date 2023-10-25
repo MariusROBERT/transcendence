@@ -147,7 +147,6 @@ export class GameMatchmaking {
     let game = this.getGame(id);
     if (game === undefined)
       return 'game not found';
-
     const user1 = await this.service.getUserById(game.playerIds[0]);
     const user2 = await this.service.getUserById(game.playerIds[1]);
 
@@ -169,6 +168,9 @@ export class GameMatchmaking {
     let player1Won = game.state.score.p1 > game.state.score.p2;
     await this.service.endOfGameUpdatingProfile(gameId, user1, player1Won);
     await this.service.endOfGameUpdatingProfile(gameId, user2, !player1Won);
+    // console.log(user1);
+    await this.service.rankUpdate(user1.id);
+    await this.service.rankUpdate(user2.id);
     //TODO: Save game score and update dataBase here
 
     // remove the game from the controller's games

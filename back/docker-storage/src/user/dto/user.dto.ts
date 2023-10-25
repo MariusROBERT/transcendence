@@ -84,6 +84,10 @@ export class PublicProfileDto {
   @IsNotEmpty()
   elo: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  rank: number;
+
   @IsNotEmpty()
   gamesId: number[];
 }
