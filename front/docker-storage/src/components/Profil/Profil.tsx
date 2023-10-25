@@ -46,9 +46,9 @@ export default function Profil() {
   };
 
   useEffect(() => {
-    if (user)
+    if (profilUser)
       getGames();
-  }, [user]);
+  }, [profilUser]);
 
   const imgStyle = {
     width: '200px',
@@ -62,7 +62,7 @@ export default function Profil() {
   };
 
   async function getGames() {
-    const tmp: { gameHist: GameHistory[] } = (await Fetch('Game/get_game/' + user?.id, 'GET'))?.json;
+    const tmp: { gameHist: GameHistory[] } = (await Fetch('Game/get_game/' + profilUser?.id, 'GET'))?.json;
     setGames(tmp.gameHist);
   }
 
@@ -109,7 +109,7 @@ export default function Profil() {
             fontSize: '60px'
           }}>MATCH HISTORY</p>
           {
-            games.length === 0 ?
+            games?.length === 0 ?
               <p style={{display: 'flex', justifyContent: 'center', margin: '10px 0'}}>No games played yet</p>
               :
               <div style={{
@@ -142,7 +142,7 @@ export default function Profil() {
           }
         </div>
         <div style={{maxHeight: '400px', overflowY: 'scroll'}}>
-          {games.map((game) => (
+          {games?.map((game) => (
             <GameHistoryBanner game={game} key={game.id}/>
           ))}
         </div>
