@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -46,7 +45,6 @@ export class AuthService {
     user.recvInvitesFrom = [];
     user.blocked = [];
     user.gamesId = [];
-    user.elo = 1000;
     user.rank = 0;
     try {
       await this.userRepository.save(user); // save user in DB
