@@ -27,10 +27,15 @@ import {
 } from './dto/user.dto';
 import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    @InjectRepository(ChannelEntity)
+    private readonly channelRepository: Repository<ChannelEntity>,) {
   }
 
   // --------- PROFILE --------- :
@@ -104,6 +109,14 @@ export class UserController {
 
   // --------- MSG & CHANNEL --------- :
 
+  @Patch('remove_last_msg')
+  async removeLastMessage(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    await this.userService.removeLastMsg(id);
+  }
+
   // get_message_from_channel
   @Get('/get_msg/:id_chan')
   @UseGuards(JwtAuthGuard)
@@ -118,14 +131,14 @@ export class UserController {
   // get last message
   @Get('get_last_msg')
   @UseGuards(JwtAuthGuard)
-  async GetLastMsg(@User() user: UserEntity) {
+  async GetLastMsg(@User() user: UserEntity): Promise<Date | null> {
     return await this.userService.getLastMsg(user);
   }
 
   // get_channels_of_user
   @Get('get_channels')
   @UseGuards(JwtAuthGuard)
-  async GetChannels(@User() user: UserEntity) {
+  async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
     return await this.userService.getChannels(user);
   }
 

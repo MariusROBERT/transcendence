@@ -27,7 +27,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     UpdateChannelMessage(id);
     UpdateChannelUsers(id);
     SetCurrChan(name);
-    socket?.emit('join', { channel: name });
+    socket?.emit('join', { channel: name } as any);
     publish('open_chat', undefined);
   }
 
@@ -38,7 +38,6 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         value: res?.json?.channel_name,
       },
     });
-    //console.log(res?.json?.channel_name + ' ' + current_chan);
     if (res?.json?.channel_name === current_chan) {
       publish('close_chat', {
         detail: {
@@ -49,6 +48,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
   }
 
   async function OnSetting() {
+    if (id == -1) return ;
     const res = await Fetch('channel/public/' + id, 'GET');
     await setPublicData(res?.json);
     setEditVisible(true);
@@ -78,7 +78,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
       >
         <RoundButton
           icon_size={50}
-          icon={require('../../assets/imgs/icon_chat.png')}
+          icon={require('../../assets/imgs/icons8-chat-90.png')}
           onClick={() => {
             OnJoinChannel();
             setIsChatOpen(true);
@@ -95,11 +95,13 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         flex_justifyContent={'flex-end'}
       >
         <RoundButton
-          icon={require('../../assets/imgs/icon_leave.png')}
+        icon_size={50}
+          icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
-        ></RoundButton>
+        />
         <RoundButton
-          icon={require('../../assets/imgs/icon_options.png')}
+          icon_size={50}
+          icon={require('../../assets/imgs/settings-svgrepo-com.png')}
           onClick={OnSetting}
         />
       </Flex>

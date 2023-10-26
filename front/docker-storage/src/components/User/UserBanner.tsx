@@ -40,8 +40,6 @@ const UserBanner = ({ otherUser }: Props) => {
     };
   }, [socket, userBanner]);
 
-  const displayName = userBanner.username;
-
   const userBannerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'row',
@@ -73,7 +71,7 @@ const UserBanner = ({ otherUser }: Props) => {
                alt={userBanner.user_status ? 'connected' : 'disconnected'} />
           <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
-          <p onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{displayName}</p>
+          <p onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{userBanner.username}</p>
         </Flex>
         {!isMe && !mobile && <UserButton otherUser={otherUser} />}
       </div>

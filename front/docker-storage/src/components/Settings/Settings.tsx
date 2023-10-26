@@ -165,15 +165,13 @@ export default function Settings() {
 
   const mobile = window.innerWidth < 500;
 
-  const displayName = userInfosSettings?.username;
-
   return (
     <Popup isVisible={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}>
       <div>
         <form onSubmit={saveModifications} style={settingsStyle}>
           {mobile ?
-            <h3>{displayName}</h3> :
-            <h2>{displayName}</h2>
+            <h3>{userInfosSettings?.username}</h3> :
+            <h2>{userInfosSettings?.username}</h2>
           }
           <div>
             <div style={modifContainerImage}>

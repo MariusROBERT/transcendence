@@ -269,7 +269,7 @@ export class MouseBall extends AutonomousBall {
   }
 }
 
-class Rainbow {
+export class Rainbow {
   step = 0;
   red = 0;
   green = 0;

@@ -32,7 +32,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
       }}
       className={'text cursor_pointer'}
     >
-      <img
+      {/* <img
         style={{
           height: mobile ? 50 : 80,
           width: mobile ? 50 : 80,
@@ -41,15 +41,18 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
           left: mobile ? -5 : -15,
         }}
         src={require('../../assets/imgs/icon_search.png')} alt={'search'}
-      />
+      /> */}
       <input
         id={id}
         style={{
+          width: '100%',          
+          boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
+          paddingLeft: '10px',
           outline: 'none',
           borderRadius: '10px',
-          border: '0',
           position: 'relative',
-          width: mobile ? 200 : 315,
+          border: '0',
+          // width: mobile ? 200 : 315,
           backgroundColor: color.white,
         }}
         placeholder={children}

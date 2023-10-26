@@ -73,7 +73,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
   const userElementStyle: CSSProperties = {
     maxWidth: mobile ? 500 : 600,
-    border: '1px solid white',
+    borderBottom: '2px solid white',
     flexWrap: 'nowrap',
     display: 'flex',
     justifyContent: 'space-around',
@@ -91,6 +91,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
   return (
     <Popup isVisible={isLeaderboardOpen} onClose={() => {setIsLeaderboardOpen(false)}}>
+
       <div style={container}>
         <div style={{display:'flex', justifyContent:'center'}}>
           <SearchBar setSearchTerm={setSearchTerm}

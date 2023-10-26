@@ -106,9 +106,9 @@ export class UserService {
   }
 
   async logout(user: UserEntity) {
-    // pas testé
     const lastMsg = await this.getLastMsg(user);
-    if (lastMsg) user.last_msg_date = lastMsg.createdAt;
+
+    if (lastMsg) user.last_msg_date = lastMsg;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -239,8 +239,8 @@ export class UserService {
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.ChannelRepository.createQueryBuilder('channels')
-      .leftJoinAndSelect('channels.users', 'user')
+    return this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.users', 'user')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
   }
@@ -306,36 +306,11 @@ export class UserService {
       .getMany();
   }
 
-  // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
-  async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
-    // est ce quil a des new msg et si oui de quel cahnnel
-    const userChannels = await this.getChannels(user);
-    const lastMsg = await this.getLastMsg(user);
-    const channelsWithNewMsg: ChannelEntity[] = [];
-    if (lastMsg.createdAt > user.last_msg_date) {
-      // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
-      // pour chaque channel aller voir s'il y a des new msg;
-      for (const channel of userChannels) {
-        const messagesInChannel = await this.MessageRepository.find({
-          where: { channel: { id: channel.id } },
-          order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-          take: 1, // Récupérez seulement le premier (le plus récent) message
-        });
-        if (messagesInChannel[0].createdAt > user.last_msg_date)
-          // stocker les channel et les retourner
-          channelsWithNewMsg.push(channel);
-      }
-      return channelsWithNewMsg;
-    }
-    return null;
-  }
-
-  async getLastMsg(user: UserEntity): Promise<MessageEntity> {
-    // pas testé
+  async getLastMsg(user: UserEntity): Promise<Date> {
     const userChannels = await this.getChannels(user);
     if (!userChannels || userChannels.length === 0) return null;
     let latestMessage: MessageEntity | null = null;
-    // Itérer sur les chaînes pour trouver le dernier message
+
     for (const channel of userChannels) {
       const messagesInChannel = await this.MessageRepository.find({
         where: { channel: { id: channel.id } },
@@ -352,7 +327,14 @@ export class UserService {
         }
       }
     }
-    return latestMessage;
+    return latestMessage.createdAt;
+  }
+
+  async removeLastMsg(id: number) {
+    const user = await this.UserRepository.findOne({where: {id}})    
+    if (user.last_msg_date)
+      user.last_msg_date = null;
+    await this.UserRepository.save(user)
   }
 
   async getMsgsByChannel(
@@ -380,7 +362,6 @@ export class UserService {
 
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
-    // Vérifiez si l'utilisateur existe dans la liste des administrateurs
     return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 

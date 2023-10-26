@@ -23,7 +23,7 @@ import { MutedEntity } from './entities/muted.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: ['dist/**/*.entity{.ts,.js}'], // a chaque modif des fichiers entity, mettre a jour la DB
+      entities: ['dist/**/*.entity{.ts,.js}'], 
       synchronize: true,
     }),
     TypeOrmModule.forFeature([
