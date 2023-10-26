@@ -122,7 +122,7 @@ export function SidePanel({
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
-  if (!isMoving && !contextIsOpen) {
+  if (!isMoving && !contextIsOpen && isLeftPanel) {
     return (
       <div
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
@@ -137,7 +137,8 @@ export function SidePanel({
       </div>
     );
   }
-
+  if (!isMoving && !contextIsOpen)
+    return (<></>)
   return (
     <div style={getStyle()}>
       <div style={buttonStyle}>
