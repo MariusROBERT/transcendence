@@ -12,7 +12,6 @@ interface Props {
 
 export function Search(props: Props) {
   const { isLeaderboardOpen, setIsLeaderboardOpen } = useUIContext();
-  const mobile = window.innerWidth < 500;
 
   useEffect(() => {
     const input = document.getElementById('searchBar') as HTMLInputElement;
@@ -26,20 +25,11 @@ export function Search(props: Props) {
     // eslint-disable-next-line
   }, [isLeaderboardOpen]);
 
-  const style: React.CSSProperties = {
-   position: 'absolute',
-   left: '48%',
-   transform: 'translate(-50%)',
-   top: mobile ? 80 : 40,
-   border: '0',
-  }
-
   return (
-    <div style={{ zIndex: 2 }}>
+    <div style={{ zIndex: 2, width: '100%', left: '50%', display: 'flex', justifyContent:'space-around', margin: 'auto' }}>
       <SearchBar setSearchTerm={props.setSearchTerm}
                  onClick={() => setIsLeaderboardOpen(true)}
                  isVisible={!isLeaderboardOpen}
-                 style={style}
       >
         {props.placeHolder || ''}
       </SearchBar>

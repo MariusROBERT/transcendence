@@ -68,15 +68,13 @@ const Navbar: React.FC = () => {
   }, [recvInvitesFrom.length, socket]);
 
   const navbarStyle: CSSProperties = {
-    top: '150px',
     right: '50%',
-    transform: 'translate(50%, 50%)',
-    width: '400px',
-    position: 'fixed',
+    width: '100%',
     display: 'flex',
     justifyContent: 'space-around',
     borderRadius: '30px',
     zIndex: 0,
+    margin: 'auto'
   };
 
   const notifstyle: CSSProperties = {

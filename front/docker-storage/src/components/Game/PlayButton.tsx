@@ -1,4 +1,4 @@
-import { Flex, SwitchToggle } from '..';
+import { SwitchToggle } from '..';
 import { useGameContext } from '../../contexts';
 import { useEffect, useState } from 'react';
 import './playBtn.css';
@@ -12,24 +12,55 @@ export function PlayButton() {
     setIsSpecial(isInQueue === 'special');
   }, [isInQueue]);
 
-  const mobile = window.innerWidth < 500;
-
   return (
-    <>
-      <div style={{height: '350px' }}>
-        <div className='btnContainer' onClick={() => {
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 10,
+      justifyContent: 'center',
+      position: 'relative',
+      margin: 'auto',
+      // zIndex: -100
+    }}
+    >
+      <div
+        className="btnContainer"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onClick={() => {
           joinQueue(isSpecial ? 'special' : 'normal');
-        }}>
-          <img src={require('../../assets/imgs/pngwing.com (3).png')}  alt={'Play'}/>
-        </div>
-        <Flex flex_direction={'row'}>
-          <p>Special Mode: </p>
-          <SwitchToggle onChange={() => {
-            setIsSpecial(!isSpecial);
-          }} checked={isSpecial}></SwitchToggle>
-        </Flex>
-        <div style={{ height: mobile ? 38 : 56 }} />
+        }}
+      >
+        <img
+          src={require('../../assets/imgs/pngwing.com (3).png')}
+          alt={'Play'}
+        />
       </div>
-    </>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          justifyContent: 'center',
+          position: 'absolute',
+          bottom: -20,
+          // zIndex: 10000,
+        }}
+      >
+        <p>Special Mode: </p>
+        <SwitchToggle
+          onChange={() => {
+            setIsSpecial(!isSpecial);
+          }}
+          checked={isSpecial}
+        />
+      </div>
+    </div>
   );
 }

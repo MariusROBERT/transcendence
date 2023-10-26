@@ -5,11 +5,9 @@
     height: 300px;
 }
 .btnContainer img {
-    /* margin-left: 20px; */
     width: 100%;
 }
 .btnContainer{
-    color: #c50ce1;
     overflow: hidden;
 }
 
@@ -19,10 +17,5 @@
 
 .btnContainer:hover > img{
     transition: 0.5s;
-    filter: drop-shadow(0 0 1px rgb(0, 180, 255));
-}
-
-.btnContainer span{
-    position: absolute;
-    display: block;
+    filter: drop-shadow(0 0 10px rgb(0, 180, 255));
 }

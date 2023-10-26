@@ -11,8 +11,6 @@ interface Props {
 export function GroupItems({ children, heading, duration_ms }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // const mobile = window.innerWidth < 500;
-
   const groupStyle: React.CSSProperties = {
     width: '100%',
     paddingTop: isOpen ? '25px' : '0px',
