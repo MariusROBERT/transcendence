@@ -26,79 +26,24 @@ const Navbar: React.FC = () => {
     setNotifsVisible(!notifsVisible);
   };
 
-  useEffect(() => {
-    const getAllUnreadMsg = async () => {
-      if (id !== user?.id) return;
-      
-      const response = await fetch(`http://localhost:3001/api/msgsUnread/user/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const msgs = await response.json();
-      const uniqueSenders = new Set();
-      const uniqueMsgs = msgs.filter((msg: any) => {
-        if (!uniqueSenders.has(msg.channel_id)) {
-          uniqueSenders.add(msg.channel_id);
-          return true;
-        }
-        return false;
-      });
-      setMsgs(uniqueMsgs);
-    };
-    getAllUnreadMsg();
-  }, [socket]);
-
-  // recv msg instant
-  useEffect(() => {
-    const onNotifMsg = async (data: NotifMsg) => {
-
-      // if the chat is open : don't save the msg as unread
-      setMsgs(msgs.filter((el) => el.channel_name !== current_chan));
-      console.log('current_chan ', current_chan);
-      console.log('data.channel_name ', data.channel_name);
-      if (current_chan === data.channel_name) {
-
-        // return await Fetch(`msgsUnread/${data?.channel_id}`, 'DELETE');
-        // if (data.priv_msg) {
-
-          // try {
-          //   return (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${data.channel_id}`, {
-          //     method: 'DELETE',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //     },
-          //   }))
-          // } catch (e) {
-          //   console.log(e);
-          // }
-        // }
-        // else {
-        //   try {
-        //     return  (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${data.channel_id}`, {
-        //       method: 'DELETE',
-        //       headers: {
-        //         'Content-Type': 'application/json',
-        //       },
-        //     }))
-        //   } catch (e) {
-        //     console.log(e);
-        //   }
-        // }
-      }
+  const onNotifMsg = async (data: NotifMsg) => {
+    if (current_chan !== data.channel_name) {
       if (msgs.some((msg) => msg.channel_id === data.channel_id))
         return;
       if (id === data.sender_id)
         return;
       setMsgs([...msgs, data]);
-    };
+    }
+  };
 
+  // recv msg instant
+  useEffect(() => {
     socket?.on('notifMsg', onNotifMsg);
+
     return (() => {
       socket?.off('notifMsg', onNotifMsg);
     });
-  }, [socket, msgs]);
+  }, [socket, msgs, id]);
 
   // friends request
   useEffect(() => {

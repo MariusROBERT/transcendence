@@ -12,7 +12,6 @@ import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { MutedService } from 'src/muted/muted.service';
 import { MutedEntity } from './entities/muted.entity';
-import { MsgsUnreadEntity } from './entities/msgsunread.entity';
 
 @Module({
   imports: [
@@ -24,7 +23,7 @@ import { MsgsUnreadEntity } from './entities/msgsunread.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: ['dist/**/*.entity{.ts,.js}'], // a chaque modif des fichiers entity, mettre a jour la DB
+      entities: ['dist/**/*.entity{.ts,.js}'], 
       synchronize: true,
     }),
     TypeOrmModule.forFeature([
@@ -32,7 +31,6 @@ import { MsgsUnreadEntity } from './entities/msgsunread.entity';
       MessageEntity,
       UserEntity,
       MutedEntity,
-      MsgsUnreadEntity
     ]),
   ],
   controllers: [],

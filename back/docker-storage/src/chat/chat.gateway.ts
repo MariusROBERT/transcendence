@@ -13,7 +13,6 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
-import { MsgsUnreadService } from 'src/msgsUread/msgsunread.service';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -48,7 +47,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-    private msgsUnreadService: MsgsUnreadService,
   ) { }
 
   @WebSocketServer()
@@ -72,11 +70,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { channel } = body;
     const chan = await this.chanService.getChannelByName(channel);
 
-    client.rooms.forEach((room) => {
-      if (room !== client.id) {
-        client.leave(room);
-      }
-    });
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
     client.join(channel);
     this.server.to(channel).emit('join', chan.id);
   }
@@ -84,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('leave')
   async handleLeave(client: Socket) {
     client.rooms.forEach((room) => {
-      if (room !== client.id) {
+      if (room !== 'user' + client.id) {
         client.leave(room);
       }
     });
@@ -145,24 +143,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     
     usersList.forEach(usr => {
       if (userE.id !== usr.id) {
-        // send notif Msg
         const userRoom = 'user' + usr.id;
         client.join(userRoom);
         this.server.to(userRoom).emit('notifMsg', data);
-        
-        const msg: MsgsUnreadDto = {
-          sender_id: userE.id,
-          receiver_id: usr.id,
-          channel_id: chanE.id,
-          channel_name: chanE.channel_name,
-          sender_username: userE.username,
-          priv_msg: chanE.priv_msg,
-          socket: chanE.socket
-        };
-        // save notif msg in db
-        this.msgsUnreadService.create(msg)
       }
     });
-
-  }
+   }
 }

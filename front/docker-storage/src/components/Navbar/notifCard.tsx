@@ -44,33 +44,8 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const onclick = async () => {
     if (!usr || !notifMsg) return;
     OnJoinChannel(notifMsg.channel_name);
-    if (setNotifsMsg && notifsMsg) {      
-      if (notifMsg.priv_msg) {
-        setNotifsMsg(notifsMsg.filter((el) => el.sender_id !== otherUserId));
-        try {
-          (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_sender_id/${otherUserId}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }))
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      else
-        setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== otherUserId));
-        try {
-          (await fetch(`http://localhost:3001/api/msgsUnread/remove_chan_by_chan_id/${otherUserId}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }))
-        } catch (e) {
-          console.log(e);
-        }
-    }
+    if (setNotifsMsg && notifsMsg)
+      setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== notifMsg.channel_id));
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {

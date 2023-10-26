@@ -9,7 +9,6 @@ import { ChannelModule } from './channel/channel.module';
 import { MessagesModule } from './messages/messages.module';
 import { GameModule } from './game/game.module';
 import { UserGateway } from './user/user.gateway';
-import { MsgsUnreadModule } from './msgsUread/msgsunread.module';
 
 @Module({
   imports: [
@@ -23,10 +22,9 @@ import { MsgsUnreadModule } from './msgsUread/msgsunread.module';
     MessagesModule,
     ChannelModule,
     GameModule,
-    MsgsUnreadModule
   ],
   controllers: [AppController],
-  providers: [AppService, UserGateway], // on mettra les gateway ici
+  providers: [AppService, UserGateway], 
   exports: [AppService],
 })
 export class AppModule {
