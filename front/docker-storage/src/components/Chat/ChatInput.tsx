@@ -1,3 +1,4 @@
+
 import { color } from '../../utils';
 
 interface Props {
@@ -8,11 +9,11 @@ interface Props {
 }
 
 export default function ChatInput({
-                                    input,
-                                    setInput,
-                                    OnEnter,
-                                    OnClick,
-                                  }: Props) {
+  input,
+  setInput,
+  OnEnter,
+  OnClick,
+}: Props) {
 
   const mobile = window.innerWidth < 500;
 
@@ -27,21 +28,11 @@ export default function ChatInput({
         position: 'relative',
         display: 'flex',
         flexDirection: 'row',
-        
+
       }}
       className={'text cursor_pointer'}
     >
-      {/* <img
-        style={{
-          height: mobile ? 50 : 80,
-          width: mobile ? 50 : 80,
-          position: 'relative',
-          top: mobile ? -5 : -10,
-          left: mobile ? -5 : -15,
-        }}
-        src={require('../../assets/imgs/icon_search.png')}
-        alt={'search'}
-      /> */}
+
       <input
         style={{
           paddingLeft: '15px',

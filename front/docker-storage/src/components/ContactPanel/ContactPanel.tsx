@@ -86,10 +86,10 @@ export function ContactPanel({ viewport }: Props) {
             )}
           </ GroupItems>
           <GroupItems heading={'Channels'} duration_ms={900}>
-            <div style={{ margin: '10px' }}>
+            <div style={{display: 'flex', width: '75%', justifyContent: 'space-around', margin: '10px', marginBottom: '50px',}}>
               <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-plus-100.png')} onClick={onclick}
               ></RoundButton>
-
+              <ChatMenu></ChatMenu>
             </div>
             <div>
 
@@ -130,9 +130,6 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background >
       </div >
-      <div>
-        <ChatMenu />
-      </div>
     </>
   );
 }
