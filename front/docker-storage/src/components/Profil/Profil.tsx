@@ -29,7 +29,7 @@ export default function Profil() {
     if (isProfileOpen === id)
       return setProfilUser(user);
     setProfil();
-  }, [isProfileOpen]);
+  }, [isProfileOpen, profilUser, user]);
 
   const profilContainer: React.CSSProperties = {
     borderRadius: '50px',
@@ -86,16 +86,16 @@ export default function Profil() {
           </div>
           <div style={{marginLeft: '50px'}}>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={ProfilStyle}>Rank </p> <p style={ProfilStyle}> : {user?.rank}</p>
+              <p style={{...ProfilStyle, ...titleStyle}}>Rank </p> <p style={ProfilStyle}> : {profilUser?.rank}</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={ProfilStyle}>Elo </p><p style={ProfilStyle}>: {user?.elo}</p>
+              <p style={{...ProfilStyle, ...titleStyle}}>Elo </p><p style={ProfilStyle}>: {profilUser?.elo}</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={ProfilStyle}>Winrate</p><p style={ProfilStyle}> : {user?.winrate} %</p>
+              <p style={{...ProfilStyle, ...titleStyle}}>Winrate</p><p style={ProfilStyle}> : {profilUser?.winrate} %</p>
             </div>
             <div style={{flexDirection: 'row', display: 'flex'}}>
-              <p style={ProfilStyle}>Games played </p><p style={ProfilStyle}> : {user?.gamesPlayed}</p>
+              <p style={{...ProfilStyle, ...titleStyle}}>Games played </p><p style={ProfilStyle}> : {profilUser?.gamesPlayed}</p>
             </div>
           </div>
         </Flex>
@@ -106,7 +106,8 @@ export default function Profil() {
             justifyContent: 'space-evenly',
             margin: '10px 0',
             padding: '1px 0',
-            fontSize: '60px'
+            fontSize: '60px',
+            ...titleStyle
           }}>MATCH HISTORY</p>
           {
             games?.length === 0 ?
@@ -127,13 +128,13 @@ export default function Profil() {
                   }}>You</p>
                 </Flex>
                 <Flex flex_alignItems="center">
-                  <p style={{fontSize: '25px', paddingRight: '30px'}}>Elo</p>
+                  <p style={{fontSize: '25px', paddingRight: '30px'/*, ...titleStyle */}} >Elo</p>
                 </Flex>
                 <Flex flex_alignItems="center">
-                  <p style={{fontSize: '35px', paddingRight: '30px'}}>Score</p>
+                  <p style={{fontSize: '35px', paddingRight: '30px'/*, ...titleStyle */}}>Score</p>
                 </Flex>
                 <Flex flex_alignItems="center">
-                  <p style={{fontSize: '25px', paddingRight: '30px'}}>Elo</p>
+                  <p style={{fontSize: '25px', paddingRight: '30px'/*, ...titleStyle */}}>Elo</p>
                 </Flex>
                 <Flex flex_alignItems="center">
                   <p style={{fontSize: '25px', paddingRight: '30px'}}>Opponent</p>
@@ -153,9 +154,13 @@ export default function Profil() {
 
 }
 
+const titleStyle: CSSProperties = {
+  color : '#CCFF00',
+};
+
 const ProfilStyle: CSSProperties = {
   minWidth: '13ch',
-  fontSize:'20px'
+  fontSize:'20px',
 };
 
 const nameStyle: CSSProperties = {

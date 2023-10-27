@@ -1,12 +1,14 @@
 import { GameHistory, IUser } from '../../utils/interfaces';
 import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
 import React, { CSSProperties, useState } from 'react';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
     game:GameHistory;
 }
 
 const GameHistoryBanner = ({game }: Props) => {
+  const { setIsProfileOpen } = useUIContext();
     return (
         <div style={{marginBottom:'5px', alignItems:'column', justifyContent: 'center', display: 'flex', position:'relative'}}>
           <div style={{
@@ -37,12 +39,12 @@ const GameHistoryBanner = ({game }: Props) => {
               <p style={{marginRight:'15px'}}>{game.eloOpponent}</p>
             </Flex>
             <Flex flex_direction="column">
-              <div style={nameStyle}>
+              <div style={nameStyle} onClick={() => setIsProfileOpen(game.idOpponent || 0)}>
                   {game.opponent}
               </div>
               <div>
                 <RoundButton icon={game.urlImgOpponent} icon_size={60}
-                             onClick={() => null}/>
+                             onClick={() => setIsProfileOpen(game.idOpponent || 0)}/>
               </div>
             </Flex>
           </div>

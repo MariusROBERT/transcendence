@@ -197,7 +197,7 @@ export function ChatPanel({ viewport, width }: Props) {
         style={{
           height: viewport.height - 125 + 'px',
           width: width - 50 + 'px',
-          backgroundColor: color.grey,
+          backgroundColor: '#00375Cbb',
           display: 'flex',
           flexDirection: 'column',
           gap: '5px 5px',

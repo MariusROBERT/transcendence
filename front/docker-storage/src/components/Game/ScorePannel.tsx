@@ -33,13 +33,17 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
           borderRadius: '50%',
           top: -13,
           left: -7,
-          background: 'linear-gradient(90deg, rgba(129,255,0,1) 0%, rgba(73,181,0,1) 30%, rgba(209,84,0,1) 59%, rgba(255,0,0,1) 100%)',
+          background: 'white',
           color: 'black',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          <p style={{fontSize: 30, minWidth:'8ch', textAlign:'center'}}>
+          <p style={{
+            fontSize: 30, 
+            minWidth:'8ch', 
+            textAlign:'center',
+            }}>
           {/* {(score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)} */}
             {won ? ((score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)):
               ((score2 === -1 ? 'FF' : score2) + ' VS ' + (score1 === -1 ? 'FF' : score1))}

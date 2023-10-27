@@ -48,7 +48,12 @@ export function GameScore({viewport}: { viewport: Viewport }) {
   return (
     <Background flex_direction={viewport.isLandscape ? 'row' : 'column'}>
       <Flex flex_justifyContent={'center'} flex_direction={'column'} flex_alignItems={'center'} flex_gap={'0'}>
-        <p style={{fontSize: 80, margin: 10}}>You {won ? 'won' : 'lost'}</p>
+        <p style={{
+          fontSize: 80,
+           margin: 10,
+           color:won?'#CCFF00':'red',
+           }}>
+            You {won ? 'won' : 'lost'}</p>
         {
           profil1 && profil2 &&
             <ScorePannel user1={profil1} user2={profil2} score1={game.points1} score2={game.points2} won={won}/>

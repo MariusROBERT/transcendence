@@ -50,7 +50,7 @@ export function ContactPanel({ viewport }: Props) {
 
   return (
     <>
-      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 }}>
+      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
           flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
@@ -71,7 +71,7 @@ export function ContactPanel({ viewport }: Props) {
             borderRadius={0}
           >
             <Background
-              bg_color={color.grey}
+              // bg_color={color.grey}
               flex_direction={'row'}
               flex_justifyContent={'flex-end'}
             >

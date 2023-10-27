@@ -37,7 +37,7 @@ interface Props {
 function Background({
                       children,
                       image,
-                      bg_color = color.black,
+                      bg_color = '#00000000',
                       flex_direction = 'column',
                       flex_wrap = 'nowrap',
                       flex_justifyContent = 'center',
@@ -54,7 +54,7 @@ function Background({
     backgroundImage: 'url(' + image + ')',
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
-    // backgroundColor: bg_color,
+    backgroundColor: bg_color,
     margin: margin,
     padding: padding,
     height: '100%',
