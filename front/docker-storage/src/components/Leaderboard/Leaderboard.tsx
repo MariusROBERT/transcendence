@@ -47,9 +47,9 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{user.rank}</p> {/* TO CHANGE */}
+          <p style={{fontWeight: 'bold'}}>{user.rank}</p> 
           {<UserBanner otherUser={user} />}
-          <p>{user.elo}</p>
+          <p style={{fontWeight: 'bold'}}>{user.elo}</p>
         </div>
       ));
       setUserElements(elements);
