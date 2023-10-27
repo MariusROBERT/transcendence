@@ -3,7 +3,6 @@ import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
-import { color } from '../../utils';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
@@ -46,7 +45,7 @@ const UserBanner = ({ otherUser }: Props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: '12.5px',
-    backgroundColor: color.grey,
+    background: '#00AA55',
     height: '25px',
     marginTop: 5,
     width: mobile ? 200 : 400,

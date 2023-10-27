@@ -235,6 +235,7 @@ export function ChatPanel({ viewport, width }: Props) {
           flexDirection: 'column',
           gap: '5px 5px',
           overflow: 'scroll',
+          backgroundColor: '#00375Cbb',
         }}
         ref={msgsRef as React.RefObject<HTMLDivElement>}
       >
