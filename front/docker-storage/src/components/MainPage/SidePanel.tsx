@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
-import { SetCurrChan } from '../../utils/channel_functions';
+import { SetCurrChan, current_chan } from '../../utils/channel_functions';
 import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
@@ -61,7 +61,7 @@ export function SidePanel({
     if (isMoving) return;
     setContextIsOpen(false);
     if (!isLeftPanel) {
-      socket?.emit('leave');
+      // socket?.emit('leave');
       SetCurrChan('');
     }
     setIsAnim(true);

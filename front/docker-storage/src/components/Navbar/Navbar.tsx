@@ -27,7 +27,11 @@ const Navbar: React.FC = () => {
   };
 
   const onNotifMsg = async (data: NotifMsg) => {
+    console.log('wsh');
+    
     if (current_chan !== data.channel_name) {
+      console.log('cuur', current_chan);
+      
       if (msgs.some((msg) => msg.channel_id === data.channel_id))
         return;
       if (id === data.sender_id)
@@ -44,6 +48,15 @@ const Navbar: React.FC = () => {
       socket?.off('notifMsg', onNotifMsg);
     });
   }, [socket, msgs, id]);
+
+  // useEffect(() => {
+  //   socket?.on('message', onNotifMsg);
+
+  //   return (() => {
+  //     socket?.off('message', onNotifMsg);
+  //   });
+  // }, [socket, msgs, id]);
+
 
   // friends request
   useEffect(() => {

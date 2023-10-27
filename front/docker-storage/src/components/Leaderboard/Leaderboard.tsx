@@ -47,9 +47,9 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p style={{fontWeight: 'bold'}}>{user.rank}</p> 
+          <p style={{ fontWeight: 'bold' }}>{user.rank}</p>
           {<UserBanner otherUser={user} />}
-          <p style={{fontWeight: 'bold'}}>{user.elo}</p>
+          <p style={{ fontWeight: 'bold' }}>{user.elo}</p>
         </div>
       ));
       setUserElements(elements);
@@ -91,7 +91,6 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
   return (
     <Popup isVisible={isLeaderboardOpen} onClose={() => { setIsLeaderboardOpen(false) }}>
-
       <div style={container}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SearchBar setSearchTerm={setSearchTerm}
@@ -100,9 +99,9 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
             {'search for a user...'}
           </SearchBar>
         </div>
-        <div style={{padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
-          <p style={{fontWeight: 'bold'}}>Rank </p>
-          <p style={{fontWeight: 'bold'}}>Elo</p>
+        <div style={{ padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
+          <p style={{ fontWeight: 'bold' }}>Rank </p>
+          <p style={{ fontWeight: 'bold' }}>Elo</p>
         </div>
         {userElements}
         {userElements.length === 0 && (
