@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { Background, Border } from '..';
 import { color } from '../../utils';
 
