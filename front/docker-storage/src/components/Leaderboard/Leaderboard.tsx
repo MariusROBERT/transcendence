@@ -41,7 +41,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()) && user.rank !==0
+          user.username.toLowerCase().includes(searchTerm.toLowerCase()) // && user.rank !== 0
         )
         .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
 
@@ -90,20 +90,19 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     return (<></>);
 
   return (
-    <Popup isVisible={isLeaderboardOpen} onClose={() => {setIsLeaderboardOpen(false)}}>
+    <Popup isVisible={isLeaderboardOpen} onClose={() => { setIsLeaderboardOpen(false) }}>
 
       <div style={container}>
-        <div style={{display:'flex', justifyContent:'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SearchBar setSearchTerm={setSearchTerm}
-                      isVisible={isLeaderboardOpen}
-                      id={'searchBar'}>
-                      {'search for a user...'}
+            isVisible={isLeaderboardOpen}
+            id={'searchBar'}>
+            {'search for a user...'}
           </SearchBar>
         </div>
-        <div style={{display:'flex', flexDirection:'row'}}>
-        <p style={ProfilStyle}>Rank </p>
-        <p style={ProfilStyle}>Username </p>
-        <p style={{position:'absolute', right:'0', ...ProfilStyle}}>Elo</p>
+        <div style={{padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
+          <p style={{fontWeight: 'bold'}}>Rank </p>
+          <p style={{fontWeight: 'bold'}}>Elo</p>
         </div>
         {userElements}
         {userElements.length === 0 && (
@@ -119,8 +118,3 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     </Popup>
   );
 }
-
-const ProfilStyle: CSSProperties = {
-  minWidth: '13ch',
-  fontSize:'20px'
-};

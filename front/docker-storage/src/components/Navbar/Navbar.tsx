@@ -78,13 +78,12 @@ const Navbar: React.FC = () => {
   };
 
   const notifstyle: CSSProperties = {
-    maxHeight: '500px',
+    position: 'absolute',
+    height: '20%',
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    position: 'absolute',
-    top: '120px',
-    minHeight: '100%',
+    top: '420px',
     background: 'transparent',
   };
 
