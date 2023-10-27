@@ -60,7 +60,6 @@ export function ContactPanel({ viewport }: Props) {
     <>
       <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
-          flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
         >
@@ -130,7 +129,7 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background >
       </div >
-      <div>
+      <div style={{width: '100%', backgroundColor: '#00375C88'}}>
         <ChatMenu />
       </div>
     </>
