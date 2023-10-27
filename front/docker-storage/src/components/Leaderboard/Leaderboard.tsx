@@ -41,7 +41,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()) && user.rank !==0
+          user.username.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
 
