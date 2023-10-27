@@ -84,6 +84,7 @@ export default function JoinChat() {
           <Button
             onClick={() => {
               setCreChatVisible(true);
+              setInputValueChatMenu('')
             }}
           >
             Create Channel
