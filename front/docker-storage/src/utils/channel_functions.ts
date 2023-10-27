@@ -24,13 +24,17 @@ export async function UpdateChannelUsers(id: number) {
 }
 
 export async function UpdateChannels() {
-  const res = await Fetch('channel/of_user', 'POST');
-  const channels = res?.json;
-  publish('update_chan', {
-    detail: {
-      value: channels,
-    },
-  });
+  try {
+    const res = await Fetch('channel/of_user', 'POST');
+    const channels = res?.json;
+    publish('update_chan', {
+      detail: {
+        value: channels,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export let current_chan = '';

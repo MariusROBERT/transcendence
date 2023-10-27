@@ -34,41 +34,41 @@ export function UserButton({ otherUser }: Props) {
     }}>
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_chat.png')}
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-chat-90.png')}
                        onClick={() => {openChat(otherUser, socket);
                                       setIsChatOpen(true)}} />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
-          <RoundButton icon={require('../../assets/imgs/icon_play.png')}
-                       onClick={() => sendGameInvite(otherUser.id, 'normal')} />
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-play-64.png')}
+            onClick={() => sendGameInvite(otherUser.id, 'normal')} />
         }
         {!friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) && !recvInvitesFrom?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_add_friend.png')}
-                       onClick={() => sendFriendRequest(otherUser.id)} />
+          <RoundButton icon_size={40} icon={require('../../assets/imgs/icons8-add-friends-64 (1).png')}
+            onClick={() => sendFriendRequest(otherUser.id)} />
         }
         {recvInvitesFrom?.includes(otherUser.id) && !friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) &&
           <div style={askStyle}>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
-                         onClick={() => acceptFriendRequest(otherUser.id)} />
+              onClick={() => acceptFriendRequest(otherUser.id)} />
             <RoundButton icon={require('../../assets/imgs/icon_denied.png')}
-                         onClick={() => declineFriendRequest(otherUser.id)} />
+              onClick={() => declineFriendRequest(otherUser.id)} />
           </div>
         }
         {sendInvitesTo?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_close.png')}
-                       onClick={() => cancelFriendRequest(otherUser.id)} />
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-cross-64.png')}
+            onClick={() => cancelFriendRequest(otherUser.id)} />
         }
         {!blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_block.png')}
-                       onClick={() => {
-                         blockUser(otherUser.id);
-                       }} />
+          <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-block-128.png')}
+            onClick={() => {
+              blockUser(otherUser.id);
+            }} />
         }
         {blocked?.includes(otherUser.id) &&
-          <RoundButton icon={require('../../assets/imgs/icon_unblock.png')}
-                       onClick={() => {
-                         unblockUser(otherUser.id);
-                       }} />
+          <RoundButton icon_size={40} icon={require('../../assets/imgs/icons8-cross-64.png')}
+            onClick={() => {
+              unblockUser(otherUser.id);
+            }} />
         }
       </Flex>
     </div>

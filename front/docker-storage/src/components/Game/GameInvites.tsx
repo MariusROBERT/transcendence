@@ -26,28 +26,26 @@ export function GameInvites() {
     getUsername();
   }, [inviteFrom, inviteTo]);
 
-  const mobile = window.innerWidth < 500;
-
   const inviteStyle: CSSProperties = {
-    top: mobile ? 60 : 0,
-    right: isInQueue || inviteFrom !== inviteTo ? (mobile ? -30 : 185) : -600,
-    minWidth: mobile ? 200 : (inviteTo ? 400 : 550),
-    marginLeft: 5,
+    border: '2px solid orange',
+    borderTop: 0,
+    top: isInQueue || inviteFrom !== inviteTo ? 0 : -300,
+    minWidth: inviteTo ? 400 : 550,
     position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
     zIndex: 95,
     transition: '1s',
     minHeight: '60px',
-    height: '60px',
-    borderRadius: 30 + 'px',
+    height: '70px',
+    borderRadius: '0 0 15px 15px',
     overflow: 'hidden',
   };
 
   return (
     <div style={inviteStyle}>
       <Background flex_direction={'row'} flex_alignItems={'center'} flex_justifyContent={'space-evenly'}
-                  bg_color={color.grey}>
+                  bg_color={color.black}>
         {inviteTo && (<>
           <p style={{ marginLeft: 10 }}>{'You invited ' + username + ' to Play'}</p>
           <Button onClick={cancelGameInvite}>Cancel</Button>
@@ -66,18 +64,10 @@ export function GameInvites() {
               if (inviteFrom)
                 declineGameInvite(inviteFrom);
             }} />
-          {/*<Button onClick={() => {*/}
-          {/*  if (inviteFrom)*/}
-          {/*    acceptGameInvite(inviteFrom);*/}
-          {/*}}>Accept</Button>*/}
-          {/*<Button onClick={() => {*/}
-          {/*  if (inviteFrom)*/}
-          {/*    declineGameInvite(inviteFrom);*/}
-          {/*}}>Decline</Button>*/}
         </>)}
         {isInQueue && (<>
           <p
-            style={{ marginLeft: mobile ? 20 : 10 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
+            style={{ marginLeft: 10, marginRight: 0 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
           <Button onClick={leaveQueue}>Cancel</Button>
         </>)}
         <p style={{ minWidth: '30px' }}></p>

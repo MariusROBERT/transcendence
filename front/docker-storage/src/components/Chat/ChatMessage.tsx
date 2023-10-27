@@ -37,13 +37,13 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
       }
       <div
         style={{
+          boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
           flex: 'auto',
-          width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          borderRadius: 10 + 'px',
+          borderRadius: '20px',
           overflow: 'hidden',
-          border: 'solid ' + color.black + ' ' + 2 + 'px',
+          marginTop: '5px',
         }}
       >
         <Background
@@ -53,6 +53,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
           flex_justifyContent={'flex-start'}
         >
           <p style={{
+            padding: '4px',
             margin: '10px',
             color: color.black,
             textShadow: 'none',

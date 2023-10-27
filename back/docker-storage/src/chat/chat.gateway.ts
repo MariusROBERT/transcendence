@@ -20,6 +20,18 @@ export interface ChannelMessage {
   sender_username: string;
   message_content: string;
   channel_id: number;
+  channel_name: string;
+  priv_msg: boolean
+}
+
+export interface MsgsUnreadDto {
+  sender_id: number;
+  receiver_id: number
+  channel_id: number;
+  channel_name: string;
+  sender_username: string;
+  priv_msg: boolean;
+  socket: Socket
 }
 
 @Injectable()
@@ -35,8 +47,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private messService: MessagesService,
     private userService: UserService,
     private jwtService: JwtService,
-  ) {
-  }
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -59,11 +70,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { channel } = body;
     const chan = await this.chanService.getChannelByName(channel);
 
-    client.rooms.forEach((room) => {
-      if (room !== client.id) {
-        client.leave(room);
-      }
-    });
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
     client.join(channel);
     this.server.to(channel).emit('join', chan.id);
   }
@@ -71,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('leave')
   async handleLeave(client: Socket) {
     client.rooms.forEach((room) => {
-      if (room !== client.id) {
+      if (room !== 'user' + client.id) {
         client.leave(room);
       }
     });
@@ -86,6 +97,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @UseGuards(ChatCheckGuard, BlockGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket, body: any) {
+    
     const { message, channel } = body;
     let chanE;
 
@@ -94,6 +106,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('error chan < 0');
       return;
     }
+
     //  Check if socket is in room
     const current_room = this.server.sockets.adapter.rooms.get(channel);
     if (!current_room?.has(client.id)) return;
@@ -103,10 +116,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(error);
       return;
     }
+
     const token = String(client.handshake.query.token);
     const payload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
+    
     const userE = await this.userService.getUserByUsername(payload.username);
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
@@ -116,7 +131,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sender_username: userE.username,
       message_content: message,
       channel_id: chanE.id,
+      channel_name: chanE.channel_name,
+      priv_msg: chanE.priv_msg
     };
     this.server.to(channel).emit('message', data);
-  }
+
+    let usersList = await this.userService.getFullUsersInChannels(chanE.id);
+    let tmp = await this.userService.getFullAdminInChannels(chanE.id);
+    usersList.concat(tmp);
+    usersList = [...usersList, chanE.owner];
+    
+    usersList.forEach(usr => {
+      if (userE.id !== usr.id) {
+        const userRoom = 'user' + usr.id;
+        client.join(userRoom);
+        this.server.to(userRoom).emit('notifMsg', data);
+      }
+    });
+   }
 }

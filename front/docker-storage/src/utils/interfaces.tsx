@@ -1,5 +1,7 @@
 // --------------------------- Auth :
 
+import { Socket } from 'socket.io-client';
+
 // --------------------------- Register :
 
 export interface FormDataRegister {
@@ -105,6 +107,7 @@ export interface IUser {
   recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
+  last_msg_date: Date;
   gamesId: number[];
 }
 
@@ -121,6 +124,7 @@ export interface GameHistory{
     eloOpponent: number;
     scoreOpponent: number;
     date: Date;
+  
 }
 
 export interface UserButtonsProps {
@@ -132,6 +136,19 @@ export interface UserButtonsProps {
 export interface NotificationBadgeProps {
   showBadge: boolean;
 }
+
+export interface NotifMsg {
+  id: number;
+  sender_id: number,
+  channel_id: number,
+  channel_name: string;
+  message_content: string;
+  sender_username: string,
+  sender_urlImg: string,
+  priv_msg: boolean,
+  socket: Socket
+}
+
 
 // --------------------------- Notifs :
 

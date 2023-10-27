@@ -3,6 +3,7 @@ import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { useUserContext } from '../../contexts';
 import { SetCurrChan } from '../../utils/channel_functions';
+import { subscribe, unsubscribe } from '../../utils/event';
 
 interface Props {
   children: ReactNode;
@@ -36,6 +37,26 @@ export function SidePanel({
       Open();
   }, [contextIsOpen]);
 
+  useEffect(() => {
+    subscribe('open_chat', () => {
+      if (!isLeftPanel) Open();
+    });
+    return () => {
+      unsubscribe('open_chat', () => null);
+    };
+  }, [isLeftPanel]);
+
+  useEffect(() => {
+    subscribe('close_chat', () => {
+      if (!isLeftPanel) Close();
+    });
+    return () => {
+      unsubscribe('close_chat', () => {
+        console.log('unsubscribe close_chat');
+      });
+    };
+  }, [isLeftPanel]);
+
   async function Close() {
     if (isMoving) return;
     setContextIsOpen(false);
@@ -66,7 +87,8 @@ export function SidePanel({
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      zIndex: 110,
+      boxShadow:'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
+      zIndex: 10,
       width: width + 'px',
       height: '100%',
       position: 'absolute',
@@ -100,7 +122,7 @@ export function SidePanel({
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
-  if (!isMoving && !contextIsOpen) {
+  if (!isMoving && !contextIsOpen && isLeftPanel) {
     return (
       <div
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
@@ -115,7 +137,8 @@ export function SidePanel({
       </div>
     );
   }
-
+  if (!isMoving && !contextIsOpen)
+    return (<></>)
   return (
     <div style={getStyle()}>
       <div style={buttonStyle}>

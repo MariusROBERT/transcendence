@@ -24,7 +24,7 @@ import { UserGateway } from './user/user.gateway';
     GameModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserGateway], // on mettra les gateway ici
+  providers: [AppService, UserGateway], 
   exports: [AppService],
 })
 export class AppModule {

@@ -36,7 +36,7 @@ export default function EditChat({ data, isVisible, setIsVisible }: Props) {
       setError('Password is too long');
       return;
     }
-    console.log(data);
+    // console.log(data);
     await Fetch(
       'channel/edit/' + data?.channel_id,
       'PATCH',
