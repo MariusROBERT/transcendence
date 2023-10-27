@@ -20,6 +20,7 @@ interface PublicChannelDto {
   id: number;
   channel_name: string;
   channel_priv_msg: boolean;
+  sender_name: string
 }
 
 export function ChatPanel({ viewport, width }: Props) {
@@ -219,8 +220,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background flex_justifyContent={'space-evenly'}>
-      {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
-      <div style={{ minHeight: '60px', paddingTop: 10 }} />
+      {!channel?.channel_priv_msg ? (<h3>{channel?.channel_name}</h3>) : (<h3>{channel?.sender_name}</h3>)}
       <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
         style={{

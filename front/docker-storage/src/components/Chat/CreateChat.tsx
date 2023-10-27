@@ -3,7 +3,6 @@ import { Fetch, color } from '../../utils';
 import { publish } from '../../utils/event';
 import { Button } from '../ComponentBase/Button';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannels } from '../../utils/channel_functions';
 import SwitchToggle from '../ComponentBase/SwitchToggle';
 import { Flex } from '../ComponentBase/FlexBox';
 import {

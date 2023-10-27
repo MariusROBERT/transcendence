@@ -42,7 +42,7 @@ export function ChatMenu() {
           height: '50px',
           fontSize: '1.3em',
           backgroundColor: 'white',
-          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;',
+          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         }}
         placeholder='Search Channel'
         onClick={() => {

@@ -77,6 +77,7 @@ export function ContactPanel({ viewport }: Props) {
                   justifyContent: 'center',
                   alignItems: 'center',
                   alignContent: 'center',
+                  marginTop: '10px',
                   marginLeft: '10px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
@@ -114,6 +115,7 @@ export function ContactPanel({ viewport }: Props) {
                   alignItems: 'center',
                   alignContent: 'center',
                   marginLeft: '10px',
+                  marginTop: '30px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
                 }
