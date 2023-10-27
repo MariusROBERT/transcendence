@@ -9,12 +9,15 @@ import {
   Profil,
   Settings,
   Leaderboard,
+  Flex,
 } from '..';
 import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';
 import {useFriendsRequestContext, useUserContext} from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 import JoinChat from '../Chat/JoinChat';
+import { Rainbow } from '../Game/game.utils';
+
 
 interface Props {
   panelWidth: number;
@@ -30,6 +33,22 @@ export function MainPage({ panelWidth, viewport }: Props) {
     isChatOpen, setIsChatOpen,
     isContactOpen, setIsContactOpen
   } = useUIContext();
+  const [rainbow] = useState<Rainbow>(new Rainbow());
+  const [titleColor, setTitleColor] = useState<string>('');
+
+  // functions -------------------------------------------------------------------------------------------------------//
+
+  function rgbTitle() {
+    setTimeout(() => {
+      const color = rainbow.next();
+      setTitleColor(`rgb(${color[0]}, ${color[1]}, ${color[2]}`);
+      rgbTitle();
+    }, 20);
+  }
+
+  useEffect(() => {
+    rgbTitle();
+  }, []);
 
   useEffect(() => {
     if (focused) {
@@ -62,11 +81,18 @@ export function MainPage({ panelWidth, viewport }: Props) {
           display: 'flex',
           flexDirection: 'column',
           margin: 'auto',
+          height:'100vh'
         }}>
+          <div style={{ height: '200px'}}>
+          <h2 style={{ paddingBottom: '10px', filter: `drop-shadow(0 0 10px ${titleColor})`, fontSize:'130px', zIndex:'20', fontFamily:'title', top:'15px'}}>PONG</h2>
+          </div>
+          <div style={{}}>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
           <Navbar />
+          </div>
+          <div style={{position:'absolute', top:'50%', transform:'translate(25%,-50%)'}}>
           <PlayButton />
-          <div style={{height: 210}} />
+          </div>
         </div>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen}>
           <Background>
@@ -78,6 +104,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
       <Profil />
       <Settings />
       <JoinChat />
+      
+      
     </div>
   );
 }

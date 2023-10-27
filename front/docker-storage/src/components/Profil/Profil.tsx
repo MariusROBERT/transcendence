@@ -107,6 +107,7 @@ export default function Profil() {
             margin: '10px 0',
             padding: '1px 0',
             fontSize: '60px',
+            fontFamily:'title',
             ...titleStyle
           }}>MATCH HISTORY</p>
           {
@@ -128,10 +129,10 @@ export default function Profil() {
                   }}>You</p>
                 </Flex>
                 <Flex flex_alignItems="center">
-                  <p style={{fontSize: '25px', paddingRight: '30px'/*, ...titleStyle */}} >Elo</p>
+                  <p style={{fontSize: '25px', paddingRight: '30px'}} >Elo</p>
                 </Flex>
                 <Flex flex_alignItems="center">
-                  <p style={{fontSize: '35px', paddingRight: '30px'/*, ...titleStyle */}}>Score</p>
+                  <p style={{fontSize: '35px', paddingRight: '30px', fontFamily:'title'}}>Score</p>
                 </Flex>
                 <Flex flex_alignItems="center">
                   <p style={{fontSize: '25px', paddingRight: '30px'/*, ...titleStyle */}}>Elo</p>

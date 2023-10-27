@@ -52,6 +52,7 @@ export function GameScore({viewport}: { viewport: Viewport }) {
           fontSize: 80,
            margin: 10,
            color:won?'#CCFF00':'red',
+           fontFamily:'title',
            }}>
             You {won ? 'won' : 'lost'}</p>
         {

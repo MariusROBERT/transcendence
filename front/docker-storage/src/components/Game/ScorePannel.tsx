@@ -43,6 +43,7 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
             fontSize: 30, 
             minWidth:'8ch', 
             textAlign:'center',
+            fontFamily:'title'
             }}>
           {/* {(score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)} */}
             {won ? ((score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)):

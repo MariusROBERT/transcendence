@@ -33,7 +33,7 @@ const GameHistoryBanner = ({game }: Props) => {
               <p style={{marginRight:'20px', marginLeft:'15px'}}>{game.eloUser}</p>
             </Flex>
             <Flex flex_alignItems="center">
-              <p style={{marginRight:'20px', fontSize:'35px'}}>{game.scoreUser === -1 ? 'FF' : game.scoreUser} - {game.scoreOpponent=== -1 ? 'FF' : game.scoreOpponent}</p>
+              <p style={{marginRight:'20px', fontSize:'35px', fontFamily:'title'}}>{game.scoreUser === -1 ? 'FF' : game.scoreUser} - {game.scoreOpponent=== -1 ? 'FF' : game.scoreOpponent}</p>
             </Flex>
             <Flex flex_alignItems="center">
               <p style={{marginRight:'15px'}}>{game.eloOpponent}</p>
