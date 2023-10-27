@@ -1,6 +1,6 @@
-import { GameHistory, IUser } from '../../utils/interfaces';
-import { AuthGuard, Flex, RoundButton, Profil, Popup } from '..';
-import React, { CSSProperties, useState } from 'react';
+import { GameHistory } from '../../utils/interfaces';
+import {Flex, RoundButton} from '..';
+import React, { CSSProperties } from 'react';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {

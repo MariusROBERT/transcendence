@@ -19,7 +19,7 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
       borderRadius:'50px',
     }}>
     <Flex flex_direction="row" flex_alignItems="center" flex_gap={'0'}>
-      {<ScoreUser user={user1} won={won}/>}
+      {<ScoreUser user={user1}/>}
       <div style={{
         position: 'relative',
         minWidth: '200px',
@@ -51,7 +51,7 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
           </p>
         </div>
       </div>
-      <ScoreUser user={user2} mirror won={!won} />
+      <ScoreUser user={user2} mirror />
     </Flex>
     </div>
   );

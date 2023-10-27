@@ -9,7 +9,6 @@ import {
   Profil,
   Settings,
   Leaderboard,
-  Flex,
 } from '..';
 import React, {useEffect, useState} from 'react';
 import {Search} from '../Search/Search';

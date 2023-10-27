@@ -1,4 +1,3 @@
-import { color } from '../../utils';
 import { ReactNode } from 'react';
 
 interface Props {

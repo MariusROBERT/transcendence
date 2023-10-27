@@ -3,7 +3,6 @@ import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
-import { color } from '../../utils';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {

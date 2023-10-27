@@ -6,10 +6,9 @@ import {IUser} from '../../utils/interfaces';
 interface Props {
   user: IUser;
   mirror?: boolean;
-  won:boolean;
 }
 
-export default function ScoreUser({user, mirror, won}: Props) {
+export default function ScoreUser({user, mirror}: Props) {
   return (
     <div>
       <div style={{
