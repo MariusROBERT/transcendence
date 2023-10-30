@@ -34,6 +34,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
+    if (message.channel_id !== id) return ;
     setMessage([...msg, message]);
     setInputValue('');
   };
@@ -218,8 +219,8 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   return (
-    <Background flex_justifyContent={'space-evenly'}>
-      {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
+    <Background bg_color={'#00375Cbb'} flex_justifyContent={'space-evenly'}>
+      {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
@@ -235,7 +236,6 @@ export function ChatPanel({ viewport, width }: Props) {
           flexDirection: 'column',
           gap: '5px 5px',
           overflow: 'scroll',
-          backgroundColor: '#00375Cbb',
         }}
         ref={msgsRef as React.RefObject<HTMLDivElement>}
       >
