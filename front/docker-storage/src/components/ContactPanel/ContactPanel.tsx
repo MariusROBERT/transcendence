@@ -1,5 +1,5 @@
 
-import { Background, Border, ChannelBanner, ChatMenu, GroupItems, Popup, RoundButton, UserBanner } from '..';
+import { Background, Border, ChannelBanner, SearchChannelButton, GroupItems, Popup, RoundButton, UserBanner } from '..';
 import { color, Fetch, Viewport } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
@@ -89,7 +89,8 @@ export function ContactPanel({ viewport }: Props) {
             <div style={{display: 'flex', width: '75%', justifyContent: 'space-around', margin: '10px', marginBottom: '50px',}}>
               <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-plus-100.png')} onClick={onclick}
               ></RoundButton>
-              <ChatMenu></ChatMenu>
+
+              <SearchChannelButton></SearchChannelButton>
             </div>
             <div>
 
