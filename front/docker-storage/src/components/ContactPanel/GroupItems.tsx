@@ -32,7 +32,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
         borderRadius={0}
       >
         <Background
-          bg_color={color.grey}
+          // bg_color={color.grey}
           flex_direction={'row'}
           flex_justifyContent={'flex-end'}
         >

@@ -142,6 +142,11 @@ export class UserService {
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
+    PublicProfile.gamesPlayed = profile.gamesPlayed;
+    PublicProfile.elo = profile.elo;
+    PublicProfile.gamesId = profile.gamesId;
+    PublicProfile.rank = profile.rank;
+
 
     return PublicProfile;
   }
@@ -441,5 +446,89 @@ export class UserService {
       gameInvitationTo: user.gameInvitationTo,
       gameInviteType: user.gameInvitationType,
     };
+  }
+
+  // GAME SAVING 
+  async endOfGameUpdatingProfile(gameId:number, user1:UserEntity, user2:UserEntity, won:boolean){
+  
+    user1.gamesPlayed += 1;
+    user2.gamesPlayed += 1;
+    let winner = user1;
+    let loser = user2;
+    won? 1 : (winner = user2, loser = user1);
+    winner.gamesWon += 1;
+    loser.gamesLost += 1;
+    const K = 50; // ponderation factor
+    const expectedOutcomeWinner = 1 / (1 + 10 ** ((loser.elo - winner.elo) / 400));
+    const expectedOutcomeLoser = 1 - expectedOutcomeWinner;
+
+    const newEloWinner = winner.elo + K * (1 - expectedOutcomeWinner);
+    const newEloLoser = loser.elo + K * (0 - expectedOutcomeLoser);
+
+    winner.elo = Math.round(newEloWinner);
+    loser.elo = Math.round(newEloLoser);
+    if (!loser.gamesId)
+      loser.gamesId = [];
+    loser.gamesId.push(gameId);
+    if (!winner.gamesId)
+      winner.gamesId = [];
+    winner.gamesId.push(gameId)
+    loser.winrate = loser.gamesWon / loser.gamesPlayed * 100;
+    winner.winrate = winner.gamesWon / winner.gamesPlayed * 100;
+    await this.UserRepository.save(loser);
+    await this.UserRepository.save(winner);
+    return ;
+  }
+
+
+  async rankUpdate(id:number){
+    let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
+    // users.forEach(element => {
+    //   element.rank = 0;
+    //   element.elo = 1000;
+    //   this.UserRepository.save(element);
+    // });
+    // return ;
+    users = users.filter(user=> (user.rank !== 0 || user.id === id));
+    let position = users.findIndex((user) => user.id === id);
+    // console.log("NEW");
+    // console.log(position);
+    if (users[position].rank === 0)
+    {
+      users[position].rank = position + 1;
+      await this.UserRepository.save(users[position]);
+      let length = users.length;
+      position += 1;
+      while (position < length)
+      {
+        users[position].rank = position + 1;
+        await this.UserRepository.save(users[position]);
+        // console.log(users[position]);
+        position += 1;
+      }
+      return ;
+    }
+    let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
+    // console.log("rank");
+    // console.log(users.map(u=>u.rank));
+    // console.log(position);
+    if (diff === 0 )
+      return ;
+    users[position].rank = position + 1;
+    await this.UserRepository.save(users[position]);
+    let i = 0;
+    diff > 0 ? i = -1 : i = 1;
+    let j = 0;
+    while (j !== -diff)
+    {
+      j += i;
+      // console.log(users.map(u=>u.rank));
+      // console.log(position);
+      // console.log(j);
+      // console.log(diff);
+      users[position + j].rank += i;
+      await this.UserRepository.save(users[position + j]);
+    }
+    return ;
   }
 }

@@ -1,4 +1,3 @@
-import { color } from '../../utils';
 import { ReactNode } from 'react';
 
 interface Props {
@@ -37,7 +36,7 @@ interface Props {
 function Background({
                       children,
                       image,
-                      bg_color = color.black,
+                      bg_color = '#00000000',
                       flex_direction = 'column',
                       flex_wrap = 'nowrap',
                       flex_justifyContent = 'center',

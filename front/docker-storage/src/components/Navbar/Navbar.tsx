@@ -45,6 +45,15 @@ const Navbar: React.FC = () => {
     });
   }, [socket, msgs, id]);
 
+  // useEffect(() => {
+  //   socket?.on('message', onNotifMsg);
+
+  //   return (() => {
+  //     socket?.off('message', onNotifMsg);
+  //   });
+  // }, [socket, msgs, id]);
+
+
   // friends request
   useEffect(() => {
     const setNotif = async () => {
@@ -78,13 +87,12 @@ const Navbar: React.FC = () => {
   };
 
   const notifstyle: CSSProperties = {
-    maxHeight: '500px',
+    position: 'absolute',
+    height: '20%',
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    position: 'absolute',
-    top: '120px',
-    minHeight: '100%',
+    top: '420px',
     background: 'transparent',
   };
 

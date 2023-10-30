@@ -41,15 +41,15 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
         return (<p>No user</p>);
       const filteredUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+          user.username.toLowerCase().includes(searchTerm.toLowerCase()) // && user.rank !== 0
         )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // TODO: sort by ELO
+        .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
 
       const elements = filteredUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{'RANK'}</p> {/* TO CHANGE */}
+          <p style={{ fontWeight: 'bold' }}>{user.rank}</p>
           {<UserBanner otherUser={user} />}
-          <p>ELO pt</p>
+          <p style={{ fontWeight: 'bold' }}>{user.elo}</p>
         </div>
       ));
       setUserElements(elements);
@@ -59,7 +59,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
   }, [searchTerm, allUsers, user]);
 
   const container: CSSProperties = {
-    background: 'grey',
+    background: '#00375C',
     padding: '10px',
     display: 'flex',
     flexDirection: 'column',
@@ -67,7 +67,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     alignContent: 'center',
     maxHeight: '500px',
     overflowY: 'scroll',
-    borderRadius: '15px',
+    borderRadius: '50px',
     // width: mobile ? 200 : 700,
   };
 
@@ -78,27 +78,30 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     display: 'flex',
     justifyContent: 'space-around',
     alignContent: 'center',
-    background: '#646464',
+    background: 'radial-gradient(circle, rgba(9,6,64,1) 0%, rgba(0,212,255,1) 100%)',
     color: 'white',
     margin: '10px 0',
     padding: '10px',
     cursor: 'pointer',
-    borderRadius: '10px',
+    borderRadius: '50px',
   };
 
   if (!isLeaderboardOpen)
     return (<></>);
 
   return (
-    <Popup isVisible={isLeaderboardOpen} onClose={() => {setIsLeaderboardOpen(false)}}>
-
+    <Popup isVisible={isLeaderboardOpen} onClose={() => { setIsLeaderboardOpen(false) }}>
       <div style={container}>
-        <div style={{display:'flex', justifyContent:'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SearchBar setSearchTerm={setSearchTerm}
-                      isVisible={isLeaderboardOpen}
-                      id={'searchBar'}>
-                      {'search for a user...'}
+            isVisible={isLeaderboardOpen}
+            id={'searchBar'}>
+            {'search for a user...'}
           </SearchBar>
+        </div>
+        <div style={{ padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
+          <p style={{ fontWeight: 'bold' }}>Rank </p>
+          <p style={{ fontWeight: 'bold' }}>Elo</p>
         </div>
         {userElements}
         {userElements.length === 0 && (

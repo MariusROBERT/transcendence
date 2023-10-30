@@ -58,9 +58,8 @@ export function ContactPanel({ viewport }: Props) {
 
   return (
     <>
-      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 }}>
+      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
-          flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
         >
