@@ -219,7 +219,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   return (
     <Background bg_color={'#00375Cbb'} flex_justifyContent={'space-evenly'}>
-      {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
+      {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div

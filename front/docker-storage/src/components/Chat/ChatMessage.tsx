@@ -25,7 +25,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         <div
           style={{
             display: 'flex',
-            flexDirection: isMe ? 'row-reverse' : 'row',
+            flexDirection: isMe ? 'row' : 'row-reverse',
           }}
         >
           <RoundButton
@@ -47,7 +47,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         }}
       >
         <Background
-          bg_color={isMe ? color.white2 : '#CCFF00'}
+          bg_color={isMe ? '#CCFF00' : color.white2}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
