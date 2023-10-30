@@ -22,6 +22,7 @@ interface PublicChannelDto {
   channel_priv_msg: boolean;
 }
 
+// TODO refacto all useEffect (Infinite LOOp)
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
   const [userVisible, setUserVisible] = useState<boolean>(false);
@@ -29,7 +30,7 @@ export function ChatPanel({ viewport, width }: Props) {
   const [id, setId] = useState<number>(-1);
   const { socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
-  const msgsRef = useRef<HTMLDivElement | null>(null);
+  const msgsRef = useRef<HTMLDivElement>();
   const [channel, setChannel] = useState<PublicChannelDto>();
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
 
@@ -38,11 +39,13 @@ export function ChatPanel({ viewport, width }: Props) {
   const getMsg = async (message: ChannelMessage) => {
     if (message.channel_id !== id) return;
     setMessage([...msg, message]);
-    setInputValue('');
   };
 
   useEffect(() => {
     document.getElementById('inpt')?.focus();
+  }, [])
+
+  useEffect(() => {
 
     socket?.on('message', getMsg);
     return () => {
@@ -50,27 +53,22 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   });
 
-  const updateUsers = async (id: number) => {
-    UpdateChannelUsers(id);
-  };
-
-  const getChan = async () => {
-    if (id === -1) return;
-    const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
-    setChannel(chan);
-    // console.log(chan);
-  }
-
   useEffect(() => {
+    const getChan = async () => {
+      if (id === -1) return;
+      const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
+      setChannel(chan);
+      // console.log(chan);
+    }
     getChan();
   }, [id])
 
   useEffect(() => {
-    socket?.on('join', updateUsers);
+    socket?.on('join', UpdateChannelUsers);
     return () => {
-      socket?.off('join', updateUsers);
+      socket?.off('join', UpdateChannelUsers);
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
@@ -82,86 +80,25 @@ export function ChatPanel({ viewport, width }: Props) {
     });
   }, []);
 
-  async function execCommand(command: string, cmd: string): Promise<boolean> {
-    const split = cmd.split(' ');
-
-    if (split.length === 3 && split[0] === command) {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      setInputValue('');
-      Fetch(
-        'channel/' + command + '/' + id_channel,
-        'POST',
-        JSON.stringify({
-          id: id_user,
-        }),
-      );
-      return true;
-    }
-    return false;
-  }
-
-  async function CommandParsing(): Promise<boolean> {
-    const command = inputValue;
-    const split = command.split(' ');
-
-    if (await execCommand('add_admin', command)) return true;
-    if (await execCommand('kick', command)) return true;
-    if (await execCommand('ban', command)) return true;
-    if (await execCommand('unban', command)) return true;
-
-    //  Mute
-    if (split.length === 4 && split[0] === 'mute') {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      const time = parseInt(split[3], 10);
-      setInputValue('');
-      Fetch(
-        'channel/mute/' + id_channel,
-        'POST',
-        JSON.stringify({
-          id: id_user,
-          time: time,
-        }),
-      );
-      return true;
-    }
-
-    //  Unmute
-    if (split.length === 3 && split[0] === 'unmute') {
-      const id_channel = parseInt(split[1], 10);
-      const id_user = parseInt(split[2], 10);
-      setInputValue('');
-      Fetch(
-        'channel/unmute/' + id_channel,
-        'POST',
-        JSON.stringify({
-          id: id_user,
-        }),
-      );
-      return true;
-    }
-    return false;
-  }
-
   async function onEnterPressed() {
     if (inputValue.length <= 0 || inputValue.length > 256) return;
-    if (await CommandParsing()) return; // If it's a command do not continue
     const chan = await GetCurrChan();
     socket?.emit('message', { message: inputValue, channel: chan } as any);
+    setInputValue('');
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
     setCurrUser(msgs);
     setUserVisible(true);
+    // TODO show profile here if not admin
   }
 
   useEffect(() => {
     // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
-    if (msgsRef.current) {
+    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
       msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
     }
-  }, [msg, msgsRef]);
+  });
 
   useEffect(() => {
     const el = msg.map((data, idx) => (
@@ -181,37 +118,7 @@ export function ChatPanel({ viewport, width }: Props) {
     if (current_chan != '') {
       return (
         <>
-          <textarea id='inpt'
-            value={inputValue}
-            onChange={(evt) => {
-              setInputValue(evt.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.keyCode !== 13) return;
-              onEnterPressed();
-            }}
-            maxLength={256}
-            style={{
-              boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
-              background: 'white',
-              outline: 'none',
-              height: '50px',
-              fontSize: '1.3em',
-              flex: 'auto',
-              borderRadius: '15px',
-              paddingLeft: '15px',
-              paddingTop: '15px',
-              paddingBottom: '10px',
-              marginBottom: '5px',
-              overflowWrap: 'break-word',
-              resize: 'none',
-            }}
-          />
-          <RoundButton
-            icon_size={50}
-            icon={require('../../assets/imgs/icon_play.png')}
-            onClick={onEnterPressed}
-          />
+
         </>
       );
     }
@@ -252,7 +159,37 @@ export function ChatPanel({ viewport, width }: Props) {
           width: width - 30 + 'px',
         }}
       >
-        {inputMessage()}
+        <textarea id='inpt'
+                  value={inputValue}
+                  onChange={(evt) => {
+                    setInputValue(evt.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.keyCode !== 13) return;
+                    onEnterPressed();
+                  }}
+                  maxLength={256}
+                  style={{
+                    boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
+                    background: 'white',
+                    outline: 'none',
+                    height: '50px',
+                    fontSize: '1.3em',
+                    flex: 'auto',
+                    borderRadius: '15px',
+                    paddingLeft: '15px',
+                    paddingTop: '15px',
+                    paddingBottom: '10px',
+                    marginBottom: '5px',
+                    overflowWrap: 'break-word',
+                    resize: 'none',
+                  }}
+        />
+        <RoundButton
+          icon_size={50}
+          icon={require('../../assets/imgs/icon_play.png')}
+          onClick={onEnterPressed}
+        />
         <ChatUser data={currUser} visibility={userVisible} onClose={() => setUserVisible(false)}></ChatUser>
       </div>
     </Background>
