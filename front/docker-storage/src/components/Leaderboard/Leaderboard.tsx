@@ -20,7 +20,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     const getAllProfil = async () => {
@@ -32,7 +32,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     };
     getAllProfil();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
