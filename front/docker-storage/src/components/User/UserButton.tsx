@@ -41,7 +41,7 @@ export function UserButton({ otherUser }: Props) {
             onClick={() => {
               openChat(otherUser, socket);
               setIsChatOpen(true)
-              setMsgs(msgs.filter(el => el.channel_name !== otherUser.username))
+              setMsgs(msgs.filter(el => el.sender_username !== otherUser.username))
             }}
           />
         }
