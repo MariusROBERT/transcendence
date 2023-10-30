@@ -1,31 +1,23 @@
-import { subscribe } from '../../utils/event';
 import { ChannelMessage, ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from './ChanUser';
-import { useEffect, useState } from 'react';
-import {Fetch} from '../../utils';
 
 interface Props {
   chan_id: number;
+  users: ChannelUsers[];
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChanUserList({ chan_id, onClick }: Props) {
-  const [usrs, setUsers] = useState<ChannelUsers[]>([]);
+export function ChanUserList({ chan_id, onClick, users }: Props) {
 
   const uniqueIds = new Set();
 
-  useEffect(() => {
-    subscribe('enter_users', async (event: any) => {
-      if (event.detail.id !== chan_id) return;
-      setUsers(event.detail.value);
-    });
-    async function getUsers(){
-      setUsers((await Fetch('channel/users/' + chan_id, 'GET'))?.json);
+  const unique = users.filter((item) => {
+    if (!uniqueIds.has(item.id)) {
+      uniqueIds.add(item.id);
+      return true;
     }
-
-    getUsers();
-
-  }, [chan_id]);
+    return false;
+  });
 
   return (
     <div
@@ -46,7 +38,7 @@ export function ChanUserList({ chan_id, onClick }: Props) {
           flexWrap: 'nowrap',
         }}
       >
-        {usrs.map((item, idx) => (
+        {unique.map((item, idx) => (
           <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>
