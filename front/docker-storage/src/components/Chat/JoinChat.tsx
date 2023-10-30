@@ -10,7 +10,8 @@ import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 
 export default function JoinChat() {
-  const { inputValueChatMenu, setInputValueChatMenu, isChatMenuOpen, setIsChatMenuOpen, channels } = useUIContext();
+  const { isChatMenuOpen, setIsChatMenuOpen, channels } = useUIContext();
+  const [input, setInput] = useState<string>('');
 
   const [channelStatus, SetChannelStatus] = useState<
     'all' | 'public' | 'protected'
@@ -25,7 +26,7 @@ export default function JoinChat() {
     ? channels.filter((channel) => {
       const name = channel?.channel_name
         .toLowerCase()
-        .startsWith(inputValueChatMenu.toLowerCase());
+        .startsWith(input.toLowerCase());
 
       const status =
         channelStatus === 'all' || (channelStatus === 'public' && !channel.has_password) || (channelStatus === 'protected' && channel.has_password);
@@ -63,8 +64,8 @@ export default function JoinChat() {
     <Popup isVisible={isChatMenuOpen} onClose={() => setIsChatMenuOpen(false)}>
       <div style={createChatStyle}>
         <ChatInput
-          input={inputValueChatMenu}
-          setInput={setInputValueChatMenu}
+          input={input}
+          setInput={setInput}
           OnClick={() => null}
           OnEnter={() => null}
         />
@@ -84,7 +85,7 @@ export default function JoinChat() {
           <Button
             onClick={() => {
               setCreChatVisible(true);
-              setInputValueChatMenu('')
+              setInput('')
             }}
           >
             Create Channel
