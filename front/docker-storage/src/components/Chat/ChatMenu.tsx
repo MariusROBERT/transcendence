@@ -22,14 +22,14 @@ export function ChatMenu() {
     setIsChatMenuOpen(true);
   }
 
-  useEffect(() => {
-    subscribe('update_chan', () => {
-      OnJoinChannel();
-    });
-    return () => {
-      unsubscribe('update_chan', () => void 0);
-    };
-  }, [channels]);
+  //useEffect(() => {
+  //  subscribe('update_chan', () => {
+  //    //OnJoinChannel();
+  //  });
+  //  return () => {
+  //    unsubscribe('update_chan', () => void 0);
+  //  };
+  //}, [channels]);
 
   return (
     <div>
