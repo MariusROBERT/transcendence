@@ -14,6 +14,8 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const [visible, setVisible] = useState<boolean>(false);
   const [usr, setUsr] = useState<IUser>();
   const { socket } = useUserContext()
+  const { msgs, setMsgs } = useFriendsRequestContext()
+
 
   useEffect(() => {
     notifsMsg?.filter((el) => {

@@ -23,6 +23,8 @@ export function UserButton({ otherUser }: Props) {
     recvInvitesFrom,
     friends,
     blocked,
+    setMsgs,
+    msgs
   } = useFriendsRequestContext();
 
   return (
@@ -39,6 +41,7 @@ export function UserButton({ otherUser }: Props) {
                          openChat(otherUser, socket);
                          setIsChatOpen(true);
                          setIsLeaderboardOpen(false);
+                         setMsgs(msgs.filter(el => el.sender_username !== otherUser.username));
                        }
           } />
         }

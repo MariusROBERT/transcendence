@@ -13,8 +13,8 @@ const Navbar: React.FC = () => {
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
   const { user, socket, id } = useUserContext();
-  const { recvInvitesFrom } = useFriendsRequestContext();
-  const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
+  const { recvInvitesFrom, msgs, setMsgs } = useFriendsRequestContext();
+  // const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
 
   const logout = async () => {
     socket?.disconnect();
@@ -44,15 +44,6 @@ const Navbar: React.FC = () => {
       socket?.off('notifMsg', onNotifMsg);
     });
   }, [socket, msgs, id]);
-
-  // useEffect(() => {
-  //   socket?.on('message', onNotifMsg);
-
-  //   return (() => {
-  //     socket?.off('message', onNotifMsg);
-  //   });
-  // }, [socket, msgs, id]);
-
 
   // friends request
   useEffect(() => {

@@ -7,7 +7,9 @@ type FriendsRequestType = {
   sendInvitesTo: number[],
   friends: number[],
   blocked: number[],
-  // msgs: NotifMsg[],
+  msgs: NotifMsg[],
+  setMsgs: React.Dispatch<React.SetStateAction<NotifMsg[]>>,
+
 
   sendFriendRequest: (to: number) => void,
   acceptFriendRequest: (from: number) => void,
@@ -24,7 +26,8 @@ const FriendsRequestContext = createContext<FriendsRequestType>({
   sendInvitesTo: [],
   friends: [],
   blocked: [],
-  // msgs: [],
+  msgs: [],
+  setMsgs: (msgs) => {void msgs},
 
   sendFriendRequest: (to: number) => {
     void to;
@@ -64,7 +67,7 @@ export function FriendsRequestProvider({ children }: Props) {
   const [sendInvitesTo, setSendInvitesTo] = useState<number[]>([]);
   const [friends, setFriends] = useState<number[]>([]);
   const [blocked, setBlocked] = useState<number[]>([]);
-  // const [msgs, setMsgs] = useState<number[]>([]);
+  const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
 
   // useEffect(() => {
   //   console.log('invite From: ', recvInvitesFrom, 'invite To:', sendInvitesTo,'friends:', friends, 'blocked: ', blocked);
@@ -181,7 +184,9 @@ export function FriendsRequestProvider({ children }: Props) {
           recvInvitesFrom,
           sendInvitesTo,
           friends,
-          // msgs,
+
+          msgs,
+          setMsgs,
 
           sendFriendRequest,
           acceptFriendRequest,
