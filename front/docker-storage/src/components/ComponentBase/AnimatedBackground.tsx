@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function AnimatedBackground(props: Props) {
-  const [size, setSize] = useState<Size>({ ...baseSize, ball: 5 });
+  const [size, setSize] = useState<Size>(baseSize);
   const [balls] = useState<AutonomousBall[]>([]);
 
   useEffect(() => {

@@ -6,7 +6,6 @@ import { subscribe } from '../../utils/event';
 import {
   GetCurrChan,
   UpdateChannelUsers,
-  current_chan,
 } from '../../utils/channel_functions';
 import {ChannelMessage, ChannelUsers, IChatUser} from '../../utils/interfaces';
 import ChatUser from './ChatUser';

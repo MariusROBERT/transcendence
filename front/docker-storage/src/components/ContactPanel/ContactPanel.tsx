@@ -6,11 +6,13 @@ import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useEffect, useState } from 'react';
 import { subscribe } from '../../utils/event';
 import CreateChat from '../Chat/CreateChat';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   viewport: Viewport;
 }
 export function ContactPanel({ viewport }: Props) {
+  const { isContactOpen } = useUIContext()
   const { socket } = useUserContext();
   const { friends } = useFriendsRequestContext();
   const [friendList, setFriendList] = useState<IUser[]>([]);
@@ -27,7 +29,7 @@ export function ContactPanel({ viewport }: Props) {
       setFriendList(users.filter((u: IUser) => friends.includes(u.id)));
     };
     getFriends();
-  }, [friends]);
+  }, [friends, isContactOpen]);
 
   async function FetchChannels() {
     const channels = (await Fetch('channel/of_user', 'POST'))?.json;
@@ -42,7 +44,7 @@ export function ContactPanel({ viewport }: Props) {
       if (event.detail)
         await FetchChannels();
     });
-  }, []);
+  }, [isContactOpen]);
 
   useEffect(() => {
     socket?.on('join', FetchChannels);
@@ -58,7 +60,7 @@ export function ContactPanel({ viewport }: Props) {
 
   return (
     <>
-      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
+      <div style={{ height: '100%', width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}

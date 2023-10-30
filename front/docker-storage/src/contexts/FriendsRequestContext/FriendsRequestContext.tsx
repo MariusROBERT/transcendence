@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useUserContext } from '../UserContext/UserContext';
 import { Fetch } from '../../utils';
-import { NotifMsg } from '../../utils/interfaces';
+import {NotifMsg} from '../../utils/interfaces';
 
 type FriendsRequestType = {
   recvInvitesFrom: number[],

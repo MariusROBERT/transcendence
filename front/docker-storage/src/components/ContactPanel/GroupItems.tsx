@@ -25,6 +25,7 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
 
   return (
     <>
+      <div style={{backgroundColor: '#FFFFFF55', width:'100%', minHeight:'3px'}}/>
       <Border
         borderSize={0}
         height={50}
