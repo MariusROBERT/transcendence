@@ -70,22 +70,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { channel } = body;
     const chan = await this.chanService.getChannelByName(channel);
 
-    client.rooms.forEach((room) => {
-      if (room !== 'user' + client.id) {
-        client.leave(room);
-      }
-    });
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
     client.join(channel);
     this.server.to(channel).emit('join', chan.id);
   }
 
   @SubscribeMessage('leave')
   async handleLeave(client: Socket) {
-    client.rooms.forEach((room) => {
-      if (room !== 'user' + client.id) {
-        client.leave(room);
-      }
-    });
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
   }
 
   @SubscribeMessage('remove')

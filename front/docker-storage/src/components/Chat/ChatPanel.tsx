@@ -34,6 +34,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
+    if (message.channel_id !== id) return ;
     setMessage([...msg, message]);
     setInputValue('');
   };
