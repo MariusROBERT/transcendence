@@ -19,6 +19,7 @@ export async function UpdateChannelUsers(id: number) {
   publish('enter_users', {
     detail: {
       value: usrs,
+      id: id,
     },
   });
 }

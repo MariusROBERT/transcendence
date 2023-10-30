@@ -33,7 +33,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
 
   async function OnLeave() {
     const res = await Fetch('channel/leave/' + id, 'PATCH');
-    publish('fetch_chan', {
+    publish('update_chan', {
       detail: {
         value: res?.json?.channel_name,
       },
