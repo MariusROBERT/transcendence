@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function UserButton({ otherUser }: Props) {
-  const { setIsChatOpen } = useUIContext();
+  const { setIsChatOpen, setIsLeaderboardOpen } = useUIContext();
   const { socket } = useUserContext();
   const { sendGameInvite } = useGameContext();
   const {
@@ -36,12 +36,19 @@ export function UserButton({ otherUser }: Props) {
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
           <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-chat-90.png')}
-                       onClick={() => {openChat(otherUser, socket);
-                                      setIsChatOpen(true)}} />
+                       onClick={() => {
+                         openChat(otherUser, socket);
+                         setIsChatOpen(true);
+                         setIsLeaderboardOpen(false);
+                       }
+          } />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
           <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-play-64.png')}
-            onClick={() => sendGameInvite(otherUser.id, 'normal')} />
+            onClick={() => {
+              sendGameInvite(otherUser.id, 'normal');
+              setIsLeaderboardOpen(false);
+            }} />
         }
         {!friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) && !sendInvitesTo?.includes(otherUser.id) && !recvInvitesFrom?.includes(otherUser.id) &&
           <RoundButton icon_size={40} icon={require('../../assets/imgs/icons8-add-friends-64 (1).png')}
