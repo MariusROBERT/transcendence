@@ -8,7 +8,7 @@ import {
   UpdateChannelUsers,
   current_chan,
 } from '../../utils/channel_functions';
-import { ChannelMessage, IChatUser } from '../../utils/interfaces';
+import { ChannelMessage, ChannelUsers, IChatUser } from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
@@ -26,11 +26,12 @@ export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
   const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
-  const [id, setId] = useState<number>(-1);
-  const { socket } = useUserContext();
+  const [cid, setId] = useState<number>(-1);
+  const {id, socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
   const [channel, setChannel] = useState<PublicChannelDto>()
+  const [usrs, setUsers] = useState<ChannelUsers[]>([]);
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
@@ -52,21 +53,27 @@ export function ChatPanel({ viewport, width }: Props) {
   };
 
   const getChan = async() => {
-    if (id === -1) return ;
-    const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
+    if (cid === -1) return ;
+    const chan = (await (Fetch(`channel/public/${cid}`, 'GET')))?.json
     setChannel(chan);
     // console.log(chan);
   }
 
   useEffect(() => {
     getChan();
-  }, [id])
+  }, [cid])
 
   useEffect(() => {
     socket?.on('join', updateUsers);
     return () => {
       socket?.off('join', updateUsers);
     };
+  }, []);
+
+  useEffect(() => {
+    subscribe('enter_users', async (event: any) => {
+      setUsers(event.detail.value);
+    });
   }, []);
 
   useEffect(() => {
@@ -220,8 +227,9 @@ export function ChatPanel({ viewport, width }: Props) {
   return (
     <Background flex_justifyContent={'space-evenly'}>
       {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
+      {channel?.channel_priv_msg && <h3>{usrs[0].id === id ? usrs[1].username : usrs[0].username}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
-      <ChanUserList onClick={OnUserClick} chan_id={id} />
+      <ChanUserList onClick={OnUserClick} chan_id={cid} />
       <div
         style={{
           border: '5px solid transparent',
