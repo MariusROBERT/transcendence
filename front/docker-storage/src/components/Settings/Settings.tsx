@@ -95,7 +95,10 @@ export default function Settings() {
       is2fa === userInfosSettings?.is2fa_active
     )
       // nothing changed
-      return;
+      {
+        setIsSettingsOpen(false);
+        return;
+      }
 
     // PASSWORD :
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
@@ -161,6 +164,7 @@ export default function Settings() {
       }
     }
     setErrorMessage('');
+    setIsSettingsOpen(false);
   };
 
   const mobile = window.innerWidth < 500;

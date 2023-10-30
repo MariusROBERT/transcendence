@@ -30,7 +30,6 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const { socket } = useUserContext();
 
   useEffect(() => {
     if (contextIsOpen)
@@ -61,7 +60,7 @@ export function SidePanel({
     if (isMoving) return;
     setContextIsOpen(false);
     if (!isLeftPanel) {
-      socket?.emit('leave');
+      // socket?.emit('leave');
       SetCurrChan('');
     }
     setIsAnim(true);

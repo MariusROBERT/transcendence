@@ -1,5 +1,5 @@
 
-import { Background, Border, ChannelBanner, ChatMenu, GroupItems, Popup, RoundButton, UserBanner } from '..';
+import { Background, Border, ChannelBanner, SearchChannelButton, GroupItems, Popup, RoundButton, UserBanner } from '..';
 import { color, Fetch, Viewport } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
@@ -60,7 +60,6 @@ export function ContactPanel({ viewport }: Props) {
     <>
       <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
-          flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
         >
@@ -77,6 +76,7 @@ export function ContactPanel({ viewport }: Props) {
                   justifyContent: 'center',
                   alignItems: 'center',
                   alignContent: 'center',
+                  marginTop: '10px',
                   marginLeft: '10px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
@@ -86,10 +86,11 @@ export function ContactPanel({ viewport }: Props) {
             )}
           </ GroupItems>
           <GroupItems heading={'Channels'} duration_ms={900}>
-            <div style={{ margin: '10px' }}>
+            <div style={{display: 'flex', width: '75%', justifyContent: 'space-around', margin: '10px', marginBottom: '50px',}}>
               <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-plus-100.png')} onClick={onclick}
               ></RoundButton>
 
+              <SearchChannelButton></SearchChannelButton>
             </div>
             <div>
 
@@ -114,6 +115,7 @@ export function ContactPanel({ viewport }: Props) {
                   alignItems: 'center',
                   alignContent: 'center',
                   marginLeft: '10px',
+                  marginTop: '30px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
                 }
@@ -130,9 +132,6 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background >
       </div >
-      <div>
-        <ChatMenu />
-      </div>
     </>
   );
 }

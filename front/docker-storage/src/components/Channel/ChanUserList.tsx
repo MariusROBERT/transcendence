@@ -2,6 +2,7 @@ import { subscribe } from '../../utils/event';
 import { ChannelMessage, ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from './ChanUser';
 import { useEffect, useState } from 'react';
+import {Fetch} from '../../utils';
 
 interface Props {
   chan_id: number;
@@ -13,19 +14,18 @@ export function ChanUserList({ chan_id, onClick }: Props) {
 
   const uniqueIds = new Set();
 
-  const unique = usrs.filter((item) => {
-    if (!uniqueIds.has(item.id)) {
-      uniqueIds.add(item.id);
-      return true;
-    }
-    return false;
-  });
-
   useEffect(() => {
     subscribe('enter_users', async (event: any) => {
+      if (event.detail.id !== chan_id) return;
       setUsers(event.detail.value);
     });
-  }, []);
+    async function getUsers(){
+      setUsers((await Fetch('channel/users/' + chan_id, 'GET'))?.json);
+    }
+
+    getUsers();
+
+  }, [chan_id]);
 
   return (
     <div
@@ -46,7 +46,7 @@ export function ChanUserList({ chan_id, onClick }: Props) {
           flexWrap: 'nowrap',
         }}
       >
-        {unique.map((item, idx) => (
+        {usrs.map((item, idx) => (
           <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>

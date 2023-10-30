@@ -81,11 +81,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('leave')
   async handleLeave(client: Socket) {
-    client.rooms.forEach((room) => {
-      if (room !== 'user' + client.id) {
-        client.leave(room);
-      }
-    });
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
   }
 
   @SubscribeMessage('remove')
