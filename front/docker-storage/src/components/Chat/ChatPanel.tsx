@@ -20,7 +20,6 @@ interface PublicChannelDto {
   id: number;
   channel_name: string;
   channel_priv_msg: boolean;
-  sender_name: string
 }
 
 export function ChatPanel({ viewport, width }: Props) {
@@ -31,11 +30,13 @@ export function ChatPanel({ viewport, width }: Props) {
   const { socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement | null>(null);
-  const [channel, setChannel] = useState<PublicChannelDto>()
+  const [channel, setChannel] = useState<PublicChannelDto>();
+  const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
+
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
-    if (message.channel_id !== id) return ;
+    if (message.channel_id !== id) return;
     setMessage([...msg, message]);
     setInputValue('');
   };
@@ -53,8 +54,8 @@ export function ChatPanel({ viewport, width }: Props) {
     UpdateChannelUsers(id);
   };
 
-  const getChan = async() => {
-    if (id === -1) return ;
+  const getChan = async () => {
+    if (id === -1) return;
     const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
     setChannel(chan);
     // console.log(chan);
@@ -73,6 +74,7 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
+      setPrintMsgs([]);
       //console.log(event.detail.value)
       setMessage(event.detail.value);
       //console.log(event.detail.id);
@@ -159,24 +161,21 @@ export function ChatPanel({ viewport, width }: Props) {
     if (msgsRef.current) {
       msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
     }
-  }, [msg]);
+  }, [msg, msgsRef]);
 
-  function chat() {
-    return (
-      <>
-        {msg.map((data, idx) => (
-          <ChatMessage
-            key={idx}
-            data={data}
-            onClick={OnUserClick}
-            last={idx > 0 ? msg[idx - 1].sender_id : undefined}
-          >
-            {data.message_content}
-          </ChatMessage>
-        ))}
-      </>
-    );
-  }
+  useEffect(() => {
+    const el = msg.map((data, idx) => (
+      <ChatMessage
+        key={idx}
+        data={data}
+        onClick={OnUserClick}
+        last={idx > 0 ? msg[idx - 1].sender_id : undefined}
+      >
+        {data.message_content}
+      </ChatMessage>
+    ))
+    setPrintMsgs(el);
+  }, [msg])
 
   function inputMessage() {
     if (current_chan != '') {
@@ -220,13 +219,14 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   return (
-    <Background flex_justifyContent={'space-evenly'}>
-      {!channel?.channel_priv_msg ? (<h3>{channel?.channel_name}</h3>) : (<h3>{channel?.sender_name}</h3>)}
+    <Background bg_color={'#00375Cbb'} flex_justifyContent={'space-evenly'}>
+      {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
+      <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={id} />
       <div
         style={{
           border: '5px solid transparent',
-          borderTop: '5px solid rgba(0, 0, 0, 0.2)', 
+          borderTop: '5px solid rgba(0, 0, 0, 0.2)',
           paddingTop: '5px',
           padding: '10px',
           height: viewport.height - 125 + 'px',
@@ -239,7 +239,7 @@ export function ChatPanel({ viewport, width }: Props) {
         }}
         ref={msgsRef as React.RefObject<HTMLDivElement>}
       >
-        {chat()}
+        {printMsgs}
       </div>
       <div
         style={{
