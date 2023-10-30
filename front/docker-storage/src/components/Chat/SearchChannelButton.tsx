@@ -21,16 +21,6 @@ export function SearchChannelButton() {
     setIsChatMenuOpen(true);
   }
 
-  useEffect(() => {
-
-    subscribe('update_chan', () => {
-      OnJoinChannel();
-    });
-    return () => {
-      unsubscribe('update_chan', () => void 0);
-    };
-  }, [channels]);
-
   return (
     <div style={{display: 'flex', alignItems: 'center', width: '50%'}}>
        <button
