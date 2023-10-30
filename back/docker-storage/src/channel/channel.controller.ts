@@ -60,10 +60,10 @@ export class ChannelController {
     return await this.channelService.getPublicChannelsData(user);
   }
 
-  @Get('/name/:id')
+  @Get('/name/:chan_name')
   //@UseGuards(JwtAuthGuard)
-  async GetChannelIdByName(@Param('id') id: string) {
-    return await this.channelService.getChannelIdByName(id);
+  async GetChannelIdByName(@Param('chan_name') chan_name: string) {
+    return await this.channelService.getChannelIdByName(chan_name);
   }
 
   @Get('/msg/:id')

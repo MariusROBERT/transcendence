@@ -3,9 +3,14 @@ import { Fetch, color } from '../../utils';
 import { publish } from '../../utils/event';
 import { Button } from '../ComponentBase/Button';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannels } from '../../utils/channel_functions';
 import SwitchToggle from '../ComponentBase/SwitchToggle';
 import { Flex } from '../ComponentBase/FlexBox';
+import {
+  UpdateChannelMessage,
+  UpdateChannelUsers,
+  SetCurrChan,
+} from '../../utils/channel_functions';
+import { useUserContext } from '../../contexts';
 
 interface Props {
   name: string; //  Pass the user name in ChatMenu
@@ -21,6 +26,17 @@ export default function CreateChat({ visible, setVisible }: Props) {
   const [checked, setChecked] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
   const mobile = window.innerWidth < 500;
+  const { socket } = useUserContext();
+
+  async function OnJoinChannel(channelName: string) {
+    const chan = (await Fetch(`channel/name/${channelName}`, 'GET'))?.json;
+    UpdateChannelMessage(chan.id);
+    UpdateChannelUsers(chan.id);
+    SetCurrChan(channelName);
+    socket?.emit('join', { channel: channelName } as any);
+    publish('open_chat', undefined);
+  }
+
 
   useEffect(() => {
     if (!visible) {
@@ -50,7 +66,8 @@ export default function CreateChat({ visible, setVisible }: Props) {
     }
     setVisible(false);
     publish('chat_created', undefined);
-    UpdateChannels();
+    // UpdateChannels();
+    OnJoinChannel(channelName);
   }
 
   function OnChange() {

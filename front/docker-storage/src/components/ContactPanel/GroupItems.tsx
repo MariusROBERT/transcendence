@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { Background, Border } from '..';
 import { color } from '../../utils';
 
@@ -9,24 +9,19 @@ interface Props {
 }
 
 export function GroupItems({ children, heading, duration_ms }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
 
   const groupStyle: React.CSSProperties = {
     width: '100%',
-    paddingTop: isOpen ? '25px' : '0px',
+    paddingTop: '25px',
     paddingRight: '5px',
     paddingLeft: '15px',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'scroll',
     overflowX: 'hidden',
-    height: isOpen ? '100%' : '0px',
+    height: '100%',
     transition: duration_ms + 'ms ease',
   };
-
-  function openGroup() {
-    setIsOpen(!isOpen);
-  }
 
   return (
     <>
@@ -40,15 +35,8 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
           // bg_color={color.grey}
           flex_direction={'row'}
           flex_justifyContent={'flex-end'}
-          onClick={openGroup}
         >
-          <h2 style={{ position: 'absolute', left: 5 }} onClick={() => {
-              openGroup();
-            }}>{heading}</h2>
-          {/* <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {
-              openGroup();
-            }} /></div> */}
+          <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
         </Background>
       </Border>
       <div style={groupStyle}>

@@ -10,7 +10,7 @@ export { ChannelBanner } from './Channel/ChannelBanner';
 export { ChanUserList } from './Channel/ChanUserList';
 
 // Chat
-export { ChatMenu } from './Chat/ChatMenu';
+export { SearchChannelButton } from './Chat/SearchChannelButton';
 export { ChatMessage } from './Chat/ChatMessage';
 export { ChatPanel } from './Chat/ChatPanel';
 
