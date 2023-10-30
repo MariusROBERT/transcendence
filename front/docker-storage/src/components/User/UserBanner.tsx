@@ -73,7 +73,7 @@ const UserBanner = ({ otherUser }: Props) => {
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
           <p onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{userBanner.username}</p>
         </Flex>
-        {!isMe && !mobile && <UserButton otherUser={otherUser} />}
+        {!isMe && !mobile && <UserButton otherUser={userBanner} />}
       </div>
     </>
   );
