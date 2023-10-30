@@ -8,7 +8,7 @@ import {
   UpdateChannelUsers,
   current_chan,
 } from '../../utils/channel_functions';
-import { ChannelMessage, IChatUser } from '../../utils/interfaces';
+import {ChannelMessage, ChannelUsers, IChatUser} from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
@@ -27,17 +27,18 @@ export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
   const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
-  const [id, setId] = useState<number>(-1);
-  const { socket } = useUserContext();
+  const [channelId, setChannelId] = useState<number>(-1);
+  const { id, socket } = useUserContext();
   const [msg, setMessage] = useState<ChannelMessage[]>([]);
   const msgsRef = useRef<HTMLDivElement>();
   const [channel, setChannel] = useState<PublicChannelDto>();
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
+  const [users, setUsers] = useState<ChannelUsers[]>([]);
 
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
-    if (message.channel_id !== id) return;
+    if (message.channel_id !== channelId) return;
     setMessage([...msg, message]);
   };
 
@@ -55,13 +56,13 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     const getChan = async () => {
-      if (id === -1) return;
-      const chan = (await (Fetch(`channel/public/${id}`, 'GET')))?.json
+      if (channelId === -1) return;
+      const chan = (await (Fetch(`channel/public/${channelId}`, 'GET')))?.json
       setChannel(chan);
       // console.log(chan);
     }
     getChan();
-  }, [id])
+  }, [channelId])
 
   useEffect(() => {
     socket?.on('join', UpdateChannelUsers);
@@ -76,7 +77,7 @@ export function ChatPanel({ viewport, width }: Props) {
       //console.log(event.detail.value)
       setMessage(event.detail.value);
       //console.log(event.detail.id);
-      setId(event.detail.id);
+      setChannelId(event.detail.id);
     });
   }, []);
 
@@ -100,6 +101,20 @@ export function ChatPanel({ viewport, width }: Props) {
     }
   });
 
+
+  useEffect(() => {
+    subscribe('enter_users', async (event: any) => {
+      if (event.detail.id !== channelId) return;
+      setUsers(event.detail.value);
+    });
+    async function getUsers(){
+      setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
+    }
+
+    getUsers();
+
+  }, [channelId]);
+
   useEffect(() => {
     const el = msg.map((data, idx) => (
       <ChatMessage
@@ -114,22 +129,12 @@ export function ChatPanel({ viewport, width }: Props) {
     setPrintMsgs(el);
   }, [msg])
 
-  function inputMessage() {
-    if (current_chan != '') {
-      return (
-        <>
-
-        </>
-      );
-    }
-    return <></>;
-  }
-
   return (
     <Background bg_color={'#00375Cbb'} flex_justifyContent={'space-evenly'}>
       {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
+      {channel?.channel_priv_msg && users.length > 0 && <h3>{users[0].id === id ? users[1].username : users[0].username}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
-      <ChanUserList onClick={OnUserClick} chan_id={id} />
+      <ChanUserList onClick={OnUserClick} chan_id={channelId} users={users}/>
       <div
         style={{
           border: '5px solid transparent',
