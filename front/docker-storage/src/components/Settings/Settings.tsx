@@ -5,10 +5,12 @@ import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
 import { API_URL } from '../../utils/Global';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import {useUserContext} from '../../contexts';
 
 
 export default function Settings() {
   const { isSettingsOpen, setIsSettingsOpen } = useUIContext();
+  const { fetchContext } = useUserContext()
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
@@ -164,6 +166,7 @@ export default function Settings() {
       }
     }
     setErrorMessage('');
+    fetchContext();
     setIsSettingsOpen(false);
   };
 
