@@ -5,12 +5,11 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   chan_id: number;
+  usrs: ChannelUsers[];
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChanUserList({ chan_id, onClick }: Props) {
-  const [usrs, setUsers] = useState<ChannelUsers[]>([]);
-
+export function ChanUserList({ chan_id, onClick, usrs }: Props) {
   const uniqueIds = new Set();
 
   const unique = usrs.filter((item) => {
@@ -20,12 +19,6 @@ export function ChanUserList({ chan_id, onClick }: Props) {
     }
     return false;
   });
-
-  useEffect(() => {
-    subscribe('enter_users', async (event: any) => {
-      setUsers(event.detail.value);
-    });
-  }, []);
 
   return (
     <div

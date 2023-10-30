@@ -229,7 +229,7 @@ export function ChatPanel({ viewport, width }: Props) {
       {!channel?.channel_priv_msg && <h3>{channel?.channel_name} {channel?.channel_priv_msg}</h3>}
       {channel?.channel_priv_msg && <h3>{usrs[0].id === id ? usrs[1].username : usrs[0].username}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
-      <ChanUserList onClick={OnUserClick} chan_id={cid} />
+      <ChanUserList onClick={OnUserClick} chan_id={cid} usrs={usrs} />
       <div
         style={{
           border: '5px solid transparent',
