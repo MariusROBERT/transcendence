@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { Fetch } from '../../utils';
-import { subscribe, unsubscribe } from '../../utils/event';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 /*
@@ -12,7 +10,7 @@ import { useUIContext } from '../../contexts/UIContext/UIContext';
     //  In channel creation you can set name, password, type, and directly add users/admin
 */
 export function SearchChannelButton() {
-  const { setIsChatMenuOpen, channels, setChannels } = useUIContext();
+  const { setIsChatMenuOpen, setChannels } = useUIContext();
 
   //  TODO: clean here
   async function OnJoinChannel() {
