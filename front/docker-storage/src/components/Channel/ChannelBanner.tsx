@@ -7,7 +7,7 @@ import {
   SetCurrChan,
   current_chan,
 } from '../../utils/channel_functions';
-import { useUserContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import EditChat from '../Chat/EditChat';
 import { useEffect, useState } from 'react';
 import { publish } from '../../utils/event';
@@ -19,6 +19,9 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined);
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  const { msgs, setMsgs } = useFriendsRequestContext();
+
+
   useEffect(() => {
     setMobile(window.innerWidth < 650);
   }, [window.innerWidth]);
@@ -82,6 +85,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
           onClick={() => {
             OnJoinChannel();
             setIsChatOpen(true);
+            setMsgs(msgs.filter(el => el.channel_id !== id))
           }}
         />
         <p style={{ fontSize: '20px' }}>

@@ -24,6 +24,8 @@ export function UserButton({ otherUser }: Props) {
     recvInvitesFrom,
     friends,
     blocked,
+    setMsgs,
+    msgs
   } = useFriendsRequestContext();
 
   return (
@@ -36,8 +38,12 @@ export function UserButton({ otherUser }: Props) {
       <Flex zIndex={'10'} flex_direction='row' flex_justifyContent={'space-evenly'}>
         {friends?.includes(otherUser.id) && !blocked?.includes(otherUser.id) &&
           <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-chat-90.png')}
-                       onClick={() => {openChat(otherUser, socket);
-                                      setIsChatOpen(true)}} />
+            onClick={() => {
+              openChat(otherUser, socket);
+              setIsChatOpen(true)
+              setMsgs(msgs.filter(el => el.sender_username !== otherUser.username))
+            }}
+          />
         }
         {friends?.includes(otherUser.id) && otherUser.user_status === 'on' &&
           <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-play-64.png')}
