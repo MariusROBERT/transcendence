@@ -62,7 +62,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             return OnConnect();
           const error = await registerResponse?.json().then((data) => data.message);
           setErrorMessage(error || 'Error');
-          console.error('register failure. Error:', registerResponse?.status);
+          // console.error('register failure. Error:', registerResponse?.status);
         } else {
           setErrorMessage('username can\'t be ended with _42');
         }
@@ -107,10 +107,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         setError2fa('Invalid 2fa code');
       } else {
         setErrorMessage(data.message);
-        console.error('connection failure. Error:', response?.status);
+        //console.error('connection failure. Error:', response?.status);
       }
     } catch (error) {
-      console.error(`Error : ${error}`);
+
     }
   }
 
