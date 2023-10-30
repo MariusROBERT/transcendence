@@ -11,7 +11,7 @@ import { useUIContext } from '../../contexts/UIContext/UIContext';
   //  If channel not exist open channel creation
     //  In channel creation you can set name, password, type, and directly add users/admin
 */
-export function ChatMenu() {
+export function SearchChannelButton() {
   const { setIsChatMenuOpen, channels, setChannels } = useUIContext();
 
   //  TODO: clean here
@@ -22,6 +22,7 @@ export function ChatMenu() {
   }
 
   useEffect(() => {
+
     subscribe('update_chan', () => {
       OnJoinChannel();
     });
@@ -44,7 +45,6 @@ export function ChatMenu() {
           backgroundColor: 'white',
           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         }}
-        placeholder='Search Channel'
         onClick={() => {
           OnJoinChannel();
         }}
