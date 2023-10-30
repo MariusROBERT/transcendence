@@ -13,22 +13,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
-import { ChannelEntity } from '../database/entities/channel.entity';
-import { MessageEntity } from '../database/entities/message.entity';
-import { UserEntity } from '../database/entities/user.entity';
-import { User } from '../utils/decorators/user.decorator';
-import { UserService } from './user.service';
-import {
-  PublicProfileDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-  UserGameStatus,
-} from './dto/user.dto';
-import { Express } from 'express';
-import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {JwtAuthGuard} from '../auth/guards/jwt-auth.guards';
+import {ChannelEntity} from '../database/entities/channel.entity';
+import {MessageEntity} from '../database/entities/message.entity';
+import {UserEntity} from '../database/entities/user.entity';
+import {User} from '../utils/decorators/user.decorator';
+import {UserService} from './user.service';
+import {PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus,} from './dto/user.dto';
+import {Express} from 'express';
+import {userPictureFileInterception} from './utils/user.picture.fileInterceptor';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {UserStateEnum} from "../utils/enums/user.enum";
 
 @Controller('user')
 export class UserController {
@@ -45,6 +41,9 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async GetOwnProfile(@User() user: UserEntity) {
+    if (user.user_status == UserStateEnum.OFF) {
+      await this.userService.login(user);
+    }
     return user;
   }
 
