@@ -4,6 +4,7 @@ import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { color } from '../../utils';
 
 interface Props {
   otherUser: IUser;
@@ -14,10 +15,10 @@ const UserBanner = ({ otherUser }: Props) => {
   const { id, user, socket } = useUserContext();
   const isMe = otherUser.id === user?.id;
   const [userBanner, setUserBanner] = useState<IUser>(otherUser.id === id && user ? user : otherUser);
-  const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
-  useEffect(() => {
-    setMobile(window.innerWidth < 650);
-  }, [window.innerWidth]);
+  // const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  // useEffect(() => {
+  //   setMobile(window.innerWidth < 650);
+  // }, [window.innerWidth]);
 
   useEffect(() => {
     function connect(body: { userId: number }) {
@@ -45,10 +46,12 @@ const UserBanner = ({ otherUser }: Props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: '12.5px',
-    background: '#00AA55',
+    background: color.light_blue,
+    color: user?.friends.includes(otherUser.id) ? color.green : color.white,
     height: '25px',
     marginTop: 5,
-    width: mobile ? 200 : 400,
+    // width: mobile ? 200 : 400,
+    width: 400,
     alignSelf: 'center',
     margin: '0 10px',
   };
@@ -72,7 +75,7 @@ const UserBanner = ({ otherUser }: Props) => {
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
           <p style={{fontWeight: 'bold'}} onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{userBanner.username}</p>
         </Flex>
-        {!isMe && !mobile && <UserButton otherUser={userBanner} />}
+        {!isMe && <UserButton otherUser={userBanner} />}
       </div>
     </>
   );

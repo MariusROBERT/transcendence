@@ -12,17 +12,19 @@ interface Props {
   duration_ms?: number;
   contextIsOpen: boolean;
   setContextIsOpen: (isOpen: boolean) => void | undefined;
+  isChatOpen: boolean
 }
 
 export function SidePanel({
-                            children,
-                            viewport,
-                            width,
-                            isLeftPanel,
-                            duration_ms = 1000,
-                            contextIsOpen,
-                            setContextIsOpen,
-                          }: Props) {
+  children,
+  viewport,
+  width,
+  isLeftPanel,
+  duration_ms = 1000,
+  contextIsOpen,
+  setContextIsOpen,
+  isChatOpen
+}: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
@@ -55,8 +57,20 @@ export function SidePanel({
     };
   }, [isLeftPanel]);
 
+
+  const bodyWidth = window.innerWidth;
+
+  useEffect(() => {
+    if (isChatOpen && isLeftPanel && contextIsOpen && bodyWidth < 1000) {
+      localStorage.setItem('isPannelOpen', '0');
+      Close()
+    }
+  }, [bodyWidth])
+
   async function Close() {
     if (isMoving) return;
+    if (isLeftPanel)
+      localStorage.setItem('isPannelOpen', '0');
     setContextIsOpen(false);
     if (!isLeftPanel) {
       // socket?.emit('leave');
@@ -72,6 +86,8 @@ export function SidePanel({
   }
 
   async function Open() {
+    if (isLeftPanel)
+      localStorage.setItem('isPannelOpen', '1');
     setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);
@@ -85,7 +101,7 @@ export function SidePanel({
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      boxShadow:'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
+      boxShadow: 'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
       zIndex: 10,
       width: width + 'px',
       height: '100%',
@@ -114,7 +130,7 @@ export function SidePanel({
   const buttonStyle: React.CSSProperties = {
     position: 'absolute',
     top: '50%',
-    left: (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
+    left:  (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
     rotate:
       ((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
@@ -126,7 +142,8 @@ export function SidePanel({
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
-          <RoundButton
+         
+         <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
             onClick={contextIsOpen ? Close : Open}
@@ -140,7 +157,7 @@ export function SidePanel({
   return (
     <div style={getStyle()}>
       <div style={buttonStyle}>
-        <RoundButton
+         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
           onClick={contextIsOpen ? Close : Open}

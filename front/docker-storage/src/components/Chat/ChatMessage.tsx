@@ -47,7 +47,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         }}
       >
         <Background
-          bg_color={isMe ? '#CCFF00' : color.white2}
+          bg_color={isMe ? color.green : color.white2}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}

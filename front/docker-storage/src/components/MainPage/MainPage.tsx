@@ -71,7 +71,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
                   flex_alignItems={'stretch'} forceStyle={{ zIndex: 2, position:'relative' }}>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} contextIsOpen={isContactOpen} setContextIsOpen={setIsContactOpen}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} contextIsOpen={isContactOpen} setContextIsOpen={setIsContactOpen} isChatOpen={isChatOpen}>
           <Background flex_justifyContent={'flex-start'}>
             <ContactPanel viewport={viewport} />
           </Background>
@@ -93,7 +93,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <PlayButton />
           </div>
         </div>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen}>
+        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen} isChatOpen={isChatOpen}>
           <Background>
             <ChatPanel viewport={viewport} width={panelWidth} />
           </Background>

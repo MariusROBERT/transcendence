@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Viewport, Fetch } from '../../utils';
+import { Viewport, Fetch, color } from '../../utils';
 import { Background, RoundButton, ChatMessage, ChanUserList } from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
@@ -129,7 +129,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }, [msg])
 
   return (
-    <Background bg_color={'#00375Cbb'} flex_justifyContent={'space-evenly'}>
+    <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
       {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
       {channel?.channel_priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].username : users[0].username}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />

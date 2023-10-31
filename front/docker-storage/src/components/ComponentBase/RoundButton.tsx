@@ -44,8 +44,6 @@ export function RoundButton(
         ? icon_size * 1.2
         : icon_size;
 
-    let opacity: number;
-
     return {
       display: 'flex',
       justifyContent: 'center',
@@ -71,13 +69,13 @@ export function RoundButton(
       className={hover ? 'hover' : ''}
     >
       <button disabled={isDisabled}
-              style={getIconStyle()}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onClick={() => {
-                onClick();
-                handleMouseClick();
-              }}
+        style={getIconStyle()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={() => {
+          onClick();
+          handleMouseClick();
+        }}
       />
     </div>
   );
