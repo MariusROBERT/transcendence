@@ -20,7 +20,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     const getAllProfil = async () => {
@@ -32,7 +32,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     };
     getAllProfil();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
@@ -52,9 +52,9 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
 
       const elements = sortedUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{user.rank > 0 ? user.rank : 'NC'}</p> {/* TO CHANGE */}
+          <p>{user.rank > 0 ? user.rank : 'NC'}</p>
           {<UserBanner otherUser={user} />}
-          <p>{user.elo}</p>
+          <p style={{ fontWeight: 'bold' }}>{user.elo}</p>
         </div>
       ));
       setUserElements(elements);
@@ -95,14 +95,13 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     return (<></>);
 
   return (
-    <Popup isVisible={isLeaderboardOpen} onClose={() => {setIsLeaderboardOpen(false)}}>
-
+    <Popup isVisible={isLeaderboardOpen} onClose={() => { setIsLeaderboardOpen(false) }}>
       <div style={container}>
-        <div style={{display:'flex', justifyContent:'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SearchBar setSearchTerm={setSearchTerm}
-                      isVisible={isLeaderboardOpen}
-                      id={'searchBar'}>
-                      {'search for a user...'}
+            isVisible={isLeaderboardOpen}
+            id={'searchBar'}>
+            {'search for a user...'}
           </SearchBar>
         </div>
         <div style={{display:'flex', flexDirection:'row'}}>
@@ -117,9 +116,8 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <p>No user found.</p>
             </div>
-          </div>
-        )}
-          </div>
+          </div>)}
+        </div>
       </div>
     </Popup>
   );
@@ -129,5 +127,3 @@ const ProfilStyle: CSSProperties = {
   minWidth: '13ch',
   fontSize:'20px'
 };
-
-// style={{maxHeight: '400px', overflowY: 'scroll'}}

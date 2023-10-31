@@ -1,31 +1,23 @@
-import { subscribe } from '../../utils/event';
 import { ChannelMessage, ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from './ChanUser';
-import { useEffect, useState } from 'react';
 
 interface Props {
   chan_id: number;
+  users: ChannelUsers[];
   onClick: (name: ChannelMessage) => void;
 }
 
-export function ChanUserList({ chan_id, onClick }: Props) {
-  const [usrs, setUsers] = useState<ChannelUsers[]>([]);
+export function ChanUserList({ chan_id, onClick, users }: Props) {
 
   const uniqueIds = new Set();
 
-  const unique = usrs.filter((item) => {
+  const unique = users.filter((item) => {
     if (!uniqueIds.has(item.id)) {
       uniqueIds.add(item.id);
       return true;
     }
     return false;
   });
-
-  useEffect(() => {
-    subscribe('enter_users', async (event: any) => {
-      setUsers(event.detail.value);
-    });
-  }, []);
 
   return (
     <div

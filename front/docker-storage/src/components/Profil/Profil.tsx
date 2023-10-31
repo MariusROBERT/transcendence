@@ -56,7 +56,9 @@ export default function Profil() {
     border: '2px solid',
   };
 
-  const statusStyle = {
+  const statusStyle: React.CSSProperties  = {
+    position: 'absolute',
+    top: '0px',
     width: '10px',
     height: '10px',
   };

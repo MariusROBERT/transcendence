@@ -20,8 +20,6 @@ type UIContextType = {
   // chat
   isChatMenuOpen: boolean;
   setIsChatMenuOpen: (value: boolean) => void;
-  inputValueChatMenu: string;
-  setInputValueChatMenu: (value: string) => void;
   channels: ChannelPublicPass[] | undefined;
   setChannels: (value: ChannelPublicPass[] | undefined) => void;
 
@@ -60,10 +58,6 @@ const UIContext = createContext<UIContextType>({
   setIsChatMenuOpen: (value: boolean) => {
     void(value);
   },
-  inputValueChatMenu: '',
-  setInputValueChatMenu: (value: string) => {
-    void(value);
-  },
   channels: undefined,
   setChannels: (value: ChannelPublicPass[] | undefined) => {
     void(value);
@@ -94,7 +88,6 @@ export function UIContextProvider({ children }: Props) {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
-  const [inputValueChatMenu, setInputValueChatMenu] = useState('');
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined);
 
   async function loadUIContext(): Promise<void> {
@@ -145,8 +138,6 @@ export function UIContextProvider({ children }: Props) {
         // chat
         isChatMenuOpen,
         setIsChatMenuOpen,
-        inputValueChatMenu,
-        setInputValueChatMenu,
         channels,
         setChannels,
 

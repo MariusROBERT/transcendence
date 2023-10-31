@@ -13,8 +13,8 @@ const Navbar: React.FC = () => {
   const [notifsVisible, setNotifsVisible] = useState<boolean>(false);
   const [notifs, setNotifs] = useState<Array<IUser>>([]);
   const { user, socket, id } = useUserContext();
-  const { recvInvitesFrom } = useFriendsRequestContext();
-  const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
+  const { recvInvitesFrom, msgs, setMsgs } = useFriendsRequestContext();
+  // const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
 
   const logout = async () => {
     socket?.disconnect();
@@ -78,13 +78,12 @@ const Navbar: React.FC = () => {
   };
 
   const notifstyle: CSSProperties = {
-    maxHeight: '500px',
+    position: 'absolute',
+    height: '20%',
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    position: 'absolute',
-    top: '120px',
-    minHeight: '100%',
+    top: '420px',
     background: 'transparent',
   };
 

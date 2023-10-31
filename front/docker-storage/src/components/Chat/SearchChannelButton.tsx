@@ -1,7 +1,4 @@
-import { useEffect } from 'react';
 import { Fetch } from '../../utils';
-import ChatInput from './ChatInput';
-import { subscribe, unsubscribe } from '../../utils/event';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 /*
@@ -12,8 +9,8 @@ import { useUIContext } from '../../contexts/UIContext/UIContext';
   //  If channel not exist open channel creation
     //  In channel creation you can set name, password, type, and directly add users/admin
 */
-export function ChatMenu() {
-  const { inputValueChatMenu, setInputValueChatMenu, setIsChatMenuOpen, channels, setChannels } = useUIContext();
+export function SearchChannelButton() {
+  const { setIsChatMenuOpen, setChannels } = useUIContext();
 
   //  TODO: clean here
   async function OnJoinChannel() {
@@ -22,23 +19,24 @@ export function ChatMenu() {
     setIsChatMenuOpen(true);
   }
 
-  useEffect(() => {
-    subscribe('update_chan', () => {
-      OnJoinChannel();
-    });
-    return () => {
-      unsubscribe('update_chan', () => void 0);
-    };
-  }, [channels]);
-
   return (
-    <div>
-      <ChatInput
-        input={inputValueChatMenu}
-        setInput={setInputValueChatMenu}
-        OnClick={OnJoinChannel}
-        OnEnter={() => void 0}
-      />
+    <div style={{display: 'flex', alignItems: 'center', width: '50%'}}>
+       <button
+        style={{
+          padding: '15px',
+          borderRadius: '10px',
+          border: '0',
+          position: 'relative',
+          width: '200px',
+          height: '50px',
+          fontSize: '1.3em',
+          backgroundColor: 'white',
+          boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        }}
+        onClick={() => {
+          OnJoinChannel();
+        }}
+      >Search Channel</button>
     </div>
   );
 }

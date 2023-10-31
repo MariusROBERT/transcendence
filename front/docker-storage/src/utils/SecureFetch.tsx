@@ -48,7 +48,7 @@ export async function unsecureFetch(
     });
     return response;
   } catch (e) {
-    console.warn(e);
+    // console.warn(e);
     return;
   }
 }

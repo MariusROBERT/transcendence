@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
-import { useUserContext } from '../../contexts';
 import { SetCurrChan } from '../../utils/channel_functions';
 import { subscribe, unsubscribe } from '../../utils/event';
 
@@ -30,7 +29,6 @@ export function SidePanel({
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const { socket } = useUserContext();
 
   useEffect(() => {
     if (contextIsOpen)
@@ -61,7 +59,7 @@ export function SidePanel({
     if (isMoving) return;
     setContextIsOpen(false);
     if (!isLeftPanel) {
-      socket?.emit('leave');
+      // socket?.emit('leave');
       SetCurrChan('');
     }
     setIsAnim(true);

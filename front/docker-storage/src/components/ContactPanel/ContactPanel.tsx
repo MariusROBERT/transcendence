@@ -1,16 +1,18 @@
 
-import { Background, Border, ChannelBanner, ChatMenu, GroupItems, Popup, RoundButton, UserBanner } from '..';
+import { Background, Border, ChannelBanner, SearchChannelButton, GroupItems, Popup, RoundButton, UserBanner } from '..';
 import { color, Fetch, Viewport } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useEffect, useState } from 'react';
 import { subscribe } from '../../utils/event';
 import CreateChat from '../Chat/CreateChat';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   viewport: Viewport;
 }
 export function ContactPanel({ viewport }: Props) {
+  const { isContactOpen } = useUIContext()
   const { socket } = useUserContext();
   const { friends } = useFriendsRequestContext();
   const [friendList, setFriendList] = useState<IUser[]>([]);
@@ -27,7 +29,7 @@ export function ContactPanel({ viewport }: Props) {
       setFriendList(users.filter((u: IUser) => friends.includes(u.id)));
     };
     getFriends();
-  }, [friends]);
+  }, [friends, isContactOpen]);
 
   async function FetchChannels() {
     const channels = (await Fetch('channel/of_user', 'POST'))?.json;
@@ -42,7 +44,7 @@ export function ContactPanel({ viewport }: Props) {
       if (event.detail)
         await FetchChannels();
     });
-  }, []);
+  }, [isContactOpen]);
 
   useEffect(() => {
     socket?.on('join', FetchChannels);
@@ -58,9 +60,8 @@ export function ContactPanel({ viewport }: Props) {
 
   return (
     <>
-      <div style={{ height: viewport.height - 100, width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
+      <div style={{ height: '100%', width: '100%', paddingTop: mobile ? 60 : 0 , backgroundColor: '#00375C88'}}>
         <Background
-          flex_gap={'1px 0px'}
           flex_alignItems={'stretch'}
           flex_justifyContent={'flex-start'}
         >
@@ -77,6 +78,7 @@ export function ContactPanel({ viewport }: Props) {
                   justifyContent: 'center',
                   alignItems: 'center',
                   alignContent: 'center',
+                  marginTop: '10px',
                   marginLeft: '10px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
@@ -86,10 +88,11 @@ export function ContactPanel({ viewport }: Props) {
             )}
           </ GroupItems>
           <GroupItems heading={'Channels'} duration_ms={900}>
-            <div style={{ margin: '10px' }}>
+            <div style={{display: 'flex', width: '75%', justifyContent: 'space-around', margin: '10px', marginBottom: '50px',}}>
               <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-plus-100.png')} onClick={onclick}
               ></RoundButton>
 
+              <SearchChannelButton></SearchChannelButton>
             </div>
             <div>
 
@@ -114,6 +117,7 @@ export function ContactPanel({ viewport }: Props) {
                   alignItems: 'center',
                   alignContent: 'center',
                   marginLeft: '10px',
+                  marginTop: '30px',
                   transition: 'transform 0.2s',
                   borderBottom: '2px solid #C2D0D3',
                 }
@@ -130,9 +134,6 @@ export function ContactPanel({ viewport }: Props) {
           </Border>
         </Background >
       </div >
-      <div>
-        <ChatMenu />
-      </div>
     </>
   );
 }
