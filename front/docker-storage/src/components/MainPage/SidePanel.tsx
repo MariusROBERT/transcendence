@@ -15,14 +15,14 @@ interface Props {
 }
 
 export function SidePanel({
-                            children,
-                            viewport,
-                            width,
-                            isLeftPanel,
-                            duration_ms = 1000,
-                            contextIsOpen,
-                            setContextIsOpen,
-                          }: Props) {
+  children,
+  viewport,
+  width,
+  isLeftPanel,
+  duration_ms = 1000,
+  contextIsOpen,
+  setContextIsOpen,
+}: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
@@ -85,7 +85,7 @@ export function SidePanel({
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      boxShadow:'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
+      boxShadow: 'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
       zIndex: 10,
       width: width + 'px',
       height: '100%',

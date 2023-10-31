@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useState } from 'react';
 import { Popup, SearchBar, UserBanner } from '..';
 import { IUser } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
+import { Fetch, color } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
@@ -78,7 +78,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     display: 'flex',
     justifyContent: 'space-around',
     alignContent: 'center',
-    background: 'radial-gradient(circle, rgba(9,6,64,1) 0%, rgba(0,212,255,1) 100%)',
+    background: `radial-gradient(circle, ${color.blue} 0%,  ${color.light_blue} 100%)`,
     color: 'white',
     margin: '10px 0',
     padding: '10px',

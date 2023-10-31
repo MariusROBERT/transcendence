@@ -4,6 +4,7 @@ import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useUserContext } from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { color } from '../../utils';
 
 interface Props {
   otherUser: IUser;
@@ -45,7 +46,8 @@ const UserBanner = ({ otherUser }: Props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: '12.5px',
-    background: '#00AA55',
+    background: color.light_blue,
+    color: user?.friends.includes(otherUser.id) ? color.green : color.white,
     height: '25px',
     marginTop: 5,
     width: mobile ? 200 : 400,

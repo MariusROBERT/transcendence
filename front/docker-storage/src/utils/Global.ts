@@ -7,10 +7,13 @@ export const color = {
   beige: '#E9DCBE',
   white: '#F3F3F3',
   white2: '#ebf2fc',
+  blue: '#00375Cbb',
+  light_blue: '#005690bb',
+
 
   //  For channels
   red: '#FF0066', // Admin
-  green: '#00CC66', // Owner
+  green: '#CCFF00', // Owner
 };
 
 export const API_URL = 'http://localhost:3001';
