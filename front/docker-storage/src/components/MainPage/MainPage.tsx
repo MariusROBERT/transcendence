@@ -37,6 +37,15 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   // functions -------------------------------------------------------------------------------------------------------//
 
+  const bodyWidth = window.innerWidth;
+
+  useEffect(() => {
+    console.log('suu');
+    if (isChatOpen && isContactOpen && bodyWidth < 1000)
+      setIsContactOpen(false);
+  }, [bodyWidth])
+
+
   function rgbTitle() {
     setTimeout(() => {
       const color = rainbow.next();
