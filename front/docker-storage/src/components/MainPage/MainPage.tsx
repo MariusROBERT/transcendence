@@ -37,6 +37,16 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   // functions -------------------------------------------------------------------------------------------------------//
 
+
+  useEffect(() => {
+    const isPannelOpen = localStorage.getItem('isPannelOpen');
+
+    if (isPannelOpen === '1') {
+      setIsContactOpen(true);
+    } else
+      setIsContactOpen(false);
+  }, [])
+
   function rgbTitle() {
     setTimeout(() => {
       const color = rainbow.next();
