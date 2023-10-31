@@ -39,15 +39,20 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
-      const filteredUsers = allUsers
+      const rankedUsers = allUsers
         .filter((user: IUser) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase())
+          && user.rank != 0
         )
         .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
+       const unrankedUsers =  allUsers.filter((user: IUser) =>
+       user.username.toLowerCase().includes(searchTerm.toLowerCase())
+       && user.rank == 0);
+       const sortedUsers = [...rankedUsers, ...unrankedUsers];
 
-      const elements = filteredUsers.map((user: IUser) => (
+      const elements = sortedUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{user.rank}</p> {/* TO CHANGE */}
+          <p>{user.rank > 0 ? user.rank : 'NC'}</p> {/* TO CHANGE */}
           {<UserBanner otherUser={user} />}
           <p>{user.elo}</p>
         </div>
@@ -104,17 +109,17 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
         <p style={ProfilStyle}>Rank </p>
         <p style={ProfilStyle}>Username </p>
         <p style={{position:'absolute', right:'0', ...ProfilStyle}}>Elo</p>
-        </div>
+        </div >
+        <div  style={{maxHeight: '600px', overflowY: 'scroll'}}>
         {userElements}
         {userElements.length === 0 && (
           <div style={{ color: 'white', marginTop: '5px' }}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <p>No user found.</p>
             </div>
-            <div style={{ ...userElementStyle, visibility: 'hidden' }} />
           </div>
-        )
-        }
+        )}
+          </div>
       </div>
     </Popup>
   );
@@ -124,3 +129,5 @@ const ProfilStyle: CSSProperties = {
   minWidth: '13ch',
   fontSize:'20px'
 };
+
+// style={{maxHeight: '400px', overflowY: 'scroll'}}
