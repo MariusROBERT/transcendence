@@ -57,6 +57,8 @@ export function SidePanel({
 
   async function Close() {
     if (isMoving) return;
+    if (isLeftPanel)
+      localStorage.setItem('isPannelOpen', '0');
     setContextIsOpen(false);
     if (!isLeftPanel) {
       // socket?.emit('leave');
@@ -72,6 +74,8 @@ export function SidePanel({
   }
 
   async function Open() {
+    if (isLeftPanel)
+      localStorage.setItem('isPannelOpen', '1');
     setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);

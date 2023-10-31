@@ -40,9 +40,10 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const bodyWidth = window.innerWidth;
 
   useEffect(() => {
-    console.log('suu');
-    if (isChatOpen && isContactOpen && bodyWidth < 1000)
+    if (isChatOpen && isContactOpen && bodyWidth < 1000) {
+      localStorage.setItem('isPannelOpen', '0');
       setIsContactOpen(false);
+    }
   }, [bodyWidth])
 
 
@@ -56,6 +57,9 @@ export function MainPage({ panelWidth, viewport }: Props) {
 
   useEffect(() => {
     rgbTitle();
+    const isPannelOpen = localStorage.getItem('isPannelOpen');
+    if (isPannelOpen === '1' && bodyWidth >= 1000)
+      setIsContactOpen(true);
   }, []);
 
   useEffect(() => {
