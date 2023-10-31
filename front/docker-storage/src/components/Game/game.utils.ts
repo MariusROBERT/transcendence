@@ -24,7 +24,7 @@ export const baseSize = {
   ball: 15,
   bar: { x: 25, y: 144 },
   halfBar: 72,
-  halfBall: 25,
+  halfBall: 3,
   p1X: 25,
   p2X: 1280 - 25,
 };

@@ -12,6 +12,7 @@ interface Props {
   duration_ms?: number;
   contextIsOpen: boolean;
   setContextIsOpen: (isOpen: boolean) => void | undefined;
+  isChatOpen: boolean
 }
 
 export function SidePanel({
@@ -22,6 +23,7 @@ export function SidePanel({
   duration_ms = 1000,
   contextIsOpen,
   setContextIsOpen,
+  isChatOpen
 }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -54,6 +56,16 @@ export function SidePanel({
       });
     };
   }, [isLeftPanel]);
+
+
+  const bodyWidth = window.innerWidth;
+
+  useEffect(() => {
+    if (isChatOpen && isLeftPanel && contextIsOpen && bodyWidth < 1000) {
+      localStorage.setItem('isPannelOpen', '0');
+      Close()
+    }
+  }, [bodyWidth])
 
   async function Close() {
     if (isMoving) return;
@@ -118,7 +130,7 @@ export function SidePanel({
   const buttonStyle: React.CSSProperties = {
     position: 'absolute',
     top: '50%',
-    left: (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
+    left:  (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
     rotate:
       ((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
@@ -130,7 +142,8 @@ export function SidePanel({
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
-          <RoundButton
+         
+         <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
             onClick={contextIsOpen ? Close : Open}
@@ -144,7 +157,7 @@ export function SidePanel({
   return (
     <div style={getStyle()}>
       <div style={buttonStyle}>
-        <RoundButton
+         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
           onClick={contextIsOpen ? Close : Open}
