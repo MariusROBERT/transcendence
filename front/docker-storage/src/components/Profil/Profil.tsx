@@ -80,7 +80,7 @@ export default function Profil() {
         }
         <Flex flex_direction="row">
           <div style={{alignItems: 'center'}}>
-            {profilUser ? <RoundButton icon={profilUser.urlImg} icon_size={250} onClick={() => null}/> : <p>No Image</p>}
+            {profilUser ? <RoundButton isDisabled={true} icon={profilUser.urlImg} icon_size={250} onClick={() => null}/> : <p>No Image</p>}
             <img style={isProfileOpen !== id ? statusStyle : (profilUser?.user_status ? statusStyle : imgStyle)}
                  src={profilUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
                    require('../../assets/imgs/icon_red_disconnect.png')}

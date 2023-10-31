@@ -45,11 +45,8 @@ export function RoundButton(
         : icon_size;
 
     let opacity: number;
-    isDisabled ? opacity = 0.2 : opacity = 1;
-
 
     return {
-      opacity: opacity,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
