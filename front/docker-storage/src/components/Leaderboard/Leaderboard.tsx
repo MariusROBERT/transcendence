@@ -39,15 +39,20 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
-      const filteredUsers = allUsers
+      const rankedUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()) // && user.rank !== 0
+          user.username.toLowerCase().includes(searchTerm.toLowerCase())
+          && user.rank != 0
         )
         .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
+       const unrankedUsers =  allUsers.filter((user: IUser) =>
+       user.username.toLowerCase().includes(searchTerm.toLowerCase())
+       && user.rank == 0);
+       const sortedUsers = [...rankedUsers, ...unrankedUsers];
 
-      const elements = filteredUsers.map((user: IUser) => (
+      const elements = sortedUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p style={{ fontWeight: 'bold' }}>{user.rank}</p>
+          <p>{user.rank > 0 ? user.rank : 'NC'}</p>
           {<UserBanner otherUser={user} />}
           <p style={{ fontWeight: 'bold' }}>{user.elo}</p>
         </div>
@@ -99,21 +104,26 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
             {'search for a user...'}
           </SearchBar>
         </div>
-        <div style={{ padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
-          <p style={{ fontWeight: 'bold' }}>Rank </p>
-          <p style={{ fontWeight: 'bold' }}>Elo</p>
-        </div>
+        <div style={{display:'flex', flexDirection:'row'}}>
+        <p style={ProfilStyle}>Rank </p>
+        <p style={ProfilStyle}>Username </p>
+        <p style={{position:'absolute', right:'0', ...ProfilStyle}}>Elo</p>
+        </div >
+        <div  style={{maxHeight: '600px', overflowY: 'scroll'}}>
         {userElements}
         {userElements.length === 0 && (
           <div style={{ color: 'white', marginTop: '5px' }}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <p>No user found.</p>
             </div>
-            <div style={{ ...userElementStyle, visibility: 'hidden' }} />
-          </div>
-        )
-        }
+          </div>)}
+        </div>
       </div>
     </Popup>
   );
 }
+
+const ProfilStyle: CSSProperties = {
+  minWidth: '13ch',
+  fontSize:'20px'
+};

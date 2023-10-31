@@ -25,7 +25,7 @@ const GameHistoryBanner = ({game }: Props) => {
                   {game.user}
               </div>
               <div>
-                <RoundButton icon={game.urlImgUser} icon_size={60}
+                <RoundButton isDisabled={true} icon={game.urlImgUser} icon_size={60}
                              onClick={() => null}/>
               </div>
             </Flex>

@@ -30,7 +30,7 @@ const UserBanner = ({ otherUser }: Props) => {
       console.log('disconnect: ', body);
       if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'off' });
     }
-
+    
     socket?.on('user_connection', connect);
     socket?.on('user_disconnection', disconnect);
 
