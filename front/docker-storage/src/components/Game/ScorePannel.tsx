@@ -29,6 +29,7 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
         <div id="score" style={{
           position: 'absolute',
           minWidth: '215px',
+          width:'90%',
           minHeight: '215px',
           borderRadius: '50%',
           top: -13,
