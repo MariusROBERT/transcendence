@@ -46,16 +46,14 @@ export function SidePanel({
     };
   }, [isLeftPanel]);
 
-  useEffect(() => {
-    subscribe('close_chat', () => {
-      if (!isLeftPanel) Close();
-    });
-    return () => {
-      unsubscribe('close_chat', () => {
-        console.log('unsubscribe close_chat');
-      });
-    };
-  }, [isLeftPanel]);
+  //useEffect(() => {
+  //  subscribe('close_chat', () => {
+  //    if (isLeftPanel) Close();
+  //  });
+  //  return () => {
+  //    unsubscribe('close_chat', () => null);
+  //  };
+  //}, []);
 
 
   const bodyWidth = window.innerWidth;

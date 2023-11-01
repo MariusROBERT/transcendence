@@ -14,7 +14,7 @@ import { publish } from '../../utils/event';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 export function ChannelBanner({ id, name, type }: ChannelInfos) {
-  const { setIsChatOpen } = useUIContext();
+  const { setIsChatOpen, isChatOpen } = useUIContext();
   const { socket } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined);
@@ -31,7 +31,8 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     UpdateChannelUsers(id);
     SetCurrChan(name);
     socket?.emit('join', { channel: name } as any);
-    publish('open_chat', undefined);
+    if (!isChatOpen)
+      publish('open_chat', undefined);
     document.getElementById('inpt')?.focus();
   }
 
@@ -88,7 +89,8 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
           icon={require('../../assets/imgs/icons8-chat-90.png')}
           onClick={() => {
             OnJoinChannel();
-            setIsChatOpen(true);
+            if (!isChatOpen)
+              setIsChatOpen(true);
             setMsgs(msgs.filter(el => el.channel_id !== id))
           }}
         />
