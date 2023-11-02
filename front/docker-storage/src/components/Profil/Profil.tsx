@@ -28,8 +28,9 @@ export default function Profil() {
       return setProfilUser(undefined);
     if (isProfileOpen === id)
       return setProfilUser(user);
+
     setProfil();
-  }, [isProfileOpen, profilUser, user]);
+  }, [isProfileOpen, user, id]);
 
   const profilContainer: React.CSSProperties = {
     borderRadius: '50px',
