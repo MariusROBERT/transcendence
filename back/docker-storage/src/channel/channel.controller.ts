@@ -80,6 +80,7 @@ export class ChannelController {
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity[]> {
+    if (id < 1) return;
     return await this.channelService.getChannelUsers(id);
   }
 
