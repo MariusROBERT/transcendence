@@ -15,28 +15,39 @@ const UserBanner = ({ otherUser }: Props) => {
   const { id, user, socket } = useUserContext();
   const isMe = otherUser.id === user?.id;
   const [userBanner, setUserBanner] = useState<IUser>(otherUser.id === id && user ? user : otherUser);
-  // const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
-  // useEffect(() => {
-  //   setMobile(window.innerWidth < 650);
-  // }, [window.innerWidth]);
+
+  useEffect(() => {
+    if (isMe)
+      return;
+    if (userBanner?.id < 1)
+      return;
+    socket?.emit('get_user_status', { userId: userBanner?.id});
+  }, [socket, isMe, userBanner]);
+
 
   useEffect(() => {
     function connect(body: { userId: number }) {
-      console.log('connect: ', body);
       if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'on' });
     }
 
     function disconnect(body: { userId: number }) {
-      console.log('disconnect: ', body);
       if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'off' });
     }
-    
+
+    function start_game(body: { userId: number }) {
+      if (body.userId === userBanner.id) setUserBanner({ ...userBanner, user_status: 'in_game' });
+    }
+
     socket?.on('user_connection', connect);
     socket?.on('user_disconnection', disconnect);
+    socket?.on('user_start_game', start_game);
+    socket?.on('user_end_game', connect);
 
     return () => {
       socket?.off('user_connection');
       socket?.off('user_disconnection');
+      socket?.off('user_start_game', start_game);
+      socket?.off('user_end_game', connect);
     };
   }, [socket, userBanner]);
 
@@ -50,7 +61,6 @@ const UserBanner = ({ otherUser }: Props) => {
     color: user?.friends.includes(otherUser.id) ? color.green : color.white,
     height: '25px',
     marginTop: 5,
-    // width: mobile ? 200 : 400,
     width: 400,
     alignSelf: 'center',
     margin: '0 10px',
@@ -69,7 +79,7 @@ const UserBanner = ({ otherUser }: Props) => {
       <div style={userBannerStyle}>
         <Flex flex_direction='row'>
           <img style={statusStyle}
-               src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : require('../../assets/imgs/icon_red_disconnect.png')}
+               src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : userBanner.user_status === 'off' ? require('../../assets/imgs/icon_red_disconnect.png') : require('../../assets/imgs/pngwing.com (3).png')}
                alt={userBanner.user_status ? 'connected' : 'disconnected'} />
           <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />

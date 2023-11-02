@@ -21,10 +21,10 @@ export interface Size {
 export const baseSize = {
   height: 720,
   width: 1280,
-  ball: 15,
+  ball: 50,
   bar: { x: 25, y: 144 },
   halfBar: 72,
-  halfBall: 3,
+  halfBall: 25,
   p1X: 25,
   p2X: 1280 - 25,
 };

@@ -97,7 +97,7 @@ export interface IUser {
   id: number;
   username: string;
   urlImg: string;
-  user_status: string;
+  user_status: 'on' | 'off' | 'in_game';
   winrate: number;
   elo: number;
   gamesPlayed:number;
