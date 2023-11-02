@@ -93,6 +93,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('user_disconnection', { userId: clientId });
   }
 
+  @SubscribeMessage('get_user_status')
+  async getUserStatus(client: Socket, @MessageBody()
+    msg: {
+    userId: number;
+    },
+  ){
+    if (!this.controller.matchmaking.getGame(msg.userId))
+      return;
+    this.server.emit('user_start_game', { userId: msg.userId});
+  }
+
   // Invites Management --------------------------------------------------------------------------------------------- //
   @SubscribeMessage('send_invite')
   async sendInvite(
@@ -220,6 +231,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .to('user' + playerIds[0])
       .to('user' + playerIds[1])
       .emit('end_game');
+    this.server.emit('user_end_game', { userId: playerIds[0]});
+    this.server.emit('user_end_game', { userId: playerIds[1]});
   }
 
   @SubscribeMessage('start_game')
@@ -235,6 +248,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       p1: p1.username,
       p2: p2.username,
     });
+    this.server.emit('user_start_game', { userId: playerIds[0]});
+    this.server.emit('user_start_game', { userId: playerIds[1]});
 
     return this.controller.matchmaking.startGame(msg.id);
   }
