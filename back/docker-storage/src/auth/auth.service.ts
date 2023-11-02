@@ -88,6 +88,7 @@ export class AuthService {
 
     if (hashedPwd === user.password) {
       // JWT
+      // TODO : change payload: put only user.id
       const payload = {
         username,
         role: user.role,
