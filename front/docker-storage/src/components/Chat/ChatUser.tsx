@@ -169,22 +169,37 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
     return <div></div>;
   }
 
+
+  useEffect(() => {
+    if (visibility && type !== 'perm') {
+      setIsProfileOpen(currentUser?.id || 0);
+      onClose();
+    }
+  }, [type, currentUser, visibility]);
+
   return (
-    <Popup isVisible={visibility} onClose={onClose}>
-      <div style={createChatStyle}>
-        <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
-          <ErrorPanel text={errorMessage}></ErrorPanel>
-        </div>
-        <h2>
-          {currentUser?.username}#{currentUser?.id}
-        </h2>
-        <RoundButton
-          icon_size={100}
-          icon={String(data?.sender_urlImg)}
-          onClick={() => setIsProfileOpen(currentUser?.id || 0)}
-        />
-        {type === 'perm' ? showAdmin() : <></>}
-      </div>
-    </Popup>
+    <>
+      {type !== 'perm' &&
+      <></>
+      }
+      {type === 'perm' &&
+        <Popup isVisible={visibility} onClose={onClose}>
+          <div style={createChatStyle}>
+            <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+              <ErrorPanel text={errorMessage}></ErrorPanel>
+            </div>
+            <h2>
+              {currentUser?.username}#{currentUser?.id}
+            </h2>
+            <RoundButton
+              icon_size={100}
+              icon={String(data?.sender_urlImg)}
+              onClick={() => setIsProfileOpen(currentUser?.id || 0)}
+            />
+            {type === 'perm' ? showAdmin() : <></>}
+          </div>
+        </Popup>
+      }
+    </>
   );
 }
