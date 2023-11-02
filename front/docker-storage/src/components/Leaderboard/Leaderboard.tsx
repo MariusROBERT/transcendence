@@ -70,7 +70,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
-    maxHeight: '500px',
+    maxHeight: '80%',
     overflowY: 'scroll',
     borderRadius: '50px',
     // width: mobile ? 200 : 700,
@@ -104,11 +104,10 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
             {'search for a user...'}
           </SearchBar>
         </div>
-        <div style={{display:'flex', flexDirection:'row'}}>
-        <p style={ProfilStyle}>Rank </p>
-        <p style={ProfilStyle}>Username </p>
-        <p style={{position:'absolute', right:'0', ...ProfilStyle}}>Elo</p>
-        </div >
+        <div style={{ padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
+          <p style={{ fontWeight: 'bold' }}>Rank </p>
+          <p style={{ fontWeight: 'bold' }}>Elo</p>
+        </div>
         <div  style={{maxHeight: '600px', overflowY: 'scroll'}}>
         {userElements}
         {userElements.length === 0 && (
