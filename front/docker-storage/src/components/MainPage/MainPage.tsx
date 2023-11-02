@@ -89,19 +89,18 @@ export function MainPage({ panelWidth, viewport }: Props) {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'space-between',
           margin: 'auto',
           height: '100vh',
+          overflow: 'scroll',
         }}>
-          <div style={{ height: '150px' }}>
-            <h2 style={{margin: '50px', paddingBottom: '10px', filter: `drop-shadow(0 0 10px ${titleColor})`, fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
-          </div>
-          <div>
+          <div style={{ height: '350px' }}>
+            <h2 style={{margin: '50px', filter: `drop-shadow(0 0 10px ${titleColor})`, fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
             <Navbar />
           </div>
-          <div style={{ position: 'absolute', top: '50%', transform: 'translate(30%,-50%)' }}>
-            <PlayButton />
-          </div>
+          <PlayButton />
+          <div style={{ height: '350px' }} />
         </div>
         <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen} isChatOpen={isChatOpen}>
           <Background>
