@@ -4,12 +4,13 @@ import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { IChatUser, IUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannelUsers } from '../../utils/channel_functions';
+import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 import Popup from '../ComponentBase/Popup';
+import { publish } from '../../utils/event';
 
 interface Props {
   data: IChatUser | undefined;
@@ -67,6 +68,20 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       }
     }
   }
+
+  useEffect(() => {
+    async function onRemove ( user: number ) {
+      
+      if (user === id) {
+        publish('close_chat', undefined);
+        await UpdateChannels();
+      }
+    }
+    socket?.on('remove', onRemove);
+    return (() => {
+      socket?.off('remove', onRemove);
+    })
+  }, [id, socket])
 
   async function OnKick() {
     execCommand('kick');

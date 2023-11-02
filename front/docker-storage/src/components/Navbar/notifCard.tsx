@@ -14,8 +14,6 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
   const [visible, setVisible] = useState<boolean>(false);
   const [usr, setUsr] = useState<IUser>();
   const { socket } = useUserContext()
-  const { msgs, setMsgs } = useFriendsRequestContext()
-
 
   useEffect(() => {
     notifsMsg?.filter((el) => {
@@ -41,6 +39,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     SetCurrChan(name);
     socket?.emit('join', { channel: name });
     publish('open_chat', undefined);
+    document.getElementById('inpt')?.focus();
   }
 
   const onclick = async () => {

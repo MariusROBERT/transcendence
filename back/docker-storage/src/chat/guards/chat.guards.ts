@@ -36,7 +36,8 @@ export class ChatCheckGuard implements CanActivate {
         throw new Error('You are muted');
       return true;
     }
-    throw new Error('You are not in channel');
+    // throw new Error('You are not in channel');
+    return ;
   }
 }
 

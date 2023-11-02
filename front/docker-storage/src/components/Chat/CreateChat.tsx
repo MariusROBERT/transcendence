@@ -9,6 +9,7 @@ import {
   UpdateChannelMessage,
   UpdateChannelUsers,
   SetCurrChan,
+  UpdateChannels,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
 
@@ -35,6 +36,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
     SetCurrChan(channelName);
     socket?.emit('join', { channel: channelName } as any);
     publish('open_chat', undefined);
+    document.getElementById('inpt')?.focus();
   }
 
 
@@ -66,7 +68,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
     }
     setVisible(false);
     publish('chat_created', undefined);
-    // UpdateChannels();
+    UpdateChannels();
     OnJoinChannel(channelName);
   }
 

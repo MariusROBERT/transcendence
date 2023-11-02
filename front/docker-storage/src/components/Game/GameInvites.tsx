@@ -27,7 +27,7 @@ export function GameInvites() {
   }, [inviteFrom, inviteTo]);
 
   const inviteStyle: CSSProperties = {
-    border: '2px solid orange',
+    border: `2px solid ${color.white2}`,
     borderTop: 0,
     top: isInQueue || inviteFrom !== inviteTo ? 0 : -300,
     minWidth: inviteTo ? 400 : 550,
@@ -35,7 +35,7 @@ export function GameInvites() {
     display: 'flex',
     flexDirection: 'row',
     zIndex: 95,
-    transition: '1s',
+    transition: '0.2s',
     minHeight: '60px',
     height: '70px',
     borderRadius: '0 0 15px 15px',
@@ -45,7 +45,7 @@ export function GameInvites() {
   return (
     <div style={inviteStyle}>
       <Background flex_direction={'row'} flex_alignItems={'center'} flex_justifyContent={'space-evenly'}
-                  bg_color={color.black}>
+                  bg_color={color.light_blue}>
         {inviteTo && (<>
           <p style={{ marginLeft: 10 }}>{'You invited ' + username + ' to Play'}</p>
           <Button onClick={cancelGameInvite}>Cancel</Button>
@@ -67,7 +67,7 @@ export function GameInvites() {
         </>)}
         {isInQueue && (<>
           <p
-            style={{ marginLeft: 10, marginRight: 0 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
+            style={{ paddingLeft: '10px', marginRight: 0 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
           <Button onClick={leaveQueue}>Cancel</Button>
         </>)}
         <p style={{ minWidth: '30px' }}></p>

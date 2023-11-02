@@ -28,7 +28,7 @@ export default function ScoreUser({user, mirror}: Props) {
               {user.username}
           </div>
           <div>
-            <RoundButton icon={user.urlImg} icon_size={130}
+            <RoundButton isDisabled={true} icon={user.urlImg} icon_size={130}
                          onClick={() => null}/>
           </div>
         </Flex>
@@ -53,7 +53,7 @@ const nameStyle: CSSProperties = {
   marginTop: '5px',
   fontWeight: 'bold',
   textShadow: '2px 2px 4px #000000',
-  fontSize: 20,
+  fontSize: 15,
   fontFamily: 'robot_font, sans-serif'
 };
 
@@ -61,7 +61,7 @@ const scoreStyle: CSSProperties = {
   marginTop: '5px',
   fontWeight: 'bold',
   textShadow: '2px 2px 4px #000000',
-  fontSize: 20,
+  fontSize: 15,
   fontFamily: 'robot_font, sans-serif',
   minWidth: '13ch',
   textAlign:'center'

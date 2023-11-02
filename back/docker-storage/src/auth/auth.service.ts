@@ -93,11 +93,21 @@ export class AuthService {
         role: user.role,
       };
       user.user_status = UserStateEnum.ON;
+
+      // secu for friendsRequest
+      user.sentInvitesTo.forEach(id => {
+        if (user.friends.includes(id)) {
+          const friend = this.userRepository.findOne({where: {id}});
+          user.sentInvitesTo.filter((el) => el !== id);
+        }
+      });
+
       await this.userRepository.save(user);
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     }
     throw new NotFoundException('wrong password');
+
   }
 
   async ftLogin(userData: ftLoginDto) {

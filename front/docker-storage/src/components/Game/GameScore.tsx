@@ -57,7 +57,10 @@ export function GameScore({viewport}: { viewport: Viewport }) {
             You {won ? 'won' : 'lost'}</p>
         {
           profil1 && profil2 &&
-            <ScorePannel user1={profil1} user2={profil2} score1={game.points1} score2={game.points2} won={won}/>
+            (profil1.id == game.player1 ? 
+            <ScorePannel user1={profil1} user2={profil2} score1={game.points1} score2={game.points2} won={won}/> :
+            <ScorePannel user1={profil1} user2={profil2} score1={game.points2} score2={game.points1} won={won}/>
+            )
         }
         <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
           navigate('/');

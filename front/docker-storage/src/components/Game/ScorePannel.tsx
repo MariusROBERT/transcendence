@@ -29,6 +29,7 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
         <div id="score" style={{
           position: 'absolute',
           minWidth: '215px',
+          width:'90%',
           minHeight: '215px',
           borderRadius: '50%',
           top: -13,
@@ -45,9 +46,9 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
             textAlign:'center',
             fontFamily:'title'
             }}>
-          {/* {(score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)} */}
-            {won ? ((score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)):
-              ((score2 === -1 ? 'FF' : score2) + ' VS ' + (score1 === -1 ? 'FF' : score1))}
+          {(score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)}
+            {/* {won ? ((score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)):
+              ((score2 === -1 ? 'FF' : score2) + ' VS ' + (score1 === -1 ? 'FF' : score1))} */}
           </p>
         </div>
       </div>

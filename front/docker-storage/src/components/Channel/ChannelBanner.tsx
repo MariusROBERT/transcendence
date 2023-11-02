@@ -32,6 +32,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
     SetCurrChan(name);
     socket?.emit('join', { channel: name } as any);
     publish('open_chat', undefined);
+    document.getElementById('inpt')?.focus();
   }
 
   async function OnLeave() {
@@ -64,12 +65,15 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderRadius: '12.5px',
+        fontWeight: 'bold',
+        color: type === 'owner' ? color.green  : color.white,
         backgroundColor:
-          type === 'owner'
-            ? color.green
-            : type === 'admin'
-              ? color.red
-              : color.grey,
+          // type === 'owner'
+            // ? 
+            color.light_blue,
+            // : type === 'admin'
+            //   ? color.red
+            //   : color.grey,
         height: '25px',
         width: mobile ? 200 : 400,
       }}
