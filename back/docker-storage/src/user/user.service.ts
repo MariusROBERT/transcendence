@@ -53,6 +53,8 @@ export class UserService {
     if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+    console.log('3  :', profile);
+
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
@@ -79,6 +81,7 @@ export class UserService {
       sentInvitesTo: user.sentInvitesTo,
       blocked: user.blocked
     };
+    console.log('4  :', user);
 
     return publicUser;
   }

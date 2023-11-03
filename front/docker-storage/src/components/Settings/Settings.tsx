@@ -5,7 +5,7 @@ import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
 import { API_URL } from '../../utils/Global';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
-import {useUserContext} from '../../contexts';
+import { useUserContext } from '../../contexts';
 
 
 export default function Settings() {
@@ -23,6 +23,7 @@ export default function Settings() {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [is2fa, setIs2fa] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>('');
 
   useEffect(() => {
     if (isSettingsOpen) {
@@ -91,16 +92,17 @@ export default function Settings() {
     e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
     if (
+      newName === '' &&
       confirmPassword === '' &&
       password === '' &&
       newImageUrl === '' &&
       is2fa === userInfosSettings?.is2fa_active
     )
-      // nothing changed
-      {
-        setIsSettingsOpen(false);
-        return;
-      }
+    // nothing changed
+    {
+      setIsSettingsOpen(false);
+      return;
+    }
 
     // PASSWORD :
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
@@ -153,13 +155,18 @@ export default function Settings() {
     }
 
     // 2FA :
-    if (is2fa !== userInfosSettings?.is2fa_active) {
+    if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
+      console.log('1 newname:', newName);
+      
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
           is2fa_active: is2fa,
+          pseudo: newName
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
+      console.log('2 newname:', newName);
+
       }
       if (user?.is2fa_active) {
         setQrCode2fa(user.qrCode);
@@ -169,6 +176,7 @@ export default function Settings() {
     setErrorMessage('');
     fetchContext();
     setIsSettingsOpen(false);
+    setNewName('');
   };
 
   const mobile = window.innerWidth < 500;
@@ -187,8 +195,8 @@ export default function Settings() {
                 ...imgStyle,
                 borderColor: newImageUrl === '' ? 'green' : 'orange',
               }} // green = synced with back, orange = not uploaded yet
-                   src={newImageUrl || userInfosSettings?.urlImg}
-                   alt='user profile pic'
+                src={newImageUrl || userInfosSettings?.urlImg}
+                alt='user profile pic'
               />
               <input
                 id={'image'}
@@ -210,32 +218,36 @@ export default function Settings() {
               />
               <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
             </div>
+            <div className="change_name">
+              <input id='change_name' type="text" placeholder='New name' onChange={(e) => setNewName(e.target.value)} />
+              <label htmlFor="change_name"></label>
+            </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
           {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={oldPassword}
-                             setPassword={setOldPassword}
-                             placeholder={'Current password'}
-                             noVerify
+                setHidePassword={setHidePassword}
+                password={oldPassword}
+                setPassword={setOldPassword}
+                placeholder={'Current password'}
+                noVerify
               />
               <br />
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={password}
-                             setPassword={setPassword}
-                             noVerify /* DEV: uncomment this line for dev */
+                setHidePassword={setHidePassword}
+                password={password}
+                setPassword={setPassword}
+                noVerify /* DEV: uncomment this line for dev */
               />
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={confirmPassword}
-                             setPassword={setConfirmPassword}
-                             placeholder={'Confirm password'}
-                             confirmPassword={password}
-                             noVerify /* DEV: uncomment this line for dev */
+                setHidePassword={setHidePassword}
+                password={confirmPassword}
+                setPassword={setConfirmPassword}
+                placeholder={'Confirm password'}
+                confirmPassword={password}
+                noVerify /* DEV: uncomment this line for dev */
               />
               <br />
             </div>

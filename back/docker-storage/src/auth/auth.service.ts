@@ -38,7 +38,7 @@ export class AuthService {
     });
     user.salt = await bcrypt.genSalt(); // genere le salt
     user.password = await bcrypt.hash(user.password, user.salt);
-    user.pseudo =user.username;
+    user.pseudo = user.username;
     user.user_status = UserStateEnum.ON;
     user.urlImg = API_URL + '/public/default.png';
     user.friends = [];

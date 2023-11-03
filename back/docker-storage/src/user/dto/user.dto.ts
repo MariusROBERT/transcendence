@@ -10,13 +10,18 @@ import {
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
 export class UpdateUserDto {
+
   @IsOptional()
   @IsString()
-  urlImg!: string;
+  pseudo: string;
+
+  @IsOptional()
+  @IsString()
+  urlImg: string;
 
   @IsOptional()
   @IsBoolean()
-  is2fa_active!: boolean;
+  is2fa_active: boolean;
 
   @IsOptional()
   @IsString()
