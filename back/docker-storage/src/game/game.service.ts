@@ -247,12 +247,12 @@ export class GameService {
           where: {id: element.player2}
         });
         game.idUser = playerId;
-        game.user = user.username;
+        game.user = user.pseudo;
         game.eloUser = element.elo1;
         game.scoreUser = element.points1;
         game.urlImgUser = user.urlImg;
         game.idOpponent = opponent.id;
-        game.opponent = opponent.username;
+        game.opponent = opponent.pseudo;
         game.urlImgOpponent = opponent.urlImg;
         game.eloOpponent = element.elo2;
         game.scoreOpponent = element.points2;
@@ -261,12 +261,12 @@ export class GameService {
           where: {id: element.player1}
         });
         game.idUser = playerId;
-        game.user = user.username;
+        game.user = user.pseudo;
         game.eloUser = element.elo2;
         game.scoreUser = element.points2;
         game.urlImgUser = user.urlImg;
         game.idOpponent = opponent.id;
-        game.opponent = opponent.username;
+        game.opponent = opponent.pseudo;
         game.urlImgOpponent = opponent.urlImg;
         game.eloOpponent = element.elo1;
         game.scoreOpponent = element.points1;

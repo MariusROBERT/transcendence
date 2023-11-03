@@ -5,7 +5,7 @@ import { Socket } from 'socket.io-client';
 // --------------------------- Register :
 
 export interface FormDataRegister {
-  username: string;
+  pseudo: string;
   password: string;
   confirmPassword: string;
 }
@@ -13,7 +13,7 @@ export interface FormDataRegister {
 // --------------------------- Login :
 
 export interface FormData {
-  username: string;
+  pseudo: string;
   password: string;
 }
 
@@ -21,7 +21,7 @@ export interface FormData {
 
 export interface UserAndInvites {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
   user_status: string;
   winrate: number;
@@ -45,7 +45,7 @@ export interface ChannelCreate {
 export interface ChannelMessage {
   sender_id: number;
   sender_urlImg: string;
-  sender_username: string;
+  sender_pseudo: string;
   message_content: string;
   channel_id: number;
 }
@@ -53,13 +53,13 @@ export interface ChannelMessage {
 export interface IChatUser {
   sender_id: number;
   sender_urlImg: string;
-  sender_username: string;
+  sender_pseudo: string;
   channel_id: number;
 }
 
 export interface ChannelUsers {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
   type: string;
 }
@@ -90,12 +90,12 @@ export interface ChannelPublicPass {
 export interface UserInfos {
   id: number;
   urlImg: string;
-  username: string;
+  pseudo: string;
 }
 
 export interface IUser {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
   user_status: 'on' | 'off' | 'in_game';
   winrate: number;
@@ -143,7 +143,7 @@ export interface NotifMsg {
   channel_id: number,
   channel_name: string;
   message_content: string;
-  sender_username: string,
+  sender_pseudo: string,
   sender_urlImg: string,
   priv_msg: boolean,
   socket: Socket
@@ -166,13 +166,13 @@ export interface Modifications {
 export interface settingInfos {
   urlImg: string;
   is2fa_active: boolean;
-  username: string;
+  pseudo: string;
 }
 
 export interface UserInfosForSetting {
   urlImg: string;
   is2fa_active: boolean;
-  username: string;
+  pseudo: string;
 }
 
 // --------------------------- Switch Toggle :

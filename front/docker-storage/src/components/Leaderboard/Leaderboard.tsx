@@ -41,12 +41,12 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
         return (<p>No user</p>);
       const rankedUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase())
+          user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
           && user.rank != 0
         )
         .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
        const unrankedUsers =  allUsers.filter((user: IUser) =>
-       user.username.toLowerCase().includes(searchTerm.toLowerCase())
+       user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
        && user.rank == 0);
        const sortedUsers = [...rankedUsers, ...unrankedUsers];
 

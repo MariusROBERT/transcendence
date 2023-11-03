@@ -178,8 +178,8 @@ export default function Settings() {
       <div>
         <form onSubmit={saveModifications} style={settingsStyle}>
           {mobile ?
-            <h3>{userInfosSettings?.username}</h3> :
-            <h2>{userInfosSettings?.username}</h2>
+            <h3>{userInfosSettings?.pseudo}</h3> :
+            <h2>{userInfosSettings?.pseudo}</h2>
           }
           <div>
             <div style={modifContainerImage}>
@@ -212,7 +212,7 @@ export default function Settings() {
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
+          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}

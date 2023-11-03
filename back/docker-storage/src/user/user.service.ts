@@ -66,7 +66,7 @@ export class UserService {
     await this.UserRepository.save(newProfile);
     const publicUser: OwnProfileDto = {
       id: user.id,
-      username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
       user_status: user.user_status,
       winrate: user.winrate,
@@ -152,7 +152,7 @@ export class UserService {
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
-    PublicProfile.username = profile.username;
+    PublicProfile.pseudo = profile.pseudo;
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;

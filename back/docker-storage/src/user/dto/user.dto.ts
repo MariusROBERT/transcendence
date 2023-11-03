@@ -58,7 +58,7 @@ export class PublicProfileDto {
 
   @IsNotEmpty()
   @IsString()
-  username: string;
+  pseudo: string;
 
   @IsNotEmpty()
   @IsString()
@@ -99,7 +99,7 @@ export class OwnProfileDto {
 
   @IsNotEmpty()
   @IsString()
-  username: string;
+  pseudo: string;
 
   @IsNotEmpty()
   @IsString()

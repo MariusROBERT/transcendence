@@ -46,7 +46,7 @@ export class UserController {
     }
     const publicUser: OwnProfileDto = {
       id: user.id,
-      username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
       user_status: user.user_status,
       winrate: user.winrate,

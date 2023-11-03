@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import { API_URL } from '../../utils/Global';
 import { Rainbow } from '../Game/game.utils';
-import Cookies from 'js-cookie';
 
 const SIZE = 350;
 
