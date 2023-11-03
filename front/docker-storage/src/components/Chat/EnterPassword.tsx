@@ -66,7 +66,6 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
       setVisible(false);
       if (current.channel_name) {
         OnJoinChannel(current.id, current.channel_name);
-        // socket?.emit('join', { channel: current?.channel_name });
       }
     }
   }
