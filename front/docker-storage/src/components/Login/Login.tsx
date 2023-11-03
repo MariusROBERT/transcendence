@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import { API_URL } from '../../utils/Global';
 import { Rainbow } from '../Game/game.utils';
+import Cookies from 'js-cookie';
 
 const SIZE = 350;
 
@@ -196,6 +197,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
           </Background>
         </Border>
+        
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
             <div style={{ padding: '0 35px 0 0' }}>

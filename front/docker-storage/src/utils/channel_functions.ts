@@ -14,6 +14,7 @@ export async function UpdateChannelMessage(id: number) {
 }
 
 export async function UpdateChannelUsers(id: number) {
+  if (id < 1) return;
   const res3 = await Fetch('channel/users/' + id, 'GET');
   const usrs = res3?.json;
   publish('enter_users', {
