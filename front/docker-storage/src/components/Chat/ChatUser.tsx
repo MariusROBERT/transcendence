@@ -101,8 +101,9 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
     if (isNum) {
       const number = Number(muteTime);
       if (number > 1000000) {
-      setErrorVisible(true);
+        setErrorVisible(true);
         seterrorMessage('mute time too high');
+        setmuteTime('');
         return;
       }
       Fetch(
