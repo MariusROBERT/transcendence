@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function ChatUser({ data, visibility, onClose }: Props) {
-  const { setIsProfileOpen } = useUIContext();
+  const { setIsProfileOpen, isProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
@@ -37,8 +37,14 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
         //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
-        if (t === 'owner' || t === 'admin') setType('perm');
-        else setType('noperm');
+        if (t === 'owner' || t === 'admin') {
+          setType('perm');
+          setIsProfileOpen(0);
+        }
+        else {
+          setType('noperm');
+          setIsProfileOpen(data?.sender_id || 0);
+        }
         const rep2 = await Fetch(
           'user/get_public_profile_by_id/' + data?.sender_id,
           'GET',
@@ -47,7 +53,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       }
     };
     fetchData();
-  }, [visibility, data?.channel_id]);
+  }, [visibility, data?.channel_id, data?.sender_id]);
 
   async function execCommand(command: string) {
     const rep = await Fetch(
@@ -175,23 +181,12 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
     return <div></div>;
   }
 
-
-  useEffect(() => {
-    if (visibility && type !== 'perm') {
-      setIsProfileOpen(currentUser?.id || 0);
-      onClose();
-    }
-  }, [type, currentUser, visibility]);
-
   return (
     <>
-      {type !== 'perm' &&
-      <></>
-      }
       {type === 'perm' &&
         <Popup isVisible={visibility} onClose={onClose}>
           <div style={createChatStyle}>
-            <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+            <div style={{visibility: errorVisible ? 'inherit' : 'hidden'}}>
               <ErrorPanel text={errorMessage}></ErrorPanel>
             </div>
             <h2>
@@ -204,8 +199,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
             />
             {type === 'perm' ? showAdmin() : <></>}
           </div>
-        </Popup>
-      }
+        </Popup>}
     </>
   );
 }
