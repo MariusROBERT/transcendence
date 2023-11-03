@@ -106,9 +106,6 @@ export class UserService {
   }
 
   async logout(user: UserEntity) {
-    // const lastMsg = await this.getLastMsg(user);
-
-    // if (lastMsg) user.last_msg_date = lastMsg;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -310,30 +307,6 @@ export class UserService {
       .where('baned.id = :channelId', { channelId })
       .getMany();
   }
-
-  // async getLastMsg(user: UserEntity): Promise<Date> {
-  //   const userChannels = await this.getChannels(user);
-  //   if (!userChannels || userChannels.length === 0) return null;
-  //   let latestMessage: MessageEntity | null = null;
-
-  //   for (const channel of userChannels) {
-  //     const messagesInChannel = await this.MessageRepository.find({
-  //       where: { channel: { id: channel.id } },
-  //       order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-  //       take: 1, // Récupérez seulement le premier (le plus récent) message
-  //     });
-  //     if (messagesInChannel && messagesInChannel.length > 0) {
-  //       const lastMessageInChannel = messagesInChannel[0];
-  //       if (
-  //         !latestMessage ||
-  //         lastMessageInChannel.createdAt > latestMessage.createdAt
-  //       ) {
-  //         latestMessage = lastMessageInChannel;
-  //       }
-  //     }
-  //   }
-  //   return latestMessage.createdAt;
-  // }
 
   async removeLastMsg(id: number) {
     const user = await this.UserRepository.findOne({where: {id}})    

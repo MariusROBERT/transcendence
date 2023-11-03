@@ -22,6 +22,7 @@ const Navbar: React.FC = () => {
     navigate('/login');
     socket?.disconnect();
     Cookies.remove('jwtToken');
+    localStorage.removeItem('isPannelOpen');
   };
  
   const showNotif = () => {
@@ -67,7 +68,7 @@ const Navbar: React.FC = () => {
       }
     };
     setNotif();
-  }, [recvInvitesFrom.length, socket]);
+  }, [recvInvitesFrom?.length, socket]);
 
   const navbarStyle: CSSProperties = {
     right: '50%',

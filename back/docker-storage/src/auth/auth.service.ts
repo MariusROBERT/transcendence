@@ -54,7 +54,6 @@ export class AuthService {
     return {
       id: user.id,
       username: user.username,
-      password: user.password,
     };
   }
 
