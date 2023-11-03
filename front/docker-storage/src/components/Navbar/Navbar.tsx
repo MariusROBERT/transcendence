@@ -65,7 +65,7 @@ const Navbar: React.FC = () => {
       }
     };
     setNotif();
-  }, [recvInvitesFrom.length, socket]);
+  }, [recvInvitesFrom?.length, socket]);
 
   const navbarStyle: CSSProperties = {
     right: '50%',
