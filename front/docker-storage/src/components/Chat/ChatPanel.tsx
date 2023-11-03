@@ -107,6 +107,7 @@ export function ChatPanel({ viewport, width }: Props) {
       setUsers(event.detail.value);
     });
     async function getUsers(){
+      if (channelId < 1) return;
       setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
     }
 

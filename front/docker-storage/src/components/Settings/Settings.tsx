@@ -140,7 +140,8 @@ export default function Settings() {
       ).then((r) => {
         if (r.ok) {
           setPictureError('');
-          return r.json();
+          // return r.json();
+          return;
         }
         setPictureError('Error while uploading picture');
         return null;

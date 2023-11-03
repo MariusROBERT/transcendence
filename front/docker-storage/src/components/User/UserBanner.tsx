@@ -58,7 +58,7 @@ const UserBanner = ({ otherUser }: Props) => {
     alignItems: 'center',
     borderRadius: '12.5px',
     background: color.light_blue,
-    color: user?.friends.includes(otherUser.id) ? color.green : color.white,
+    color: user?.friends?.includes(otherUser.id) ? color.green : color.white,
     height: '25px',
     marginTop: 5,
     width: 400,

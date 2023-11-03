@@ -70,8 +70,8 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
   }
 
   useEffect(() => {
-    async function onRemove ( user: number ) {
-      
+    async function onRemove(user: number) {
+
       if (user === id) {
         publish('close_chat', undefined);
         await UpdateChannels();
@@ -100,6 +100,12 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
     const isNum = /^\d+$/.test(muteTime);
     if (isNum) {
       const number = Number(muteTime);
+      if (number > 1000000) {
+        setErrorVisible(true);
+        seterrorMessage('mute time too high');
+        setmuteTime('');
+        return;
+      }
       Fetch(
         'channel/mute/' + data?.channel_id,
         'POST',

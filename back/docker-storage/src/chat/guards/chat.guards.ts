@@ -33,7 +33,8 @@ export class ChatCheckGuard implements CanActivate {
         (await this.muteService.getMutedInChannel(chanE.id, userE.id))
           ?.endDate > new Date()
       )
-        throw new Error('You are muted');
+        // throw new Error('You are muted');
+        return;
       return true;
     }
     // throw new Error('You are not in channel');
