@@ -9,6 +9,7 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
+  OwnProfileDto,
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
@@ -44,7 +45,6 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    //console.log('modifications apportées: ', profile);
 
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
@@ -63,7 +63,24 @@ export class UserService {
         code2fa: secret ? secret[1] : '',
       };
     }
-    return await this.UserRepository.save(newProfile);
+    await this.UserRepository.save(newProfile);
+    const publicUser: OwnProfileDto = {
+      id: user.id,
+      username: user.username,
+      urlImg: user.urlImg,
+      user_status: user.user_status,
+      winrate: user.winrate,
+      gamesPlayed: user.gamesPlayed,
+      elo: user.elo,
+      rank: user.rank,
+      gamesId: user.gamesId,
+      friends: user.friends,
+      recvInvitesFrom: user.recvInvitesFrom,
+      sentInvitesTo: user.sentInvitesTo,
+      blocked: user.blocked
+    };
+
+    return publicUser;
   }
 
   async updatePassword(updatePwdDto: UpdatePwdDto, user: UserEntity) {
@@ -106,9 +123,6 @@ export class UserService {
   }
 
   async logout(user: UserEntity) {
-    const lastMsg = await this.getLastMsg(user);
-
-    if (lastMsg) user.last_msg_date = lastMsg;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -311,30 +325,6 @@ export class UserService {
       .getMany();
   }
 
-  async getLastMsg(user: UserEntity): Promise<Date> {
-    const userChannels = await this.getChannels(user);
-    if (!userChannels || userChannels.length === 0) return null;
-    let latestMessage: MessageEntity | null = null;
-
-    for (const channel of userChannels) {
-      const messagesInChannel = await this.MessageRepository.find({
-        where: { channel: { id: channel.id } },
-        order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-        take: 1, // Récupérez seulement le premier (le plus récent) message
-      });
-      if (messagesInChannel && messagesInChannel.length > 0) {
-        const lastMessageInChannel = messagesInChannel[0];
-        if (
-          !latestMessage ||
-          lastMessageInChannel.createdAt > latestMessage.createdAt
-        ) {
-          latestMessage = lastMessageInChannel;
-        }
-      }
-    }
-    return latestMessage.createdAt;
-  }
-
   async removeLastMsg(id: number) {
     const user = await this.UserRepository.findOne({where: {id}})    
     if (user.last_msg_date)
@@ -382,7 +372,6 @@ export class UserService {
     }
     user.urlImg = API_URL + '/' + file.path;
     await this.UserRepository.save(user);
-    return user;
   }
 
   async getUserById(id: number): Promise<UserEntity> {

@@ -92,6 +92,59 @@ export class PublicProfileDto {
   gamesId: number[];
 }
 
+export class OwnProfileDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+
+  @IsNotEmpty()
+  @IsString()
+  username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  urlImg: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserStateEnum)
+  user_status: UserStateEnum;
+
+  @IsNotEmpty()
+  @IsNumber()
+  winrate: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  gamesPlayed: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  elo: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  rank: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  friends: number[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  recvInvitesFrom: number[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  sentInvitesTo: number[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  blocked: number[];
+
+  @IsNotEmpty()
+  gamesId: number[];
+}
+
 export class UpdatePwdDto {
   @IsString()
   newPassword: string;
