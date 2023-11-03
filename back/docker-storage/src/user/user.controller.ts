@@ -88,7 +88,7 @@ export class UserController {
       }),
     )
     file?: Express.Multer.File,
-  ): Promise<UserEntity> {
+  ) {
     return await this.userService.updatePicture(user, file);
   }
 
