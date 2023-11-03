@@ -126,7 +126,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
     @Body() editChannelDto: EditChannelDto,
-  ) {
+  ): Promise<PublicChannelDto> {
     return this.channelService.editChannel(editChannelDto, id);
   }
 
