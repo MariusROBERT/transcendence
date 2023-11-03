@@ -20,8 +20,6 @@ export function PlayButton() {
       gap: 10,
       justifyContent: 'center',
       position: 'relative',
-      margin: 'auto',
-      // zIndex: -100
     }}
     >
       <div
