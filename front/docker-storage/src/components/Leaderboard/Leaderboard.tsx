@@ -121,8 +121,3 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     </Popup>
   );
 }
-
-const ProfilStyle: CSSProperties = {
-  minWidth: '13ch',
-  fontSize:'20px'
-};

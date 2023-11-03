@@ -3,6 +3,7 @@ import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
 import { SetCurrChan } from '../../utils/channel_functions';
 import { subscribe, unsubscribe } from '../../utils/event';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   children: ReactNode;
@@ -29,6 +30,7 @@ export function SidePanel({
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
   const [isAnim, setIsAnim] = useState<boolean>(false);
+  const { saveUIContext } = useUIContext();
 
   const isMoving = isAnim || isHiding || isShowing;
 
@@ -57,20 +59,14 @@ export function SidePanel({
     };
   }, [isLeftPanel]);
 
-
-  const bodyWidth = window.innerWidth;
-
   useEffect(() => {
-    if (isChatOpen && isLeftPanel && contextIsOpen && bodyWidth < 1000) {
-      localStorage.setItem('isPannelOpen', '0');
-      Close()
+    if (isChatOpen && isLeftPanel && contextIsOpen && viewport.width < 1000) {
+      Close();
     }
-  }, [bodyWidth])
+  }, [viewport.width, isChatOpen, isLeftPanel, contextIsOpen])
 
   async function Close() {
     if (isMoving) return;
-    if (isLeftPanel)
-      localStorage.setItem('isPannelOpen', '0');
     setContextIsOpen(false);
     if (!isLeftPanel) {
       // socket?.emit('leave');
@@ -86,8 +82,6 @@ export function SidePanel({
   }
 
   async function Open() {
-    if (isLeftPanel)
-      localStorage.setItem('isPannelOpen', '1');
     setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);

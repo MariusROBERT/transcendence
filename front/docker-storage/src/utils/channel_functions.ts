@@ -41,10 +41,10 @@ export async function UpdateChannels() {
 
 export let current_chan = '';
 
-export async function SetCurrChan(chan: string) {
+export function SetCurrChan(chan: string) {
   current_chan = chan;
 }
 
-export async function GetCurrChan() {
+export function GetCurrChan() {
   return current_chan;
 }
