@@ -26,7 +26,7 @@ export function ContactPanel({ viewport }: Props) {
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
       if (!users)
         return setFriendList([]);
-      setFriendList(users.filter((u: IUser) => friends.includes(u.id)));
+      setFriendList(users.filter((u: IUser) => friends?.includes(u.id)));
     };
     getFriends();
   }, [friends, isContactOpen]);

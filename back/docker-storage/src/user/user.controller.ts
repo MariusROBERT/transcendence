@@ -19,7 +19,7 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import { PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus, } from './dto/user.dto';
+import { OwnProfileDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus, } from './dto/user.dto';
 import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -40,22 +40,24 @@ export class UserController {
   // get_his_own_profile
   @Get()
   @UseGuards(JwtAuthGuard)
-  async GetOwnProfile(@User() user: UserEntity): Promise<PublicProfileDto> {
+  async GetOwnProfile(@User() user: UserEntity): Promise<OwnProfileDto> {
     if (user.user_status == UserStateEnum.OFF) {
       await this.userService.login(user);
     }
-    const publicUser: PublicProfileDto = {
+    const publicUser: OwnProfileDto = {
       id: user.id,
-      socketId: user.socketId,
       username: user.username,
       urlImg: user.urlImg,
       user_status: user.user_status,
       winrate: user.winrate,
-      is_friend: false,
       gamesPlayed: user.gamesPlayed,
       elo: user.elo,
       rank: user.rank,
       gamesId: user.gamesId,
+      friends: user.friends,
+      recvInvitesFrom: user.recvInvitesFrom,
+      sentInvitesTo: user.sentInvitesTo,
+      blocked: user.blocked
     };
 
     return publicUser;
@@ -139,13 +141,6 @@ export class UserController {
     channels: ChannelEntity[],
   ): Promise<MessageEntity[]> {
     return await this.userService.getMsgsByChannel(user, channels, id);
-  }
-
-  // get last message
-  @Get('get_last_msg')
-  @UseGuards(JwtAuthGuard)
-  async GetLastMsg(@User() user: UserEntity): Promise<Date | null> {
-    return await this.userService.getLastMsg(user);
   }
 
   // get_channels_of_user

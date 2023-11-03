@@ -20,6 +20,7 @@ const Navbar: React.FC = () => {
     socket?.disconnect();
     Cookies.remove('jwtToken');
     window.location.replace('/login');
+    localStorage.removeItem('isPannelOpen');
   };
 
   const showNotif = () => {
