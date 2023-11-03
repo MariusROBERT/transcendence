@@ -1,6 +1,5 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import { useUserContext } from '../UserContext/UserContext';
-import { current_chan, SetCurrChan } from '../../utils/channel_functions';
 import { ChannelPublicPass } from '../../utils/interfaces';
 
 type UIContextType = {
@@ -90,33 +89,33 @@ export function UIContextProvider({ children }: Props) {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined);
 
-  async function loadUIContext(): Promise<void> {
+  useEffect(() => {
     if (id <= 0) return;
-    if (id.toString() !== localStorage.getItem('id')) {
-      return resetUIContext();
-    }
+    saveUIContext();
+  }, [theme, isLeaderboardOpen, isSettingsOpen, isProfileOpen, isContactOpen, isChatMenuOpen, channels, id]);
+
+  async function loadUIContext(): Promise<void> {
     setTheme(localStorage.getItem('theme') as 'rainbow' | 'matrix');
     setIsSettingsOpen(localStorage.getItem('isSettingsOpen') === 'true');
     setIsProfileOpen(localStorage.getItem('isProfileOpen') ? parseInt(localStorage.getItem('isProfileOpen') as string) : 0);
-    await SetCurrChan(localStorage.getItem('isChatOpen') !== '' ? localStorage.getItem('isChatOpen') as string : '');
-    setIsChatOpen(localStorage.getItem('isChatOpen') === 'true');
     setIsContactOpen(localStorage.getItem('isContactOpen') === 'true');
+    setIsLeaderboardOpen(localStorage.getItem('isLeaderboardOpen') === 'true');
   }
 
   async function saveUIContext(): Promise<void> {
     localStorage.setItem('theme', theme);
     localStorage.setItem('isSettingsOpen', isSettingsOpen.toString());
     localStorage.setItem('isProfileOpen', isProfileOpen ? isProfileOpen.toString() : '0');
-    localStorage.setItem('isChatOpen', current_chan);
     localStorage.setItem('isContactOpen', isContactOpen.toString());
+    localStorage.setItem('isLeaderboardOpen', isLeaderboardOpen.toString());
   }
 
   async function resetUIContext(): Promise<void> {
     localStorage.setItem('theme', 'rainbow');
     localStorage.setItem('isSettingsOpen', 'false');
     localStorage.setItem('isProfileOpen', '0');
-    localStorage.setItem('isChatOpen', '');
     localStorage.setItem('isContactOpen', 'false');
+    localStorage.setItem('isLeaderboardOpen', 'false');
   }
 
   return (

@@ -10,15 +10,15 @@ interface Props {
 export function Contexts({ children }: Props) {
   return (
     <>
-      <UIContextProvider>
-        <UserContextProvider>
+      <UserContextProvider>
+        <UIContextProvider>
           <FriendsRequestProvider>
             <GameContextProvider>
               {children}
             </GameContextProvider>
           </FriendsRequestProvider>
-        </UserContextProvider>
-      </UIContextProvider>
+        </UIContextProvider>
+      </UserContextProvider>
     </>
   );
 }

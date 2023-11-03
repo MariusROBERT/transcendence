@@ -30,22 +30,13 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
   const {
     isChatOpen, setIsChatOpen,
-    isContactOpen, setIsContactOpen
+    isContactOpen, setIsContactOpen,
+    loadUIContext
   } = useUIContext();
   const [rainbow] = useState<Rainbow>(new Rainbow());
   const [titleColor, setTitleColor] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
-
-
-  useEffect(() => {
-    const isPannelOpen = localStorage.getItem('isPannelOpen');
-
-    if (isPannelOpen === '1') {
-      setIsContactOpen(true);
-    } else
-      setIsContactOpen(false);
-  }, [])
 
   function rgbTitle() {
     setTimeout(() => {
@@ -56,10 +47,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }
 
   useEffect(() => {
-    rgbTitle();
-  }, []);
-
-  useEffect(() => {
     if (focused) {
       fetchContext();
     }
@@ -67,15 +54,12 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }, [focused]);
 
   useEffect(() => {
+    rgbTitle();
     fetchFriendsRequestContext();
+    loadUIContext();
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    if (!user)
-      return;
-    // eslint-disable-next-line
-  }, [user]);
 
   return (
     <div style={MainPageStyle}>
