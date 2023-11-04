@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function ChatUser({ data, visibility, onClose }: Props) {
-  const { setIsProfileOpen, isProfileOpen } = useUIContext();
+  const { setIsProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');

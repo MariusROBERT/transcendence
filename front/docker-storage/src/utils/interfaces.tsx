@@ -30,16 +30,16 @@ export interface UserAndInvites {
 
 // --------------------------- Channels :
 
+export interface PublicChannelDto {
+  id: number;
+  channel_name: string;
+  priv_msg: boolean;
+}
+
 export interface ChannelInfos {
   id: number;
   name: string;
   type: string;
-}
-
-//  Use later for a function
-export interface ChannelCreate {
-  channel_name: string;
-  priv_msg: boolean;
 }
 
 export interface ChannelMessage {
