@@ -268,7 +268,6 @@ export class UserService {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
   }
-
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')

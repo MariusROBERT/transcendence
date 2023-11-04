@@ -33,7 +33,6 @@ export function ChatPanel({ viewport, width }: Props) {
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
   const [users, setUsers] = useState<ChannelUsers[]>([]);
 
-
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
     if (message.channel_id !== channelId) return;

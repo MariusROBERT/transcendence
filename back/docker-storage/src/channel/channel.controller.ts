@@ -39,12 +39,24 @@ import {
   IsProtected,
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
-import { log } from 'console';
+
+interface ChannelUsers {
+  id: number;
+  username: string;
+  urlImg: string;
+}
+
+interface ChannelInfos {
+  id: number;
+  name: string;
+  type: string;
+}
 
 @Controller('channel')
 export class ChannelController {
   constructor(private channelService: ChannelService) {
   }
+
 
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)
@@ -75,11 +87,13 @@ export class ChannelController {
     return await this.channelService.getChannelMessages(id);
   }
 
+  
+
   @Get('/users/:id')
   @UseGuards(JwtAuthGuard)
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserEntity[]> {
+  ): Promise<ChannelUsers[]> {
     if (id < 1) return;
     return await this.channelService.getChannelUsers(id);
   }
@@ -96,7 +110,7 @@ export class ChannelController {
   //  TODO CHANGE TO GET
   @Post('/of_user')
   @UseGuards(JwtAuthGuard)
-  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelEntity[]> {
+  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelInfos[]> {
     return await this.channelService.getChannelOfUser(user.id);
   }
 
