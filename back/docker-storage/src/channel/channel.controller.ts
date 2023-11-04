@@ -13,7 +13,6 @@ import {
   CreateChannelDto,
   EditChannelDto,
   PublicChannelDto,
-  UpdateChannelDto,
 } from './dto/channel.dto';
 import { UserChanDto } from 'src/user/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
@@ -40,23 +39,10 @@ import {
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
 
-interface ChannelUsers {
-  id: number;
-  username: string;
-  urlImg: string;
-}
-
-interface ChannelInfos {
-  id: number;
-  name: string;
-  type: string;
-}
-
 @Controller('channel')
 export class ChannelController {
   constructor(private channelService: ChannelService) {
   }
-
 
   @Get('/public/:id')
   @UseGuards(JwtAuthGuard)
@@ -87,14 +73,11 @@ export class ChannelController {
     return await this.channelService.getChannelMessages(id);
   }
 
-  
-
   @Get('/users/:id')
   @UseGuards(JwtAuthGuard)
   async GetChannelUsers(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChannelUsers[]> {
-    if (id < 1) return;
+  ): Promise<UserChanDto[]> {
     return await this.channelService.getChannelUsers(id);
   }
 
@@ -110,7 +93,7 @@ export class ChannelController {
   //  TODO CHANGE TO GET
   @Post('/of_user')
   @UseGuards(JwtAuthGuard)
-  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelInfos[]> {
+  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelEntity[]> {
     return await this.channelService.getChannelOfUser(user.id);
   }
 
@@ -141,7 +124,7 @@ export class ChannelController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
     @Body() editChannelDto: EditChannelDto,
-  ): Promise<PublicChannelDto> {
+  ) {
     return this.channelService.editChannel(editChannelDto, id);
   }
 

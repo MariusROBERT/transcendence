@@ -23,18 +23,6 @@ import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
-export interface ChannelUsers {
-  id: number;
-  username: string;
-  urlImg: string;
-}
-
-interface ChannelInfos {
-  id: number;
-  name: string;
-  type: string;
-}
-
 @Injectable()
 export class ChannelService {
   constructor(
@@ -264,15 +252,8 @@ export class ChannelService {
    @param {number} - The channel id
    @return {UserEntity[]} - The channel users
    */
-  async getChannelUsers(id: number): Promise<ChannelUsers[]> {
-    const lisUsers = await this.userService.getUsersInChannels(id);
-    const dtoList: ChannelUsers[] = lisUsers.map((user) => ({
-      id: user.id,
-      username: user.username,
-      urlImg: user.urlImg,
-
-    }))
-    return dtoList;
+  async getChannelUsers(id: number): Promise<UserEntity[]> {
+    return await this.userService.getUsersInChannels(id);
   }
 
   /**
@@ -316,7 +297,7 @@ export class ChannelService {
    @param {number} id - The user id
    @return {ChannelEntity[]} - The channels user
    */
-  async getChannelOfUser(id: number): Promise<ChannelInfos[]> {
+  async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
     const chans = await this.getChannelOfUserByType('users', id);
     const admchans = await this.getChannelOfUserByType('admins', id);
     const ownchans = await this.getChannelOfUserByType('owner', id);
