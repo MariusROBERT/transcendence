@@ -8,7 +8,7 @@ interface Props {
   children: string;
   data: ChannelMessage;
   last: number | undefined;
-  onClick: (name: ChannelMessage) => void;
+  onClick: () => void;
 }
 
 export function ChatMessage({ children, data, last, onClick }: Props) {
@@ -30,7 +30,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         >
           <RoundButton
             icon={data.sender_urlImg}
-            onClick={() => onClick(data)}
+            onClick={() => onClick()}
           />
           <p style={{ fontSize: '15px' }}> {data.sender_pseudo} </p>
         </div>

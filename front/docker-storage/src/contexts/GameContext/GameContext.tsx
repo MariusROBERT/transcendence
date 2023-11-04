@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import { Fetch } from '../../utils';
 import { useUserContext } from '../UserContext/UserContext';
 import { useNavigate } from 'react-router-dom';
+import {useUIContext} from '../UIContext/UIContext';
 
 type GameContextType = {
   inviteFrom: number | undefined,
@@ -23,6 +24,7 @@ type GameContextType = {
 
   fetchGameContext: () => void
 }
+
 
 const GameContext = createContext<GameContextType>({
   inviteFrom: undefined,
@@ -76,6 +78,7 @@ interface Props {
 }
 
 export function GameContextProvider({ children }: Props) {
+  const { setIsLeaderboardOpen, setIsSettingsOpen, setIsProfileOpen, setIsChatMenuOpen, setIsChatOpen, setIsContactOpen } = useUIContext();
   const { socket, id } = useUserContext();
   const navigate = useNavigate();
 
@@ -273,6 +276,12 @@ export function GameContextProvider({ children }: Props) {
 
   // Game Start / End -- Event reception ---------------------------------------------------------------------------- //
   function onOpenGame(body: { p1: number, p2: number }) {
+    setIsLeaderboardOpen(false);
+    setIsSettingsOpen(false);
+    setIsProfileOpen(0);
+    setIsChatMenuOpen(false);
+    setIsChatOpen(false);
+    setIsContactOpen(false);
     setInviteFrom(undefined);
     setInviteTo(undefined);
     setIsInQueue(undefined);

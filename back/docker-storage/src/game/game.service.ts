@@ -31,9 +31,9 @@ export class GameService {
   async update(game: gameRoom) {
     //check for the end game conditions
     if (
-      game.state.score.p1 >= 50 ||
-      game.state.score.p2 >= 50 ||
-      !game.state.running
+      (game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
+      || (game.state.score.p1 >= 20 || game.state.score.p2 >= 20)
+      || !game.state.running
     ) {
       game.state.running = false;
       return this.controller.matchmaking.endGame(game.playerIds[0]);

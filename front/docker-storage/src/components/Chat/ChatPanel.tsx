@@ -24,7 +24,6 @@ interface PublicChannelDto {
 // TODO refacto all useEffect (Infinite LOOp)
 export function ChatPanel({ viewport, width }: Props) {
   const [inputValue, setInputValue] = useState<string>('');
-  const [userVisible, setUserVisible] = useState<boolean>(false);
   const [currUser, setCurrUser] = useState<IChatUser>();
   const [channelId, setChannelId] = useState<number>(-1);
   const { id, socket } = useUserContext();
@@ -88,9 +87,8 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
+    console.log(msgs.sender_username);
     setCurrUser(msgs);
-    setUserVisible(true);
-    // TODO show profile here if not admin
   }
 
   useEffect(() => {
@@ -119,9 +117,9 @@ export function ChatPanel({ viewport, width }: Props) {
     const el = msg.map((data, idx) => (
       <ChatMessage
         key={idx}
-        data={data}
-        onClick={OnUserClick}
+        onClick={() => OnUserClick(data)}
         last={idx > 0 ? msg[idx - 1].sender_id : undefined}
+        data={data}
       >
         {data.message_content}
       </ChatMessage>
@@ -195,7 +193,8 @@ export function ChatPanel({ viewport, width }: Props) {
           icon={require('../../assets/imgs/icon_play.png')}
           onClick={onEnterPressed}
         />
-        <ChatUser data={currUser} visibility={userVisible} onClose={() => setUserVisible(false)}></ChatUser>
+        {<ChatUser data={currUser} visibility={currUser !== undefined}
+                                             onClose={() => setCurrUser(undefined)}></ChatUser>}
       </div>
     </Background>
   );
