@@ -255,7 +255,7 @@ export default function Settings() {
           <div style={modifContainer2FA}>
             <p>2FA</p>
             <SwitchToggle
-              onChange={(change) => setIs2fa(change)}
+              onChange={(change: boolean) => setIs2fa(change)}
               checked={!!userInfosSettings?.is2fa_active}
             />
           </div>

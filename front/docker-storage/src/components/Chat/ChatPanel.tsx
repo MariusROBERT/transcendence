@@ -87,7 +87,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
-    console.log(msgs.sender_username);
+    console.log(msgs.sender_pseudo);
     setCurrUser(msgs);
   }
 
