@@ -24,6 +24,7 @@ type UIContextType = {
 
   saveUIContext: () => void
   loadUIContext: () => void
+  resetUIContext: () => void
 }
 
 const UIContext = createContext<UIContextType>({
@@ -68,6 +69,9 @@ const UIContext = createContext<UIContextType>({
   loadUIContext: () => {
     return;
   },
+  resetUIContext: () => {
+    return ;
+  }
 });
 
 export function useUIContext() {
@@ -142,6 +146,7 @@ export function UIContextProvider({ children }: Props) {
 
         saveUIContext,
         loadUIContext,
+        resetUIContext
       }}>
         {children}
       </UIContext.Provider>
