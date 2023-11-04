@@ -16,13 +16,14 @@ const Navbar: React.FC = () => {
   const { user, socket, id } = useUserContext();
   const { recvInvitesFrom, msgs, setMsgs } = useFriendsRequestContext();
   // const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
+  const { resetUIContext } = useUIContext();
 
   const navigate = useNavigate();
   const logout = async () => {
     navigate('/login');
     socket?.disconnect();
     Cookies.remove('jwtToken');
-    localStorage.removeItem('isPannelOpen');
+    resetUIContext();
   };
  
   const showNotif = () => {
