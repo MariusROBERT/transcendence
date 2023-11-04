@@ -106,6 +106,9 @@ export class OwnProfileDto {
   @IsString()
   pseudo: string;
 
+  @IsString()
+  username: string;
+
   @IsNotEmpty()
   @IsString()
   urlImg: string;

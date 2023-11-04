@@ -173,6 +173,7 @@ export interface UserInfosForSetting {
   urlImg: string;
   is2fa_active: boolean;
   pseudo: string;
+  username?: string;
 }
 
 // --------------------------- Switch Toggle :
