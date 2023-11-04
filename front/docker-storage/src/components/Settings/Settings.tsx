@@ -156,7 +156,7 @@ export default function Settings() {
 
     // 2FA :
     if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
-      console.log('1 newname:', newName);
+      // console.log('1 newname:', newName);
       
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
@@ -165,7 +165,7 @@ export default function Settings() {
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
-      console.log('2 newname:', newName);
+      // console.log('2 newname:', newName);
 
       }
       if (user?.is2fa_active) {
