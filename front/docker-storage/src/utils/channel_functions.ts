@@ -27,7 +27,7 @@ export async function UpdateChannelUsers(id: number) {
 
 export async function UpdateChannels() {
   try {
-    const res = await Fetch('channel/of_user', 'POST');
+    const res = await Fetch('channel/of_user', 'GET');
     const channels = res?.json;
     publish('update_chan', {
       detail: {
