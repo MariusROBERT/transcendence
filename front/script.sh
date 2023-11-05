@@ -8,4 +8,8 @@ fi
 
 npm install
 echo "npm install done !"
-npm run start
+
+
+
+##npm install -g serve
+##serve -s build -l 3000

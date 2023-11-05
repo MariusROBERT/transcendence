@@ -7,4 +7,8 @@ fi
 npm install
 #npm upgrade
 
-nest start --watch
+npm run build
+npm start
+
+#nest build
+#nest start --build
