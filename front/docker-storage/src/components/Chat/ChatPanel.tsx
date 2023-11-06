@@ -99,11 +99,6 @@ export function ChatPanel({ viewport, width }: Props) {
     }
   }, [printMsgs]);
 
-
-  useEffect(() => {
-
-  }, [channelId]);
-
   useEffect(() => {
     const el = msg.map((data, idx) => (
       <ChatMessage
