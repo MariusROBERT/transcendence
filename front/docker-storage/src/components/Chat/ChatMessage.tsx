@@ -32,7 +32,7 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
             icon={data.sender_urlImg}
             onClick={() => onClick()}
           />
-          <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
+          <p style={{ fontSize: '15px' }}> {data.sender_pseudo} </p>
         </div>
       }
       <div

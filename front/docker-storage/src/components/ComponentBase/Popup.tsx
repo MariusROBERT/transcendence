@@ -30,7 +30,7 @@ export default function Popup(props: Props) {
 
   return (
     <div
-      style={{
+      style={{        
         visibility: props.isVisible ? 'visible' : 'hidden',
         position: 'fixed',
         top: 0,
@@ -60,7 +60,7 @@ export default function Popup(props: Props) {
            }}></div>
       {
         props.isVisible &&
-        (<div style={{ position: 'relative', ...props.style }}>
+        (<div style={{ position: 'relative', ...props.style, }}>
           <div style={{
                position: 'absolute',
                top: '2%',
