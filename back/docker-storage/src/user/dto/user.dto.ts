@@ -5,10 +5,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  isNumber,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
+// ----- update :
 export class UpdateUserDto {
 
   @IsOptional()
@@ -36,6 +36,7 @@ export class UpdateUserDto {
   winrate: number;
 }
 
+// ----- channel :
 export class UserChanDto {
   @IsNotEmpty()
   @IsNumber()
@@ -52,6 +53,7 @@ export class UserAddChanDto {
   password: string;
 }
 
+// ----- public :
 export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()
@@ -97,6 +99,7 @@ export class PublicProfileDto {
   gamesId: number[];
 }
 
+// ----- private :
 export class OwnProfileDto {
   @IsNotEmpty()
   @IsNumber()
@@ -153,6 +156,7 @@ export class OwnProfileDto {
   gamesId: number[];
 }
 
+// ----- password :
 export class UpdatePwdDto {
   @IsString()
   newPassword: string;
@@ -161,12 +165,14 @@ export class UpdatePwdDto {
   oldPassword: string;
 }
 
+// ----- socket :
 export class GetUserIdFromSocketIdDto {
   @IsNotEmpty()
   @IsString()
   socketId: string;
 }
 
+// ----- game :
 export class UserGameStatus {
   @IsNumber()
   gameInvitationTo: number;

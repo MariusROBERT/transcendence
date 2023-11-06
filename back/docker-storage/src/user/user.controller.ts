@@ -144,12 +144,12 @@ export class UserController {
     return await this.userService.getMsgsByChannel(user, channels, id);
   }
 
-  // get_channels_of_user
-  @Get('get_channels')
-  @UseGuards(JwtAuthGuard)
-  async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.userService.getChannels(user);
-  }
+  // // get_channels_of_user
+  // @Get('get_channels')
+  // @UseGuards(JwtAuthGuard)
+  // async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
+  //   return await this.userService.getChannels(user);
+  // }
 
   @Get('/:id')
   async GetUserById(

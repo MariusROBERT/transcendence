@@ -91,7 +91,6 @@ export class AuthService {
       // TODO : change payload: put only user.id
       const payload = {
         username,
-        role: user.role,
       };
       user.user_status = UserStateEnum.ON;
 
@@ -149,7 +148,6 @@ export class AuthService {
     }
     const payload = {
       username,
-      role: user2.role,
     };
     return this.jwtService.sign(payload);
   }
@@ -182,7 +180,6 @@ export class AuthService {
       }
       const payload = {
         username: user.username,
-        role: user.role,
       };
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };

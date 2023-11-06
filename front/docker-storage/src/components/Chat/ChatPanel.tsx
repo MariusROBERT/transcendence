@@ -7,18 +7,12 @@ import {
   GetCurrChan,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
-import {ChannelMessage, ChannelUsers, IChatUser} from '../../utils/interfaces';
+import {ChannelMessage, ChannelUsers, IChatUser, PublicChannelDto} from '../../utils/interfaces';
 import ChatUser from './ChatUser';
 
 interface Props {
   viewport: Viewport;
   width: number;
-}
-
-interface PublicChannelDto {
-  id: number;
-  channel_name: string;
-  channel_priv_msg: boolean;
 }
 
 // TODO refacto all useEffect (Infinite LOOp)
@@ -32,7 +26,6 @@ export function ChatPanel({ viewport, width }: Props) {
   const [channel, setChannel] = useState<PublicChannelDto>();
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
   const [users, setUsers] = useState<ChannelUsers[]>([]);
-
 
   //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
