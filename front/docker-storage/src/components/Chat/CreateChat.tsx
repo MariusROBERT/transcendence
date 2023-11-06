@@ -133,7 +133,7 @@ export const createChatStyle: React.CSSProperties = {
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  background: 'grey',
+  backgroundColor: color.blue,
   height: '100%',
   color: 'white',
   margin: '10px',

@@ -25,7 +25,7 @@ export default function ScoreUser({user, mirror}: Props) {
       }}>
         <Flex flex_direction="column">
           <div style={nameStyle}>
-              {user.username}
+              {user.pseudo}
           </div>
           <div>
             <RoundButton isDisabled={true} icon={user.urlImg} icon_size={130}

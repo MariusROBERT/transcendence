@@ -47,6 +47,7 @@ export class UserController {
     return {
       id: user.id,
       username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
       is2fa_active: user.is2fa_active,
       user_status: user.user_status,

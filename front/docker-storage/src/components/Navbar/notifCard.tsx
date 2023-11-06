@@ -55,7 +55,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
         <div className='bar' />
         <div className='container'>
           <div className='username'>
-            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifFriends?.username}</span> vous a demande en ami</p>
+            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifFriends?.pseudo}</span> vous a demande en ami</p>
           </div>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
@@ -78,7 +78,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
       } className='container'>
         <div className='username'>
           {!notifMsg?.priv_msg ? (<p>Vous avez recu un message sur <span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifMsg?.channel_name}</span></p>) :
-            (<p> Vous avez recu un message de <span style={{ fontWeight: 'bold', color: '#459DD3' }} >{notifMsg?.sender_username} </span> </p>)}
+            (<p> Vous avez recu un message de <span style={{ fontWeight: 'bold', color: '#459DD3' }} >{notifMsg?.sender_pseudo} </span> </p>)}
         </div>
       </div>
     </div>

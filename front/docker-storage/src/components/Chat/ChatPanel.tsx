@@ -34,7 +34,17 @@ export function ChatPanel({ viewport, width }: Props) {
   };
 
   useEffect(() => {
+    subscribe('enter_chan', async (event: any) => {
+      setPrintMsgs([]);
+      //console.log(event.detail.value)
+      setMessage(event.detail.value);
+      //console.log(event.detail.id);
+      setChannelId(event.detail.id);
+    });
     document.getElementById('inpt')?.focus();
+    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    }
   }, [])
 
   useEffect(() => {
@@ -62,16 +72,6 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   }, [socket]);
 
-  useEffect(() => {
-    subscribe('enter_chan', async (event: any) => {
-      setPrintMsgs([]);
-      //console.log(event.detail.value)
-      setMessage(event.detail.value);
-      //console.log(event.detail.id);
-      setChannelId(event.detail.id);
-    });
-  }, []);
-
   async function onEnterPressed() {
     if (inputValue.length <= 0 || inputValue.length > 256) return;
     const chan = await GetCurrChan();
@@ -80,17 +80,9 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
-    console.log(msgs.sender_username);
+    // console.log(msgs.sender_pseudo);
     setCurrUser(msgs);
   }
-
-  useEffect(() => {
-    // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
-    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
-      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
-    }
-  });
-
 
   useEffect(() => {
     subscribe('enter_users', async (event: any) => {
@@ -123,7 +115,7 @@ export function ChatPanel({ viewport, width }: Props) {
   return (
     <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
       {!channel?.priv_msg && <h3>{channel?.channel_name}</h3>}
-      {channel?.priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].username : users[0].username}</h3>}
+      {channel?.priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].pseudo : users[0].pseudo}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={channelId} users={users}/>
       <div
