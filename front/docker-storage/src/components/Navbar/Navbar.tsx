@@ -19,10 +19,10 @@ const Navbar: React.FC = () => {
   const { resetUIContext } = useUIContext();
 
   const logout = async () => {
-    window.location.replace('/login')
     Cookies.remove('jwtToken');
     socket?.disconnect();
     resetUIContext();
+    window.location.replace('/login')
   };
  
   const showNotif = () => {
@@ -88,6 +88,7 @@ const Navbar: React.FC = () => {
     flexDirection: 'column',
     top: '420px',
     background: 'transparent',
+    zIndex: 100,
   };
 
   return (
