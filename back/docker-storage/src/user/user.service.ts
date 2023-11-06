@@ -68,6 +68,7 @@ export class UserService {
       id: user.id,
       username: user.username,
       urlImg: user.urlImg,
+      is2fa_active: user.is2fa_active,
       user_status: user.user_status,
       winrate: user.winrate,
       gamesPlayed: user.gamesPlayed,
@@ -398,8 +399,26 @@ export class UserService {
       secret,
     );
     user.secret2fa = secret;
+    user.is2fa_active = false;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
+  }
+
+  async confirm2Fa(code: number, user: UserEntity) {
+    if (user.is2fa_active || !user.secret2fa || user.secret2fa === '') {
+      throw new BadRequestException('You don\' have to validate 2fa');
+    }
+    if (
+        !authenticator.verify({
+          token: String(code),
+          secret: user.secret2fa,
+        })
+    ) {
+      throw new BadRequestException('Invalid 2fa code');
+    }
+    user.is2fa_active = true;
+    await this.UserRepository.save(user);
+    return ([]);
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //

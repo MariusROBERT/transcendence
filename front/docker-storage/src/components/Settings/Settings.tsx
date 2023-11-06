@@ -18,6 +18,7 @@ export default function Settings() {
   const [newImageUrl, setNewImageUrl] = useState<string>('');
   const [newImage, setNewImage] = useState<Blob>();
   const [code2fa, setCode2fa] = useState<string>('');
+  const [confirm2fa, setConfirm2fa] = useState<string>('');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [oldPassword, setOldPassword] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -87,8 +88,9 @@ export default function Settings() {
 
   // MODIFICATIONS
 
-  const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const saveModifications = async (e: FormEvent<HTMLFormElement> | null) => {
+    if (e)
+      e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
     if (
       confirmPassword === '' &&
@@ -161,15 +163,31 @@ export default function Settings() {
       if (user) {
         setUserInfosSettings(user);
       }
-      if (user?.is2fa_active) {
+      if (user?.qrCode && e) {
         setQrCode2fa(user.qrCode);
         setCode2fa(user.code2fa);
       }
     }
     setErrorMessage('');
     fetchContext();
-    setIsSettingsOpen(false);
+    if (!is2fa || !e)
+      setIsSettingsOpen(false);
   };
+
+  async function validate2fa(code: number) {
+    const res = await Fetch('user/confirm2fa', 'PATCH', JSON.stringify({
+      code: code,
+    }));
+    if (res?.response.ok) {
+      setConfirm2fa('');
+      setQrCode2fa('');
+      setIsSettingsOpen(false);
+    }
+    else if (res?.response.statusText === 'You don\' have to validate 2fa')
+      setQrCode2fa('');
+    else
+      setConfirm2fa('');
+  }
 
   const mobile = window.innerWidth < 500;
 
@@ -250,7 +268,7 @@ export default function Settings() {
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
           <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
         </form>
-        {qrCode2fa &&
+        {qrCode2fa && qrCode2fa !== '' &&
           <div style={{
             position: 'fixed',
             top: 0,
@@ -278,10 +296,47 @@ export default function Settings() {
                 fontSize: '1.75em',
                 textShadow: 'none',
               }}>{code2fa}</p>
-              <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }} />
-              <label htmlFor={'2faDone'}>
-                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
-              </label>
+              <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
+                  Enter a first code to validate
+              </p>
+              <input id={'2fa'}
+                     type='number'
+                     name={'twoFactorCode'}
+                     autoComplete={'one-time-code'}
+                     maxLength={6}
+                     value={confirm2fa}
+                     onKeyDown={(e) => {
+                       if (e.key === 'Enter')
+                         validate2fa(Number(confirm2fa));
+                     }}
+                     onChange={(e) => {
+                       if (e.target.value.length > 6)
+                         e.target.value = e.target.value.slice(0, 6);
+                       setConfirm2fa(e.target.value.replace(/[^0-9]/g, ''));
+                     }}
+                     style={{
+                       width: '6ch',
+                       height: '2em',
+                       fontSize: '2.5em',
+                       textAlign: 'center',
+                       backgroundColor: 'darkgrey',
+                       borderRadius: 5,
+                     }}
+              />
+              <div style={{display: 'flex', flexDirection: 'row'}}>
+                <button id={'2faCancel'} onClick={() => {
+                  setIs2fa(false);
+                  setQrCode2fa('');
+                  saveModifications(null);
+                }} style={{ display: 'none' }} />
+                <label htmlFor={'2faCancel'}>
+                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Cancel</p>
+                </label>
+                <button id={'2faDone'} onClick={() => validate2fa(Number(confirm2fa))} style={{ display: 'none' }} />
+                <label htmlFor={'2faDone'}>
+                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Done</p>
+                </label>
+              </div>
             </div>
           </div>
         }
