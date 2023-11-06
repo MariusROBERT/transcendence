@@ -3,7 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
-import { API_URL } from '../../utils/Global';
+import { API_URL, color } from '../../utils/Global';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 import { useUserContext } from '../../contexts';
 
@@ -156,7 +156,7 @@ export default function Settings() {
 
     // 2FA :
     if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
-      // console.log('1 newname:', newName);
+      console.log('1 newname:', newName);
       
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
@@ -165,7 +165,7 @@ export default function Settings() {
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
-      // console.log('2 newname:', newName);
+      console.log('2 newname:', newName);
 
       }
       if (user?.is2fa_active) {
@@ -224,7 +224,7 @@ export default function Settings() {
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
+          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
@@ -255,7 +255,7 @@ export default function Settings() {
           <div style={modifContainer2FA}>
             <p>2FA</p>
             <SwitchToggle
-              onChange={(change: boolean) => setIs2fa(change)}
+              onChange={(change) => setIs2fa(change)}
               checked={!!userInfosSettings?.is2fa_active}
             />
           </div>
@@ -314,7 +314,7 @@ const settingsStyle: React.CSSProperties = {
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  background: 'grey',
+  backgroundColor: color.blue,
   height: '100%',
   color: 'white',
   margin: '10px',
@@ -353,8 +353,8 @@ export const Btn: React.CSSProperties = {
   height: '30px',
   width: '200px',
   borderRadius: '6px',
-  backgroundColor: 'darkgrey',
+  backgroundColor: color.green,
   padding: '5px',
   marginTop: '5px',
-  color: 'white',
+  color: 'black',
 };

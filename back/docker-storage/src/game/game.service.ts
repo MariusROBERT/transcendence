@@ -31,7 +31,7 @@ export class GameService {
   async update(game: gameRoom) {
     //check for the end game conditions
     if (
-      (game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
+      (!game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
       || (game.state.score.p1 >= 20 || game.state.score.p2 >= 20)
       || !game.state.running
     ) {
@@ -169,11 +169,11 @@ export class GameService {
       new Ball(
         new Vector2(size.width / 2, size.height / 2),
         new Vector2(1, 1),
-        Math.max(state.player_speed - 2, 1),
+        Math.max(state.player_speed - 2, 5),
         0,
       ),
     );
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 5);
   }
 
   // Mod New Rounds --------------------------------------------------------- //
@@ -235,7 +235,6 @@ export class GameService {
     const games = await this.gameRepository.find({
       where: [{player1: playerId}, {player2: playerId}],
       order: {date: 'DESC'},
-      // take: 10, //limitation a 10 parties pour le moment
     });
     const user = await this.UserRepository.findOne({
       where: {id: playerId}

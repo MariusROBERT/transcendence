@@ -275,17 +275,17 @@ export class UserService {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };
