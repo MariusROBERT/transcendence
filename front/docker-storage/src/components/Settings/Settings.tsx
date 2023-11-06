@@ -279,15 +279,12 @@ export default function Settings() {
           <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
         </form>
         {qrCode2fa && qrCode2fa !== '' &&
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            zIndex: 130,
-            backgroundColor: 'rgba(70,70,70,0.5)',
-            height: '100vh',
-            width: '100vw',
-          }}>
+          <Popup isVisible={qrCode2fa !== ''} onClose={ () => {
+            setIs2fa(false);
+            setQrCode2fa('');
+            saveModifications(null);
+          }
+          }>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -348,7 +345,7 @@ export default function Settings() {
                 </label>
               </div>
             </div>
-          </div>
+          </Popup>
         }
       </div>
     </Popup>
