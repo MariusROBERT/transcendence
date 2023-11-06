@@ -117,6 +117,10 @@ export class OwnProfileDto {
   urlImg: string;
 
   @IsNotEmpty()
+  @IsBoolean()
+  is2fa_active: boolean;
+
+  @IsNotEmpty()
   @IsEnum(UserStateEnum)
   user_status: UserStateEnum;
 
