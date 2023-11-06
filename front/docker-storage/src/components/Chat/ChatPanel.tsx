@@ -27,7 +27,6 @@ export function ChatPanel({ viewport, width }: Props) {
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
   const [users, setUsers] = useState<ChannelUsers[]>([]);
 
-  //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
     if (message.channel_id !== channelId) return;
     setMessage([...msg, message]);
@@ -50,7 +49,6 @@ export function ChatPanel({ viewport, width }: Props) {
       if (channelId === -1) return;
       const chan = (await (Fetch(`channel/public/${channelId}`, 'GET')))?.json
       setChannel(chan);
-      // console.log(chan);
     }
     getChan();
   }, [channelId])
@@ -65,9 +63,7 @@ export function ChatPanel({ viewport, width }: Props) {
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
       setPrintMsgs([]);
-      //console.log(event.detail.value)
       setMessage(event.detail.value);
-      //console.log(event.detail.id);
       setChannelId(event.detail.id);
     });
   }, []);
@@ -85,11 +81,10 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   useEffect(() => {
-    // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
     if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
       msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
     }
-  });
+  }, [msg]);
 
 
   useEffect(() => {
