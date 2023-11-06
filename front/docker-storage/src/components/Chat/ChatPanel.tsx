@@ -9,6 +9,7 @@ import {
 } from '../../utils/channel_functions';
 import {ChannelMessage, ChannelUsers, IChatUser, PublicChannelDto} from '../../utils/interfaces';
 import ChatUser from './ChatUser';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   viewport: Viewport;
@@ -17,6 +18,7 @@ interface Props {
 
 // TODO refacto all useEffect (Infinite LOOp)
 export function ChatPanel({ viewport, width }: Props) {
+  const {setIsProfileOpen} = useUIContext();
   const [inputValue, setInputValue] = useState<string>('');
   const [currUser, setCurrUser] = useState<IChatUser>();
   const [channelId, setChannelId] = useState<number>(-1);
@@ -42,9 +44,6 @@ export function ChatPanel({ viewport, width }: Props) {
       setChannelId(event.detail.id);
     });
     document.getElementById('inpt')?.focus();
-    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
-      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
-    }
   }, [])
 
   useEffect(() => {
@@ -53,15 +52,24 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('message', getMsg);
     };
-  });
+  },[socket, msg]);
 
   useEffect(() => {
     const getChan = async () => {
       if (channelId === -1) return;
       const chan = (await (Fetch(`channel/public/${channelId}`, 'GET')))?.json
       setChannel(chan);
-      // console.log(chan);
     }
+    async function getUsers(){
+      if (channelId < 1) return;
+      setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
+    }
+
+    subscribe('enter_users', async (event: any) => {
+      if (event.detail.id !== channelId) return;
+      setUsers(event.detail.value);
+    });
+    getUsers();
     getChan();
   }, [channelId])
 
@@ -80,23 +88,16 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
-    // console.log(msgs.sender_pseudo);
+    setIsProfileOpen(0);
+    setCurrUser(undefined);
     setCurrUser(msgs);
   }
 
   useEffect(() => {
-    subscribe('enter_users', async (event: any) => {
-      if (event.detail.id !== channelId) return;
-      setUsers(event.detail.value);
-    });
-    async function getUsers(){
-      if (channelId < 1) return;
-      setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
+    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
     }
-
-    getUsers();
-
-  }, [channelId]);
+  }, [printMsgs]);
 
   useEffect(() => {
     const el = msg.map((data, idx) => (
@@ -110,7 +111,7 @@ export function ChatPanel({ viewport, width }: Props) {
       </ChatMessage>
     ))
     setPrintMsgs(el);
-  }, [msg])
+  }, [msg]);
 
   return (
     <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
@@ -179,7 +180,10 @@ export function ChatPanel({ viewport, width }: Props) {
           onClick={onEnterPressed}
         />
         {<ChatUser data={currUser} visibility={currUser !== undefined}
-                                             onClose={() => setCurrUser(undefined)}></ChatUser>}
+                                             onClose={() => {
+                                                 setCurrUser(undefined);
+                                                 setIsProfileOpen(0);
+                                             }}></ChatUser>}
       </div>
     </Background>
   );
