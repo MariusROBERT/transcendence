@@ -8,10 +8,11 @@ import Popup from '../ComponentBase/Popup';
 import { Fetch } from '../../utils';
 import { SetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
 import { publish } from '../../utils/event';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();
-  const [visible, setVisible] = useState<boolean>(false);
+  const { setIsProfileOpen } = useUIContext();
   const [usr, setUsr] = useState<IUser>();
   const { socket } = useUserContext()
 
@@ -55,7 +56,7 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
         <div className='bar' />
         <div className='container'>
           <div className='username'>
-            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => { setVisible(true); }} />}<p><span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifFriends?.pseudo}</span> vous a demande en ami</p>
+            {notifFriends && <RoundButton icon={notifFriends.urlImg} onClick={() => {setIsProfileOpen(otherUserId)}} />}<p><span style={{ fontWeight: 'bold', color: '#459DD3' }}>{notifFriends?.pseudo}</span> vous a demande en ami</p>
           </div>
           <div className='btn'>
             <RoundButton icon={require('../../assets/imgs/icon_accept.png')}
@@ -64,9 +65,6 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
               onClick={() => { declineFriendRequest(otherUserId) }} />
           </div>
         </div>
-        <Popup isVisible={visible} onClose={() => setVisible(false)}>
-          <Profil />
-        </Popup>
       </div>
     );
   }

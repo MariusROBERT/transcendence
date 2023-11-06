@@ -133,7 +133,6 @@ export class ChannelService {
    @throw {NotFoundException} - If channel not found
    */
   async getChannelById(id: number): Promise<ChannelEntity> {
-    //console.log(id);
     const channel = await this.ChannelRepository.findOne({
       where: { id },
     });

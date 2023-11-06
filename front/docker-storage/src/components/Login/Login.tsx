@@ -85,7 +85,6 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
       const response = await unsecureFetch('auth/login', 'POST',
         JSON.stringify(credits));
-      // console.log('response : ', response);
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;

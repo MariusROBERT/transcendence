@@ -500,8 +500,6 @@ export class UserService {
     // return ;
     users = users.filter(user=> (user.rank !== 0 || user.id === id));
     let position = users.findIndex((user) => user.id === id);
-    // console.log("NEW");
-    // console.log(position);
     if (users[position].rank === 0)
     {
       users[position].rank = position + 1;
@@ -512,15 +510,11 @@ export class UserService {
       {
         users[position].rank = position + 1;
         await this.UserRepository.save(users[position]);
-        // console.log(users[position]);
         position += 1;
       }
       return ;
     }
     let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
-    // console.log("rank");
-    // console.log(users.map(u=>u.rank));
-    // console.log(position);
     if (diff === 0 )
       return ;
     users[position].rank = position + 1;
@@ -531,10 +525,6 @@ export class UserService {
     while (j !== -diff)
     {
       j += i;
-      // console.log(users.map(u=>u.rank));
-      // console.log(position);
-      // console.log(j);
-      // console.log(diff);
       users[position + j].rank += i;
       await this.UserRepository.save(users[position + j]);
     }

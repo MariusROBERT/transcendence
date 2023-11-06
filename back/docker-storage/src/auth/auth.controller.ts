@@ -42,7 +42,6 @@ export class AuthController {
   @UseGuards(FtOAuthGuard)
   @UseFilters(FtAuthFilter)
   async auth42callback(@Req() req, @Res() res) {
-    // console.log('req: ', req.session);
     const token = await this.authService.ftLogin({
       username: req.user.username,
       urlImg: req.user._json.image.link,
