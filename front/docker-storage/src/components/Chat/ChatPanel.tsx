@@ -29,7 +29,12 @@ export function ChatPanel({ viewport, width }: Props) {
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
   const [users, setUsers] = useState<ChannelUsers[]>([]);
 
-  //  See if there is a better way to do this
+  const scrollBottom = () => {
+    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    }
+  }
+
   const getMsg = async (message: ChannelMessage) => {
     if (message.channel_id !== channelId) return;
     setMessage([...msg, message]);
@@ -38,9 +43,7 @@ export function ChatPanel({ viewport, width }: Props) {
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
       setPrintMsgs([]);
-      //console.log(event.detail.value)
       setMessage(event.detail.value);
-      //console.log(event.detail.id);
       setChannelId(event.detail.id);
     });
     document.getElementById('inpt')?.focus();
@@ -81,9 +84,10 @@ export function ChatPanel({ viewport, width }: Props) {
   }, [socket]);
 
   async function onEnterPressed() {
-    if (inputValue.length <= 0 || inputValue.length > 256) return;
+    const ipt = inputValue.trim();
+    if (ipt.length <= 0 || ipt.length > 256) return;
     const chan = await GetCurrChan();
-    socket?.emit('message', { message: inputValue, channel: chan } as any);
+    socket?.emit('message', { message: ipt, channel: chan } as any);
     setInputValue('');
   }
 
@@ -94,10 +98,16 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   useEffect(() => {
-    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
-      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    subscribe('enter_users', async (event: any) => {
+      if (event.detail.id !== channelId) return;
+      setUsers(event.detail.value);
+    });
+    async function getUsers(){
+      if (channelId < 1) return;
+      setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
     }
-  }, [printMsgs]);
+    getUsers();
+  }, [channelId]);
 
   useEffect(() => {
     const el = msg.map((data, idx) => (
@@ -112,6 +122,10 @@ export function ChatPanel({ viewport, width }: Props) {
     ))
     setPrintMsgs(el);
   }, [msg]);
+
+  useEffect(() => {
+    scrollBottom();
+  }, [printMsgs])
 
   return (
     <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
@@ -151,6 +165,7 @@ export function ChatPanel({ viewport, width }: Props) {
         <textarea id='inpt'
                   value={inputValue}
                   onChange={(evt) => {
+                    if (evt.target.value === '\n') return;
                     setInputValue(evt.target.value);
                   }}
                   onKeyDown={(e) => {
@@ -162,7 +177,7 @@ export function ChatPanel({ viewport, width }: Props) {
                     boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
                     background: 'white',
                     outline: 'none',
-                    height: '50px',
+                    height: '40px',
                     fontSize: '1.3em',
                     flex: 'auto',
                     borderRadius: '15px',
