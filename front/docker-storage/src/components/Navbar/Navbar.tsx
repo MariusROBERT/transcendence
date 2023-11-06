@@ -18,11 +18,10 @@ const Navbar: React.FC = () => {
   // const [msgs, setMsgs] = useState<Array<NotifMsg>>([]);
   const { resetUIContext } = useUIContext();
 
-  const navigate = useNavigate();
   const logout = async () => {
-    navigate('/login');
-    socket?.disconnect();
+    window.location.replace('/login')
     Cookies.remove('jwtToken');
+    socket?.disconnect();
     resetUIContext();
   };
  
