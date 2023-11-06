@@ -47,6 +47,7 @@ export default function Popup(props: Props) {
       <div style={{
         backgroundColor: 'rgba(0,0,0,0.3)',
         backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         height: '100%',
         width: '100%',
         position: 'absolute',
