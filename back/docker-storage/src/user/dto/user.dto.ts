@@ -10,13 +10,18 @@ import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
 // ----- update :
 export class UpdateUserDto {
+
   @IsOptional()
   @IsString()
-  urlImg!: string;
+  pseudo: string;
+
+  @IsOptional()
+  @IsString()
+  urlImg: string;
 
   @IsOptional()
   @IsBoolean()
-  is2fa_active!: boolean;
+  is2fa_active: boolean;
 
   @IsOptional()
   @IsString()
@@ -60,7 +65,7 @@ export class PublicProfileDto {
 
   @IsNotEmpty()
   @IsString()
-  username: string;
+  pseudo: string;
 
   @IsNotEmpty()
   @IsString()
@@ -101,6 +106,9 @@ export class OwnProfileDto {
   id: number;
 
   @IsNotEmpty()
+  @IsString()
+  pseudo: string;
+
   @IsString()
   username: string;
 

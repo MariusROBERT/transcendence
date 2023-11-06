@@ -17,21 +17,11 @@ import { FRONT_URL } from '../utils/Globals';
 export interface ChannelMessage {
   sender_id: number;
   sender_urlImg: string;
-  sender_username: string;
+  sender_pseudo: string;
   message_content: string;
   channel_id: number;
   channel_name: string;
   priv_msg: boolean
-}
-
-export interface MsgsUnreadDto {
-  sender_id: number;
-  receiver_id: number
-  channel_id: number;
-  channel_name: string;
-  sender_username: string;
-  priv_msg: boolean;
-  socket: Socket
 }
 
 @Injectable()
@@ -128,7 +118,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const data: ChannelMessage = {
       sender_id: userE.id,
       sender_urlImg: userE.urlImg,
-      sender_username: userE.username,
+      sender_pseudo: userE.pseudo,
       message_content: message,
       channel_id: chanE.id,
       channel_name: chanE.channel_name,

@@ -191,9 +191,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           <Background bg_color={color.clear}>
             <h2 style={{padding: 20, filter: `drop-shadow(0 0 10px ${titleColor})`}}>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => {
+            <button  className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}} onClick={() => {
               setSign(!signIn);
-            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            }}><p>{signIn ? 'Sign Up' : 'Sign In'}</p></button>
           </Background>
         </Border>
         
@@ -238,8 +238,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     />
                   }
                   <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
-                    <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
-                      <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
+                    <button type={'submit'} className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}}>
+                      <p>{signIn ? 'Connect' : 'SignUp'}</p>
                     </button>
                   </Flex>
                   <br />
