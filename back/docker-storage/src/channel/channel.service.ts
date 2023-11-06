@@ -155,7 +155,7 @@ export class ChannelService {
         'channel.id',
         'channel.channel_name as channel_name',
         'channel.chan_status as channel_status',
-        'channel.priv_msg',
+        'channel.priv_msg as priv_msg',
         'owner.id as owner_id',
       ])
       .where('channel.id = :id', { id })
