@@ -69,8 +69,6 @@ export default function Popup(props: Props) {
                padding: '5px',
                margin: 0,
              }}>
-          <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
-            props.onClose();}}/>
             </div>
           {props.children}
         </div>)
