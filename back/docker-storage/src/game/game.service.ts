@@ -31,7 +31,7 @@ export class GameService {
   async update(game: gameRoom) {
     //check for the end game conditions
     if (
-      (game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
+      (!game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
       || (game.state.score.p1 >= 20 || game.state.score.p2 >= 20)
       || !game.state.running
     ) {
@@ -169,11 +169,11 @@ export class GameService {
       new Ball(
         new Vector2(size.width / 2, size.height / 2),
         new Vector2(1, 1),
-        Math.max(state.player_speed - 2, 1),
+        Math.max(state.player_speed - 2, 5),
         0,
       ),
     );
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 5);
   }
 
   // Mod New Rounds --------------------------------------------------------- //
@@ -235,7 +235,6 @@ export class GameService {
     const games = await this.gameRepository.find({
       where: [{player1: playerId}, {player2: playerId}],
       order: {date: 'DESC'},
-      // take: 10, //limitation a 10 parties pour le moment
     });
     const user = await this.UserRepository.findOne({
       where: {id: playerId}
@@ -247,12 +246,12 @@ export class GameService {
           where: {id: element.player2}
         });
         game.idUser = playerId;
-        game.user = user.username;
+        game.user = user.pseudo;
         game.eloUser = element.elo1;
         game.scoreUser = element.points1;
         game.urlImgUser = user.urlImg;
         game.idOpponent = opponent.id;
-        game.opponent = opponent.username;
+        game.opponent = opponent.pseudo;
         game.urlImgOpponent = opponent.urlImg;
         game.eloOpponent = element.elo2;
         game.scoreOpponent = element.points2;
@@ -261,12 +260,12 @@ export class GameService {
           where: {id: element.player1}
         });
         game.idUser = playerId;
-        game.user = user.username;
+        game.user = user.pseudo;
         game.eloUser = element.elo2;
         game.scoreUser = element.points2;
         game.urlImgUser = user.urlImg;
         game.idOpponent = opponent.id;
-        game.opponent = opponent.username;
+        game.opponent = opponent.pseudo;
         game.urlImgOpponent = opponent.urlImg;
         game.eloOpponent = element.elo1;
         game.scoreOpponent = element.points1;

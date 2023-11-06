@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
+import { Fetch, color } from '../../utils';
 import {
   SetCurrChan,
   UpdateChannelMessage,
@@ -51,7 +51,7 @@ export default function ChannelElement({
     margin: '5px 0',
     border: '1px solid white',
     display: 'flex',
-    background: '#646464',
+    background: color.light_blue,
     color: 'white',
     cursor: 'pointer',
     borderRadius: '10px',
@@ -79,7 +79,7 @@ export default function ChannelElement({
           icon={require(
             data?.has_password
               ? '../../assets/imgs/icon_lock.png'
-              : '../../assets/imgs/icon_chat.png',
+              : '../../assets/imgs/icons8-chat-90.png',
           )}
           onClick={joinChannel}
         />

@@ -38,7 +38,7 @@ interface Props {
 }
 
 export function UserContextProvider({ children }: Props) {
-  const [username, setUsername] = useState<number>(0);
+  const [pseudo, setPseudo] = useState<number>(0);
   const [id, setId] = useState<number>(0);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
@@ -50,7 +50,7 @@ export function UserContextProvider({ children }: Props) {
       setIsOnline(false);
     } else {
       setUser(user);
-      setUsername(user.username);
+      setPseudo(user.pseudo);
       setId(user.id);
       setIsOnline(true);
       if (!socket)
@@ -68,7 +68,7 @@ export function UserContextProvider({ children }: Props) {
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      // console.log('Connected, Socket ID: ', socket?.id, ' UserName: [', username, '] ID: ', id);
+      // console.log('Connected, Socket ID: ', socket?.id, ' pseudo: [', pseudo, '] ID: ', id);
     });
     socket?.connect();
 
@@ -77,7 +77,7 @@ export function UserContextProvider({ children }: Props) {
       socket?.off('disconnect');
       socket?.off('connect');
     };
-  }, [socket, id, username]);
+  }, [socket, id, pseudo]);
 
   function initSocket() {
     const token = Cookies.get('jwtToken');

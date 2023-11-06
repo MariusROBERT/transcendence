@@ -76,8 +76,8 @@ export default function Profil() {
     <Popup isVisible={isProfileOpen !== 0} onClose={() => setIsProfileOpen(0)}>
       <div style={profilContainer}>
         {mobile ?
-          <h3 style={nameStyle}>{profilUser?.username}</h3> :
-          <h2 style={nameStyle}>{profilUser?.username}</h2>
+          <h3 style={nameStyle}>{profilUser?.pseudo}</h3> :
+          <h2 style={nameStyle}>{profilUser?.pseudo}</h2>
         }
         <Flex flex_direction="row">
           <div style={{alignItems: 'center'}}>

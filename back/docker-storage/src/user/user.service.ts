@@ -53,6 +53,7 @@ export class UserService {
     if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
@@ -67,6 +68,7 @@ export class UserService {
     const publicUser: OwnProfileDto = {
       id: user.id,
       username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
       user_status: user.user_status,
       winrate: user.winrate,
@@ -152,7 +154,7 @@ export class UserService {
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
-    PublicProfile.username = profile.username;
+    PublicProfile.pseudo = profile.pseudo;
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
@@ -272,17 +274,17 @@ export class UserService {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };

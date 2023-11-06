@@ -24,6 +24,9 @@ export class UserEntity {
   @Column({ unique: true, nullable: false })
   username!: string;
 
+  @Column({ nullable: false })
+  pseudo!: string;
+
   @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
   role!: UserRoleEnum;
 

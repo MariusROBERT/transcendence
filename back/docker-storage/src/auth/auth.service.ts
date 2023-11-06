@@ -38,6 +38,7 @@ export class AuthService {
     });
     user.salt = await bcrypt.genSalt(); // genere le salt
     user.password = await bcrypt.hash(user.password, user.salt);
+    user.pseudo = user.username;
     user.user_status = UserStateEnum.ON;
     user.urlImg = API_URL + '/public/default.png';
     user.friends = [];
@@ -124,6 +125,7 @@ export class AuthService {
       });
       user2.salt = '42'; // = await bcrypt.genSalt();
       user2.password = '42'; // = await bcrypt.hash(user.password, user.salt);
+      user2.pseudo = username;
       user2.user_status = UserStateEnum.ON;
       user2.friends = [];
       user2.sentInvitesTo = [];

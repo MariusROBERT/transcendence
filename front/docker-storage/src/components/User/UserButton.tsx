@@ -41,7 +41,7 @@ export function UserButton({ otherUser }: Props) {
                          openChat(otherUser, socket);
                          setIsChatOpen(true);
                          setIsLeaderboardOpen(false);
-                         setMsgs(msgs.filter(el => el.sender_username !== otherUser.username));
+                         setMsgs(msgs.filter(el => el.sender_pseudo !== otherUser.pseudo));
                        }
           } />
         }

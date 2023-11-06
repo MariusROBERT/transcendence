@@ -83,7 +83,7 @@ const UserBanner = ({ otherUser }: Props) => {
                alt={userBanner.user_status ? 'connected' : 'disconnected'} />
           <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
-          <p style={{fontWeight: 'bold'}} onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{userBanner.username}</p>
+          <p style={{fontWeight: 'bold'}} onClick={() => setIsProfileOpen(userBanner?.id || 0)}>{userBanner.pseudo}</p>
         </Flex>
         {!isMe && <UserButton otherUser={userBanner} />}
       </div>

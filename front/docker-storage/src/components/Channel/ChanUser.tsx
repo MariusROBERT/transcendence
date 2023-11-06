@@ -20,7 +20,7 @@ export function ChanUser({ item, chan_id, onClick }: Props) {
       channel_id: chan_id,
       sender_id: item.id,
       sender_urlImg: item.urlImg,
-      sender_username: item.username,
+      sender_pseudo: item.pseudo,
       message_content: '',
     };
     onClick(data);

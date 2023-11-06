@@ -13,17 +13,17 @@ export function GameInvites() {
     declineGameInvite,
     leaveQueue,
   } = useGameContext();
-  const [username, setUsername] = useState<string | undefined>();
+  const [pseudo, setPseudo] = useState<string | undefined>();
 
   useEffect(() => {
-    async function getUsername() {
+    async function getPseudo() {
       if (inviteFrom === inviteTo)
-        return setUsername(undefined);
+        return setPseudo(undefined);
       const id = inviteTo ? inviteTo : inviteFrom;
-      setUsername(((await Fetch('user/get_public_profile_by_id/' + id, 'GET'))?.json)?.username);
+      setPseudo(((await Fetch('user/get_public_profile_by_id/' + id, 'GET'))?.json)?.pseudo);
     }
 
-    getUsername();
+    getPseudo();
   }, [inviteFrom, inviteTo]);
 
   const inviteStyle: CSSProperties = {
@@ -47,11 +47,11 @@ export function GameInvites() {
       <Background flex_direction={'row'} flex_alignItems={'center'} flex_justifyContent={'space-evenly'}
                   bg_color={color.light_blue}>
         {inviteTo && (<>
-          <p style={{ marginLeft: 10 }}>{'You invited ' + username + ' to Play'}</p>
+          <p style={{ marginLeft: 10 }}>{'You invited ' + pseudo + ' to Play'}</p>
           <Button onClick={cancelGameInvite}>Cancel</Button>
         </>)}
         {inviteFrom && (<>
-          <p style={{ marginLeft: 10 }}>{username + ' invited you to Play: '}</p>
+          <p style={{ marginLeft: 10 }}>{pseudo + ' invited you to Play: '}</p>
           <RoundButton
             icon={require('../../assets/imgs/icon_accept_invite.png')}
             onClick={() => {

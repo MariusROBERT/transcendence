@@ -191,7 +191,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
               <ErrorPanel text={errorMessage}></ErrorPanel>
             </div>
             <h2>
-              {currentUser?.username}#{currentUser?.id}
+              {currentUser?.pseudo}#{currentUser?.id}
             </h2>
             <RoundButton
               icon_size={100}
