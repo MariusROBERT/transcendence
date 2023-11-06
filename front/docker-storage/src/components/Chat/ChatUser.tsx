@@ -43,6 +43,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
         }
         else {
           setType('noperm');
+          onClose();
           setIsProfileOpen(data?.sender_id || 0);
         }
         const rep2 = await Fetch(
