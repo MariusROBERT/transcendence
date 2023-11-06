@@ -8,7 +8,7 @@ interface Props {
   children: string;
   data: ChannelMessage;
   last: number | undefined;
-  onClick: (name: ChannelMessage) => void;
+  onClick: () => void;
 }
 
 export function ChatMessage({ children, data, last, onClick }: Props) {
@@ -19,6 +19,9 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
     <div style={{
       paddingRight: isMe ? 5 : 20,
       paddingLeft: isMe ? 20 : 5,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: isMe ? 'flex-end' : 'flex-start',
     }}>
       {
         last !== data.sender_id &&
@@ -30,29 +33,31 @@ export function ChatMessage({ children, data, last, onClick }: Props) {
         >
           <RoundButton
             icon={data.sender_urlImg}
-            onClick={() => onClick(data)}
+            onClick={() => onClick()}
           />
-          <p style={{ fontSize: '15px' }}> {data.sender_username} </p>
+          <p style={{ fontSize: '15px' }}> {data.sender_pseudo} </p>
         </div>
       }
       <div
         style={{
-          flex: 'auto',
-          width: '100%',
+          boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
           display: 'flex',
-          flexDirection: 'column',
-          borderRadius: 10 + 'px',
+          alignItems: isMe ? 'flex-start' : 'flex-end',
+          borderRadius: '20px',
           overflow: 'hidden',
-          border: 'solid ' + color.black + ' ' + 2 + 'px',
+          marginTop: '5px',
+          width: 'fit-content',
+          maxWidth: '100%',
         }}
       >
         <Background
-          bg_color={isMe ? color.white2 : color.white}
+          bg_color={isMe ? color.green : color.white2}
           flex_direction={'column'}
           flex_alignItems={'stretch'}
-          flex_justifyContent={'flex-start'}
+          flex_justifyContent={isMe ? 'flex-start' : 'flex-end'}
         >
           <p style={{
+            padding: '4px',
             margin: '10px',
             color: color.black,
             textShadow: 'none',

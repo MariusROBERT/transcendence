@@ -1,16 +1,18 @@
 import { CSSProperties, useEffect, useState } from 'react';
-import { UserBanner } from '..';
-import { IUser, LeaderboardProps } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
+import { Popup, SearchBar, UserBanner } from '..';
+import { IUser } from '../../utils/interfaces';
+import { Fetch, color } from '../../utils';
 import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
-export function Leaderboard({ searchTerm }: LeaderboardProps) {
+export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string, setSearchTerm: (value: string) => void }) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
+  const { isLeaderboardOpen, setIsLeaderboardOpen } = useUIContext();
+
   useEffect(() => {
     setMobile(window.innerWidth < 650);
   }, [window.innerWidth]);
@@ -18,44 +20,41 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   useEffect(() => {
     fetchContext();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     const getAllProfil = async () => {
       await fetchFriendsRequestContext();
-      let cancelled = false;
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
-      if (cancelled) { // todo : voir si cest utile ici
+      if (!users)
         return;
-      }
-      if (users && Array.isArray(users) && users.length === 0)
-        setErrorMessage('Aucun utilisateur trouvé.');
-      else setAllUsers(users);
-
-      return () => {
-        cancelled = true;
-      };
+      setAllUsers(users);
     };
     getAllProfil();
     // eslint-disable-next-line
-  }, []);
+  }, [isLeaderboardOpen]);
 
   useEffect(() => {
     // Filtrer et trier les users en fonction de searchTerm lorsque searchTerm change
     function filterAndSortUsers() {
       if (!allUsers)
         return (<p>No user</p>);
-      const filteredUsers = allUsers
+      const rankedUsers = allUsers
         .filter((user: IUser) =>
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+          user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
+          && user.rank != 0
         )
-        .sort((a: IUser, b: IUser) => a.username.localeCompare(b.username)); // TODO: sort by ELO
+        .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
+       const unrankedUsers =  allUsers.filter((user: IUser) =>
+       user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
+       && user.rank == 0);
+       const sortedUsers = [...rankedUsers, ...unrankedUsers];
 
-      const elements = filteredUsers.map((user: IUser) => (
+      const elements = sortedUsers.map((user: IUser) => (
         <div key={user.id} style={userElementStyle}>
-          <p>{'RANK'}</p> {/* TO CHANGE */}
+          <p>{user.rank > 0 ? user.rank : 'NC'}</p>
           {<UserBanner otherUser={user} />}
-          <p>ELO pt</p>
+          <p style={{ fontWeight: 'bold' }}>{user.elo}</p>
         </div>
       ));
       setUserElements(elements);
@@ -65,46 +64,60 @@ export function Leaderboard({ searchTerm }: LeaderboardProps) {
   }, [searchTerm, allUsers, user]);
 
   const container: CSSProperties = {
-    background: 'grey',
+    background: '#00375C',
+    padding: '10px',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
-    maxHeight: '500px',
+    maxHeight: '80vh',
     overflowY: 'scroll',
+    borderRadius: '50px',
     // width: mobile ? 200 : 700,
   };
 
   const userElementStyle: CSSProperties = {
     maxWidth: mobile ? 500 : 600,
-    border: '1px solid white',
+    borderBottom: '2px solid white',
     flexWrap: 'nowrap',
     display: 'flex',
     justifyContent: 'space-around',
     alignContent: 'center',
-    background: '#646464',
+    background: `radial-gradient(circle, ${color.blue} 0%,  ${color.light_blue} 100%)`,
     color: 'white',
     margin: '10px 0',
     padding: '10px',
     cursor: 'pointer',
-    borderRadius: '10px',
+    borderRadius: '50px',
   };
 
+  if (!isLeaderboardOpen)
+    return (<></>);
 
   return (
-    <div style={container}>
-      {errorMessage && (
-        <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
-      )}
-      <div className='container'>{userElements}</div>
-      {userElements.length === 0 && !errorMessage && (
-        <div style={{ color: 'white', marginTop: '5px' }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <p>No user found.</p>
-          </div>
-          <div style={{ ...userElementStyle, visibility: 'hidden' }} />
+    <Popup isVisible={isLeaderboardOpen} onClose={() => { setIsLeaderboardOpen(false) }}>
+      <div style={container}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <SearchBar setSearchTerm={setSearchTerm}
+            isVisible={isLeaderboardOpen}
+            id={'searchBar'}>
+            {'search for a user...'}
+          </SearchBar>
         </div>
-      )
-      }
-    </div>
+        <div style={{ padding: '0 10px', display: 'flex', width: '95%', justifyContent: 'space-between', }}>
+          <p style={{ fontWeight: 'bold' }}>Rank </p>
+          <p style={{ fontWeight: 'bold' }}>Elo</p>
+        </div>
+        <div  style={{maxHeight: '600px', overflowY: 'scroll'}}>
+        {userElements}
+        {userElements.length === 0 && (
+          <div style={{ color: 'white', marginTop: '5px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <p>No user found.</p>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    </Popup>
   );
 }

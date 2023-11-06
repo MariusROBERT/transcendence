@@ -4,22 +4,24 @@ import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { IChatUser, IUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannelUsers } from '../../utils/channel_functions';
+import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 import Popup from '../ComponentBase/Popup';
-import Profil from '../Profil/Profil';
+import { publish } from '../../utils/event';
 
 interface Props {
   data: IChatUser | undefined;
   visibility: boolean;
+  onClose: () => void;
 }
 
-export default function ChatUser({ data, visibility }: Props) {
+export default function ChatUser({ data, visibility, onClose }: Props) {
+  const { setIsProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
-  const [profilVisible, setProfilVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
   const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
   const { socket, id } = useUserContext();
@@ -35,8 +37,15 @@ export default function ChatUser({ data, visibility }: Props) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
         //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
-        if (t === 'owner' || t === 'admin') setType('perm');
-        else setType('noperm');
+        if (t === 'owner' || t === 'admin') {
+          setType('perm');
+          setIsProfileOpen(0);
+        }
+        else {
+          setType('noperm');
+          onClose();
+          setIsProfileOpen(data?.sender_id || 0);
+        }
         const rep2 = await Fetch(
           'user/get_public_profile_by_id/' + data?.sender_id,
           'GET',
@@ -45,7 +54,7 @@ export default function ChatUser({ data, visibility }: Props) {
       }
     };
     fetchData();
-  }, [visibility, data?.channel_id]);
+  }, [visibility, data?.channel_id, data?.sender_id]);
 
   async function execCommand(command: string) {
     const rep = await Fetch(
@@ -67,6 +76,20 @@ export default function ChatUser({ data, visibility }: Props) {
     }
   }
 
+  useEffect(() => {
+    async function onRemove(user: number) {
+
+      if (user === id) {
+        publish('close_chat', undefined);
+        await UpdateChannels();
+      }
+    }
+    socket?.on('remove', onRemove);
+    return (() => {
+      socket?.off('remove', onRemove);
+    })
+  }, [id, socket])
+
   async function OnKick() {
     execCommand('kick');
   }
@@ -84,6 +107,12 @@ export default function ChatUser({ data, visibility }: Props) {
     const isNum = /^\d+$/.test(muteTime);
     if (isNum) {
       const number = Number(muteTime);
+      if (number > 1000000) {
+        setErrorVisible(true);
+        seterrorMessage('mute time too high');
+        setmuteTime('');
+        return;
+      }
       Fetch(
         'channel/mute/' + data?.channel_id,
         'POST',
@@ -154,22 +183,24 @@ export default function ChatUser({ data, visibility }: Props) {
   }
 
   return (
-    <div style={createChatStyle}>
-      <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
-        <ErrorPanel text={errorMessage}></ErrorPanel>
-      </div>
-      <h2>
-        {currentUser?.username}#{currentUser?.id}
-      </h2>
-      <RoundButton
-        icon_size={100}
-        icon={String(data?.sender_urlImg)}
-        onClick={() => setProfilVisible(true)}
-      />
-      {type === 'perm' ? showAdmin() : <></>}
-      <Popup setIsVisible={setProfilVisible} isVisible={profilVisible}>
-        <Profil otherUser={currentUser} isVisible={profilVisible} setIsVisible={setProfilVisible}/>
-      </Popup>
-    </div>
+    <>
+      {type === 'perm' &&
+        <Popup isVisible={visibility} onClose={onClose}>
+          <div style={createChatStyle}>
+            <div style={{visibility: errorVisible ? 'inherit' : 'hidden'}}>
+              <ErrorPanel text={errorMessage}></ErrorPanel>
+            </div>
+            <h2>
+              {currentUser?.pseudo}#{currentUser?.id}
+            </h2>
+            <RoundButton
+              icon_size={100}
+              icon={String(data?.sender_urlImg)}
+              onClick={() => setIsProfileOpen(currentUser?.id || 0)}
+            />
+            {type === 'perm' ? showAdmin() : <></>}
+          </div>
+        </Popup>}
+    </>
   );
 }

@@ -13,47 +13,45 @@ export function GameInvites() {
     declineGameInvite,
     leaveQueue,
   } = useGameContext();
-  const [username, setUsername] = useState<string | undefined>();
+  const [pseudo, setPseudo] = useState<string | undefined>();
 
   useEffect(() => {
-    async function getUsername() {
+    async function getPseudo() {
       if (inviteFrom === inviteTo)
-        return setUsername(undefined);
+        return setPseudo(undefined);
       const id = inviteTo ? inviteTo : inviteFrom;
-      setUsername(((await Fetch('user/get_public_profile_by_id/' + id, 'GET'))?.json)?.username);
+      setPseudo(((await Fetch('user/get_public_profile_by_id/' + id, 'GET'))?.json)?.pseudo);
     }
 
-    getUsername();
+    getPseudo();
   }, [inviteFrom, inviteTo]);
 
-  const mobile = window.innerWidth < 500;
-
   const inviteStyle: CSSProperties = {
-    top: mobile ? 60 : 0,
-    right: isInQueue || inviteFrom !== inviteTo ? (mobile ? -30 : 185) : -600,
-    minWidth: mobile ? 200 : (inviteTo ? 400 : 550),
-    marginLeft: 5,
+    border: `2px solid ${color.white2}`,
+    borderTop: 0,
+    top: isInQueue || inviteFrom !== inviteTo ? 0 : -300,
+    minWidth: inviteTo ? 400 : 550,
     position: 'fixed',
     display: 'flex',
     flexDirection: 'row',
     zIndex: 95,
-    transition: '1s',
+    transition: '0.2s',
     minHeight: '60px',
-    height: '60px',
-    borderRadius: 30 + 'px',
+    height: '70px',
+    borderRadius: '0 0 15px 15px',
     overflow: 'hidden',
   };
 
   return (
     <div style={inviteStyle}>
       <Background flex_direction={'row'} flex_alignItems={'center'} flex_justifyContent={'space-evenly'}
-                  bg_color={color.grey}>
+                  bg_color={color.light_blue}>
         {inviteTo && (<>
-          <p style={{ marginLeft: 10 }}>{'You invited ' + username + ' to Play'}</p>
+          <p style={{ marginLeft: 10 }}>{'You invited ' + pseudo + ' to Play'}</p>
           <Button onClick={cancelGameInvite}>Cancel</Button>
         </>)}
         {inviteFrom && (<>
-          <p style={{ marginLeft: 10 }}>{username + ' invited you to Play: '}</p>
+          <p style={{ marginLeft: 10 }}>{pseudo + ' invited you to Play: '}</p>
           <RoundButton
             icon={require('../../assets/imgs/icon_accept_invite.png')}
             onClick={() => {
@@ -66,18 +64,10 @@ export function GameInvites() {
               if (inviteFrom)
                 declineGameInvite(inviteFrom);
             }} />
-          {/*<Button onClick={() => {*/}
-          {/*  if (inviteFrom)*/}
-          {/*    acceptGameInvite(inviteFrom);*/}
-          {/*}}>Accept</Button>*/}
-          {/*<Button onClick={() => {*/}
-          {/*  if (inviteFrom)*/}
-          {/*    declineGameInvite(inviteFrom);*/}
-          {/*}}>Decline</Button>*/}
         </>)}
         {isInQueue && (<>
           <p
-            style={{ marginLeft: mobile ? 20 : 10 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
+            style={{ paddingLeft: '10px', marginRight: 0 }}>{'Searching for opponent ' + isInQueue + ' game Mode'}</p>
           <Button onClick={leaveQueue}>Cancel</Button>
         </>)}
         <p style={{ minWidth: '30px' }}></p>

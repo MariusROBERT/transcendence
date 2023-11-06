@@ -4,6 +4,8 @@
     --grey: #8e8b82;
     --beige: #e9dcbe;
     --white: #f3f3f3;
+    --green: #CCFF00;
+    --light_blue: #005690bb;
 }
 
 ::-webkit-scrollbar {
@@ -17,12 +19,14 @@ body {
     font-family: 'title';
     src: local('techno_hideo'),
     url('assets/fonts/techno_hideo.woff') format('woff');
+    /* url(' assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf') format('truetype'); */
 }
 
 @font-face {
     font-family: 'robot_font';
     src: local('robot'),
-    url('assets/fonts/Robot_Font.otf') format('truetype');
+    url(' assets/fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf') format('truetype');
+    /* url('assets/fonts/Robot_Font.otf') format('truetype'); */
 }
 
 body {
@@ -68,9 +72,9 @@ input {
     font-size: large;
 }
 
-p {
+/* p {
     text-shadow: 2px 2px 2px black;
-}
+} */
 
 button {
     cursor: url('assets/imgs/cursor/pointer.png'), pointer;

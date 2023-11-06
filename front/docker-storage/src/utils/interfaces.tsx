@@ -1,9 +1,11 @@
 // --------------------------- Auth :
 
+import { Socket } from 'socket.io-client';
+
 // --------------------------- Register :
 
 export interface FormDataRegister {
-  username: string;
+  pseudo: string;
   password: string;
   confirmPassword: string;
 }
@@ -11,7 +13,7 @@ export interface FormDataRegister {
 // --------------------------- Login :
 
 export interface FormData {
-  username: string;
+  pseudo: string;
   password: string;
 }
 
@@ -19,7 +21,7 @@ export interface FormData {
 
 export interface UserAndInvites {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
   user_status: string;
   winrate: number;
@@ -28,22 +30,22 @@ export interface UserAndInvites {
 
 // --------------------------- Channels :
 
+export interface PublicChannelDto {
+  id: number;
+  channel_name: string;
+  priv_msg: boolean;
+}
+
 export interface ChannelInfos {
   id: number;
   name: string;
   type: string;
 }
 
-//  Use later for a function
-export interface ChannelCreate {
-  channel_name: string;
-  priv_msg: boolean;
-}
-
 export interface ChannelMessage {
   sender_id: number;
   sender_urlImg: string;
-  sender_username: string;
+  sender_pseudo: string;
   message_content: string;
   channel_id: number;
 }
@@ -51,13 +53,13 @@ export interface ChannelMessage {
 export interface IChatUser {
   sender_id: number;
   sender_urlImg: string;
-  sender_username: string;
+  sender_pseudo: string;
   channel_id: number;
 }
 
 export interface ChannelUsers {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
   type: string;
 }
@@ -88,27 +90,42 @@ export interface ChannelPublicPass {
 export interface UserInfos {
   id: number;
   urlImg: string;
-  username: string;
+  pseudo: string;
 }
 
 export interface IUser {
   id: number;
-  username: string;
+  pseudo: string;
   urlImg: string;
-  user_status: string;
+  user_status: 'on' | 'off' | 'in_game';
   winrate: number;
+  elo: number;
+  gamesPlayed:number;
+  rank:number;
+  is_friend: boolean;
   sentInvitesTo: number[];
   recvInvitesFrom: number[];
   friends: number[];
   blocked: number[];
+  last_msg_date: Date;
+  gamesId: number[];
 }
 
-export interface LeaderboardProps {
-  //isVisible: boolean;
-  //setIsVisible: (b: boolean) => void;
-  searchTerm: string;
+export interface GameHistory{
+    id: number;
+    user: string;
+    idUser: number;
+    urlImgUser: string;
+    eloUser: number;
+    scoreUser: number;
+    opponent: string;
+    idOpponent: number;
+    urlImgOpponent: string;
+    eloOpponent: number;
+    scoreOpponent: number;
+    date: Date;
+  
 }
-
 
 export interface UserButtonsProps {
   id: number | undefined;
@@ -119,6 +136,19 @@ export interface UserButtonsProps {
 export interface NotificationBadgeProps {
   showBadge: boolean;
 }
+
+export interface NotifMsg {
+  id: number;
+  sender_id: number,
+  channel_id: number,
+  channel_name: string;
+  message_content: string;
+  sender_pseudo: string,
+  sender_urlImg: string,
+  priv_msg: boolean,
+  socket: Socket
+}
+
 
 // --------------------------- Notifs :
 
@@ -136,13 +166,14 @@ export interface Modifications {
 export interface settingInfos {
   urlImg: string;
   is2fa_active: boolean;
-  username: string;
+  pseudo: string;
 }
 
 export interface UserInfosForSetting {
   urlImg: string;
   is2fa_active: boolean;
-  username: string;
+  pseudo: string;
+  username?: string;
 }
 
 // --------------------------- Switch Toggle :

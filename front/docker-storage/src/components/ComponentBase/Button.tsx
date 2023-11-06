@@ -1,3 +1,5 @@
+import { color } from '../../utils';
+
 interface Props {
   children?: string;
   onClick: () => void;
@@ -10,15 +12,16 @@ export function Button({ children, onClick, icon, type = 'button' }: Props) {
     backgroundImage: 'url(' + icon + ')',
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
+    backgroundColor: color.green,
   };
   return (
     <button
-      className={'button-30 color-3 cursor_pointer'}
+      className={'button-30 cursor_pointer'}
       onClick={onClick}
       style={style}
       type={type}
     >
-      <p className={'color-3'}>{children}</p>
+      <p>{children}</p>
     </button>
   );
 }

@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+.btnContainer {
+    border-radius: 50%;
+    width: 300px;
+    height: 300px;
+}
+.btnContainer img {
+    width: 100%;
+}
+.btnContainer{
+    overflow: hidden;
+}
+
+.btnContainer > img{
+    transition: 0.5s;
+}
+
+.btnContainer:hover > img{
+    transition: 0.5s;
+    filter: drop-shadow(0 0 10px rgb(0, 180, 255));
+}

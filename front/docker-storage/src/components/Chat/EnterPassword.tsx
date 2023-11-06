@@ -4,8 +4,10 @@ import { ErrorPanel } from '../Error/ErrorPanel';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { ChannelPublicPass } from '../../utils/interfaces';
 import {
+  SetCurrChan,
   UpdateChannelMessage,
   UpdateChannelUsers,
+  current_chan,
 } from '../../utils/channel_functions';
 import { Fetch } from '../../utils';
 import { useUserContext } from '../../contexts';
@@ -24,6 +26,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
   const { socket } = useUserContext();
 
   async function AddUserInChannel() {
+    if (current?.channel_name === current_chan) return;
     const res = await Fetch(
       'channel/add_user/' + current?.id,
       'POST',
@@ -45,6 +48,15 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
     }
   }, [visible]);
 
+  async function OnJoinChannel(id:number, name: string) {
+    UpdateChannelMessage(id);
+    UpdateChannelUsers(id);
+    SetCurrChan(name);
+    socket?.emit('join', { channel: name } as any);
+    publish('open_chat', undefined);
+    document.getElementById('inpt')?.focus();
+  }
+
   async function OnButtonClick() {
     if (current === undefined) return;
     if ((await AddUserInChannel()) === 400) {
@@ -52,7 +64,9 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
       setErrorVisible(true);
     } else {
       setVisible(false);
-      socket?.emit('join', { channel: current?.channel_name });
+      if (current.channel_name) {
+        OnJoinChannel(current.id, current.channel_name);
+      }
     }
   }
 

@@ -24,6 +24,9 @@ export class UserEntity {
   @Column({ unique: true, nullable: false })
   username!: string;
 
+  @Column({ nullable: false })
+  pseudo!: string;
+
   @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.USER })
   role!: UserRoleEnum;
 
@@ -95,8 +98,23 @@ export class UserEntity {
 
   // GAME :
 
-  @Column({ default: 0 })
+  @Column('integer', { array: true, nullable: true })
+  gamesId: number[];
+  
+  @Column({ default: '' })
+  socketId: string;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2, default : 100.00 })
   winrate: number;
+
+  @Column({ default: 0 })
+  gamesPlayed: number;
+
+  @Column({ default: 0 })
+  gamesWon: number
+
+  @Column({ default: 0 })
+  gamesLost: number
 
   @OneToMany(() => GameEntity, (game) => game.player1)
   gamesAsPlayer1: GameEntity[];
@@ -104,8 +122,11 @@ export class UserEntity {
   @OneToMany(() => GameEntity, (game) => game.player2)
   gamesAsPlayer2: GameEntity[];
 
-  @Column({ default: 0 })
+  @Column({ default: 1000 })
   elo: number;
+
+  @Column({ default: 0 })
+  rank: number;
 
   // Game Invites:
   @Column({ default: -1 })

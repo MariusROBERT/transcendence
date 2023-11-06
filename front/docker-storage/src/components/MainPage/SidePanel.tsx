@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { delay, Viewport, color } from '../../utils';
 import { RoundButton } from '..';
-import { useUserContext } from '../../contexts';
 import { SetCurrChan } from '../../utils/channel_functions';
 import { subscribe, unsubscribe } from '../../utils/event';
 
@@ -11,33 +10,32 @@ interface Props {
   width: number;
   isLeftPanel: boolean;
   duration_ms?: number;
+  contextIsOpen: boolean;
+  setContextIsOpen: (isOpen: boolean) => void | undefined;
+  isChatOpen: boolean
 }
 
 export function SidePanel({
-                            children,
-                            viewport,
-                            width,
-                            isLeftPanel,
-                            duration_ms = 1000,
-                          }: Props) {
+  children,
+  viewport,
+  width,
+  isLeftPanel,
+  duration_ms = 1000,
+  contextIsOpen,
+  setContextIsOpen,
+  isChatOpen
+}: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
   const [isShowing, setIsShowing] = useState<boolean>(false);
   const [isAnim, setIsAnim] = useState<boolean>(false);
 
   const isMoving = isAnim || isHiding || isShowing;
-  const { socket, id } = useUserContext();
-
-  const Remove = async (uid: number) => {
-    if (!isLeftPanel && uid === id) Close();
-  };
 
   useEffect(() => {
-    socket?.on('remove', Remove);
-    return () => {
-      socket?.off('remove', Remove);
-    };
-  });
+    if (contextIsOpen)
+      Open();
+  }, [contextIsOpen]);
 
   useEffect(() => {
     subscribe('open_chat', () => {
@@ -59,10 +57,17 @@ export function SidePanel({
     };
   }, [isLeftPanel]);
 
+  useEffect(() => {
+    if (isChatOpen && isLeftPanel && contextIsOpen && viewport.width < 1000) {
+      Close();
+    }
+  }, [viewport.width, isChatOpen, isLeftPanel, contextIsOpen])
+
   async function Close() {
     if (isMoving) return;
+    setContextIsOpen(false);
     if (!isLeftPanel) {
-      socket?.emit('leave');
+      // socket?.emit('leave');
       SetCurrChan('');
     }
     setIsAnim(true);
@@ -75,6 +80,7 @@ export function SidePanel({
   }
 
   async function Open() {
+    setContextIsOpen(true);
     if (isMoving) return;
     setIsAnim(true);
     await delay(duration_ms);
@@ -87,7 +93,8 @@ export function SidePanel({
 
   function getStyle(): React.CSSProperties {
     const style: React.CSSProperties = {
-      zIndex: 110,
+      boxShadow: 'rgba(0, 180, 255, 0.4) 0px 60px 70px, rgba(0, 0, 255, 0.2) 0px -15px 40px, rgba(255, 255, 255, 0.2) 0px 6px 12px, rgba(255, 255, 255, 0.27) 0px 15px 20px, rgba(255, 255, 255, 0.15) 0px -5px 8px',
+      zIndex: 10,
       width: width + 'px',
       height: '100%',
       position: 'absolute',
@@ -115,35 +122,37 @@ export function SidePanel({
   const buttonStyle: React.CSSProperties = {
     position: 'absolute',
     top: '50%',
-    left: (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
+    left:  (isLeftPanel ? (isAnim ? width + 50 : width) : 0) - 30 + 'px',
     rotate:
       ((isLeftPanel && isOpen) || (!isLeftPanel && !isOpen) ? -90 : 90) + 'deg',
     transition: (isAnim ? duration_ms / 3 : duration_ms / 2) + 'ms ease',
   };
 
-  if (!isMoving && !isOpen) {
+  if (!isMoving && !contextIsOpen && isLeftPanel) {
     return (
       <div
         style={{ color: color.white, position: 'absolute', height: '100%', left: getStyle().left }}
       >
         <div style={buttonStyle}>
-          <RoundButton
+         
+         <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/side_panel_button.png')}
-            onClick={isOpen ? Close : Open}
+            onClick={contextIsOpen ? Close : Open}
           />
         </div>
       </div>
     );
   }
-
+  if (!isMoving && !contextIsOpen)
+    return (<></>)
   return (
     <div style={getStyle()}>
       <div style={buttonStyle}>
-        <RoundButton
+         <RoundButton
           icon_size={50}
           icon={require('../../assets/imgs/side_panel_button.png')}
-          onClick={isOpen ? Close : Open}
+          onClick={contextIsOpen ? Close : Open}
         />
       </div>
       <div style={{ overflow: 'hidden', display: 'flex', height: '100%' }}>

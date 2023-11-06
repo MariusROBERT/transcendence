@@ -1,9 +1,10 @@
 import React from 'react';
+import { RoundButton } from './RoundButton';
 
 interface Props {
   children: React.ReactNode;
   isVisible: boolean;
-  setIsVisible: (isVisible: boolean) => void;
+  onClose: () => void;
   style?: React.CSSProperties;
   mainDivStyle?: React.CSSProperties;
 }
@@ -19,7 +20,7 @@ export default function Popup(props: Props) {
 
   function escape(e: KeyboardEvent) {
     if (e.key === 'Escape' && props.isVisible)
-      props.setIsVisible(false);
+      props.onClose();
   }
 
   React.useEffect(() => {
@@ -29,7 +30,7 @@ export default function Popup(props: Props) {
 
   return (
     <div
-      style={{
+      style={{        
         visibility: props.isVisible ? 'visible' : 'hidden',
         position: 'fixed',
         top: 0,
@@ -54,22 +55,21 @@ export default function Popup(props: Props) {
       }}
            onClick={(e) => {
              if (e.target === e.currentTarget) {
-               props.setIsVisible(false);
+               props.onClose();
              }
            }}></div>
       {
         props.isVisible &&
-        (<div style={{ position: 'relative', ...props.style }}>
-          <p onClick={() => props.setIsVisible(false)}
-             style={{
+        (<div style={{ position: 'relative', ...props.style, }}>
+          <div style={{
                position: 'absolute',
-               top: '15px',
-               left: '15px',
+               top: '2%',
+               left: '3%',
                fontSize: '1.5em',
                padding: '5px',
                margin: 0,
-             }}>X
-          </p>
+             }}>
+            </div>
           {props.children}
         </div>)
       }

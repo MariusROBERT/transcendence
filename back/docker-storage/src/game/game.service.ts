@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import {
-  clamp,
-  delay,
-  gameRoom,
-  size,
-  State,
-  Vector2,
-  Ball,
-} from './game.interfaces';
-import { GameController } from './game.controller';
+import {Injectable} from '@nestjs/common';
+import {Ball, clamp, delay, gameRoom, size, State, Vector2,} from './game.interfaces';
+import {GameController} from './game.controller';
+import {GameEntity} from 'src/database/entities/game.entity';
+import {Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {PublicGameDto} from './game.dto';
+import {UserEntity} from '../database/entities/user.entity';
 
+//rajout pour le matchmeking
 @Injectable()
 export class GameService {
   controller: GameController;
+
+  constructor(
+    @InjectRepository(GameEntity)
+    private gameRepository: Repository<GameEntity>,
+    @InjectRepository(UserEntity)
+    private UserRepository: Repository<UserEntity>,
+  ) {
+  }
 
   setController(controller: GameController) {
     this.controller = controller;
@@ -25,9 +31,9 @@ export class GameService {
   async update(game: gameRoom) {
     //check for the end game conditions
     if (
-      game.state.score.p1 >= 50 ||
-      game.state.score.p2 >= 50 ||
-      !game.state.running
+      (!game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
+      || (game.state.score.p1 >= 20 || game.state.score.p2 >= 20)
+      || !game.state.running
     ) {
       game.state.running = false;
       return this.controller.matchmaking.endGame(game.playerIds[0]);
@@ -163,11 +169,11 @@ export class GameService {
       new Ball(
         new Vector2(size.width / 2, size.height / 2),
         new Vector2(1, 1),
-        Math.max(state.player_speed - 2, 1),
+        Math.max(state.player_speed - 2, 5),
         0,
       ),
     );
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 5);
   }
 
   // Mod New Rounds --------------------------------------------------------- //
@@ -222,5 +228,52 @@ export class GameService {
     //place holder
     this.createNBalls(state, 4);
     state.player_speed = Math.max(state.player_speed - 2, 1);
+  }
+
+  async getGames(playerId: number): Promise<{ gameHist: PublicGameDto[] }> {
+    let gameHist: PublicGameDto[] = [];
+    const games = await this.gameRepository.find({
+      where: [{player1: playerId}, {player2: playerId}],
+      order: {date: 'DESC'},
+    });
+    const user = await this.UserRepository.findOne({
+      where: {id: playerId}
+    });
+    for (const element of games) {
+      let game: PublicGameDto = new PublicGameDto();
+      if (element.player1 == playerId) {
+        const opponent = await this.UserRepository.findOne({
+          where: {id: element.player2}
+        });
+        game.idUser = playerId;
+        game.user = user.pseudo;
+        game.eloUser = element.elo1;
+        game.scoreUser = element.points1;
+        game.urlImgUser = user.urlImg;
+        game.idOpponent = opponent.id;
+        game.opponent = opponent.pseudo;
+        game.urlImgOpponent = opponent.urlImg;
+        game.eloOpponent = element.elo2;
+        game.scoreOpponent = element.points2;
+      } else {
+        const opponent = await this.UserRepository.findOne({
+          where: {id: element.player1}
+        });
+        game.idUser = playerId;
+        game.user = user.pseudo;
+        game.eloUser = element.elo2;
+        game.scoreUser = element.points2;
+        game.urlImgUser = user.urlImg;
+        game.idOpponent = opponent.id;
+        game.opponent = opponent.pseudo;
+        game.urlImgOpponent = opponent.urlImg;
+        game.eloOpponent = element.elo1;
+        game.scoreOpponent = element.points1;
+      }
+      game.id = element.id;
+      game.date = element.date;
+      gameHist.push(game);
+    }
+    return {gameHist};
   }
 }

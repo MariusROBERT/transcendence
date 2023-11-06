@@ -1,4 +1,3 @@
-import { color } from '../../utils';
 import { ReactNode } from 'react';
 
 interface Props {
@@ -29,6 +28,7 @@ interface Props {
   margin?: string;
 
   fixed?: boolean;
+  onClick?: () => void;
 
   forceStyle?: React.CSSProperties;
 }
@@ -36,7 +36,7 @@ interface Props {
 function Background({
                       children,
                       image,
-                      bg_color = color.black,
+                      bg_color = '#00000000',
                       flex_direction = 'column',
                       flex_wrap = 'nowrap',
                       flex_justifyContent = 'center',
@@ -46,6 +46,7 @@ function Background({
                       margin = '0',
                       fixed = false,
                       forceStyle = {},
+                      onClick = () => void 0,
                     }: Props) {
   const style = {
     overflow: 'hidden',
@@ -67,7 +68,7 @@ function Background({
     ...forceStyle,
   };
 
-  return <div style={style}>{children}</div>;
+  return <div style={style} onClick={onClick}>{children}</div>;
 }
 
 export default Background;

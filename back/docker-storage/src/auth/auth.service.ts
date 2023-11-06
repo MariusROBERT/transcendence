@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -39,12 +38,15 @@ export class AuthService {
     });
     user.salt = await bcrypt.genSalt(); // genere le salt
     user.password = await bcrypt.hash(user.password, user.salt);
+    user.pseudo = user.username;
     user.user_status = UserStateEnum.ON;
     user.urlImg = API_URL + '/public/default.png';
     user.friends = [];
     user.sentInvitesTo = [];
     user.recvInvitesFrom = [];
     user.blocked = [];
+    user.gamesId = [];
+    user.rank = 0;
     try {
       await this.userRepository.save(user); // save user in DB
     } catch (e) {
@@ -53,7 +55,6 @@ export class AuthService {
     return {
       id: user.id,
       username: user.username,
-      password: user.password,
     };
   }
 
@@ -87,16 +88,26 @@ export class AuthService {
 
     if (hashedPwd === user.password) {
       // JWT
+      // TODO : change payload: put only user.id
       const payload = {
         username,
-        role: user.role,
       };
       user.user_status = UserStateEnum.ON;
+
+      // secu for friendsRequest
+      user.sentInvitesTo.forEach(id => {
+        if (user.friends.includes(id)) {
+          const friend = this.userRepository.findOne({where: {id}});
+          user.sentInvitesTo.filter((el) => el !== id);
+        }
+      });
+
       await this.userRepository.save(user);
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     }
     throw new NotFoundException('wrong password');
+
   }
 
   async ftLogin(userData: ftLoginDto) {
@@ -114,6 +125,7 @@ export class AuthService {
       });
       user2.salt = '42'; // = await bcrypt.genSalt();
       user2.password = '42'; // = await bcrypt.hash(user.password, user.salt);
+      user2.pseudo = username;
       user2.user_status = UserStateEnum.ON;
       user2.friends = [];
       user2.sentInvitesTo = [];
@@ -136,7 +148,6 @@ export class AuthService {
     }
     const payload = {
       username,
-      role: user2.role,
     };
     return this.jwtService.sign(payload);
   }
@@ -169,7 +180,6 @@ export class AuthService {
       }
       const payload = {
         username: user.username,
-        role: user.role,
       };
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };

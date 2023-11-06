@@ -1,14 +1,14 @@
 import { CSSProperties } from 'react';
 import { RoundButton } from '../ComponentBase/RoundButton';
 import { ChannelPublicPass } from '../../utils/interfaces';
-import { Fetch } from '../../utils';
+import { Fetch, color } from '../../utils';
 import {
   SetCurrChan,
   UpdateChannelMessage,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
-import { publish } from '../../utils/event';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   data: ChannelPublicPass;
@@ -23,6 +23,7 @@ export default function ChannelElement({
                                          setCurrent,
                                        }: Props) {
   const { socket } = useUserContext();
+  const { setIsChatOpen, setIsChatMenuOpen } = useUIContext();
 
   async function AddUserInChannel() {
     const res = await Fetch('channel/add_user/' + data.id, 'POST');
@@ -30,7 +31,8 @@ export default function ChannelElement({
     UpdateChannelMessage(data.id);
     UpdateChannelUsers(data.id);
     SetCurrChan(data.channel_name);
-    publish('open_chat', undefined);
+    setIsChatOpen(true);
+    setIsChatMenuOpen(false);
     return 0;
   }
 
@@ -49,7 +51,7 @@ export default function ChannelElement({
     margin: '5px 0',
     border: '1px solid white',
     display: 'flex',
-    background: '#646464',
+    background: color.light_blue,
     color: 'white',
     cursor: 'pointer',
     borderRadius: '10px',
@@ -75,9 +77,9 @@ export default function ChannelElement({
         </div>
         <RoundButton
           icon={require(
-            data.has_password
+            data?.has_password
               ? '../../assets/imgs/icon_lock.png'
-              : '../../assets/imgs/icon_chat.png',
+              : '../../assets/imgs/icons8-chat-90.png',
           )}
           onClick={joinChannel}
         />

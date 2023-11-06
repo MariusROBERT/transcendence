@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import { API_URL } from '../../utils/Global';
+import { Rainbow } from '../Game/game.utils';
 
 const SIZE = 350;
 
@@ -26,9 +27,22 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+  const [rainbow] = useState<Rainbow>(new Rainbow());
+  const [titleColor, setTitleColor] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
 
+  function rgbTitle() {
+    setTimeout(() => {
+      const color = rainbow.next();
+      setTitleColor(`rgb(${color[0]}, ${color[1]}, ${color[2]}`);
+      rgbTitle();
+    }, 20);
+  }
+
+  useEffect(() => {
+    rgbTitle();
+  }, []);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -48,7 +62,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
             return OnConnect();
           const error = await registerResponse?.json().then((data) => data.message);
           setErrorMessage(error || 'Error');
-          console.error('register failure. Error:', registerResponse?.status);
+          // console.error('register failure. Error:', registerResponse?.status);
         } else {
           setErrorMessage('username can\'t be ended with _42');
         }
@@ -93,10 +107,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         setError2fa('Invalid 2fa code');
       } else {
         setErrorMessage(data.message);
-        console.error('connection failure. Error:', response?.status);
+        //console.error('connection failure. Error:', response?.status);
       }
     } catch (error) {
-      console.error(`Error : ${error}`);
+
     }
   }
 
@@ -171,23 +185,24 @@ export function Login({ duration_ms = 900, viewport }: Props) {
     <div
       style={isConnected ? connectedStyle : isConnecting ? connectingStyle : isAnim ? animStyle : connectionStyle}>
       <Background bg_color={color.clear} flex_direction={viewport.isLandscape ? 'row' : 'column'}
-                  flex_justifyContent={'space-around'} forceStyle={{ padding: 0, margin: 0 }}>
+        flex_justifyContent={'space-around'} forceStyle={{ padding: 0, margin: 0 }}>
 
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
-            <h2>Welcome to Pong</h2>
+            <h2 style={{padding: 20, filter: `drop-shadow(0 0 10px ${titleColor})`}}>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => {
+            <button  className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}} onClick={() => {
               setSign(!signIn);
-            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            }}><p>{signIn ? 'Sign Up' : 'Sign In'}</p></button>
           </Background>
         </Border>
+        
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px'}>
             <div style={{ padding: '0 35px 0 0' }}>
               <form onSubmit={handleSubmit}>
                 <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px 30px 10px 10px'}
-                            forceStyle={{ overflow: '' }}>
+                  forceStyle={{ overflow: '' }}>
                   {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
                   <input
                     style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
@@ -223,8 +238,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     />
                   }
                   <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
-                    <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
-                      <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
+                    <button type={'submit'} className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}}>
+                      <p>{signIn ? 'Connect' : 'SignUp'}</p>
                     </button>
                   </Flex>
                   <br />
@@ -241,10 +256,10 @@ export function Login({ duration_ms = 900, viewport }: Props) {
         </Border>
       </Background>
       <TwoFA setIsVisible={setIs2fa}
-             isVisible={is2fa}
-             submit={OnConnect}
-             errorMessage={error2fa}
-             setErrorMessage={setError2fa}
+        isVisible={is2fa}
+        submit={OnConnect}
+        errorMessage={error2fa}
+        setErrorMessage={setError2fa}
       />
     </div>
   );

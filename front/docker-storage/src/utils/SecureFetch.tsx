@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import { API_URL } from './Global';
 
-export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST', body: any = undefined): Promise<undefined | {
+export async function Fetch(url_end: string, method: 'GET' | 'PATCH' | 'POST' | 'DELETE', body: any = undefined): Promise<undefined | {
   response: Response,
   json: any
 }> {
@@ -48,7 +48,7 @@ export async function unsecureFetch(
     });
     return response;
   } catch (e) {
-    console.warn(e);
+    // console.warn(e);
     return;
   }
 }

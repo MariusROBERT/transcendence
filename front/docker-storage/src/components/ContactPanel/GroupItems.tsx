@@ -1,5 +1,5 @@
-import React, { ReactNode, useState } from 'react';
-import { Background, Border, RoundButton } from '..';
+import React, { ReactNode } from 'react';
+import { Background, Border } from '..';
 import { color } from '../../utils';
 
 interface Props {
@@ -9,34 +9,23 @@ interface Props {
 }
 
 export function GroupItems({ children, heading, duration_ms }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const buttonStyle: React.CSSProperties = {
-    rotate: (isOpen ? 0 : 180) + 'deg',
-    transition: duration_ms + 'ms ease',
-  };
-
-  const mobile = window.innerWidth < 500;
 
   const groupStyle: React.CSSProperties = {
-    paddingTop: isOpen ? '15px' : '0px',
+    width: '100%',
+    paddingTop: '25px',
     paddingRight: '5px',
+    paddingLeft: '15px',
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: mobile ? 15 : 50,
     overflow: 'scroll',
-    height: isOpen ? '100%' : '0px',
-    gap: '30px',
+    overflowX: 'hidden',
+    height: '100%',
     transition: duration_ms + 'ms ease',
   };
-
-
-  function openGroup() {
-    setIsOpen(!isOpen);
-  }
 
   return (
     <>
+      <div style={{backgroundColor: '#FFFFFF55', width:'100%', minHeight:'3px'}}/>
       <Border
         borderSize={0}
         height={50}
@@ -44,15 +33,11 @@ export function GroupItems({ children, heading, duration_ms }: Props) {
         borderRadius={0}
       >
         <Background
-          bg_color={color.grey}
+          // bg_color={color.grey}
           flex_direction={'row'}
           flex_justifyContent={'flex-end'}
         >
           <h2 style={{ position: 'absolute', left: 5 }}>{heading}</h2>
-          <div style={buttonStyle}>
-            <RoundButton icon={require('../../assets/imgs/side_panel_button.png')} icon_size={40} onClick={() => {
-              openGroup();
-            }} /></div>
         </Background>
       </Border>
       <div style={groupStyle}>

@@ -19,18 +19,19 @@ import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
-import {
-  PublicProfileDto,
-  UpdatePwdDto,
-  UpdateUserDto,
-  UserGameStatus,
-} from './dto/user.dto';
+import { OwnProfileDto, PublicProfileDto, UpdatePwdDto, UpdateUserDto, UserGameStatus, } from './dto/user.dto';
 import { Express } from 'express';
 import { userPictureFileInterception } from './utils/user.picture.fileInterceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserStateEnum } from "../utils/enums/user.enum";
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    @InjectRepository(ChannelEntity)
+    private readonly channelRepository: Repository<ChannelEntity>,) {
   }
 
   // --------- PROFILE --------- :
@@ -39,8 +40,27 @@ export class UserController {
   // get_his_own_profile
   @Get()
   @UseGuards(JwtAuthGuard)
-  async GetOwnProfile(@User() user: UserEntity) {
-    return user;
+  async GetOwnProfile(@User() user: UserEntity): Promise<OwnProfileDto> {
+    if (user.user_status == UserStateEnum.OFF) {
+      await this.userService.login(user);
+    }
+    return {
+      id: user.id,
+      username: user.username,
+      pseudo: user.pseudo,
+      urlImg: user.urlImg,
+      is2fa_active: user.is2fa_active,
+      user_status: user.user_status,
+      winrate: user.winrate,
+      gamesPlayed: user.gamesPlayed,
+      elo: user.elo,
+      rank: user.rank,
+      gamesId: user.gamesId,
+      friends: user.friends,
+      recvInvitesFrom: user.recvInvitesFrom,
+      sentInvitesTo: user.sentInvitesTo,
+      blocked: user.blocked
+    };
   }
 
   // update_profile
@@ -51,6 +71,15 @@ export class UserController {
     @User() user: UserEntity,
   ) {
     return await this.userService.updateProfile(updateUserDto, user);
+  }
+
+  @Patch('confirm2fa')
+  @UseGuards(JwtAuthGuard)
+  async Confirm2Fa(
+      @Body() body: { code: number },
+      @User() user: UserEntity,
+  ): Promise<string[]> {
+    return this.userService.confirm2Fa(body.code, user);
   }
 
   @Post('update_picture')
@@ -67,8 +96,8 @@ export class UserController {
         fileIsRequired: true,
       }),
     )
-      file?: Express.Multer.File,
-  ): Promise<UserEntity> {
+    file?: Express.Multer.File,
+  ) {
     return await this.userService.updatePicture(user, file);
   }
 
@@ -104,6 +133,14 @@ export class UserController {
 
   // --------- MSG & CHANNEL --------- :
 
+  @Patch('remove_last_msg')
+  async removeLastMessage(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    await this.userService.removeLastMsg(id);
+  }
+
   // get_message_from_channel
   @Get('/get_msg/:id_chan')
   @UseGuards(JwtAuthGuard)
@@ -115,19 +152,12 @@ export class UserController {
     return await this.userService.getMsgsByChannel(user, channels, id);
   }
 
-  // get last message
-  @Get('get_last_msg')
-  @UseGuards(JwtAuthGuard)
-  async GetLastMsg(@User() user: UserEntity) {
-    return await this.userService.getLastMsg(user);
-  }
-
-  // get_channels_of_user
-  @Get('get_channels')
-  @UseGuards(JwtAuthGuard)
-  async GetChannels(@User() user: UserEntity) {
-    return await this.userService.getChannels(user);
-  }
+  // // get_channels_of_user
+  // @Get('get_channels')
+  // @UseGuards(JwtAuthGuard)
+  // async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
+  //   return await this.userService.getChannels(user);
+  // }
 
   @Get('/:id')
   async GetUserById(

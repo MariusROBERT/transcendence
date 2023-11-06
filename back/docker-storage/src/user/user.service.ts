@@ -9,6 +9,7 @@ import { ChannelEntity } from '../database/entities/channel.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
+  OwnProfileDto,
   PublicProfileDto,
   UpdatePwdDto,
   UpdateUserDto,
@@ -44,7 +45,6 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
-    //console.log('modifications apportées: ', profile);
 
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
@@ -53,6 +53,7 @@ export class UserService {
     if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
@@ -63,7 +64,26 @@ export class UserService {
         code2fa: secret ? secret[1] : '',
       };
     }
-    return await this.UserRepository.save(newProfile);
+    await this.UserRepository.save(newProfile);
+    const publicUser: OwnProfileDto = {
+      id: user.id,
+      username: user.username,
+      pseudo: user.pseudo,
+      urlImg: user.urlImg,
+      is2fa_active: user.is2fa_active,
+      user_status: user.user_status,
+      winrate: user.winrate,
+      gamesPlayed: user.gamesPlayed,
+      elo: user.elo,
+      rank: user.rank,
+      gamesId: user.gamesId,
+      friends: user.friends,
+      recvInvitesFrom: user.recvInvitesFrom,
+      sentInvitesTo: user.sentInvitesTo,
+      blocked: user.blocked
+    };
+
+    return publicUser;
   }
 
   async updatePassword(updatePwdDto: UpdatePwdDto, user: UserEntity) {
@@ -106,9 +126,6 @@ export class UserService {
   }
 
   async logout(user: UserEntity) {
-    // pas testé
-    const lastMsg = await this.getLastMsg(user);
-    if (lastMsg) user.last_msg_date = lastMsg.createdAt;
     user.user_status = UserStateEnum.OFF;
     user.gameInvitationTo = -1;
     user.gameInvitationFrom = -1;
@@ -138,10 +155,15 @@ export class UserService {
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
-    PublicProfile.username = profile.username;
+    PublicProfile.pseudo = profile.pseudo;
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
+    PublicProfile.gamesPlayed = profile.gamesPlayed;
+    PublicProfile.elo = profile.elo;
+    PublicProfile.gamesId = profile.gamesId;
+    PublicProfile.rank = profile.rank;
+
 
     return PublicProfile;
   }
@@ -239,8 +261,8 @@ export class UserService {
   // CHANNEL & MESSAGE :
 
   async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.ChannelRepository.createQueryBuilder('channels')
-      .leftJoinAndSelect('channels.users', 'user')
+    return this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.users', 'user')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
   }
@@ -249,22 +271,21 @@ export class UserService {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
   }
-
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };
@@ -306,53 +327,11 @@ export class UserService {
       .getMany();
   }
 
-  // des qu'il se log ==> return ChannelEntity[] (ou y'a des news msgs) ou null si aucun message
-  async isNotifMsg(user: UserEntity): Promise<ChannelEntity[]> | null {
-    // est ce quil a des new msg et si oui de quel cahnnel
-    const userChannels = await this.getChannels(user);
-    const lastMsg = await this.getLastMsg(user);
-    const channelsWithNewMsg: ChannelEntity[] = [];
-    if (lastMsg.createdAt > user.last_msg_date) {
-      // il y a des msg qu'il n'a pas vu. Mais de quel channel ?
-      // pour chaque channel aller voir s'il y a des new msg;
-      for (const channel of userChannels) {
-        const messagesInChannel = await this.MessageRepository.find({
-          where: { channel: { id: channel.id } },
-          order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-          take: 1, // Récupérez seulement le premier (le plus récent) message
-        });
-        if (messagesInChannel[0].createdAt > user.last_msg_date)
-          // stocker les channel et les retourner
-          channelsWithNewMsg.push(channel);
-      }
-      return channelsWithNewMsg;
-    }
-    return null;
-  }
-
-  async getLastMsg(user: UserEntity): Promise<MessageEntity> {
-    // pas testé
-    const userChannels = await this.getChannels(user);
-    if (!userChannels || userChannels.length === 0) return null;
-    let latestMessage: MessageEntity | null = null;
-    // Itérer sur les chaînes pour trouver le dernier message
-    for (const channel of userChannels) {
-      const messagesInChannel = await this.MessageRepository.find({
-        where: { channel: { id: channel.id } },
-        order: { createdAt: 'DESC' }, // Triez par date de création décroissante pour obtenir le dernier message
-        take: 1, // Récupérez seulement le premier (le plus récent) message
-      });
-      if (messagesInChannel && messagesInChannel.length > 0) {
-        const lastMessageInChannel = messagesInChannel[0];
-        if (
-          !latestMessage ||
-          lastMessageInChannel.createdAt > latestMessage.createdAt
-        ) {
-          latestMessage = lastMessageInChannel;
-        }
-      }
-    }
-    return latestMessage;
+  async removeLastMsg(id: number) {
+    const user = await this.UserRepository.findOne({where: {id}})    
+    if (user.last_msg_date)
+      user.last_msg_date = null;
+    await this.UserRepository.save(user)
   }
 
   async getMsgsByChannel(
@@ -380,7 +359,6 @@ export class UserService {
 
   isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
     if (!channel.admins) return false;
-    // Vérifiez si l'utilisateur existe dans la liste des administrateurs
     return channel.admins.some((adminUser) => adminUser.id === user.id);
   }
 
@@ -396,7 +374,6 @@ export class UserService {
     }
     user.urlImg = API_URL + '/' + file.path;
     await this.UserRepository.save(user);
-    return user;
   }
 
   async getUserById(id: number): Promise<UserEntity> {
@@ -424,8 +401,26 @@ export class UserService {
       secret,
     );
     user.secret2fa = secret;
+    user.is2fa_active = false;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
+  }
+
+  async confirm2Fa(code: number, user: UserEntity) {
+    if (user.is2fa_active || !user.secret2fa || user.secret2fa === '') {
+      throw new BadRequestException('You don\' have to validate 2fa');
+    }
+    if (
+        !authenticator.verify({
+          token: String(code),
+          secret: user.secret2fa,
+        })
+    ) {
+      throw new BadRequestException('Invalid 2fa code');
+    }
+    user.is2fa_active = true;
+    await this.UserRepository.save(user);
+    return ([]);
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
@@ -460,5 +455,89 @@ export class UserService {
       gameInvitationTo: user.gameInvitationTo,
       gameInviteType: user.gameInvitationType,
     };
+  }
+
+  // GAME SAVING 
+  async endOfGameUpdatingProfile(gameId:number, user1:UserEntity, user2:UserEntity, won:boolean){
+  
+    user1.gamesPlayed += 1;
+    user2.gamesPlayed += 1;
+    let winner = user1;
+    let loser = user2;
+    won? 1 : (winner = user2, loser = user1);
+    winner.gamesWon += 1;
+    loser.gamesLost += 1;
+    const K = 50; // ponderation factor
+    const expectedOutcomeWinner = 1 / (1 + 10 ** ((loser.elo - winner.elo) / 400));
+    const expectedOutcomeLoser = 1 - expectedOutcomeWinner;
+
+    const newEloWinner = winner.elo + K * (1 - expectedOutcomeWinner);
+    const newEloLoser = loser.elo + K * (0 - expectedOutcomeLoser);
+
+    winner.elo = Math.round(newEloWinner);
+    loser.elo = Math.round(newEloLoser);
+    if (!loser.gamesId)
+      loser.gamesId = [];
+    loser.gamesId.push(gameId);
+    if (!winner.gamesId)
+      winner.gamesId = [];
+    winner.gamesId.push(gameId)
+    loser.winrate = loser.gamesWon / loser.gamesPlayed * 100;
+    winner.winrate = winner.gamesWon / winner.gamesPlayed * 100;
+    await this.UserRepository.save(loser);
+    await this.UserRepository.save(winner);
+    return ;
+  }
+
+
+  async rankUpdate(id:number){
+    let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
+    // users.forEach(element => {
+    //   element.rank = 0;
+    //   element.elo = 1000;
+    //   this.UserRepository.save(element);
+    // });
+    // return ;
+    users = users.filter(user=> (user.rank !== 0 || user.id === id));
+    let position = users.findIndex((user) => user.id === id);
+    // console.log("NEW");
+    // console.log(position);
+    if (users[position].rank === 0)
+    {
+      users[position].rank = position + 1;
+      await this.UserRepository.save(users[position]);
+      let length = users.length;
+      position += 1;
+      while (position < length)
+      {
+        users[position].rank = position + 1;
+        await this.UserRepository.save(users[position]);
+        // console.log(users[position]);
+        position += 1;
+      }
+      return ;
+    }
+    let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
+    // console.log("rank");
+    // console.log(users.map(u=>u.rank));
+    // console.log(position);
+    if (diff === 0 )
+      return ;
+    users[position].rank = position + 1;
+    await this.UserRepository.save(users[position]);
+    let i = 0;
+    diff > 0 ? i = -1 : i = 1;
+    let j = 0;
+    while (j !== -diff)
+    {
+      j += i;
+      // console.log(users.map(u=>u.rank));
+      // console.log(position);
+      // console.log(j);
+      // console.log(diff);
+      users[position + j].rank += i;
+      await this.UserRepository.save(users[position + j]);
+    }
+    return ;
   }
 }

@@ -1,6 +1,7 @@
-import { Leaderboard, Popup, SearchBar } from '..';
-import React, { useEffect, useState } from 'react';
+import { SearchBar } from '..';
+import React, { useEffect } from 'react';
 import { IUser } from '../../utils/interfaces';
+import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 interface Props {
   searchTerm: string,
@@ -9,14 +10,12 @@ interface Props {
   user?: IUser
 }
 
-
 export function Search(props: Props) {
-  const [searchMode, setSearchMode] = useState<boolean>(false);
-  const mobile = window.innerWidth < 500;
+  const { isLeaderboardOpen, setIsLeaderboardOpen } = useUIContext();
 
   useEffect(() => {
     const input = document.getElementById('searchBar') as HTMLInputElement;
-    if (searchMode)
+    if (isLeaderboardOpen)
       input?.focus();
     else {
       if (input)
@@ -24,37 +23,16 @@ export function Search(props: Props) {
       props.setSearchTerm('');
     }
     // eslint-disable-next-line
-  }, [searchMode]);
+  }, [isLeaderboardOpen]);
 
   return (
-    <div style={{ zIndex: 2 }}>
+    <div style={{ zIndex: 2, width: '100%', left: '50%', display: 'flex', justifyContent:'space-around', margin: 'auto' }}>
       <SearchBar setSearchTerm={props.setSearchTerm}
-                 onClick={() => setSearchMode(true)}
-                 isVisible={!searchMode}
-                 style={{ top: mobile ? 80 : 0 }}
+                 onClick={() => setIsLeaderboardOpen(true)}
+                 isVisible={!isLeaderboardOpen}
       >
         {props.placeHolder || ''}
       </SearchBar>
-      <Popup isVisible={searchMode} setIsVisible={setSearchMode}>
-        <div style={{
-          display: 'flex',
-          minHeight: mobile ? 100 : '300px',
-          flexDirection: 'column',
-          alignItems: 'center',
-          backgroundColor: 'grey',
-          borderRadius: '10px',
-          padding: '10px',
-        }}>
-          <SearchBar setSearchTerm={props.setSearchTerm}
-                     isVisible={searchMode}
-                     id={'searchBar'}>
-            {props.placeHolder || ''}
-          </SearchBar>
-          <Leaderboard
-            searchTerm={props.searchTerm}
-          />
-        </div>
-      </Popup>
     </div>
   );
 }
