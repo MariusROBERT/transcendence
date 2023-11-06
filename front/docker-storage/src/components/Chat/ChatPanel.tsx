@@ -43,9 +43,7 @@ export function ChatPanel({ viewport, width }: Props) {
   useEffect(() => {
     subscribe('enter_chan', async (event: any) => {
       setPrintMsgs([]);
-      //console.log(event.detail.value)
       setMessage(event.detail.value);
-      //console.log(event.detail.id);
       setChannelId(event.detail.id);
     });
     document.getElementById('inpt')?.focus();
@@ -84,17 +82,6 @@ export function ChatPanel({ viewport, width }: Props) {
       socket?.off('join', UpdateChannelUsers);
     };
   }, [socket]);
-
-  useEffect(() => {
-    subscribe('enter_chan', async (event: any) => {
-      setPrintMsgs([]);
-      setMessage(event.detail.value);
-      setChannelId(event.detail.id);
-      if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
-        msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
-      }
-    });
-  }, []);
 
   async function onEnterPressed() {
     const ipt = inputValue.trim();
@@ -178,19 +165,19 @@ export function ChatPanel({ viewport, width }: Props) {
         <textarea id='inpt'
                   value={inputValue}
                   onChange={(evt) => {
+                    if (evt.target.value === '\n') return;
                     setInputValue(evt.target.value);
                   }}
                   onKeyDown={(e) => {
                     if (e.keyCode !== 13) return;
                     onEnterPressed();
                   }}
-                  rows={1}
                   maxLength={256}
                   style={{
                     boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
                     background: 'white',
                     outline: 'none',
-                    height: '20px',
+                    height: '40px',
                     fontSize: '1.3em',
                     flex: 'auto',
                     borderRadius: '15px',
