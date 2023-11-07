@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Viewport, Fetch, color } from '../../utils';
-import { Background, RoundButton, ChatMessage, ChanUserList } from '..';
+import {Background, RoundButton, ChatMessage, ChanUserList, SidePanel} from '..';
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
 import {
@@ -18,7 +18,7 @@ interface Props {
 
 // TODO refacto all useEffect (Infinite LOOp)
 export function ChatPanel({ viewport, width }: Props) {
-  const {setIsProfileOpen} = useUIContext();
+  const {setIsProfileOpen, isChatOpen, setIsChatOpen,} = useUIContext();
   const [inputValue, setInputValue] = useState<string>('');
   const [currUser, setCurrUser] = useState<IChatUser>();
   const [channelId, setChannelId] = useState<number>(-1);
@@ -125,81 +125,85 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     scrollBottom();
-  }, [printMsgs])
+  }, [printMsgs]);
 
   return (
-    <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
-      {!channel?.priv_msg && <h3>{channel?.channel_name}</h3>}
-      {channel?.priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].pseudo : users[0].pseudo}</h3>}
-      <div style={{ minHeight: '60px', paddingTop: 10 }} />
-      <ChanUserList onClick={OnUserClick} chan_id={channelId} users={users}/>
-      <div
-        style={{
-          border: '5px solid transparent',
-          borderTop: '5px solid rgba(0, 0, 0, 0.2)',
-          paddingTop: '5px',
-          padding: '10px',
-          height: viewport.height - 125 + 'px',
-          width: width - 50 + 'px',
-          margin: '30px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '5px 5px',
-          overflow: 'scroll',
-        }}
-        ref={msgsRef as React.RefObject<HTMLDivElement>}
-      >
-        {printMsgs}
-      </div>
-      <div
-        style={{
-          marginTop: '5px',
-          marginBottom: '20px',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: width - 30 + 'px',
-        }}
-      >
-        <textarea id='inpt'
-                  value={inputValue}
-                  onChange={(evt) => {
-                    if (evt.target.value === '\n') return;
-                    setInputValue(evt.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.keyCode !== 13) return;
-                    onEnterPressed();
-                  }}
-                  maxLength={256}
-                  style={{
-                    boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
-                    background: 'white',
-                    outline: 'none',
-                    height: '40px',
-                    fontSize: '1.3em',
-                    flex: 'auto',
-                    borderRadius: '15px',
-                    paddingLeft: '15px',
-                    paddingTop: '15px',
-                    paddingBottom: '10px',
-                    marginBottom: '5px',
-                    overflowWrap: 'break-word',
-                    resize: 'none',
-                  }}
-        />
-        <RoundButton
-          icon_size={50}
-          icon={require('../../assets/imgs/icon_play.png')}
-          onClick={onEnterPressed}
-        />
-        {<ChatUser data={currUser} visibility={currUser !== undefined}
-                                             onClose={() => {
-                                                 setCurrUser(undefined);
-                                                 setIsProfileOpen(0);
-                                             }}></ChatUser>}
-      </div>
-    </Background>
+    <SidePanel viewport={viewport} width={width} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen}>
+      <Background>
+        <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
+          {!channel?.priv_msg && <h3>{channel?.channel_name}</h3>}
+          {channel?.priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].pseudo : users[0].pseudo}</h3>}
+          <div style={{ minHeight: '60px', paddingTop: 10 }} />
+          <ChanUserList onClick={OnUserClick} chan_id={channelId} users={users}/>
+          <div
+            style={{
+              border: '5px solid transparent',
+              borderTop: '5px solid rgba(0, 0, 0, 0.2)',
+              paddingTop: '5px',
+              padding: '10px',
+              height: viewport.height - 125 + 'px',
+              width: width - 50 + 'px',
+              margin: '30px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '5px 5px',
+              overflow: 'scroll',
+            }}
+            ref={msgsRef as React.RefObject<HTMLDivElement>}
+          >
+            {printMsgs}
+          </div>
+          <div
+            style={{
+              marginTop: '5px',
+              marginBottom: '20px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: width - 30 + 'px',
+            }}
+          >
+            <textarea id='inpt'
+                      value={inputValue}
+                      onChange={(evt) => {
+                        if (evt.target.value === '\n') return;
+                        setInputValue(evt.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.keyCode !== 13) return;
+                        onEnterPressed();
+                      }}
+                      maxLength={256}
+                      style={{
+                        boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
+                        background: 'white',
+                        outline: 'none',
+                        height: '40px',
+                        fontSize: '1.3em',
+                        flex: 'auto',
+                        borderRadius: '15px',
+                        paddingLeft: '15px',
+                        paddingTop: '15px',
+                        paddingBottom: '10px',
+                        marginBottom: '5px',
+                        overflowWrap: 'break-word',
+                        resize: 'none',
+                      }}
+            />
+            <RoundButton
+              icon_size={50}
+              icon={require('../../assets/imgs/icon_play.png')}
+              onClick={onEnterPressed}
+            />
+            {<ChatUser data={currUser} visibility={currUser !== undefined}
+                                                 onClose={() => {
+                                                     setCurrUser(undefined);
+                                                     setIsProfileOpen(0);
+                                                 }}></ChatUser>}
+          </div>
+        </Background>
+      </Background>
+    </SidePanel>
   );
 }

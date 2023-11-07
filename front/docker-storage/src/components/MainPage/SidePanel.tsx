@@ -12,7 +12,6 @@ interface Props {
   duration_ms?: number;
   contextIsOpen: boolean;
   setContextIsOpen: (isOpen: boolean) => void | undefined;
-  isChatOpen: boolean
 }
 
 export function SidePanel({
@@ -23,7 +22,6 @@ export function SidePanel({
   duration_ms = 1000,
   contextIsOpen,
   setContextIsOpen,
-  isChatOpen
 }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHiding, setIsHiding] = useState<boolean>(false);
@@ -56,12 +54,6 @@ export function SidePanel({
       });
     };
   }, [isLeftPanel]);
-
-  useEffect(() => {
-    if (isChatOpen && isLeftPanel && contextIsOpen && viewport.width < 1000) {
-      Close();
-    }
-  }, [viewport.width, isChatOpen, isLeftPanel, contextIsOpen])
 
   async function Close() {
     if (isMoving) return;

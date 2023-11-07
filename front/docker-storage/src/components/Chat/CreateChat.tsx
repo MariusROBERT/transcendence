@@ -12,15 +12,12 @@ import {
   UpdateChannels,
 } from '../../utils/channel_functions';
 import { useUserContext } from '../../contexts';
-
-interface Props {
-  name: string; //  Pass the user name in ChatMenu
-  visible: boolean;
-  setVisible: (b: boolean) => void;
-}
+import {Popup} from '../index';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 
-export default function CreateChat({ visible, setVisible }: Props) {
+
+export default function CreateChat() {
   const [channelName, setChannelName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
@@ -28,6 +25,7 @@ export default function CreateChat({ visible, setVisible }: Props) {
   const [errorMessage, seterrorMessage] = useState<string>('Error');
   const mobile = window.innerWidth < 500;
   const { socket } = useUserContext();
+  const { isCreateChannelOpen, setIsCreateChannelOpen } = useUIContext();
 
   async function OnJoinChannel(channelName: string) {
     const chan = (await Fetch(`channel/name/${channelName}`, 'GET'))?.json;
@@ -41,12 +39,12 @@ export default function CreateChat({ visible, setVisible }: Props) {
 
 
   useEffect(() => {
-    if (!visible) {
+    if (!isCreateChannelOpen) {
       setChannelName('');
       setPassword('');
       setErrorVisible(false);
     }
-  }, [visible]);
+  }, [isCreateChannelOpen]);
 
   async function OnButtonClick() {
     if (channelName === '') return;
@@ -65,10 +63,10 @@ export default function CreateChat({ visible, setVisible }: Props) {
       setErrorVisible(true);
       return;
     }
-    setVisible(false);
     publish('chat_created', undefined);
     UpdateChannels();
     OnJoinChannel(channelName);
+    setIsCreateChannelOpen(false);
   }
 
   function OnChange() {
@@ -76,42 +74,41 @@ export default function CreateChat({ visible, setVisible }: Props) {
   }
 
   return (
-    <div style={{ ...createChatStyle, padding: mobile ? 10 : 42 }}>
-      <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
-        <ErrorPanel text={errorMessage}></ErrorPanel>
+    <Popup isVisible={isCreateChannelOpen} onClose={() => setIsCreateChannelOpen(false)}>
+      <div style={{ ...createChatStyle, padding: mobile ? 10 : 42 }}>
+        <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
+          <ErrorPanel text={errorMessage}></ErrorPanel>
+        </div>
+        <h2>Create Channel</h2>
+        <p>
+          <input
+            placeholder='Name'
+            style={inputStyle}
+            value={channelName}
+            onChange={(evt) => {
+              setChannelName(evt.target.value);
+            }}
+          ></input>
+        </p>
+        <p>
+          <input
+            placeholder='Optional password'
+            style={inputStyle}
+            value={password}
+            onChange={(evt) => {
+              setPassword(evt.target.value);
+            }}
+          ></input>
+        </p>
+        <Flex flex_direction={'row'}>
+          <p>Private Channel:</p>
+          <SwitchToggle onChange={OnChange} checked={checked}></SwitchToggle>
+        </Flex>
+        <p>
+          <Button onClick={OnButtonClick}>Save</Button>
+        </p>
       </div>
-
-      <h2>Create Channel</h2>
-
-      <p>
-        <input
-          placeholder='Name'
-          style={inputStyle}
-          value={channelName}
-          onChange={(evt) => {
-            setChannelName(evt.target.value);
-          }}
-        ></input>
-      </p>
-
-      <p>
-        <input
-          placeholder='Optional password'
-          style={inputStyle}
-          value={password}
-          onChange={(evt) => {
-            setPassword(evt.target.value);
-          }}
-        ></input>
-      </p>
-      <Flex flex_direction={'row'}>
-        <p>Private Channel:</p>
-        <SwitchToggle onChange={OnChange} checked={checked}></SwitchToggle>
-      </Flex>
-      <p>
-        <Button onClick={OnButtonClick}>Save</Button>
-      </p>
-    </div>
+    </Popup>
   );
 }
 
