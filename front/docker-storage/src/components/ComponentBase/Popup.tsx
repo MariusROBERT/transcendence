@@ -1,5 +1,4 @@
 import React from 'react';
-import { RoundButton } from './RoundButton';
 
 interface Props {
   children: React.ReactNode;
