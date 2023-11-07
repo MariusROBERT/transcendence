@@ -245,7 +245,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                 </Background>
               </form>
               <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-                <p>or sign in with Intra42</p>
+                <p>or sign in with <a style={{color: color.white, textDecoration: 'none', fontWeight: 500}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Intra42</a></p>
                 <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
                   window.location.replace(API_URL + '/api/auth/login/42');
                 }} />

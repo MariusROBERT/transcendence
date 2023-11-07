@@ -1,5 +1,4 @@
 import React from 'react';
-import { RoundButton } from './RoundButton';
 
 interface Props {
   children: React.ReactNode;
@@ -47,6 +46,7 @@ export default function Popup(props: Props) {
       <div style={{
         backgroundColor: 'rgba(0,0,0,0.3)',
         backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         height: '100%',
         width: '100%',
         position: 'absolute',
