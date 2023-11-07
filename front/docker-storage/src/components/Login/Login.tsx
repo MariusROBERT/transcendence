@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import { API_URL } from '../../utils/Global';
 import { Rainbow } from '../Game/game.utils';
-import Cookies from 'js-cookie';
 
 const SIZE = 350;
 
@@ -86,7 +85,6 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
       const response = await unsecureFetch('auth/login', 'POST',
         JSON.stringify(credits));
-      // console.log('response : ', response);
       if (response?.statusText === 'Missing 2fa code') {
         setIs2fa(true);
         return;
@@ -192,9 +190,9 @@ export function Login({ duration_ms = 900, viewport }: Props) {
           <Background bg_color={color.clear}>
             <h2 style={{padding: 20, filter: `drop-shadow(0 0 10px ${titleColor})`}}>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
-            <Button onClick={() => {
+            <button  className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}} onClick={() => {
               setSign(!signIn);
-            }}>{signIn ? 'Sign Up' : 'Sign In'}</Button>
+            }}><p>{signIn ? 'Sign Up' : 'Sign In'}</p></button>
           </Background>
         </Border>
         
@@ -239,15 +237,15 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     />
                   }
                   <Flex flex_direction={'row'} flex_justifyContent={'flex-end'}>
-                    <button type={'submit'} className={'button-30 color-3 cursor_pointer'}>
-                      <p className={'color-3'}>{signIn ? 'Connect' : 'SignUp'}</p>
+                    <button type={'submit'} className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}}>
+                      <p>{signIn ? 'Connect' : 'SignUp'}</p>
                     </button>
                   </Flex>
                   <br />
                 </Background>
               </form>
               <Flex flex_direction={'row'} flex_justifyContent={'space-between'}>
-                <p>or sign in with Intra42</p>
+                <p>or sign in with <a style={{color: color.white, textDecoration: 'none', fontWeight: 500}} href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Intra42</a></p>
                 <Button icon={require('../../assets/imgs/logo_42.png')} onClick={() => {
                   window.location.replace(API_URL + '/api/auth/login/42');
                 }} />

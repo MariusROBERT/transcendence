@@ -1,5 +1,4 @@
 import React from 'react';
-import { RoundButton } from './RoundButton';
 
 interface Props {
   children: React.ReactNode;
@@ -30,7 +29,7 @@ export default function Popup(props: Props) {
 
   return (
     <div
-      style={{
+      style={{        
         visibility: props.isVisible ? 'visible' : 'hidden',
         position: 'fixed',
         top: 0,
@@ -47,6 +46,7 @@ export default function Popup(props: Props) {
       <div style={{
         backgroundColor: 'rgba(0,0,0,0.3)',
         backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         height: '100%',
         width: '100%',
         position: 'absolute',
@@ -60,7 +60,7 @@ export default function Popup(props: Props) {
            }}></div>
       {
         props.isVisible &&
-        (<div style={{ position: 'relative', ...props.style }}>
+        (<div style={{ position: 'relative', ...props.style, }}>
           <div style={{
                position: 'absolute',
                top: '2%',
@@ -69,8 +69,6 @@ export default function Popup(props: Props) {
                padding: '5px',
                margin: 0,
              }}>
-          <RoundButton icon={require('../../assets/imgs/icon_close.png')} onClick={() => {
-            props.onClose();}}/>
             </div>
           {props.children}
         </div>)

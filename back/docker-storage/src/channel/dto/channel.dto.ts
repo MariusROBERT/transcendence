@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,23 +10,44 @@ import {
 import { ChanStateEnum } from '../../utils/enums/channel.enum';
 import { UserEntity } from '../../database/entities/user.entity';
 
+// ------- public :
 export class PublicChannelDto {
+  @IsNotEmpty()
+  @IsNumber()
   id: number;
+
+  @IsNotEmpty()
+  @IsString()
   channel_name: string;
+  
+  @IsOptional()
   chan_status: ChanStateEnum;
+  
+  @IsNotEmpty()
+  @IsBoolean()
   priv_msg: boolean;
+  
+  @IsOptional()
+  @IsBoolean()
   has_password: boolean;
+  
+  @IsOptional()
+  @IsNumber()
   owner_id: number;
+  
+  @IsOptional()
+  @IsString()
   owner_username: string;
 }
 
-// CHANNEL :
+// ------- name :
 export class ChannelNameDto {
   @IsNotEmpty()
   @IsString()
   channel_name: string;
 }
 
+// ------- create :
 export class CreateChannelDto {
   @IsNotEmpty()
   @IsString()
@@ -46,12 +68,14 @@ export class CreateChannelDto {
   priv_msg: boolean;
 }
 
+// ------- password :
 export class PassChannelDto {
   @IsOptional()
   @IsString()
   password: string;
 }
 
+// ------- update :
 export class EditChannelDto {
   @IsString()
   @Length(0, 300)
@@ -62,28 +86,11 @@ export class EditChannelDto {
   chan_status: ChanStateEnum;
 }
 
-// GET CHANNEL AND DISPLAY INFO
-export class ChannelDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
-
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsEnum(ChanStateEnum)
-  chan_status: ChanStateEnum;
-
-  @IsNotEmpty()
-  owner_id: UserEntity;
-}
-
 export class UpdateChannelDto {
   @IsNotEmpty()
   @IsString()
   channel_name: string;
+
   @IsNotEmpty()
   priv: boolean;
 

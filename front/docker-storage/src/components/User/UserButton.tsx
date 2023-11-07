@@ -41,7 +41,7 @@ export function UserButton({ otherUser }: Props) {
                          openChat(otherUser, socket);
                          setIsChatOpen(true);
                          setIsLeaderboardOpen(false);
-                         setMsgs(msgs.filter(el => el.sender_username !== otherUser.username));
+                         setMsgs(msgs.filter(el => el.sender_pseudo !== otherUser.pseudo));
                        }
           } />
         }
@@ -72,6 +72,7 @@ export function UserButton({ otherUser }: Props) {
           <RoundButton icon_size={50} icon={require('../../assets/imgs/icons8-block-128.png')}
             onClick={() => {
               blockUser(otherUser.id);
+              setIsChatOpen(false);
             }} />
         }
         {blocked?.includes(otherUser.id) &&

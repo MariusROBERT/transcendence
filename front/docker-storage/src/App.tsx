@@ -4,6 +4,7 @@ import { AuthGuard, Game, GameScore, Login, MainPage, NotFoundPage } from './com
 import { Route, Routes } from 'react-router-dom';
 import { Contexts } from './contexts';
 import { AnimatedBackground } from './components/ComponentBase/AnimatedBackground';
+import { GameBackground } from './components/ComponentBase/GameBackground';
 
 
 function App() {
@@ -58,6 +59,9 @@ function App() {
       >
         <AnimatedBackground viewport={viewport} ballNumber={10} style={{ zIndex: '-1' }} theme={theme} />
         <Routes>
+          <Route path='/background' element={
+            <GameBackground viewport={viewport} theme={theme}></GameBackground>
+          }></Route>
           <Route path='/login' element={
             <Login viewport={viewport}></Login>}>
           </Route>

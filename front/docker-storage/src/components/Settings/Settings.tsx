@@ -3,9 +3,9 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
-import { API_URL } from '../../utils/Global';
+import { API_URL, color } from '../../utils/Global';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
-import {useUserContext} from '../../contexts';
+import { useUserContext } from '../../contexts';
 
 
 export default function Settings() {
@@ -18,11 +18,13 @@ export default function Settings() {
   const [newImageUrl, setNewImageUrl] = useState<string>('');
   const [newImage, setNewImage] = useState<Blob>();
   const [code2fa, setCode2fa] = useState<string>('');
+  const [confirm2fa, setConfirm2fa] = useState<string>('');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [oldPassword, setOldPassword] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [is2fa, setIs2fa] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>('');
 
   useEffect(() => {
     if (isSettingsOpen) {
@@ -87,20 +89,22 @@ export default function Settings() {
 
   // MODIFICATIONS
 
-  const saveModifications = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const saveModifications = async (e: FormEvent<HTMLFormElement> | null) => {
+    if (e)
+      e.preventDefault();
     const jwtToken = Cookies.get('jwtToken');
     if (
+      newName === '' &&
       confirmPassword === '' &&
       password === '' &&
       newImageUrl === '' &&
       is2fa === userInfosSettings?.is2fa_active
     )
-      // nothing changed
-      {
-        setIsSettingsOpen(false);
-        return;
-      }
+    // nothing changed
+    {
+      setIsSettingsOpen(false);
+      return;
+    }
 
     // PASSWORD :
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
@@ -153,23 +157,43 @@ export default function Settings() {
     }
 
     // 2FA :
-    if (is2fa !== userInfosSettings?.is2fa_active) {
+    if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
+      console.log('1 newname:', newName);
+
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
           is2fa_active: is2fa,
+          pseudo: newName
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
       }
-      if (user?.is2fa_active) {
+      if (user?.qrCode && e) {
         setQrCode2fa(user.qrCode);
         setCode2fa(user.code2fa);
       }
     }
     setErrorMessage('');
     fetchContext();
-    setIsSettingsOpen(false);
+    if (!is2fa || !e)
+      setIsSettingsOpen(false);
+    setNewName('');
   };
+
+  async function validate2fa(code: number) {
+    const res = await Fetch('user/confirm2fa', 'PATCH', JSON.stringify({
+      code: code,
+    }));
+    if (res?.response.ok) {
+      setConfirm2fa('');
+      setQrCode2fa('');
+      setIsSettingsOpen(false);
+    }
+    else if (res?.response.statusText === 'You don\' have to validate 2fa')
+      setQrCode2fa('');
+    else
+      setConfirm2fa('');
+  }
 
   const mobile = window.innerWidth < 500;
 
@@ -178,8 +202,8 @@ export default function Settings() {
       <div>
         <form onSubmit={saveModifications} style={settingsStyle}>
           {mobile ?
-            <h3>{userInfosSettings?.username}</h3> :
-            <h2>{userInfosSettings?.username}</h2>
+            <h3>{userInfosSettings?.pseudo}</h3> :
+            <h2>{userInfosSettings?.pseudo}</h2>
           }
           <div>
             <div style={modifContainerImage}>
@@ -187,8 +211,8 @@ export default function Settings() {
                 ...imgStyle,
                 borderColor: newImageUrl === '' ? 'green' : 'orange',
               }} // green = synced with back, orange = not uploaded yet
-                   src={newImageUrl || userInfosSettings?.urlImg}
-                   alt='user profile pic'
+                src={newImageUrl || userInfosSettings?.urlImg}
+                alt='user profile pic'
               />
               <input
                 id={'image'}
@@ -210,32 +234,36 @@ export default function Settings() {
               />
               <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
             </div>
+            <div className="change_name">
+              <input id='change_name' type="text" placeholder='New name' onChange={(e) => setNewName(e.target.value)} />
+              <label htmlFor="change_name"></label>
+            </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
+          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={oldPassword}
-                             setPassword={setOldPassword}
-                             placeholder={'Current password'}
-                             noVerify
+                setHidePassword={setHidePassword}
+                password={oldPassword}
+                setPassword={setOldPassword}
+                placeholder={'Current password'}
+                noVerify
               />
               <br />
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={password}
-                             setPassword={setPassword}
-                             noVerify /* DEV: uncomment this line for dev */
+                setHidePassword={setHidePassword}
+                password={password}
+                setPassword={setPassword}
+                noVerify /* DEV: uncomment this line for dev */
               />
               <PasswordInput hidePassword={hidePassword}
-                             setHidePassword={setHidePassword}
-                             password={confirmPassword}
-                             setPassword={setConfirmPassword}
-                             placeholder={'Confirm password'}
-                             confirmPassword={password}
-                             noVerify /* DEV: uncomment this line for dev */
+                setHidePassword={setHidePassword}
+                password={confirmPassword}
+                setPassword={setConfirmPassword}
+                placeholder={'Confirm password'}
+                confirmPassword={password}
+                noVerify /* DEV: uncomment this line for dev */
               />
               <br />
             </div>
@@ -243,23 +271,20 @@ export default function Settings() {
           <div style={modifContainer2FA}>
             <p>2FA</p>
             <SwitchToggle
-              onChange={(change) => setIs2fa(change)}
+              onChange={(change: boolean) => setIs2fa(change)}
               checked={!!userInfosSettings?.is2fa_active}
             />
           </div>
           <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>
           <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
         </form>
-        {qrCode2fa &&
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            zIndex: 130,
-            backgroundColor: 'rgba(70,70,70,0.5)',
-            height: '100vh',
-            width: '100vw',
-          }}>
+        {qrCode2fa && qrCode2fa !== '' &&
+          <Popup isVisible={qrCode2fa !== ''} onClose={ () => {
+            setIs2fa(false);
+            setQrCode2fa('');
+            saveModifications(null);
+          }
+          }>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -278,12 +303,49 @@ export default function Settings() {
                 fontSize: '1.75em',
                 textShadow: 'none',
               }}>{code2fa}</p>
-              <button id={'2faDone'} onClick={() => setQrCode2fa('')} style={{ display: 'none' }} />
-              <label htmlFor={'2faDone'}>
-                <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5 }}>Done</p>
-              </label>
+              <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
+                  Enter a first code to validate
+              </p>
+              <input id={'2fa'}
+                     type='number'
+                     name={'twoFactorCode'}
+                     autoComplete={'one-time-code'}
+                     maxLength={6}
+                     value={confirm2fa}
+                     onKeyDown={(e) => {
+                       if (e.key === 'Enter')
+                         validate2fa(Number(confirm2fa));
+                     }}
+                     onChange={(e) => {
+                       if (e.target.value.length > 6)
+                         e.target.value = e.target.value.slice(0, 6);
+                       setConfirm2fa(e.target.value.replace(/[^0-9]/g, ''));
+                     }}
+                     style={{
+                       width: '6ch',
+                       height: '2em',
+                       fontSize: '2.5em',
+                       textAlign: 'center',
+                       backgroundColor: 'darkgrey',
+                       borderRadius: 5,
+                     }}
+              />
+              <div style={{display: 'flex', flexDirection: 'row'}}>
+                <button id={'2faCancel'} onClick={() => {
+                  setIs2fa(false);
+                  setQrCode2fa('');
+                  saveModifications(null);
+                }} style={{ display: 'none' }} />
+                <label htmlFor={'2faCancel'}>
+                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Cancel</p>
+                </label>
+                <button id={'2faDone'} onClick={() => validate2fa(Number(confirm2fa))} style={{ display: 'none' }} />
+                <label htmlFor={'2faDone'}>
+                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Done</p>
+                </label>
+              </div>
             </div>
-          </div>
+          </Popup>
         }
       </div>
     </Popup>
@@ -302,7 +364,7 @@ const settingsStyle: React.CSSProperties = {
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  background: 'grey',
+  backgroundColor: color.blue,
   height: '100%',
   color: 'white',
   margin: '10px',
@@ -341,8 +403,8 @@ export const Btn: React.CSSProperties = {
   height: '30px',
   width: '200px',
   borderRadius: '6px',
-  backgroundColor: 'darkgrey',
+  backgroundColor: color.green,
   padding: '5px',
   marginTop: '5px',
-  color: 'white',
+  color: 'black',
 };

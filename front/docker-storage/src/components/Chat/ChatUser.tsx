@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function ChatUser({ data, visibility, onClose }: Props) {
-  const { setIsProfileOpen, isProfileOpen } = useUIContext();
+  const { setIsProfileOpen } = useUIContext();
   const [muteTime, setmuteTime] = useState<string>('');
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
   const [errorMessage, seterrorMessage] = useState<string>('Error');
@@ -35,7 +35,6 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       }
       if (visibility) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
-        //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
         if (t === 'owner' || t === 'admin') {
           setType('perm');
@@ -43,6 +42,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
         }
         else {
           setType('noperm');
+          onClose();
           setIsProfileOpen(data?.sender_id || 0);
         }
         const rep2 = await Fetch(
@@ -190,7 +190,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
               <ErrorPanel text={errorMessage}></ErrorPanel>
             </div>
             <h2>
-              {currentUser?.username}#{currentUser?.id}
+              {currentUser?.pseudo}#{currentUser?.id}
             </h2>
             <RoundButton
               icon_size={100}

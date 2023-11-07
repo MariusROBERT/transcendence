@@ -44,10 +44,12 @@ export class UserController {
     if (user.user_status == UserStateEnum.OFF) {
       await this.userService.login(user);
     }
-    const publicUser: OwnProfileDto = {
+    return {
       id: user.id,
       username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
+      is2fa_active: user.is2fa_active,
       user_status: user.user_status,
       winrate: user.winrate,
       gamesPlayed: user.gamesPlayed,
@@ -59,8 +61,6 @@ export class UserController {
       sentInvitesTo: user.sentInvitesTo,
       blocked: user.blocked
     };
-
-    return publicUser;
   }
 
   // update_profile
@@ -71,6 +71,15 @@ export class UserController {
     @User() user: UserEntity,
   ) {
     return await this.userService.updateProfile(updateUserDto, user);
+  }
+
+  @Patch('confirm2fa')
+  @UseGuards(JwtAuthGuard)
+  async Confirm2Fa(
+      @Body() body: { code: number },
+      @User() user: UserEntity,
+  ): Promise<string[]> {
+    return this.userService.confirm2Fa(body.code, user);
   }
 
   @Post('update_picture')
@@ -143,13 +152,6 @@ export class UserController {
     return await this.userService.getMsgsByChannel(user, channels, id);
   }
 
-  // get_channels_of_user
-  @Get('get_channels')
-  @UseGuards(JwtAuthGuard)
-  async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
-    return await this.userService.getChannels(user);
-  }
-
   @Get('/:id')
   async GetUserById(
     @Param('id', ParseIntPipe) id: number,
@@ -164,7 +166,6 @@ export class UserController {
   async GetGameStatusWithId(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserGameStatus> {
-    //console.log('fetch user game infos')
     return await this.userService.getGameStatusWithId(id);
   }
 }

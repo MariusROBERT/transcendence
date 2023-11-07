@@ -53,6 +53,7 @@ export class UserService {
     if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
@@ -67,7 +68,9 @@ export class UserService {
     const publicUser: OwnProfileDto = {
       id: user.id,
       username: user.username,
+      pseudo: user.pseudo,
       urlImg: user.urlImg,
+      is2fa_active: user.is2fa_active,
       user_status: user.user_status,
       winrate: user.winrate,
       gamesPlayed: user.gamesPlayed,
@@ -152,7 +155,7 @@ export class UserService {
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
-    PublicProfile.username = profile.username;
+    PublicProfile.pseudo = profile.pseudo;
     PublicProfile.urlImg = profile.urlImg;
     PublicProfile.user_status = profile.user_status;
     PublicProfile.winrate = profile.winrate;
@@ -268,22 +271,21 @@ export class UserService {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
   }
-
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
       .where('channel.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const admin = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.admin', 'admin')
       .where('admin.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const owner = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.own', 'own')
       .where('own.id = :channelId', { channelId })
-      .select(['user.id', 'user.username', 'user.urlImg'])
+      .select(['user.id', 'user.pseudo', 'user.urlImg'])
       .getMany();
     const fusers = users.map((d) => {
       const data = { ...d };
@@ -399,8 +401,26 @@ export class UserService {
       secret,
     );
     user.secret2fa = secret;
+    user.is2fa_active = false;
     await this.UserRepository.save(user);
     return { secret, otpauthUrl };
+  }
+
+  async confirm2Fa(code: number, user: UserEntity) {
+    if (user.is2fa_active || !user.secret2fa || user.secret2fa === '') {
+      throw new BadRequestException('You don\' have to validate 2fa');
+    }
+    if (
+        !authenticator.verify({
+          token: String(code),
+          secret: user.secret2fa,
+        })
+    ) {
+      throw new BadRequestException('Invalid 2fa code');
+    }
+    user.is2fa_active = true;
+    await this.UserRepository.save(user);
+    return ([]);
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
@@ -480,8 +500,6 @@ export class UserService {
     // return ;
     users = users.filter(user=> (user.rank !== 0 || user.id === id));
     let position = users.findIndex((user) => user.id === id);
-    // console.log("NEW");
-    // console.log(position);
     if (users[position].rank === 0)
     {
       users[position].rank = position + 1;
@@ -492,15 +510,11 @@ export class UserService {
       {
         users[position].rank = position + 1;
         await this.UserRepository.save(users[position]);
-        // console.log(users[position]);
         position += 1;
       }
       return ;
     }
     let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
-    // console.log("rank");
-    // console.log(users.map(u=>u.rank));
-    // console.log(position);
     if (diff === 0 )
       return ;
     users[position].rank = position + 1;
@@ -511,10 +525,6 @@ export class UserService {
     while (j !== -diff)
     {
       j += i;
-      // console.log(users.map(u=>u.rank));
-      // console.log(position);
-      // console.log(j);
-      // console.log(diff);
       users[position + j].rank += i;
       await this.UserRepository.save(users[position + j]);
     }

@@ -21,17 +21,16 @@ export function Game({ viewport, theme }: {
   let upPressed = false;
   let downPressed = false;
   const [factor, setFactor] = useState<number>(1);
-  const [usernames, setUsernames] = useState<string[]>(['', '']);
+  const [pseudos, setPseudos] = useState<string[]>(['', '']);
   const [balls, setBalls] = useState<GuidedBall[]>([]);
 
   // On Component Creation ------------------------------------------------------------------------------------------ //
   useEffect(() => {
     if (!isInGameWith)
       return navigate('/');
-    // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
     socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
-      setUsernames([body.p1, body.p2]);
+      setPseudos([body.p1, body.p2]);
     });
 
     return (
@@ -98,7 +97,6 @@ export function Game({ viewport, theme }: {
       });
     }
 
-    // console.log('[', id, '] subscribed to update_game_state');
     socket?.on('update_game_state', onGameStateUpdate);
     return () => {
       socket?.off('update_game_state', onGameStateUpdate);
@@ -202,8 +200,8 @@ export function Game({ viewport, theme }: {
             zIndex: 3,
             top: (viewport.height - size.height) / 2,
           }}>
-            <p style={{ fontSize: '1.25em' }}>{usernames[0]}</p>
-            <p style={{ fontSize: '1.25em' }}>{usernames[1]}</p>
+            <p style={{ fontSize: '1.25em' }}>{pseudos[0]}</p>
+            <p style={{ fontSize: '1.25em' }}>{pseudos[1]}</p>
           </div>
           {id && socket && isInGameWith &&
             <Sketch setup={setup} draw={draw} keyPressed={keyPressed} keyReleased={keyReleased}

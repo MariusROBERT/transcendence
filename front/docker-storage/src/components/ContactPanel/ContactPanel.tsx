@@ -32,7 +32,7 @@ export function ContactPanel({ viewport }: Props) {
   }, [friends, isContactOpen]);
 
   async function FetchChannels() {
-    const channels = (await Fetch('channel/of_user', 'POST'))?.json;
+    const channels = (await Fetch('channel/of_user', 'GET'))?.json;
     if (!channels)
       return setChannelList([]);
     setChannelList(channels);

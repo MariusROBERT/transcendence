@@ -44,10 +44,11 @@ export class MessagesService {
         'channel.id',
         'message.content',
         'message.createdAt',
-        'sender.username',
+        'sender.pseudo',
         'sender.id',
         'sender.urlImg',
       ])
       .getRawMany();
   }
 }
+

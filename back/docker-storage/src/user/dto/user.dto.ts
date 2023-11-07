@@ -5,18 +5,23 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  isNumber,
 } from 'class-validator';
 import { UserRoleEnum, UserStateEnum } from '../../utils/enums/user.enum';
 
+// ----- update :
 export class UpdateUserDto {
+
   @IsOptional()
   @IsString()
-  urlImg!: string;
+  pseudo: string;
+
+  @IsOptional()
+  @IsString()
+  urlImg: string;
 
   @IsOptional()
   @IsBoolean()
-  is2fa_active!: boolean;
+  is2fa_active: boolean;
 
   @IsOptional()
   @IsString()
@@ -31,6 +36,7 @@ export class UpdateUserDto {
   winrate: number;
 }
 
+// ----- channel :
 export class UserChanDto {
   @IsNotEmpty()
   @IsNumber()
@@ -47,6 +53,7 @@ export class UserAddChanDto {
   password: string;
 }
 
+// ----- public :
 export class PublicProfileDto {
   @IsNotEmpty()
   @IsNumber()
@@ -58,7 +65,7 @@ export class PublicProfileDto {
 
   @IsNotEmpty()
   @IsString()
-  username: string;
+  pseudo: string;
 
   @IsNotEmpty()
   @IsString()
@@ -92,6 +99,7 @@ export class PublicProfileDto {
   gamesId: number[];
 }
 
+// ----- private :
 export class OwnProfileDto {
   @IsNotEmpty()
   @IsNumber()
@@ -99,11 +107,18 @@ export class OwnProfileDto {
 
   @IsNotEmpty()
   @IsString()
+  pseudo: string;
+
+  @IsString()
   username: string;
 
   @IsNotEmpty()
   @IsString()
   urlImg: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  is2fa_active: boolean;
 
   @IsNotEmpty()
   @IsEnum(UserStateEnum)
@@ -145,6 +160,7 @@ export class OwnProfileDto {
   gamesId: number[];
 }
 
+// ----- password :
 export class UpdatePwdDto {
   @IsString()
   newPassword: string;
@@ -153,12 +169,14 @@ export class UpdatePwdDto {
   oldPassword: string;
 }
 
+// ----- socket :
 export class GetUserIdFromSocketIdDto {
   @IsNotEmpty()
   @IsString()
   socketId: string;
 }
 
+// ----- game :
 export class UserGameStatus {
   @IsNumber()
   gameInvitationTo: number;

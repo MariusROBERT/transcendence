@@ -7,22 +7,18 @@ import {
   GetCurrChan,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
-import {ChannelMessage, ChannelUsers, IChatUser} from '../../utils/interfaces';
+import {ChannelMessage, ChannelUsers, IChatUser, PublicChannelDto} from '../../utils/interfaces';
 import ChatUser from './ChatUser';
+import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   viewport: Viewport;
   width: number;
 }
 
-interface PublicChannelDto {
-  id: number;
-  channel_name: string;
-  channel_priv_msg: boolean;
-}
-
 // TODO refacto all useEffect (Infinite LOOp)
 export function ChatPanel({ viewport, width }: Props) {
+  const {setIsProfileOpen} = useUIContext();
   const [inputValue, setInputValue] = useState<string>('');
   const [currUser, setCurrUser] = useState<IChatUser>();
   const [channelId, setChannelId] = useState<number>(-1);
@@ -33,14 +29,23 @@ export function ChatPanel({ viewport, width }: Props) {
   const [printMsgs, setPrintMsgs] = useState<JSX.Element[]>([]);
   const [users, setUsers] = useState<ChannelUsers[]>([]);
 
+  const scrollBottom = () => {
+    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
+      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+    }
+  }
 
-  //  See if there is a better way to do this
   const getMsg = async (message: ChannelMessage) => {
     if (message.channel_id !== channelId) return;
     setMessage([...msg, message]);
   };
 
   useEffect(() => {
+    subscribe('enter_chan', async (event: any) => {
+      setPrintMsgs([]);
+      setMessage(event.detail.value);
+      setChannelId(event.detail.id);
+    });
     document.getElementById('inpt')?.focus();
   }, [])
 
@@ -50,15 +55,24 @@ export function ChatPanel({ viewport, width }: Props) {
     return () => {
       socket?.off('message', getMsg);
     };
-  });
+  },[socket, msg]);
 
   useEffect(() => {
     const getChan = async () => {
       if (channelId === -1) return;
       const chan = (await (Fetch(`channel/public/${channelId}`, 'GET')))?.json
       setChannel(chan);
-      // console.log(chan);
     }
+    async function getUsers(){
+      if (channelId < 1) return;
+      setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
+    }
+
+    subscribe('enter_users', async (event: any) => {
+      if (event.detail.id !== channelId) return;
+      setUsers(event.detail.value);
+    });
+    getUsers();
     getChan();
   }, [channelId])
 
@@ -69,35 +83,19 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   }, [socket]);
 
-  useEffect(() => {
-    subscribe('enter_chan', async (event: any) => {
-      setPrintMsgs([]);
-      //console.log(event.detail.value)
-      setMessage(event.detail.value);
-      //console.log(event.detail.id);
-      setChannelId(event.detail.id);
-    });
-  }, []);
-
   async function onEnterPressed() {
-    if (inputValue.length <= 0 || inputValue.length > 256) return;
+    const ipt = inputValue.trim();
+    if (ipt.length <= 0 || ipt.length > 256) return;
     const chan = await GetCurrChan();
-    socket?.emit('message', { message: inputValue, channel: chan } as any);
+    socket?.emit('message', { message: ipt, channel: chan } as any);
     setInputValue('');
   }
 
   async function OnUserClick(msgs: ChannelMessage) {
-    console.log(msgs.sender_username);
+    setIsProfileOpen(0);
+    setCurrUser(undefined);
     setCurrUser(msgs);
   }
-
-  useEffect(() => {
-    // Faites défiler automatiquement vers le bas à chaque mise à jour du composant
-    if (msgsRef.current && msgsRef.current.scrollTop !== undefined) {
-      msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
-    }
-  });
-
 
   useEffect(() => {
     subscribe('enter_users', async (event: any) => {
@@ -108,9 +106,7 @@ export function ChatPanel({ viewport, width }: Props) {
       if (channelId < 1) return;
       setUsers((await Fetch('channel/users/' + channelId, 'GET'))?.json);
     }
-
     getUsers();
-
   }, [channelId]);
 
   useEffect(() => {
@@ -125,12 +121,16 @@ export function ChatPanel({ viewport, width }: Props) {
       </ChatMessage>
     ))
     setPrintMsgs(el);
-  }, [msg])
+  }, [msg]);
+
+  useEffect(() => {
+    scrollBottom();
+  }, [printMsgs])
 
   return (
     <Background bg_color={color.blue} flex_justifyContent={'space-evenly'}>
-      {!channel?.channel_priv_msg && <h3>{channel?.channel_name}</h3>}
-      {channel?.channel_priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].username : users[0].username}</h3>}
+      {!channel?.priv_msg && <h3>{channel?.channel_name}</h3>}
+      {channel?.priv_msg && users.length > 1 && <h3>{users[0].id === id ? users[1].pseudo : users[0].pseudo}</h3>}
       <div style={{ minHeight: '60px', paddingTop: 10 }} />
       <ChanUserList onClick={OnUserClick} chan_id={channelId} users={users}/>
       <div
@@ -165,6 +165,7 @@ export function ChatPanel({ viewport, width }: Props) {
         <textarea id='inpt'
                   value={inputValue}
                   onChange={(evt) => {
+                    if (evt.target.value === '\n') return;
                     setInputValue(evt.target.value);
                   }}
                   onKeyDown={(e) => {
@@ -176,7 +177,7 @@ export function ChatPanel({ viewport, width }: Props) {
                     boxShadow: 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset',
                     background: 'white',
                     outline: 'none',
-                    height: '50px',
+                    height: '40px',
                     fontSize: '1.3em',
                     flex: 'auto',
                     borderRadius: '15px',
@@ -194,7 +195,10 @@ export function ChatPanel({ viewport, width }: Props) {
           onClick={onEnterPressed}
         />
         {<ChatUser data={currUser} visibility={currUser !== undefined}
-                                             onClose={() => setCurrUser(undefined)}></ChatUser>}
+                                             onClose={() => {
+                                                 setCurrUser(undefined);
+                                                 setIsProfileOpen(0);
+                                             }}></ChatUser>}
       </div>
     </Background>
   );
