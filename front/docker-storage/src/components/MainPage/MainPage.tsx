@@ -5,7 +5,6 @@ import {
   ContactPanel,
   Navbar,
   PlayButton,
-  SidePanel,
   Profil,
   Settings,
   Leaderboard,
@@ -16,6 +15,7 @@ import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 import JoinChat from '../Chat/JoinChat';
 import { Rainbow } from '../Game/game.utils';
+import CreateChat from '../Chat/CreateChat';
 
 
 interface Props {
@@ -28,11 +28,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
-  const {
-    isChatOpen, setIsChatOpen,
-    isContactOpen, setIsContactOpen,
-    loadUIContext
-  } = useUIContext();
+  const { loadUIContext  } = useUIContext();
   const [rainbow] = useState<Rainbow>(new Rainbow());
   const [titleColor, setTitleColor] = useState<string>('');
 
@@ -65,19 +61,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
     <div style={MainPageStyle}>
       <Background bg_color={color.clear} flex_direction={'row'} flex_justifyContent={'space-between'}
         flex_alignItems={'stretch'} forceStyle={{ zIndex: 2, position: 'relative' }}>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={true} duration_ms={900} contextIsOpen={isContactOpen} setContextIsOpen={setIsContactOpen} isChatOpen={isChatOpen}>
-          <Background flex_justifyContent={'flex-start'}>
-            <ContactPanel viewport={viewport} />
-          </Background>
-        </SidePanel>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          margin: 'auto',
-          height: '100vh',
-          overflow: 'scroll',
-        }}>
+        <ContactPanel viewport={viewport} />
+        <div style={CenterStyle}>
           <div style={{ height: '350px' }}>
             <h2 style={{margin: '50px', filter: `drop-shadow(0 0 10px ${titleColor})`, fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
@@ -86,21 +71,25 @@ export function MainPage({ panelWidth, viewport }: Props) {
           <PlayButton />
           <div style={{ height: '350px' }} />
         </div>
-        <SidePanel viewport={viewport} width={panelWidth} isLeftPanel={false} duration_ms={900} contextIsOpen={isChatOpen} setContextIsOpen={setIsChatOpen} isChatOpen={isChatOpen}>
-          <Background>
-            <ChatPanel viewport={viewport} width={panelWidth} />
-          </Background>
-        </SidePanel>
+        <ChatPanel viewport={viewport} width={panelWidth} />
       </Background>
       <Leaderboard searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Profil />
       <Settings />
       <JoinChat />
-
-
+      <CreateChat />
     </div>
   );
 }
+
+const CenterStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  margin: 'auto',
+  height: '100vh',
+  overflow: 'scroll'
+};
 
 const MainPageStyle: React.CSSProperties = {
   position: 'relative',

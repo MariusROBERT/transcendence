@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChannelPublicPass } from '../../utils/interfaces';
 import ChannelElement from './ChannelElement';
 import ChatInput from './ChatInput';
-import CreateChat, { createChatStyle } from './CreateChat';
+import { createChatStyle } from './CreateChat';
 import { Button } from '../ComponentBase/Button';
 import Popup from '../ComponentBase/Popup';
 import EnterPassword from './EnterPassword';
@@ -10,13 +10,12 @@ import { useUIContext } from '../../contexts/UIContext/UIContext';
 
 
 export default function JoinChat() {
-  const { isChatMenuOpen, setIsChatMenuOpen, channels } = useUIContext();
+  const { isChatMenuOpen, setIsChatMenuOpen, channels, setIsCreateChannelOpen } = useUIContext();
   const [input, setInput] = useState<string>('');
 
   const [channelStatus, SetChannelStatus] = useState<
     'all' | 'public' | 'protected'
   >('all');
-  const [createChatVisible, setCreChatVisible] = useState<boolean>(false);
   const [enterPassword, setEnterPassword] = useState<boolean>(false);
   const [currentChannel, setCurrentChannel] = useState<
     ChannelPublicPass | undefined
@@ -84,21 +83,14 @@ export default function JoinChat() {
         <div style={{ margin: '10px' }}>
           <Button
             onClick={() => {
-              setCreChatVisible(true);
               setInput('');
-              
+              setIsCreateChannelOpen(true);
+              setIsChatMenuOpen(false);
             }}
           >
             Create Channel
           </Button>
         </div>
-        <Popup isVisible={createChatVisible} onClose={() => setCreChatVisible(false)}>
-          <CreateChat
-            name={''}
-            visible={createChatVisible}
-            setVisible={setCreChatVisible}
-          />
-        </Popup>
         <Popup isVisible={enterPassword} onClose={() => setEnterPassword(false)}>
           <EnterPassword
             visible={enterPassword}

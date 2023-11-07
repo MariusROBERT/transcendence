@@ -21,6 +21,8 @@ type UIContextType = {
   setIsChatMenuOpen: (value: boolean) => void;
   channels: ChannelPublicPass[] | undefined;
   setChannels: (value: ChannelPublicPass[] | undefined) => void;
+  isCreateChannelOpen: boolean;
+  setIsCreateChannelOpen: (value: boolean) => void;
 
   saveUIContext: () => void
   loadUIContext: () => void
@@ -62,6 +64,10 @@ const UIContext = createContext<UIContextType>({
   setChannels: (value: ChannelPublicPass[] | undefined) => {
     void(value);
   },
+  isCreateChannelOpen: false,
+  setIsCreateChannelOpen: (value: boolean) => {
+    void(value);
+  },
 
   saveUIContext: () => {
     return;
@@ -92,6 +98,7 @@ export function UIContextProvider({ children }: Props) {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined);
+  const [isCreateChannelOpen, setIsCreateChannelOpen] = useState(false);
 
   useEffect(() => {
     if (id <= 0) return;
@@ -143,6 +150,8 @@ export function UIContextProvider({ children }: Props) {
         setIsChatMenuOpen,
         channels,
         setChannels,
+        isCreateChannelOpen,
+        setIsCreateChannelOpen,
 
         saveUIContext,
         loadUIContext,
