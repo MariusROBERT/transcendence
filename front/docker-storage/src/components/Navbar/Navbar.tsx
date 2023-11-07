@@ -7,7 +7,6 @@ import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
 import { useUIContext } from '../../contexts/UIContext/UIContext';
 import { current_chan } from '../../utils/channel_functions';
-import { useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const { isProfileOpen, setIsProfileOpen, isSettingsOpen, setIsSettingsOpen } = useUIContext();
@@ -19,10 +18,10 @@ const Navbar: React.FC = () => {
   const { resetUIContext } = useUIContext();
 
   const logout = async () => {
-    window.location.replace('/login')
     Cookies.remove('jwtToken');
     socket?.disconnect();
     resetUIContext();
+    window.location.replace('/login')
   };
  
   const showNotif = () => {
@@ -88,6 +87,7 @@ const Navbar: React.FC = () => {
     flexDirection: 'column',
     top: '420px',
     background: 'transparent',
+    zIndex: 100,
   };
 
   return (

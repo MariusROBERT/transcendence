@@ -28,7 +28,6 @@ export function Game({ viewport, theme }: {
   useEffect(() => {
     if (!isInGameWith)
       return navigate('/');
-    // console.log('[', id, '] emit start_game', { id: id });
     socket?.emit('start_game', { id: id });
     socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
       setPseudos([body.p1, body.p2]);
@@ -98,7 +97,6 @@ export function Game({ viewport, theme }: {
       });
     }
 
-    // console.log('[', id, '] subscribed to update_game_state');
     socket?.on('update_game_state', onGameStateUpdate);
     return () => {
       socket?.off('update_game_state', onGameStateUpdate);

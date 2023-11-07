@@ -84,7 +84,6 @@ export class AuthService {
     }
 
     const hashedPwd = await bcrypt.hash(password, user.salt);
-    //console.log(hashedPwd);
 
     if (hashedPwd === user.password) {
       // JWT
@@ -111,7 +110,6 @@ export class AuthService {
   }
 
   async ftLogin(userData: ftLoginDto) {
-    //console.log(userData.username);
 
     userData.username = userData.username + '_42';
     const { username, urlImg } = userData;

@@ -17,15 +17,3 @@ export async function openChat(user: IUser, socket: Socket | undefined) {
   SetCurrChan(data.channel_name);
   socket?.emit('join', { channel: data.channel_name });
 }
-
-export function sendGameInvite() {
-  // console.log('invite ' + user_name + ' to play a game');
-}
-
-export function lookGame() {
-  // console.log('try to look game with ' + user_name);
-}
-
-export const handleOpenProfil = (setProfilVisible: any) => {
-  setProfilVisible(true);
-};
