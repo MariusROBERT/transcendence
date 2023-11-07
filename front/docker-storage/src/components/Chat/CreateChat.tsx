@@ -34,9 +34,7 @@ export default function CreateChat() {
     SetCurrChan(channelName);
     socket?.emit('join', { channel: channelName } as any);
     publish('open_chat', undefined);
-    document.getElementById('inpt')?.focus();
   }
-
 
   useEffect(() => {
     if (!isCreateChannelOpen) {
