@@ -1,4 +1,4 @@
-all: ssl
+all:
 	mkdir -p front/docker-storage back/docker-storage database/docker-storage
 	rm -rf back/docker-storage/node_modules front/docker-storage/node_modules
 	docker-compose up -d --build
