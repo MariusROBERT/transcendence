@@ -14,6 +14,7 @@ interface Props {
 export function AnimatedBackground(props: Props) {
   const [size, setSize] = useState<Size>(baseSize);
   const [balls] = useState<AutonomousBall[]>([]);
+  const [paused, setPaused] = useState<boolean>(false);
 
   useEffect(() => {
     setSize({
@@ -22,6 +23,14 @@ export function AnimatedBackground(props: Props) {
       height: props.viewport.height,
     });
   }, [props.viewport.width, props.viewport.height]);
+
+  useEffect(() => {
+    if (window.Location.pathname === '/game') {
+      setPaused(true);
+    }
+    else
+      setPaused(false);
+  }, [window.location.pathname]);
 
   let mouseBall;
 
@@ -67,6 +76,8 @@ export function AnimatedBackground(props: Props) {
     p5.rect(size.width / 2 - 5, 0, 10, size.height);
     p5.circle(size.width / 2, size.height / 2, size.ball);
     p5.fill(255, 0, 255);
+    if (paused)
+      return;
     for (let i = 0; i < balls.length; i++) {
       if (i < balls.length - 1) {
         balls[i].update(size, balls.slice(i + 1, balls.length), p5, props.theme);
