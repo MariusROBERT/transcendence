@@ -63,12 +63,10 @@ export function UserContextProvider({ children }: Props) {
       console.log('Connection to socket.io server failed', err);
     });
     socket?.on('disconnect', (reason) => {
-      //console.log('Disconnected from socket.io server', reason);
       void reason;
     });
     socket?.on('connect', () => {
       socket?.emit('update_user_socket_id', { id: id, socketId: socket?.id });
-      // console.log('Connected, Socket ID: ', socket?.id, ' pseudo: [', pseudo, '] ID: ', id);
     });
     socket?.connect();
 

@@ -35,7 +35,6 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       }
       if (visibility) {
         const rep = await Fetch('channel/rights/' + data?.channel_id, 'GET');
-        //console.log(rep?.json.currentUser.type);
         const t = rep?.json?.currentUser?.type;
         if (t === 'owner' || t === 'admin') {
           setType('perm');

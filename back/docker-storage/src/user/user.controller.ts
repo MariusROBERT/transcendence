@@ -152,13 +152,6 @@ export class UserController {
     return await this.userService.getMsgsByChannel(user, channels, id);
   }
 
-  // // get_channels_of_user
-  // @Get('get_channels')
-  // @UseGuards(JwtAuthGuard)
-  // async GetChannels(@User() user: UserEntity): Promise<ChannelEntity[]> {
-  //   return await this.userService.getChannels(user);
-  // }
-
   @Get('/:id')
   async GetUserById(
     @Param('id', ParseIntPipe) id: number,
@@ -173,7 +166,6 @@ export class UserController {
   async GetGameStatusWithId(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserGameStatus> {
-    //console.log('fetch user game infos')
     return await this.userService.getGameStatusWithId(id);
   }
 }

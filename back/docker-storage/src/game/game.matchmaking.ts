@@ -62,7 +62,6 @@ export class GameMatchmaking {
     else if (isSpecial && !this.controller.queueSpecial.includes(id))
       this.controller.queueSpecial.push(id);
 
-    // console.log('after join: \nSpecial  ', this.controller.queueSpecial, '\nNormal  ', this.controller.queue);
     await this.tryLaunchGames();
   }
 
@@ -167,7 +166,6 @@ export class GameMatchmaking {
     let gameId = await this.addGame(user1, user2, game.state.score.p1, game.state.score.p2);
     let player1Won = game.state.score.p1 > game.state.score.p2;
     await this.service.endOfGameUpdatingProfile(gameId, user1, user2, player1Won);
-    // console.log(user1);
     await this.service.rankUpdate(user1.id);
     await this.service.rankUpdate(user2.id);
     //TODO: Save game score and update dataBase here

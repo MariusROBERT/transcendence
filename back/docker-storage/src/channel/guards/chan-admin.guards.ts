@@ -35,7 +35,6 @@ export class AdminGuard implements CanActivate {
     const user = request.user;
     const params = request.params;
 
-    //console.log(params);
     const channel = await this.channelService.getChannelById(params.id);
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
     const has_perm = findPerm(user.username, users_of_chan, ['owner', 'admin']);
