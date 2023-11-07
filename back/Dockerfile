@@ -1,14 +1,12 @@
-FROM	node:latest
+FROM	node:21-alpine
 
 WORKDIR /
-
-#RUN		npm update -g
 RUN		npm i -g @nestjs/cli
 
 WORKDIR	/app
-COPY	script.sh /
-RUN		chmod +x /script.sh
-CMD		["/script.sh"]
-
-#RUN yarn install && yarn upgrade
-# CMD ["npm", " run start:dev"]
+COPY	docker-storage/package.json .
+COPY	docker-storage/package-lock.json .
+RUN		npm install
+COPY	docker-storage .
+RUN		npm run build
+CMD		["npm", "run", "start:prod"]

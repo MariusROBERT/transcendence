@@ -1,2 +1,4 @@
 .env
 .idea
+front/nginx/security
+back/docker-storage/security

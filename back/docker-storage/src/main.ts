@@ -9,11 +9,39 @@ import { json, urlencoded } from 'express';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { FRONT_URL } from './utils/Globals';
+import * as fs from 'fs';
 
 dotenv.config();
 
+const httpsOptions = fs.existsSync('./security/privkey.pem') ? {
+  httpsOptions: {
+    key: fs.readFileSync('./security/privkey.pem'),
+    cert: fs.readFileSync('./security/fullchain.pem'),
+  }
+} : undefined;
+
+const envVars = [
+  'POSTGRES_HOST',
+  'POSTGRES_PORT',
+  'POSTGRES_USER',
+  'POSTGRES_PASSWORD',
+  'POSTGRES_DB',
+  'FT_OAUTH_UID',
+  'FT_OAUTH_SECRET',
+  'JWT_SECRET',
+];
+
+let error = false;
+
+for (const envVar of envVars) {
+  if (!process.env[envVar]) {
+    console.error(`${envVar} is not defined in .env file`);
+    error = true;
+  }
+}
+
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, httpsOptions);
 
   // =================================================================================
   // Configuration des en-têtes CORS
@@ -48,7 +76,8 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.use('/public', express.static(join(__dirname, '..', 'public')));
 
-  await app.listen(parseInt(process.env.BACK_PORT));
+  await app.listen(3001);
 }
 
-bootstrap();
+if (!error)
+  bootstrap();

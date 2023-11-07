@@ -8,7 +8,7 @@ npm install
 #npm upgrade
 
 npm run build
-npm start
+npm start:prod
 
 #nest build
 #nest start --build
