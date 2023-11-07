@@ -4,8 +4,7 @@ import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
 import { PasswordInput, Popup, SwitchToggle } from '..';
 import { API_URL, color } from '../../utils/Global';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
-import { useUserContext } from '../../contexts';
+import { useUIContext, useUserContext } from '../../contexts';
 
 
 export default function Settings() {
@@ -299,7 +298,7 @@ export default function Settings() {
               <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
                   Enter a first code to validate
               </p>
-              <input id={'2fa'}
+              <input id={'2faConfirm'}
                      type='number'
                      name={'twoFactorCode'}
                      autoComplete={'one-time-code'}
