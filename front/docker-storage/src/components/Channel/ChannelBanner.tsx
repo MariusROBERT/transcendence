@@ -52,7 +52,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
   }
 
   async function OnSetting() {
-    if (id == -1) return ;
+    if (id == -1) return;
     const res = await Fetch('channel/public/' + id, 'GET');
     await setPublicData(res?.json);
     setEditVisible(true);
@@ -66,14 +66,9 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         justifyContent: 'space-between',
         borderRadius: '12.5px',
         fontWeight: 'bold',
-        color: type === 'owner' ? color.green  : color.white,
+        color: type === 'owner' ? color.green : color.white,
         backgroundColor:
-          // type === 'owner'
-            // ? 
-            color.light_blue,
-            // : type === 'admin'
-            //   ? color.red
-            //   : color.grey,
+          color.light_blue,
         height: '25px',
         width: mobile ? 200 : 400,
       }}
@@ -103,7 +98,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         flex_justifyContent={'flex-end'}
       >
         <RoundButton
-        icon_size={50}
+          icon_size={50}
           icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
         />

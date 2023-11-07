@@ -38,7 +38,6 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     SetCurrChan(name);
     socket?.emit('join', { channel: name });
     publish('open_chat', undefined);
-    document.getElementById('inpt')?.focus();
   }
 
   const onclick = async () => {

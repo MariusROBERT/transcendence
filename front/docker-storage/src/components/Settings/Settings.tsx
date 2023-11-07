@@ -295,14 +295,7 @@ export default function Settings() {
                 Scan this QrCode in your favorite 2fa application
               </p>
               <img src={qrCode2fa} alt='qrCode2fa' />
-              <p style={{
-                backgroundColor: 'lightgrey',
-                padding: '.7em',
-                borderRadius: 5,
-                color: 'black',
-                fontSize: '1.75em',
-                textShadow: 'none',
-              }}>{code2fa}</p>
+              <p style={code2faStyle}>{code2fa}</p>
               <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
                   Enter a first code to validate
               </p>
@@ -351,6 +344,15 @@ export default function Settings() {
     </Popup>
   );
 }
+
+const code2faStyle: React.CSSProperties = {
+  backgroundColor: 'lightgrey',
+  padding: '.7em',
+  borderRadius: 5,
+  color: 'black',
+  fontSize: '1.75em',
+  textShadow: 'none',
+};
 
 const imgStyle: React.CSSProperties = {
   width: '200px',

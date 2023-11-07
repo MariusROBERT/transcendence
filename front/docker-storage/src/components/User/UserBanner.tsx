@@ -66,14 +66,6 @@ const UserBanner = ({ otherUser }: Props) => {
     margin: '0 10px',
   };
 
-  const statusStyle: CSSProperties = {
-    position: 'absolute',
-    left: '0px',
-    top: '0px',
-    width: '10px',
-    height: '10px',
-  };
-
   return (
     <>
       <div style={userBannerStyle}>
@@ -91,3 +83,12 @@ const UserBanner = ({ otherUser }: Props) => {
   );
 };
 export default UserBanner;
+
+
+const statusStyle: CSSProperties = {
+  position: 'absolute',
+  left: '0px',
+  top: '0px',
+  width: '10px',
+  height: '10px',
+};
