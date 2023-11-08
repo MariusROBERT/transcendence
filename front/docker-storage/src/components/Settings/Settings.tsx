@@ -206,7 +206,7 @@ export default function Settings() {
           }
           <div>
             <div style={modifContainerImage}>
-              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg} icon_size={200} onClick={() => null}/>
+              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg || ''} icon_size={200} onClick={() => null}/>
               {/* <img style={{
                 ...imgStyle,
                 borderColor: newImageUrl === '' ? 'green' : 'orange',
