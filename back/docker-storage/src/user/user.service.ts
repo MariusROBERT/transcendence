@@ -491,7 +491,7 @@ export class UserService {
   }
 
 
-  async rankUpdate(id:number){
+  async rankUpdate(id:number, id2:number){
     let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
     // users.forEach(element => {
     //   element.rank = 0;
@@ -499,36 +499,44 @@ export class UserService {
     //   this.UserRepository.save(element);
     // });
     // return ;
-    users = users.filter(user=> (user.rank !== 0 || user.id === id));
-    let position = users.findIndex((user) => user.id === id);
-    if (users[position].rank === 0)
+    users = users.filter(user=> (user.rank !== 0 || user.id === id || user.id === id2));
+    // let position = users.findIndex((user) => user.id === id);
+    let length = users.length;
+    let position = 0;
+    while (position < length)
     {
       users[position].rank = position + 1;
-      await this.UserRepository.save(users[position]);
-      let length = users.length;
+      this.UserRepository.save(users[position]);
       position += 1;
-      while (position < length)
-      {
-        users[position].rank = position + 1;
-        await this.UserRepository.save(users[position]);
-        position += 1;
-      }
-      return ;
     }
-    let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
-    if (diff === 0 )
-      return ;
-    users[position].rank = position + 1;
-    await this.UserRepository.save(users[position]);
-    let i = 0;
-    diff > 0 ? i = -1 : i = 1;
-    let j = 0;
-    while (j !== -diff)
-    {
-      j += i;
-      users[position + j].rank += i;
-      await this.UserRepository.save(users[position + j]);
-    }
-    return ;
-  }
+  //   if (users[position].rank === 0)
+  //   {
+  //     users[position].rank = position + 1;
+  //     await this.UserRepository.save(users[position]);
+  //     let length = users.length;
+  //     position += 1;
+  //     while (position < length)
+  //     {
+  //       users[position].rank = position + 1;
+  //       await this.UserRepository.save(users[position]);
+  //       position += 1;
+  //     }
+  //     return ;
+  //   }
+  //   let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
+  //   if (diff === 0 )
+  //     return ;
+  //   users[position].rank = position + 1;
+  //   await this.UserRepository.save(users[position]);
+  //   let i = 0;
+  //   diff > 0 ? i = -1 : i = 1;
+  //   let j = 0;
+  //   while (j !== -diff)
+  //   {
+  //     j += i;
+  //     users[position + j].rank += i;
+  //     await this.UserRepository.save(users[position + j]);
+  //   }
+  //   return ;
+  // }
 }
