@@ -60,6 +60,8 @@ export class AuthService {
 
   async login(creditentials: LoginCreditDto) {
     const { username, password } = creditentials;
+    if (username.endsWith('_42'))
+      throw new UnauthorizedException('Click in the 42 button to connect with intra');
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.username = :username', { username })
