@@ -288,13 +288,13 @@ export default function Settings() {
               alignContent: 'space-evenly',
               flexDirection: 'column',
             }}>
-              <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
-                Scan this QrCode in your favorite 2fa application
+              <p style={{ backgroundColor: color.blue, padding: '1em', borderRadius: 5 }}>
+                <strong>Scan this QrCode in your favorite 2fa application</strong>
               </p>
               <img src={qrCode2fa} alt='qrCode2fa' />
               <p style={code2faStyle}>{code2fa}</p>
-              <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
-                  Enter a first code to validate
+              <p style={{ backgroundColor: color.blue, padding: '.5em', borderRadius: 5 }}>
+                  <strong>Enter a first code to validate</strong>
               </p>
               <input id={'2faConfirm'}
                      type='number'
@@ -316,7 +316,7 @@ export default function Settings() {
                        height: '2em',
                        fontSize: '2.5em',
                        textAlign: 'center',
-                       backgroundColor: 'darkgrey',
+                       backgroundColor: 'white',
                        borderRadius: 5,
                      }}
               />
@@ -327,11 +327,11 @@ export default function Settings() {
                   saveModifications(null);
                 }} style={{ display: 'none' }} />
                 <label htmlFor={'2faCancel'}>
-                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Cancel</p>
+                  <p style={{backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color : 'red' }}><strong>Cancel</strong></p>
                 </label>
                 <button id={'2faDone'} onClick={() => validate2fa(Number(confirm2fa))} style={{ display: 'none' }} />
                 <label htmlFor={'2faDone'}>
-                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Done</p>
+                  <p style={{ backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color: 'black' }}><strong>Done</strong></p>
                 </label>
               </div>
             </div>
