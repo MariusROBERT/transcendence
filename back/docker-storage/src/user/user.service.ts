@@ -46,6 +46,8 @@ export class UserService {
       throw new BadRequestException(errors);
     }
 
+    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
+      profile.pseudo = user.pseudo;
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
       ...profile, // modif seulement les differences
@@ -104,9 +106,8 @@ export class UserService {
       throw new UnauthorizedException('Wrong password');
     }
 
-    //DEV: comment these 2 lines for dev
-    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
-    //   return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
+      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
 
     const newPassword = await bcrypt.hash(
       updatePwdDto.newPassword,

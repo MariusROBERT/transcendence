@@ -52,6 +52,7 @@ export class SelfInChannelGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const params = request.params;
+    const user: UserEntity = request.user;
 
     const users = await this.userService.getUsersInChannels(params.id);
     const is_here = users.some((user) => user.id === user.id);

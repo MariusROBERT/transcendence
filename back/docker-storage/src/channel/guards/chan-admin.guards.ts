@@ -15,7 +15,7 @@ function findPerm(
 ): UserEntity | undefined {
   return list.find(
     (user) =>
-      user.username === usernameToFind && typesToCheck.includes(user.type),
+      user.pseudo === usernameToFind && typesToCheck.includes(user.type),
   );
 }
 
