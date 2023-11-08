@@ -239,7 +239,7 @@ export default function Settings() {
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
+          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
