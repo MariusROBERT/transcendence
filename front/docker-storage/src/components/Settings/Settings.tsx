@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput, Popup, SwitchToggle } from '..';
+import { PasswordInput, Popup, RoundButton, SwitchToggle } from '..';
 import { API_URL, color } from '../../utils/Global';
 import { useUIContext, useUserContext } from '../../contexts';
 
@@ -206,13 +206,14 @@ export default function Settings() {
           }
           <div>
             <div style={modifContainerImage}>
-              <img style={{
+              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg} icon_size={200} onClick={() => null}/>
+              {/* <img style={{
                 ...imgStyle,
                 borderColor: newImageUrl === '' ? 'green' : 'orange',
               }} // green = synced with back, orange = not uploaded yet
                 src={newImageUrl || userInfosSettings?.urlImg}
                 alt='user profile pic'
-              />
+              /> */}
               <input
                 id={'image'}
                 type='file'
@@ -383,6 +384,7 @@ const modifContainerImage: React.CSSProperties = {
   ...modifContainer,
   flexDirection: 'column',
   justifyContent: 'center',
+  paddingBottom: '15px'
 };
 
 const modifContainer2FA = {
