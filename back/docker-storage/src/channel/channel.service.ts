@@ -22,12 +22,15 @@ import { MutedService } from 'src/muted/muted.service';
 import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
+import {MutedEntity} from "../database/entities/muted.entity";
 
 @Injectable()
 export class ChannelService {
   constructor(
     @InjectRepository(ChannelEntity)
     private ChannelRepository: Repository<ChannelEntity>,
+    @InjectRepository(MutedEntity)
+    private MutedRepository: Repository<MutedEntity>,
     private userService: UserService,
     private msgService: MessagesService,
     private mutedService: MutedService,
@@ -78,7 +81,7 @@ export class ChannelService {
    @description Join a private channel if exist, else create it
    @param {any} second_user - The second user to join the private channel
    @param {UserEntity} user - The user that create the private channel
-   @return {ChannelENtity} - Public channel data
+   @return {ChannelEntity} - Public channel data
    */
   async joinPrivate(second_user: any, user: UserEntity) {
     const user_two = await this.userService.getUserById(second_user.id);
@@ -348,6 +351,10 @@ export class ChannelService {
         if (users.length === 0) {
           const msg_ids = await this.msgService.getIds(channel.id);
           await this.msgService.delete(msg_ids);
+          await this.MutedRepository.createQueryBuilder('muted')
+            .delete()
+            .where('muted."channelId" = :channel', { channel: channel.id })
+            .execute();
           await this.ChannelRepository.delete(channel.id);
           return this.returnPublicData(channel);
         }

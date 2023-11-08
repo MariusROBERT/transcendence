@@ -17,7 +17,7 @@ export class MutedEntity {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
-  @ManyToOne(() => ChannelEntity)
+  @ManyToOne(() => ChannelEntity, (channel) => channel.mutedUsers)
   channel: ChannelEntity;
 
   @CreateDateColumn()
