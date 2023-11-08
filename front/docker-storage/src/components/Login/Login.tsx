@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Background, Border, Button, Flex, PasswordInput, TwoFA } from '..';
 import { API_URL } from '../../utils/Global';
-import { Rainbow } from '../Game/game.utils';
 
 const SIZE = 350;
 
@@ -27,22 +26,8 @@ export function Login({ duration_ms = 900, viewport }: Props) {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
-  const [rainbow] = useState<Rainbow>(new Rainbow());
-  const [titleColor, setTitleColor] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
-
-  function rgbTitle() {
-    setTimeout(() => {
-      const color = rainbow.next();
-      setTitleColor(`rgb(${color[0]}, ${color[1]}, ${color[2]}`);
-      rgbTitle();
-    }, 20);
-  }
-
-  useEffect(() => {
-    rgbTitle();
-  }, []);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -188,7 +173,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
 
         <Border height={SIZE} width={SIZE} borderColor={color.clear}>
           <Background bg_color={color.clear}>
-            <h2 style={{padding: 20, filter: `drop-shadow(0 0 10px ${titleColor})`}}>Welcome to Pong</h2>
+            <h2 className={'rainbow'} style={{padding: 20}}>Welcome to Pong</h2>
             <p>{signIn ? 'Still not registered?' : 'You have an Account?'}</p>
             <button  className={'button-30 cursor_pointer'} style={{backgroundColor:'grey'}} onClick={() => {
               setSign(!signIn);
