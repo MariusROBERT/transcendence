@@ -46,6 +46,8 @@ export class UserService {
       throw new BadRequestException(errors);
     }
 
+    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
+      profile.pseudo = user.pseudo;
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
       ...profile, // modif seulement les differences
