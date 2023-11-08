@@ -254,7 +254,6 @@ export default function Settings() {
                 setHidePassword={setHidePassword}
                 password={password}
                 setPassword={setPassword}
-                noVerify /* DEV: uncomment this line for dev */
               />
               <PasswordInput hidePassword={hidePassword}
                 setHidePassword={setHidePassword}
@@ -262,7 +261,6 @@ export default function Settings() {
                 setPassword={setConfirmPassword}
                 placeholder={'Confirm password'}
                 confirmPassword={password}
-                noVerify /* DEV: uncomment this line for dev */
               />
               <br />
             </div>
