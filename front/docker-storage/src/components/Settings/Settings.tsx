@@ -235,7 +235,12 @@ export default function Settings() {
               <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
             </div>
             <div className="change_name">
-              <input id='change_name' type="text" placeholder='New name' onChange={(e) => setNewName(e.target.value)} />
+              <input id='change_name'
+                     type="text"
+                     placeholder='New name'
+                     onChange={(e) => setNewName(e.target.value)}
+                     pattern={'[a-zA-Z0-9\\-_+.]{1,10}'}
+              />
               <label htmlFor="change_name"></label>
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
