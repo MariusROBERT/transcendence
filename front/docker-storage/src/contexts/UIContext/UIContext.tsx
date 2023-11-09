@@ -15,6 +15,8 @@ type UIContextType = {
   setIsChatOpen: (value: boolean) => void;
   isContactOpen: boolean;
   setIsContactOpen: (value: boolean) => void;
+  paused: boolean;
+  setPaused: (value: boolean) => void;
 
   // chat
   isChatMenuOpen: boolean;
@@ -52,6 +54,10 @@ const UIContext = createContext<UIContextType>({
   },
   isContactOpen: false,
   setIsContactOpen: (value: boolean) => {
+    void(value);
+  },
+  paused: false,
+  setPaused: (value: boolean) => {
     void(value);
   },
 
@@ -99,6 +105,8 @@ export function UIContextProvider({ children }: Props) {
   const [isChatMenuOpen, setIsChatMenuOpen] = useState(false);
   const [channels, setChannels] = useState<ChannelPublicPass[] | undefined>(undefined);
   const [isCreateChannelOpen, setIsCreateChannelOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
+
 
   useEffect(() => {
     if (id <= 0) return;
@@ -144,6 +152,8 @@ export function UIContextProvider({ children }: Props) {
         setIsChatOpen,
         isContactOpen,
         setIsContactOpen,
+        paused,
+        setPaused,
 
         // chat
         isChatMenuOpen,
