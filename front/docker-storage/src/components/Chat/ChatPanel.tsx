@@ -197,6 +197,7 @@ export function ChatPanel({ viewport, width }: Props) {
             }}
           >
             <textarea id='inpt'
+              disabled={muted}
               value={inputValue}
               onChange={(evt) => {
                 if (evt.target.value === '\n') return;
