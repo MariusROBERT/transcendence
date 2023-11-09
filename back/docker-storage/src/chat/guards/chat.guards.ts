@@ -27,11 +27,11 @@ export class ChatCheckGuard implements CanActivate {
     const users = await this.userService.getUsersInChannels(chanE.id);
     const is_here = users.some((user) => user.id === userE.id);
     if (is_here) {
-      if (
-        (await this.muteService.getMutedInChannel(chanE.id, userE.id))
-          ?.endDate > new Date()
-      )
-        return;
+      //if (
+      //  (await this.muteService.getMutedInChannel(chanE.id, userE.id))
+      //    ?.endDate > new Date()
+      //)
+      //  return;
       return true;
     }
     // throw new Error('You are not in channel');

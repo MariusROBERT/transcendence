@@ -13,6 +13,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
+import { MutedService } from 'src/muted/muted.service';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -35,6 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private chanService: ChannelService,
     private messService: MessagesService,
+    private muteService: MutedService,
     private userService: UserService,
     private jwtService: JwtService,
   ) { }
@@ -120,6 +122,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     
     const userE = await this.userService.getUserByUsername(payload.username);
+
+    // Check if mute
+    if (
+      (await this.muteService.getMutedInChannel(chanE.id, userE.id))
+        ?.endDate > new Date()
+    )
+    {
+      this.server.to('user' + userE.id).emit('muted', (await this.muteService.getMutedInChannel(chanE.id, userE.id)).endDate);
+      return;
+    }
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     const data: ChannelMessage = {
