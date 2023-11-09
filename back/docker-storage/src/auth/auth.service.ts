@@ -70,24 +70,23 @@ export class AuthService {
       throw new NotFoundException('username not found');
     }
 
-    if (user.is2fa_active) {
-      if (creditentials.twoFactorCode) {
-        if (
-          !authenticator.verify({
-            token: creditentials.twoFactorCode,
-            secret: user.secret2fa,
-          })
-        ) {
-          throw new UnauthorizedException('Invalid 2fa code');
-        }
-      } else {
-        throw new UnauthorizedException('Missing 2fa code');
-      }
-    }
-
     const hashedPwd = await bcrypt.hash(password, user.salt);
 
     if (hashedPwd === user.password) {
+      if (user.is2fa_active) {
+        if (creditentials.twoFactorCode) {
+          if (
+              !authenticator.verify({
+                token: creditentials.twoFactorCode,
+                secret: user.secret2fa,
+              })
+          ) {
+            throw new UnauthorizedException('Invalid 2fa code');
+          }
+        } else {
+          throw new UnauthorizedException('Missing 2fa code');
+        }
+      }
       // JWT
       // TODO : change payload: put only user.id
       const payload = {
@@ -98,7 +97,6 @@ export class AuthService {
       // secu for friendsRequest
       user.sentInvitesTo.forEach(id => {
         if (user.friends.includes(id)) {
-          const friend = this.userRepository.findOne({where: {id}});
           user.sentInvitesTo.filter((el) => el !== id);
         }
       });
