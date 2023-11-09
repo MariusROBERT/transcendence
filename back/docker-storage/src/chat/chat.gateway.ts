@@ -47,6 +47,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     this.clients.push(client);
     this.server.emit('connect_ok');
+    // if its working change when user change username
+    client.join('user' + client.id);
   }
 
   async handleDisconnect(client: Socket) {
@@ -130,11 +132,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let tmp = await this.userService.getFullAdminInChannels(chanE.id);
     usersList.concat(tmp);
     usersList = [...usersList, chanE.owner];
-    
     usersList.forEach(usr => {
       if (userE.id !== usr.id) {
         const userRoom = 'user' + usr.id;
-        client.join(userRoom);
+        //client.join(userRoom);
         this.server.to(userRoom).emit('notifMsg', data);
       }
     });
