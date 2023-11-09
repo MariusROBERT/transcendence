@@ -82,6 +82,7 @@ export default function EnterPassword({ visible, setVisible, current }: Props) {
           placeholder='Password'
           style={inputStyle}
           value={password}
+          maxLength={20}
           onChange={(evt) => {
             setPassword(evt.target.value);
           }}
