@@ -19,6 +19,7 @@ const GameHistoryBanner = ({game }: Props) => {
             background:game.scoreUser>game.scoreOpponent? 'radial-gradient(circle, rgba(9,6,64,1) 0%, rgba(0,212,255,1) 100%)':
             'radial-gradient(circle, rgba(62,6,64,1) 14%, rgba(255,4,108,1) 100%)',
             borderRadius: '30px',
+            width: '100%',
           }}>
             <Flex flex_direction="column">
               <div style={nameStyle}>
