@@ -3,7 +3,6 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChannelService } from 'src/channel/channel.service';
 import { MutedService } from 'src/muted/muted.service';
-import { Socket } from 'socket.io-client';
 
 @Injectable()
 export class ChatCheckGuard implements CanActivate {
@@ -16,7 +15,6 @@ export class ChatCheckGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Mettez en œuvre votre logique pour vérifier si l'utilisateur est banni
     const client = context.switchToWs().getClient();
     const data = context.switchToWs().getData();
 
@@ -33,7 +31,6 @@ export class ChatCheckGuard implements CanActivate {
         (await this.muteService.getMutedInChannel(chanE.id, userE.id))
           ?.endDate > new Date()
       )
-        // throw new Error('You are muted');
         return;
       return true;
     }

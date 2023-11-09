@@ -268,7 +268,6 @@ export class ChannelService {
     const usersInChannel = await this.userService.getUsersInChannels(id);
     for (const currentUser of usersInChannel) {
       if (currentUser.id === user.id) {
-        // L'utilisateur actuel est le même que l'utilisateur passé en paramètre
         return { currentUser };
       }
     }
