@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {Ball, clamp, delay, gameRoom, size, State, Vector2,} from './game.interfaces';
 import {GameController} from './game.controller';
 import {GameEntity} from 'src/database/entities/game.entity';
@@ -232,10 +232,15 @@ export class GameService {
 
   async getGames(playerId: number): Promise<{ gameHist: PublicGameDto[] }> {
     let gameHist: PublicGameDto[] = [];
-    const games = await this.gameRepository.find({
+    let games;
+    try {
+      games = await this.gameRepository.find({
       where: [{player1: playerId}, {player2: playerId}],
       order: {date: 'DESC'},
     });
+    } catch {
+      throw new NotFoundException('User not found');
+    }
     const user = await this.UserRepository.findOne({
       where: {id: playerId}
     });

@@ -149,9 +149,12 @@ export class UserService {
 
   async getPublicProfile(
     id: number,
-    user: UserEntity,
   ): Promise<PublicProfileDto> {
-    const profile = await this.UserRepository.findOne({ where: { id } });
+    let profile;
+    try {
+      profile = await this.UserRepository.findOne({ where: { id } });
+    }
+    catch {}
     if (!profile) throw new NotFoundException(`le user ${id} n'existe pas`);
 
     const PublicProfile = new PublicProfileDto();
@@ -341,7 +344,11 @@ export class UserService {
     channels: ChannelEntity[],
     id: number,
   ): Promise<MessageEntity[]> {
-    const channel = await this.ChannelRepository.findOne({ where: { id } });
+    let channel;
+    try {
+      channel = await this.ChannelRepository.findOne({ where: { id } });
+    }
+    catch {}
     if (!channel)
       throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
     if (await this.isInChannel(user.id)) return channel.messages;
@@ -378,9 +385,10 @@ export class UserService {
   }
 
   async getUserById(id: number): Promise<UserEntity> {
-    const user = await this.UserRepository.findOne({
-      where: { id },
-    });
+    let user;
+    try {
+      user = await this.UserRepository.findOne({where: {id}});
+    } catch {}
     if (!user) return;
     return user;
   }
@@ -451,6 +459,8 @@ export class UserService {
 
   async getGameStatusWithId(id: number): Promise<UserGameStatus> {
     const user = await this.getUserById(id);
+    if (!user)
+      throw new NotFoundException('User not found');
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
@@ -465,7 +475,11 @@ export class UserService {
     user2.gamesPlayed += 1;
     let winner = user1;
     let loser = user2;
-    won? 1 : (winner = user2, loser = user1);
+    if (won)
+    {
+      winner = user2;
+      loser = user1;
+    }
     winner.gamesWon += 1;
     loser.gamesLost += 1;
     const K = 50; // ponderation factor
