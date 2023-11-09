@@ -49,6 +49,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         },
       });
     }
+    socket?.emit('leave', { channel: name } as any);
   }
 
   async function OnSetting() {

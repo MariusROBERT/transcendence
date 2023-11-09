@@ -84,6 +84,13 @@ export function ChatPanel({ viewport, width }: Props) {
     };
   }, [socket]);
 
+  useEffect(() => {
+    socket?.on('leave', UpdateChannelUsers);
+    return () => {
+      socket?.off('leave', UpdateChannelUsers);
+    };
+  }, [socket]);
+
   async function onEnterPressed() {
     const ipt = inputValue.trim();
     if (ipt.length <= 0 || ipt.length > 256) return;
