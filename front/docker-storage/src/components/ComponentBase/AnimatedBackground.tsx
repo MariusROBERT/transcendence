@@ -42,7 +42,7 @@ export function AnimatedBackground(props: Props) {
     } catch (e) {
       canvas.parent('container');
     }
-    for (let i = 0; i < (props.ballNumber || 1) && balls.length < props.ballNumber; i++) {
+    for (let i = 0; i < (props.ballNumber || 1) && (props?.ballNumber && balls.length < props?.ballNumber); i++) {
       balls.push(new AutonomousBall(p5, {
           x: Math.random() * (props.viewport.width - (size.ball * 3)) + (size.ball * 1.5),
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),

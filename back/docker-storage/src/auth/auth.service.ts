@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -65,7 +65,7 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     if (!user) {
-      throw new NotFoundException('username not found');
+      throw new BadRequestException('username not found');
     }
 
     if (user.is2fa_active) {
@@ -105,7 +105,7 @@ export class AuthService {
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     }
-    throw new NotFoundException('wrong password');
+    throw new BadRequestException('wrong password');
 
   }
 
@@ -165,7 +165,7 @@ export class AuthService {
       .where('user.username = :ftLogin', { ftLogin })
       .getOne();
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new BadRequestException('user not found');
     }
     if (user.is2fa_active) {
       if (
