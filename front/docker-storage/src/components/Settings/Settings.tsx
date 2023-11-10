@@ -14,6 +14,7 @@ export default function Settings() {
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
   const [pictureError, setPictureError] = useState<string>('');
+  const [pseudoError, setPseudoError] = useState<string>('');
   const [newImageUrl, setNewImageUrl] = useState<string>('');
   const [newImage, setNewImage] = useState<Blob>();
   const [code2fa, setCode2fa] = useState<string>('');
@@ -102,6 +103,8 @@ export default function Settings() {
     // nothing changed
     {
       setIsSettingsOpen(false);
+      console.log('soigh');
+      
       return;
     }
 
@@ -124,6 +127,22 @@ export default function Settings() {
       setOldPassword('');
       setPassword('');
       setConfirmPassword('');
+    }
+
+    //PSEUDO
+    if (newName !== '' && newName !== userInfosSettings?.pseudo)
+    {
+      const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({pseudo:newName})))?.json;
+      if (!user)
+        return ;
+      if (user.message === 'Pseudo already exists') {
+        return (setPseudoError(user.message));
+      }
+      if( user.message === 'Pseudo must contains only alphanums characters') {
+        return (setPseudoError(user.message));
+      }
+      setNewName('');
+      setPseudoError('');
     }
 
     // IMG :
@@ -156,13 +175,10 @@ export default function Settings() {
     }
 
     // 2FA :
-    if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
-      console.log('1 newname:', newName);
-
-      const user = (await Fetch('user', 'PATCH',
+    if (is2fa !== userInfosSettings?.is2fa_active) {
+      const user = (await Fetch('user/update_2fa', 'PATCH',
         JSON.stringify({
           is2fa_active: is2fa,
-          pseudo: newName
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
@@ -204,16 +220,9 @@ export default function Settings() {
             <h3>{userInfosSettings?.pseudo}</h3> :
             <h2>{userInfosSettings?.pseudo}</h2>
           }
-          <div>
+          <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
             <div style={modifContainerImage}>
               <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg || ''} icon_size={200} onClick={() => null}/>
-              {/* <img style={{
-                ...imgStyle,
-                borderColor: newImageUrl === '' ? 'green' : 'orange',
-              }} // green = synced with back, orange = not uploaded yet
-                src={newImageUrl || userInfosSettings?.urlImg}
-                alt='user profile pic'
-              /> */}
               <input
                 id={'image'}
                 type='file'
@@ -241,6 +250,7 @@ export default function Settings() {
                      onChange={(e) => setNewName(e.target.value)}
                      pattern={'[a-zA-Z0-9\\-_+.]{1,10}'}
               />
+              <p style={{color:'red', textAlign:'center', marginBottom:'0px'}}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
@@ -357,12 +367,6 @@ const code2faStyle: React.CSSProperties = {
   textShadow: 'none',
 };
 
-const imgStyle: React.CSSProperties = {
-  width: '200px',
-  borderRadius: '5px',
-  border: '2px solid',
-};
-
 const settingsStyle: React.CSSProperties = {
   borderRadius: '10px',
   padding: '30px',
@@ -406,7 +410,7 @@ export const Btn: React.CSSProperties = {
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  height: '30px',
+  height: '40px',
   width: '200px',
   borderRadius: '6px',
   backgroundColor: color.green,

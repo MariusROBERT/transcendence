@@ -39,7 +39,7 @@ export class UserService {
   // --------- PROFILE --------- :
   // -- Private -- :
 
-  async updateProfile(profile: UpdateUserDto, user: UserEntity) {
+  async updatePseudo(profile: UpdateUserDto, user: UserEntity) {
     const id: number = user.id;
     const errors = await validate(profile);
     if (errors.length > 0) {
@@ -47,7 +47,9 @@ export class UserService {
     }
 
     if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
-      profile.pseudo = user.pseudo;
+      return new BadRequestException('Pseudo must contains only alphanums characters');
+    if (await this.UserRepository.findOne({ where: { pseudo:profile.pseudo} }))
+        return new BadRequestException('Pseudo already exists');
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
       ...profile, // modif seulement les differences
@@ -55,7 +57,20 @@ export class UserService {
     if (!newProfile) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+    return (await this.UserRepository.save(newProfile));
+  }
 
+  async update2Fa(profile: UpdateUserDto, user: UserEntity) {
+    
+    const id: number = user.id;
+    const errors = await validate(profile);
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
+    const newProfile = await this.UserRepository.preload({
+      id, // search user == id
+      ...profile, // modif seulement les differences
+    });
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
