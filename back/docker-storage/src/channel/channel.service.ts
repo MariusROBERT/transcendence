@@ -114,7 +114,7 @@ export class ChannelService {
   ): Promise<PublicChannelDto> {
     const channel = await this.getChannelById(id);
 
-    if (!channel) throw new NotFoundException(`channel ${id} does not exist`);
+    if (!channel) throw new BadRequestException(`channel ${id} does not exist`);
     channel.password = null;
     if (dto.password.length > 0)
       channel.password = await bcrypt.hash(dto.password, channel.salt);
@@ -137,7 +137,7 @@ export class ChannelService {
       where: { id },
     });
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -160,7 +160,7 @@ export class ChannelService {
       .where('channel.id = :id', { id })
       .getRawOne();
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -215,7 +215,7 @@ export class ChannelService {
       //relations: ['admins'],
     });
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -232,7 +232,7 @@ export class ChannelService {
       .where('channel.channel_name = :channel_name', { channel_name })
       .getOne();
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -242,7 +242,7 @@ export class ChannelService {
    @return {MessageEntity[]} - The channel messages
    */
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    if (!id) throw new NotFoundException('Channel Not Found');
+    if (!id) throw new BadRequestException('Channel Not Found');
     return await this.msgService.getMsg(id);
   }
 
@@ -269,7 +269,7 @@ export class ChannelService {
         return { currentUser };
       }
     }
-    throw new NotFoundException('User Not Found');
+    throw new BadRequestException('User Not Found');
   }
 
   /**
