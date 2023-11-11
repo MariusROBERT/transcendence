@@ -59,13 +59,13 @@ export class ChannelEntity {
   @JoinColumn({ name: 'owner_id' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
   public owner!: UserEntity;
 
-  @ManyToMany(() => UserEntity, (user) => user.baned, { eager: true })
+  @ManyToMany(() => UserEntity, (user) => user.baned, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'baned' }) // @JoinColumn() permet de nommer les colonnes de jointure dans la DB pour ManyToOne
   baned?: UserEntity[];
 
   // MUTED :
 
-  @OneToMany(() => MutedEntity, (mutedUser) => mutedUser.channel)
+  @OneToMany(() => MutedEntity, (mutedUser) => mutedUser.channel, { cascade: true, onDelete: 'CASCADE' })
   mutedUsers: MutedEntity[];
 
   // MESSAGES :

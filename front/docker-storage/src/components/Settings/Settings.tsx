@@ -2,10 +2,9 @@ import Cookies from 'js-cookie';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UserInfosForSetting } from '../../utils/interfaces';
 import { Fetch } from '../../utils';
-import { PasswordInput, Popup, SwitchToggle } from '..';
+import { PasswordInput, Popup, RoundButton, SwitchToggle } from '..';
 import { API_URL, color } from '../../utils/Global';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
-import { useUserContext } from '../../contexts';
+import { useUIContext, useUserContext } from '../../contexts';
 
 
 export default function Settings() {
@@ -15,6 +14,7 @@ export default function Settings() {
   const [userInfosSettings, setUserInfosSettings] = useState<UserInfosForSetting>();
   const [qrCode2fa, setQrCode2fa] = useState<string>('');
   const [pictureError, setPictureError] = useState<string>('');
+  const [pseudoError, setPseudoError] = useState<string>('');
   const [newImageUrl, setNewImageUrl] = useState<string>('');
   const [newImage, setNewImage] = useState<Blob>();
   const [code2fa, setCode2fa] = useState<string>('');
@@ -103,6 +103,8 @@ export default function Settings() {
     // nothing changed
     {
       setIsSettingsOpen(false);
+      console.log('soigh');
+      
       return;
     }
 
@@ -125,6 +127,22 @@ export default function Settings() {
       setOldPassword('');
       setPassword('');
       setConfirmPassword('');
+    }
+
+    //PSEUDO
+    if (newName !== '' && newName !== userInfosSettings?.pseudo)
+    {
+      const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({pseudo:newName})))?.json;
+      if (!user)
+        return ;
+      if (user.message === 'Pseudo already exists') {
+        return (setPseudoError(user.message));
+      }
+      if( user.message === 'Pseudo must contains only alphanums characters') {
+        return (setPseudoError(user.message));
+      }
+      setNewName('');
+      setPseudoError('');
     }
 
     // IMG :
@@ -157,13 +175,10 @@ export default function Settings() {
     }
 
     // 2FA :
-    if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
-      console.log('1 newname:', newName);
-
-      const user = (await Fetch('user', 'PATCH',
+    if (is2fa !== userInfosSettings?.is2fa_active) {
+      const user = (await Fetch('user/update_2fa', 'PATCH',
         JSON.stringify({
           is2fa_active: is2fa,
-          pseudo: newName
         })))?.json;
       if (user) {
         setUserInfosSettings(user);
@@ -205,15 +220,9 @@ export default function Settings() {
             <h3>{userInfosSettings?.pseudo}</h3> :
             <h2>{userInfosSettings?.pseudo}</h2>
           }
-          <div>
+          <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
             <div style={modifContainerImage}>
-              <img style={{
-                ...imgStyle,
-                borderColor: newImageUrl === '' ? 'green' : 'orange',
-              }} // green = synced with back, orange = not uploaded yet
-                src={newImageUrl || userInfosSettings?.urlImg}
-                alt='user profile pic'
-              />
+              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg || ''} icon_size={200} onClick={() => null}/>
               <input
                 id={'image'}
                 type='file'
@@ -235,12 +244,18 @@ export default function Settings() {
               <label style={Btn} htmlFor='image'><p style={{ margin: 'auto' }}>Upload Image</p></label>
             </div>
             <div className="change_name">
-              <input id='change_name' type="text" placeholder='New name' onChange={(e) => setNewName(e.target.value)} />
+              <input id='change_name'
+                     type="text"
+                     placeholder='New name'
+                     onChange={(e) => setNewName(e.target.value)}
+                     pattern={'[a-zA-Z0-9\\-_+.]{1,10}'}
+              />
+              <p style={{color:'red', textAlign:'center', marginBottom:'0px'}}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
+          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
@@ -255,7 +270,6 @@ export default function Settings() {
                 setHidePassword={setHidePassword}
                 password={password}
                 setPassword={setPassword}
-                noVerify /* DEV: uncomment this line for dev */
               />
               <PasswordInput hidePassword={hidePassword}
                 setHidePassword={setHidePassword}
@@ -263,7 +277,6 @@ export default function Settings() {
                 setPassword={setConfirmPassword}
                 placeholder={'Confirm password'}
                 confirmPassword={password}
-                noVerify /* DEV: uncomment this line for dev */
               />
               <br />
             </div>
@@ -291,15 +304,15 @@ export default function Settings() {
               alignContent: 'space-evenly',
               flexDirection: 'column',
             }}>
-              <p style={{ backgroundColor: 'darkgrey', padding: '1em', borderRadius: 5 }}>
-                Scan this QrCode in your favorite 2fa application
+              <p style={{ backgroundColor: color.blue, padding: '1em', borderRadius: 5 }}>
+                <strong>Scan this QrCode in your favorite 2fa application</strong>
               </p>
               <img src={qrCode2fa} alt='qrCode2fa' />
               <p style={code2faStyle}>{code2fa}</p>
-              <p style={{ backgroundColor: 'darkgrey', padding: '.5em', borderRadius: 5 }}>
-                  Enter a first code to validate
+              <p style={{ backgroundColor: color.blue, padding: '.5em', borderRadius: 5 }}>
+                  <strong>Enter a first code to validate</strong>
               </p>
-              <input id={'2fa'}
+              <input id={'2faConfirm'}
                      type='number'
                      name={'twoFactorCode'}
                      autoComplete={'one-time-code'}
@@ -319,7 +332,7 @@ export default function Settings() {
                        height: '2em',
                        fontSize: '2.5em',
                        textAlign: 'center',
-                       backgroundColor: 'darkgrey',
+                       backgroundColor: 'white',
                        borderRadius: 5,
                      }}
               />
@@ -330,11 +343,11 @@ export default function Settings() {
                   saveModifications(null);
                 }} style={{ display: 'none' }} />
                 <label htmlFor={'2faCancel'}>
-                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Cancel</p>
+                  <p style={{backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color : 'red' }}><strong>Cancel</strong></p>
                 </label>
                 <button id={'2faDone'} onClick={() => validate2fa(Number(confirm2fa))} style={{ display: 'none' }} />
                 <label htmlFor={'2faDone'}>
-                  <p style={{ backgroundColor: 'darkgrey', padding: '.7em', borderRadius: 5, margin: 10 }}>Done</p>
+                  <p style={{ backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color: 'black' }}><strong>Done</strong></p>
                 </label>
               </div>
             </div>
@@ -352,12 +365,6 @@ const code2faStyle: React.CSSProperties = {
   color: 'black',
   fontSize: '1.75em',
   textShadow: 'none',
-};
-
-const imgStyle: React.CSSProperties = {
-  width: '200px',
-  borderRadius: '5px',
-  border: '2px solid',
 };
 
 const settingsStyle: React.CSSProperties = {
@@ -384,6 +391,7 @@ const modifContainerImage: React.CSSProperties = {
   ...modifContainer,
   flexDirection: 'column',
   justifyContent: 'center',
+  paddingBottom: '15px'
 };
 
 const modifContainer2FA = {
@@ -402,7 +410,7 @@ export const Btn: React.CSSProperties = {
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  height: '30px',
+  height: '40px',
   width: '200px',
   borderRadius: '6px',
   backgroundColor: color.green,

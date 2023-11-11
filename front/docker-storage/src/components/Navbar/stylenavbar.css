@@ -19,9 +19,12 @@
     border-bottom: 0.5px solid grey;
 }
 
-.notif:hover {
+.notif {
     background: linear-gradient(to left, #2b2b2b 10%, rgb(26, 26, 26) 90%);
+}
 
+.notif:hover {
+    background: linear-gradient(to left, #404040 10%, rgb(40, 40, 40) 90%);
 }
 
 .notif .container {

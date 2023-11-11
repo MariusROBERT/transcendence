@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,13 +38,17 @@ export class UserService {
   // --------- PROFILE --------- :
   // -- Private -- :
 
-  async updateProfile(profile: UpdateUserDto, user: UserEntity) {
+  async updatePseudo(profile: UpdateUserDto, user: UserEntity) {
     const id: number = user.id;
     const errors = await validate(profile);
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
 
+    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
+      return new BadRequestException('Pseudo must contains only alphanums characters');
+    if (await this.UserRepository.findOne({ where: { pseudo:profile.pseudo} }))
+        return new BadRequestException('Pseudo already exists');
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
       ...profile, // modif seulement les differences
@@ -53,7 +56,20 @@ export class UserService {
     if (!newProfile) {
       throw new BadRequestException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
+    return (await this.UserRepository.save(newProfile));
+  }
 
+  async update2Fa(profile: UpdateUserDto, user: UserEntity) {
+    
+    const id: number = user.id;
+    const errors = await validate(profile);
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
+    const newProfile = await this.UserRepository.preload({
+      id, // search user == id
+      ...profile, // modif seulement les differences
+    });
     if (profile.is2fa_active) {
       const { otpauthUrl } = await this.generateTwoFactorSecret(newProfile);
       const secret = /secret=(.+?)&/.exec(otpauthUrl);
@@ -104,9 +120,8 @@ export class UserService {
       throw new UnauthorizedException('Wrong password');
     }
 
-    //DEV: comment these 2 lines for dev
-    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
-    //   return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
+      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
 
     const newPassword = await bcrypt.hash(
       updatePwdDto.newPassword,
@@ -148,9 +163,12 @@ export class UserService {
 
   async getPublicProfile(
     id: number,
-    user: UserEntity,
   ): Promise<PublicProfileDto> {
-    const profile = await this.UserRepository.findOne({ where: { id } });
+    let profile;
+    try {
+      profile = await this.UserRepository.findOne({ where: { id } });
+    }
+    catch {}
     if (!profile) throw new BadRequestException(`le user ${id} n'existe pas`);
 
     const PublicProfile = new PublicProfileDto();
@@ -168,12 +186,12 @@ export class UserService {
     return PublicProfile;
   }
 
-  async getAllProfile(user: UserEntity): Promise<PublicProfileDto[]> {
+  async getAllProfile(): Promise<PublicProfileDto[]> {
     const users = await this.UserRepository.find();
     // Créez un tableau pour stocker les profils
     const PublicProfiles: PublicProfileDto[] = [];
     for (const profile of users) {
-      const PublicProfile = await this.getPublicProfile(profile.id, user);
+      const PublicProfile = await this.getPublicProfile(profile.id);
       PublicProfiles.push(PublicProfile);
     }
     return PublicProfiles;
@@ -340,7 +358,11 @@ export class UserService {
     channels: ChannelEntity[],
     id: number,
   ): Promise<MessageEntity[]> {
-    const channel = await this.ChannelRepository.findOne({ where: { id } });
+    let channel;
+    try {
+      channel = await this.ChannelRepository.findOne({ where: { id } });
+    }
+    catch {}
     if (!channel)
       throw new BadRequestException(`le channel d'id ${id} n'existe pas`);
     if (await this.isInChannel(user.id)) return channel.messages;
@@ -377,9 +399,10 @@ export class UserService {
   }
 
   async getUserById(id: number): Promise<UserEntity> {
-    const user = await this.UserRepository.findOne({
-      where: { id },
-    });
+    let user;
+    try {
+      user = await this.UserRepository.findOne({where: {id}});
+    } catch {}
     if (!user) return;
     return user;
   }
@@ -450,6 +473,8 @@ export class UserService {
 
   async getGameStatusWithId(id: number): Promise<UserGameStatus> {
     const user = await this.getUserById(id);
+    if (!user)
+      throw new BadRequestException('User not found');
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,
@@ -462,9 +487,8 @@ export class UserService {
   
     user1.gamesPlayed += 1;
     user2.gamesPlayed += 1;
-    let winner = user1;
-    let loser = user2;
-    won? 1 : (winner = user2, loser = user1);
+    let winner = won ? user1 : user2;
+    let loser = won ? user2 : user1;
     winner.gamesWon += 1;
     loser.gamesLost += 1;
     const K = 50; // ponderation factor
@@ -490,44 +514,16 @@ export class UserService {
   }
 
 
-  async rankUpdate(id:number){
+  async rankUpdate(){
     let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
-    // users.forEach(element => {
-    //   element.rank = 0;
-    //   element.elo = 1000;
-    //   this.UserRepository.save(element);
-    // });
-    // return ;
-    users = users.filter(user=> (user.rank !== 0 || user.id === id));
-    let position = users.findIndex((user) => user.id === id);
-    if (users[position].rank === 0)
+    users = users.filter(user=> (user.rank !== 0));
+    let length = users.length;
+    let position = 0;
+    while (position < length)
     {
       users[position].rank = position + 1;
-      await this.UserRepository.save(users[position]);
-      let length = users.length;
+      this.UserRepository.save(users[position]);
       position += 1;
-      while (position < length)
-      {
-        users[position].rank = position + 1;
-        await this.UserRepository.save(users[position]);
-        position += 1;
-      }
-      return ;
     }
-    let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
-    if (diff === 0 )
-      return ;
-    users[position].rank = position + 1;
-    await this.UserRepository.save(users[position]);
-    let i = 0;
-    diff > 0 ? i = -1 : i = 1;
-    let j = 0;
-    while (j !== -diff)
-    {
-      j += i;
-      users[position + j].rank += i;
-      await this.UserRepository.save(users[position + j]);
-    }
-    return ;
   }
 }

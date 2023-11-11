@@ -11,10 +11,8 @@ import {
 } from '..';
 import React, { useEffect, useState } from 'react';
 import { Search } from '../Search/Search';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
 import JoinChat from '../Chat/JoinChat';
-import { Rainbow } from '../Game/game.utils';
 import CreateChat from '../Chat/CreateChat';
 
 
@@ -29,18 +27,8 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
   const { loadUIContext  } = useUIContext();
-  const [rainbow] = useState<Rainbow>(new Rainbow());
-  const [titleColor, setTitleColor] = useState<string>('');
 
   // functions -------------------------------------------------------------------------------------------------------//
-
-  function rgbTitle() {
-    setTimeout(() => {
-      const color = rainbow.next();
-      setTitleColor(`rgb(${color[0]}, ${color[1]}, ${color[2]}`);
-      rgbTitle();
-    }, 20);
-  }
 
   useEffect(() => {
     if (focused) {
@@ -50,7 +38,6 @@ export function MainPage({ panelWidth, viewport }: Props) {
   }, [focused]);
 
   useEffect(() => {
-    rgbTitle();
     fetchFriendsRequestContext();
     loadUIContext();
     // eslint-disable-next-line
@@ -64,7 +51,7 @@ export function MainPage({ panelWidth, viewport }: Props) {
         <ContactPanel viewport={viewport} />
         <div style={CenterStyle}>
           <div style={{ height: '350px' }}>
-            <h2 style={{margin: '50px', filter: `drop-shadow(0 0 10px ${titleColor})`, fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
+            <h2 className={'rainbow'} style={{margin: '50px', fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
             <Navbar />
           </div>

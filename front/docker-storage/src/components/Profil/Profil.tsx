@@ -1,9 +1,8 @@
 import {GameHistory, IUser} from '../../utils/interfaces';
 import React, {CSSProperties, useEffect, useState} from 'react';
 import {UserButton} from '../User/UserButton';
-import {useUserContext} from '../../contexts';
+import {useUserContext, useUIContext} from '../../contexts';
 import {Flex, Popup, RoundButton} from '../index';
-import {useUIContext} from '../../contexts/UIContext/UIContext';
 import {Fetch} from '../../utils';
 import GameHistoryBanner from './GameHistoryBanner';
 
@@ -40,6 +39,7 @@ export default function Profil() {
     flexDirection: 'column',
     background: '#00375C',
     height: '100%',
+    maxHeight: '90vh',
     color: 'white',
     margin: mobile ? 5 : 10,
     cursor: 'pointer',
@@ -81,7 +81,7 @@ export default function Profil() {
         }
         <Flex flex_direction="row">
           <div style={{alignItems: 'center'}}>
-            {profilUser ? <RoundButton isDisabled={true} icon={profilUser.urlImg} icon_size={250} onClick={() => null}/> : <p>No Image</p>}
+            {profilUser ? <RoundButton isDisabled={true} icon={profilUser.urlImg} icon_size={150} onClick={() => null}/> : <p>No Image</p>}
             <img style={isProfileOpen !== id ? statusStyle : (profilUser?.user_status ? statusStyle : imgStyle)}
                  src={profilUser?.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') :
                    require('../../assets/imgs/icon_red_disconnect.png')}
@@ -165,8 +165,9 @@ const titleStyle: CSSProperties = {
 const ProfilStyle: CSSProperties = {
   minWidth: '13ch',
   fontSize:'20px',
+  margin: '5px 0',
 };
 
 const nameStyle: CSSProperties = {
-  fontSize:'80px'
+  fontSize:'70px'
 };

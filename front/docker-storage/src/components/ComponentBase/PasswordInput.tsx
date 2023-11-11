@@ -77,7 +77,7 @@ export function PasswordInput(props: Props) {
       errors.push('len');
     return (
       <p style={popUpStyle}>
-        {errors.map((error) => <span>{error}<br /></span>)}
+        {errors.map((error, i) => <span key={i}>{error}<br /></span>)}
       </p>
     );
   }
