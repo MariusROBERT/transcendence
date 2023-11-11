@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {Ball, clamp, delay, gameRoom, size, State, Vector2,} from './game.interfaces';
 import {GameController} from './game.controller';
 import {GameEntity} from 'src/database/entities/game.entity';
@@ -32,7 +32,7 @@ export class GameService {
     //check for the end game conditions
     if (
       (!game.state.isSpecial && (game.state.score.p1 >= 10 || game.state.score.p2 >= 10))
-      || (game.state.score.p1 >= 20 || game.state.score.p2 >= 20)
+      || (game.state.score.p1 >= 15 || game.state.score.p2 >= 15)
       || !game.state.running
     ) {
       game.state.running = false;
@@ -79,7 +79,7 @@ export class GameService {
     this.bounce(state);
 
     //increase progressively the speed of players
-    state.player_speed = Math.min(state.player_speed + 0.001, 7);
+    state.player_speed = Math.min(state.player_speed + 0.001, 8);
 
     //increase progressively the speed of balls
     for (let i = 0; i < state.balls.length; i++) {
@@ -193,7 +193,7 @@ export class GameService {
 
   private startNewRound2Balls(state: State) {
     this.createNBalls(state, 2);
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 4);
   }
 
   private createNBalls(state: State, n: number) {
@@ -204,7 +204,7 @@ export class GameService {
         new Ball(
           new Vector2(size.width / 2, ypos),
           new Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1),
-          1,
+          2.5,
           i,
         ),
       );
@@ -215,27 +215,32 @@ export class GameService {
   private startNewRoundSpeedUp(state: State) {
     //place holder
     this.createNBalls(state, 7);
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 4);
   }
 
   private startNewRoundSpeedDown(state: State) {
     //place holder
     this.createNBalls(state, 3);
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 4);
   }
 
   private startNewRoundBigBar(state: State) {
     //place holder
     this.createNBalls(state, 4);
-    state.player_speed = Math.max(state.player_speed - 2, 1);
+    state.player_speed = Math.max(state.player_speed - 2, 4);
   }
 
   async getGames(playerId: number): Promise<{ gameHist: PublicGameDto[] }> {
     let gameHist: PublicGameDto[] = [];
-    const games = await this.gameRepository.find({
+    let games;
+    try {
+      games = await this.gameRepository.find({
       where: [{player1: playerId}, {player2: playerId}],
       order: {date: 'DESC'},
     });
+    } catch {
+      throw new NotFoundException('User not found');
+    }
     const user = await this.UserRepository.findOne({
       where: {id: playerId}
     });

@@ -69,7 +69,7 @@ export class UserEntity {
   @JoinTable()
   public baned: ChannelEntity[];
 
-  @OneToMany(() => MutedEntity, (muted) => muted.user)
+  @OneToMany(() => MutedEntity, (muted) => muted.user, { onDelete: 'CASCADE' })
   @JoinTable()
   public muted: MutedEntity[];
 

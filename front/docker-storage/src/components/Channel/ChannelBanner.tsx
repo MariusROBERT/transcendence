@@ -11,7 +11,7 @@ import { useFriendsRequestContext, useUserContext } from '../../contexts';
 import EditChat from '../Chat/EditChat';
 import { useEffect, useState } from 'react';
 import { publish } from '../../utils/event';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts';
 
 export function ChannelBanner({ id, name, type }: ChannelInfos) {
   const { setIsChatOpen } = useUIContext();
@@ -102,11 +102,13 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
           icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
         />
-        <RoundButton
-          icon_size={50}
-          icon={require('../../assets/imgs/settings-svgrepo-com.png')}
-          onClick={OnSetting}
-        />
+        {type === 'owner' &&
+          <RoundButton
+            icon_size={50}
+            icon={require('../../assets/imgs/settings-svgrepo-com.png')}
+            onClick={OnSetting}
+          />
+        }
       </Flex>
       <EditChat data={publicData} isVisible={editVisible} setIsVisible={setEditVisible} />
     </div>

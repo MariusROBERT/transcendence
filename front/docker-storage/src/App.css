@@ -170,3 +170,50 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+@keyframes rainbowdropshadow {
+    0% {
+        filter: drop-shadow(0 0 10px #FF0000);
+    }
+    8% {
+        filter: drop-shadow(0 0 10px #FF7F00);
+    }
+    16% {
+        filter: drop-shadow(0 0 10px #FFFF00);
+    }
+    25% {
+        filter: drop-shadow(0 0 10px #7FFF00);
+    }
+    33% {
+        filter: drop-shadow(0 0 10px #00FF00);
+    }
+    41% {
+        filter: drop-shadow(0 0 10px #00FF7F);
+    }
+    50% {
+        filter: drop-shadow(0 0 10px #00FFFF);
+    }
+    58% {
+        filter: drop-shadow(0 0 10px #007FFF);
+    }
+    66% {
+        filter: drop-shadow(0 0 10px #0000FF);
+    }
+    75% {
+        filter: drop-shadow(0 0 10px #7F00FF);
+    }
+    83% {
+        filter: drop-shadow(0 0 10px #FF00FF);
+    }
+    91% {
+        filter: drop-shadow(0 0 10px #FF007F);
+    }
+    100% {
+        filter: drop-shadow(0 0 10px #FF0000);
+    }
+}
+
+.rainbow {
+    -webkit-animation: rainbowdropshadow 5s infinite;
+    animation: rainbowdropshadow 5s infinite;
+}

@@ -64,13 +64,22 @@ export class UserController {
   }
 
   // update_profile
-  @Patch()
+  @Patch('update_pseudo')
   @UseGuards(JwtAuthGuard)
-  async UpdateProfile(
+  async UpdatePseudo(
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
   ) {
-    return await this.userService.updateProfile(updateUserDto, user);
+    return await this.userService.updatePseudo(updateUserDto, user);
+  }
+
+  @Patch('update_2fa')
+  @UseGuards(JwtAuthGuard)
+  async Update2Fa(
+    @Body() updateUserDto: UpdateUserDto,
+    @User() user: UserEntity,
+  ) {
+    return await this.userService.update2Fa(updateUserDto, user);
   }
 
   @Patch('confirm2fa')
@@ -118,7 +127,7 @@ export class UserController {
   async GetAllPublicProfile(
     @User() user: UserEntity,
   ): Promise<PublicProfileDto[]> {
-    return await this.userService.getAllProfile(user);
+    return await this.userService.getAllProfile();
   }
 
   // get_a_public_profile_by_id
@@ -128,9 +137,9 @@ export class UserController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PublicProfileDto> {
-    return await this.userService.getPublicProfile(id, user);
+    return await this.userService.getPublicProfile(id);
   }
-
+  
   // --------- MSG & CHANNEL --------- :
 
   @Patch('remove_last_msg')

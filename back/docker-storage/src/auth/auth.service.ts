@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -28,11 +28,10 @@ export class AuthService {
   async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
     // on veut crypter le pwd avec la bibliotheque bcrypt
     // Create User
-    //DEV: comment these 2 lines for dev
-    // if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
-    //   throw new BadRequestException('Password must contain between 8 and 50 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
-    // if (!/[a-zA-Z0-9\-_+.]{1,10}/.test(userData.username))
-    //   throw new BadRequestException('Username must contain between 1 and 10 characters, only letters, numbers and -_+. are allowed');
+    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
+      throw new BadRequestException('Password must contain between 8 and 50 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+    if (!/[a-zA-Z0-9\-_+.]{1,10}/.test(userData.username))
+      throw new BadRequestException('Username must contain between 1 and 10 characters, only letters, numbers and -_+. are allowed');
     const user = this.userRepository.create({
       ...userData,
     });
@@ -60,6 +59,8 @@ export class AuthService {
 
   async login(creditentials: LoginCreditDto) {
     const { username, password } = creditentials;
+    if (username.endsWith('_42'))
+      throw new UnauthorizedException('Click in the 42 button to connect with intra');
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.username = :username', { username })
@@ -68,24 +69,23 @@ export class AuthService {
       throw new BadRequestException('username not found');
     }
 
-    if (user.is2fa_active) {
-      if (creditentials.twoFactorCode) {
-        if (
-          !authenticator.verify({
-            token: creditentials.twoFactorCode,
-            secret: user.secret2fa,
-          })
-        ) {
-          throw new UnauthorizedException('Invalid 2fa code');
-        }
-      } else {
-        throw new UnauthorizedException('Missing 2fa code');
-      }
-    }
-
     const hashedPwd = await bcrypt.hash(password, user.salt);
 
     if (hashedPwd === user.password) {
+      if (user.is2fa_active) {
+        if (creditentials.twoFactorCode) {
+          if (
+              !authenticator.verify({
+                token: creditentials.twoFactorCode,
+                secret: user.secret2fa,
+              })
+          ) {
+            throw new UnauthorizedException('Invalid 2fa code');
+          }
+        } else {
+          throw new UnauthorizedException('Missing 2fa code');
+        }
+      }
       // JWT
       // TODO : change payload: put only user.id
       const payload = {
@@ -96,7 +96,6 @@ export class AuthService {
       // secu for friendsRequest
       user.sentInvitesTo.forEach(id => {
         if (user.friends.includes(id)) {
-          const friend = this.userRepository.findOne({where: {id}});
           user.sentInvitesTo.filter((el) => el !== id);
         }
       });
