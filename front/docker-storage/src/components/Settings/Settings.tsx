@@ -156,10 +156,12 @@ export default function Settings() {
       }
     }
 
-    // 2FA :
-    if (is2fa !== userInfosSettings?.is2fa_active || newName !== userInfosSettings?.pseudo) {
-      console.log('1 newname:', newName);
-
+    // 2FA && NEWNAME :
+    if (is2fa !== userInfosSettings?.is2fa_active || (newName !== userInfosSettings?.pseudo && newName !== '')) {
+      if (newName.endsWith('_42')) {
+        setErrorMessage('Le new name ne peut pas finir par _42');
+        return ;
+      }
       const user = (await Fetch('user', 'PATCH',
         JSON.stringify({
           is2fa_active: is2fa,
@@ -240,7 +242,7 @@ export default function Settings() {
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
           </div>
-          {(userInfosSettings?.pseudo && userInfosSettings?.pseudo.match(/.*_42/)) ? null :
+          {(userInfosSettings?.username && userInfosSettings?.username.match(/.*_42/)) ? null :
             //hide password change for 42 users
             <div style={modifContainerPwd}>
               <PasswordInput hidePassword={hidePassword}
