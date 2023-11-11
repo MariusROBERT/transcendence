@@ -103,8 +103,6 @@ export default function Settings() {
     // nothing changed
     {
       setIsSettingsOpen(false);
-      console.log('soigh');
-      
       return;
     }
 
