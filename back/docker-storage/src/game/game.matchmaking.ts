@@ -76,7 +76,7 @@ export class GameMatchmaking {
         this.controller.queue[1],
         false,
       );
-      this.controller.queue.slice(2);
+      this.controller.queue = this.controller.queue.slice(2);
     }
 
     while (this.controller.queueSpecial.length >= 2) {
@@ -88,7 +88,7 @@ export class GameMatchmaking {
         this.controller.queueSpecial[1],
         true,
       );
-      this.controller.queueSpecial.slice(2);
+      this.controller.queueSpecial = this.controller.queueSpecial.slice(2);
     }
   }
 
@@ -164,14 +164,12 @@ export class GameMatchmaking {
     this.controller.games = this.controller.games.filter(g => !g.playerIds.includes(id));
 
     let gameId = await this.addGame(user1, user2, game.state.score.p1, game.state.score.p2);
+    console.log(user1.pseudo, 'score', game.state.score.p1);
+    console.log(user2.pseudo, 'score', game.state.score.p2);
     let player1Won = game.state.score.p1 > game.state.score.p2;
+    console.log('winner: ', player1Won ? user1.pseudo : user2.pseudo);
     await this.service.endOfGameUpdatingProfile(gameId, user1, user2, player1Won);
-    await this.service.rankUpdate(user1.id, user2.id);
-    // await this.service.rankUpdate(user2.id);
-    //TODO: Save game score and update dataBase here
-
-    // remove the game from the controller's games
-    this.controller.games = this.controller.games.filter((g) => g !== game);
+    await this.service.rankUpdate();
 
     // send end Game to the player's front
     await this.controller.gateway.endGame(game.playerIds);

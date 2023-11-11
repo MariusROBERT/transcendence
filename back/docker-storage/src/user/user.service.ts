@@ -488,13 +488,8 @@ export class UserService {
   
     user1.gamesPlayed += 1;
     user2.gamesPlayed += 1;
-    let winner = user1;
-    let loser = user2;
-    if (won)
-    {
-      winner = user2;
-      loser = user1;
-    }
+    let winner = won ? user1 : user2;
+    let loser = won ? user2 : user1;
     winner.gamesWon += 1;
     loser.gamesLost += 1;
     const K = 50; // ponderation factor
@@ -520,16 +515,9 @@ export class UserService {
   }
 
 
-  async rankUpdate(id:number, id2:number){
+  async rankUpdate(){
     let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
-    // users.forEach(element => {
-    //   element.rank = 0;
-    //   element.elo = 1000;
-    //   this.UserRepository.save(element);
-    // });
-    // return ;
-    users = users.filter(user=> (user.rank !== 0 || user.id === id || user.id === id2));
-    // let position = users.findIndex((user) => user.id === id);
+    users = users.filter(user=> (user.rank !== 0));
     let length = users.length;
     let position = 0;
     while (position < length)
@@ -538,35 +526,5 @@ export class UserService {
       this.UserRepository.save(users[position]);
       position += 1;
     }
-  //   if (users[position].rank === 0)
-  //   {
-  //     users[position].rank = position + 1;
-  //     await this.UserRepository.save(users[position]);
-  //     let length = users.length;
-  //     position += 1;
-  //     while (position < length)
-  //     {
-  //       users[position].rank = position + 1;
-  //       await this.UserRepository.save(users[position]);
-  //       position += 1;
-  //     }
-  //     return ;
-  //   }
-  //   let diff = position + 1 - users[position].rank; // a negative diff means the player upped his rank
-  //   if (diff === 0 )
-  //     return ;
-  //   users[position].rank = position + 1;
-  //   await this.UserRepository.save(users[position]);
-  //   let i = 0;
-  //   diff > 0 ? i = -1 : i = 1;
-  //   let j = 0;
-  //   while (j !== -diff)
-  //   {
-  //     j += i;
-  //     users[position + j].rank += i;
-  //     await this.UserRepository.save(users[position + j]);
-  //   }
-  //   return ;
-  // }
   }
 }
