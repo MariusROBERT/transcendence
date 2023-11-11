@@ -44,8 +44,10 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
+    if (profile.pseudo.endsWith('_42') && profile.pseudo !== user.username)
+      throw new BadRequestException('New pseudo can\'t end with "_42"');
 
-    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
+    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,11}$/))
       return new BadRequestException('Pseudo must contains only alphanums characters');
     if (await this.UserRepository.findOne({ where: { pseudo:profile.pseudo} }))
         return new BadRequestException('Pseudo already exists');
