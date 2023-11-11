@@ -516,7 +516,7 @@ export class UserService {
 
   async rankUpdate(){
     let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
-    users = users.filter(user=> (user.rank !== 0));
+    users = users.filter(user=> (user.gamesPlayed !== 0));
     let length = users.length;
     let position = 0;
     while (position < length)
