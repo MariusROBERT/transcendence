@@ -45,7 +45,7 @@ export class UserService {
       throw new BadRequestException(errors);
     }
 
-    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,10}$/))
+    if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,11}$/))
       return new BadRequestException('Pseudo must contains only alphanums characters');
     if (await this.UserRepository.findOne({ where: { pseudo:profile.pseudo} }))
         return new BadRequestException('Pseudo already exists');

@@ -246,7 +246,7 @@ export default function Settings() {
                      type="text"
                      placeholder='New name'
                      onChange={(e) => setNewName(e.target.value)}
-                     pattern={'[a-zA-Z0-9\\-_+.]{1,10}'}
+                     pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
               />
               <p style={{color:'red', textAlign:'center', marginBottom:'0px'}}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
