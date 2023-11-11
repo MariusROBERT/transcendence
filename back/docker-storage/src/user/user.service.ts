@@ -187,12 +187,12 @@ export class UserService {
     return PublicProfile;
   }
 
-  async getAllProfile(user: UserEntity): Promise<PublicProfileDto[]> {
+  async getAllProfile(): Promise<PublicProfileDto[]> {
     const users = await this.UserRepository.find();
     // Créez un tableau pour stocker les profils
     const PublicProfiles: PublicProfileDto[] = [];
     for (const profile of users) {
-      const PublicProfile = await this.getPublicProfile(profile.id, user);
+      const PublicProfile = await this.getPublicProfile(profile.id);
       PublicProfiles.push(PublicProfile);
     }
     return PublicProfiles;

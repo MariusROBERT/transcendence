@@ -127,7 +127,7 @@ export class UserController {
   async GetAllPublicProfile(
     @User() user: UserEntity,
   ): Promise<PublicProfileDto[]> {
-    return await this.userService.getAllProfile(user);
+    return await this.userService.getAllProfile();
   }
 
   // get_a_public_profile_by_id
@@ -137,7 +137,7 @@ export class UserController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PublicProfileDto> {
-    return await this.userService.getPublicProfile(id, user);
+    return await this.userService.getPublicProfile(id);
   }
   
   // --------- MSG & CHANNEL --------- :
