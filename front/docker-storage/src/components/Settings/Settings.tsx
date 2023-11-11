@@ -130,6 +130,10 @@ export default function Settings() {
     //PSEUDO
     if (newName !== '' && newName !== userInfosSettings?.pseudo)
     {
+      if (newName.endsWith('_42') && newName !== userInfosSettings?.username) {
+        setErrorMessage('Le new name ne peut pas finir par _42');
+        return ;
+      }
       const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({pseudo:newName})))?.json;
       if (!user)
         return ;
@@ -172,7 +176,7 @@ export default function Settings() {
       }
     }
 
-    // 2FA :
+    // 2FA && NEWNAME :
     if (is2fa !== userInfosSettings?.is2fa_active) {
       const user = (await Fetch('user/update_2fa', 'PATCH',
         JSON.stringify({
@@ -190,7 +194,6 @@ export default function Settings() {
     fetchContext();
     if (!is2fa || !e)
       setIsSettingsOpen(false);
-    setNewName('');
   };
 
   async function validate2fa(code: number) {
@@ -246,7 +249,7 @@ export default function Settings() {
                      type="text"
                      placeholder='New name'
                      onChange={(e) => setNewName(e.target.value)}
-                     pattern={'[a-zA-Z0-9\\-_+.]{1,10}'}
+                     pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
               />
               <p style={{color:'red', textAlign:'center', marginBottom:'0px'}}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
