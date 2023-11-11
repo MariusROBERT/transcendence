@@ -32,7 +32,7 @@ export function GameBackground(props: Props) {
       canvas.parent('container');
     }
 
-    for (let i = 0; i < (props.ballNumber || 5); i++) {
+    for (let i = 0; i < (props.ballNumber || 15); i++) {
       balls.push(new AutonomousBall(p5, {
           x: Math.random() * (props.viewport.width - (size.ball * 3)) + (size.ball * 1.5),
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),
@@ -79,8 +79,8 @@ export function GameBackground(props: Props) {
   }
 
   function createBlocks(probability: number, p5: p5Types) {
-    for (let y = 60; y < size.height - 60; y += 80) {
-      for (let x = 60; x < size.width - 160; x += 130) {
+    for (let y = 60; y < window.innerHeight - 60; y += 80) {
+      for (let x = 60; x < window.innerWidth - 160; x += 130) {
         if (Math.random() > 1 - probability) {
           const posX = ((y - 60) / 80) % 2 === 0 ? x : x + 70;
           blocks.push(new Block(p5, p5.createVector(posX, y), 5));

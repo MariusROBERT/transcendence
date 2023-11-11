@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -55,7 +54,7 @@ export class UserService {
       ...profile, // modif seulement les differences
     });
     if (!newProfile) {
-      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
+      throw new BadRequestException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
     return (await this.UserRepository.save(newProfile));
   }
@@ -170,7 +169,7 @@ export class UserService {
       profile = await this.UserRepository.findOne({ where: { id } });
     }
     catch {}
-    if (!profile) throw new NotFoundException(`le user ${id} n'existe pas`);
+    if (!profile) throw new BadRequestException(`le user ${id} n'existe pas`);
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
@@ -203,7 +202,7 @@ export class UserService {
   async askFriend(user: UserEntity, id: number) {
     const userAsked = await this.UserRepository.findOne({ where: { id } });
     if (!userAsked) {
-      throw new NotFoundException(`le user d'id ${id} n'existe pas`);
+      throw new BadRequestException(`le user d'id ${id} n'existe pas`);
     }
 
     if (userAsked.blocked.includes(user.id)) return;
@@ -365,9 +364,9 @@ export class UserService {
     }
     catch {}
     if (!channel)
-      throw new NotFoundException(`le channel d'id ${id} n'existe pas`);
+      throw new BadRequestException(`le channel d'id ${id} n'existe pas`);
     if (await this.isInChannel(user.id)) return channel.messages;
-    throw new NotFoundException(`le user ${id} n'appartient pas a ce channel`);
+    throw new BadRequestException(`le user ${id} n'appartient pas a ce channel`);
   }
 
   // UTILS :
@@ -413,7 +412,7 @@ export class UserService {
       where: { username },
     });
     if (!user)
-      throw new NotFoundException(`No User found for username ${username}`);
+      throw new BadRequestException(`No User found for username ${username}`);
     return user;
   }
 
@@ -475,7 +474,7 @@ export class UserService {
   async getGameStatusWithId(id: number): Promise<UserGameStatus> {
     const user = await this.getUserById(id);
     if (!user)
-      throw new NotFoundException('User not found');
+      throw new BadRequestException('User not found');
     return {
       gameInvitationFrom: user.gameInvitationFrom,
       gameInvitationTo: user.gameInvitationTo,

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ChannelEntity,
@@ -120,7 +119,7 @@ export class ChannelService {
       channel = await this.getChannelById(id);
     } catch {}
 
-    if (!channel) throw new NotFoundException(`channel ${id} does not exist`);
+    if (!channel) throw new BadRequestException(`channel ${id} does not exist`);
     channel.password = null;
     if (dto.password.length > 0)
       channel.password = await bcrypt.hash(dto.password, channel.salt);
@@ -146,7 +145,7 @@ export class ChannelService {
       });
     } catch {}
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -172,7 +171,7 @@ export class ChannelService {
       .getRawOne();
     } catch {}
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -227,7 +226,7 @@ export class ChannelService {
       //relations: ['admins'],
     });
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -244,7 +243,7 @@ export class ChannelService {
       .where('channel.channel_name = :channel_name', { channel_name })
       .getOne();
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -254,11 +253,11 @@ export class ChannelService {
    @return {MessageEntity[]} - The channel messages
    */
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    if (!id) throw new NotFoundException('Channel Not Found');
+    if (!id) throw new BadRequestException('Channel Not Found');
     try {
       return await this.msgService.getMsg(id);
     } catch {
-      throw new NotFoundException('Channel not found');
+      throw new BadRequestException('Channel not found');
     }
   }
 
@@ -271,7 +270,7 @@ export class ChannelService {
     try {
       return await this.userService.getUsersInChannels(id);
     } catch {
-      throw new NotFoundException('Channel not found');
+      throw new BadRequestException('Channel not found');
     }
   }
 
@@ -286,7 +285,7 @@ export class ChannelService {
     try {
       usersInChannel = await this.userService.getUsersInChannels(id);
     } catch {
-      throw new NotFoundException('User Not Found');
+      throw new BadRequestException('User Not Found');
     }
     for (const currentUser of usersInChannel) {
       if (currentUser.id === user.id) {
@@ -294,7 +293,7 @@ export class ChannelService {
         return { currentUser };
       }
     }
-    throw new NotFoundException('User Not Found');
+    throw new BadRequestException('User Not Found');
   }
 
   /**
