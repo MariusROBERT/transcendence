@@ -71,15 +71,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(channel).emit('join', chan.id);
   }
 
-  @SubscribeMessage('leave')
-  async handleLeave(client: Socket) {
-    // client.rooms.forEach((room) => {
-    //   if (room !== 'user' + client.id) {
-    //     client.leave(room);
-    //   }
-    // });
-  }
-
   @SubscribeMessage('remove')
   async handleRemove(client: Socket, body: any) {
     const { user } = body;

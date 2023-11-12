@@ -2,10 +2,9 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { GameInvites, RoundButton, } from '..';
 import Cookies from 'js-cookie';
 import { Fetch } from '../../utils';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
 import { IUser, NotifMsg } from '../../utils/interfaces';
 import NotifCard from './notifCard';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
 import { current_chan } from '../../utils/channel_functions';
 
 const Navbar: React.FC = () => {

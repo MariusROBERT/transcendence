@@ -43,16 +43,6 @@ export class UserChanDto {
   id: number;
 }
 
-export class UserAddChanDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
-
-  @IsString()
-  @IsOptional()
-  password: string;
-}
-
 // ----- public :
 export class PublicProfileDto {
   @IsNotEmpty()
@@ -170,11 +160,6 @@ export class UpdatePwdDto {
 }
 
 // ----- socket :
-export class GetUserIdFromSocketIdDto {
-  @IsNotEmpty()
-  @IsString()
-  socketId: string;
-}
 
 // ----- game :
 export class UserGameStatus {

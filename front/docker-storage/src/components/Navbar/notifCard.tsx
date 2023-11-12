@@ -1,12 +1,11 @@
 import { IUser, NotifMsg } from '../../utils/interfaces';
 import './stylenavbar.css';
 import { RoundButton } from '../ComponentBase/RoundButton';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
+import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Fetch } from '../../utils';
 import { SetCurrChan, UpdateChannelMessage, UpdateChannelUsers } from '../../utils/channel_functions';
 import { publish } from '../../utils/event';
-import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserId }: { notifFriends?: IUser, notifMsg?: NotifMsg, setNotifsMsg?: Dispatch<SetStateAction<NotifMsg[]>>, notifsMsg?: NotifMsg[], otherUserId: number }) => {
   const { acceptFriendRequest, declineFriendRequest, recvInvitesFrom } = useFriendsRequestContext();

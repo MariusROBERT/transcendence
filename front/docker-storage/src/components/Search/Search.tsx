@@ -1,7 +1,7 @@
 import { SearchBar } from '..';
 import React, { useEffect } from 'react';
 import { IUser } from '../../utils/interfaces';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts';
 
 interface Props {
   searchTerm: string,

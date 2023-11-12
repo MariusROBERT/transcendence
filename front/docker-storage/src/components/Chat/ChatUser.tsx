@@ -6,9 +6,8 @@ import { IChatUser, IUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
 import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
-import { useUserContext } from '../../contexts';
+import { useUserContext, useUIContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
 import Popup from '../ComponentBase/Popup';
 import { publish } from '../../utils/event';
 

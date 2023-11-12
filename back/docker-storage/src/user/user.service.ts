@@ -149,18 +149,6 @@ export class UserService {
     await this.UserRepository.save(user);
   }
 
-  //  USE FOR ADMIN BAN MUTE ..
-  async updateUserChannel(user: UserEntity, channel: ChannelEntity) {
-    try {
-      if (!user.channels) user.baned = [];
-      //user.channels.push(channel);
-      user.baned = [...user.baned, channel];
-      await this.UserRepository.save(user);
-    } catch (e) {
-      console.log('Error: ' + e);
-    }
-  }
-
   // -- Public -- :
 
   async getPublicProfile(
@@ -280,13 +268,6 @@ export class UserService {
 
   // CHANNEL & MESSAGE :
 
-  async getChannels(user: UserEntity): Promise<ChannelEntity[]> {
-    return this.ChannelRepository.createQueryBuilder('channel')
-      .innerJoin('channel.users', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .getMany();
-  }
-
   async isInChannel(id: number) {
     const user = await this.ChannelRepository.findOne({ where: { id } });
     return !!user;
@@ -372,19 +353,6 @@ export class UserService {
   }
 
   // UTILS :
-
-  isOwner(objet: any, user: UserEntity): boolean {
-    return objet.user && user.id === objet.user.id;
-  }
-
-  isChanOwner(user: UserEntity, channel: ChannelEntity): boolean {
-    return channel.owner.id == user.id;
-  }
-
-  isChanAdmin(user: UserEntity, channel: ChannelEntity): boolean {
-    if (!channel.admins) return false;
-    return channel.admins.some((adminUser) => adminUser.id === user.id);
-  }
 
   async updatePicture(user: UserEntity, file: Express.Multer.File) {
     if (

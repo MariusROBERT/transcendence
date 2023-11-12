@@ -1,7 +1,7 @@
 import { GameHistory } from '../../utils/interfaces';
 import {Flex, RoundButton} from '..';
 import React, { CSSProperties } from 'react';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts';
 
 interface Props {
     game:GameHistory;
