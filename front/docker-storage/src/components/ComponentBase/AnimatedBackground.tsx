@@ -42,7 +42,7 @@ export function AnimatedBackground(props: Props) {
     } catch (e) {
       canvas.parent('container');
     }
-    for (let i = 0; i < (props.ballNumber || 1) && (props?.ballNumber && balls.length < props?.ballNumber); i++) {
+    while (balls.length < (props.ballNumber || 1)) {
       balls.push(new AutonomousBall(p5, {
           x: Math.random() * (props.viewport.width - (size.ball * 3)) + (size.ball * 1.5),
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),
@@ -52,8 +52,11 @@ export function AnimatedBackground(props: Props) {
           y: Math.random() - 0.5,
         }));
     }
-    mouseBall = new MouseBall(p5, { x: p5.mouseX, y: p5.mouseY }, { x: 0, y: 0 });
-    balls.push(mouseBall);
+
+    if (balls.length <= (props.ballNumber || 1)) {
+      mouseBall = new MouseBall(p5, {x: p5.mouseX, y: p5.mouseY}, {x: 0, y: 0});
+      balls.push(mouseBall);
+    }
   }
 
   function draw(p5: p5Types) {
