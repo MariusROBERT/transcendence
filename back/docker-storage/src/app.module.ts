@@ -6,7 +6,6 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
-import { MessagesModule } from './messages/messages.module';
 import { GameModule } from './game/game.module';
 import { UserGateway } from './user/user.gateway';
 
@@ -19,7 +18,6 @@ import { UserGateway } from './user/user.gateway';
     AuthModule,
     UserModule,
     ChannelModule,
-    MessagesModule,
     ChannelModule,
     GameModule,
   ],

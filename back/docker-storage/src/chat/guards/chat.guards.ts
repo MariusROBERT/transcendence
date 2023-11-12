@@ -3,7 +3,6 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ChannelService } from 'src/channel/channel.service';
 import { MutedService } from 'src/muted/muted.service';
-import { Socket } from 'socket.io-client';
 
 @Injectable()
 export class ChatCheckGuard implements CanActivate {

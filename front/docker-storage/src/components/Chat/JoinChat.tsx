@@ -6,7 +6,7 @@ import { createChatStyle } from './CreateChat';
 import { Button } from '../ComponentBase/Button';
 import Popup from '../ComponentBase/Popup';
 import EnterPassword from './EnterPassword';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts';
 
 
 export default function JoinChat() {

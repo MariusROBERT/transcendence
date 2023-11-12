@@ -24,24 +24,9 @@ export class Vector2 {
     this.y += vec.y;
   }
 
-  sub(vec: Vector2) {
-    this.x -= vec.x;
-    this.y -= vec.y;
-  }
-
-  mul(vec: Vector2) {
-    this.x *= vec.x;
-    this.y *= vec.y;
-  }
-
   div(vec: Vector2) {
     this.x /= vec.x;
     this.y /= vec.y;
-  }
-
-  scale(scalar: number) {
-    this.x *= scalar;
-    this.y *= scalar;
   }
 
   length() {

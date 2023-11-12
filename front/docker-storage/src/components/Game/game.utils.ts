@@ -36,13 +36,6 @@ export const start: GameState = {
   score: { p1: 0, p2: 0 },
 };
 
-export interface gameRoom {
-  room: string,
-  playerIds: number[],
-  state: GameState,
-  ready: boolean,
-}
-
 class Particle {
   age: number;
   pos: { x: number, y: number };

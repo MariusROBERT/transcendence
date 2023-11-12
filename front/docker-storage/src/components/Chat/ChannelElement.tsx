@@ -7,8 +7,7 @@ import {
   UpdateChannelMessage,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
-import { useUserContext } from '../../contexts';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUserContext, useUIContext } from '../../contexts';
 
 interface Props {
   data: ChannelPublicPass;

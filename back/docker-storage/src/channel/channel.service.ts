@@ -468,14 +468,6 @@ export class ChannelService {
     return this.returnPublicData(channel);
   }
 
-  //  Check if user is muted
-  async isMuted(user: UserEntity, chan: ChannelEntity): Promise<number> {
-    for (let i = 0; i < chan.mutedUsers.length; i++) {
-      if (chan.mutedUsers[i].user == user) return i;
-    }
-    return -1;
-  }
-
   /**
    @description Mute user from channel
    @param {number} userid - The user id

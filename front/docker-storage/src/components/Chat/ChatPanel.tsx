@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Viewport, Fetch, color } from '../../utils';
 import {Background, RoundButton, ChatMessage, ChanUserList, SidePanel} from '..';
-import { useUserContext } from '../../contexts';
+import { useUserContext, useUIContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
 import {
   GetCurrChan,
@@ -9,7 +9,6 @@ import {
 } from '../../utils/channel_functions';
 import {ChannelMessage, ChannelUsers, IChatUser, PublicChannelDto} from '../../utils/interfaces';
 import ChatUser from './ChatUser';
-import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 interface Props {
   viewport: Viewport;

@@ -164,10 +164,7 @@ export class GameMatchmaking {
     this.controller.games = this.controller.games.filter(g => !g.playerIds.includes(id));
 
     let gameId = await this.addGame(user1, user2, game.state.score.p1, game.state.score.p2);
-    console.log(user1.pseudo, 'score', game.state.score.p1);
-    console.log(user2.pseudo, 'score', game.state.score.p2);
     let player1Won = game.state.score.p1 > game.state.score.p2;
-    console.log('winner: ', player1Won ? user1.pseudo : user2.pseudo);
     await this.service.endOfGameUpdatingProfile(gameId, user1, user2, player1Won);
     await this.service.rankUpdate();
 

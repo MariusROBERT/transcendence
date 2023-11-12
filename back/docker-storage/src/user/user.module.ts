@@ -10,7 +10,6 @@ import {
 } from '../database/entities/channel.entity';
 import { ChannelModule } from '../channel/channel.module';
 import { DatabaseModule } from '../database/database.module';
-import { MessagesModule } from '../messages/messages.module';
 import { MessagesService } from '../messages/messages.service';
 
 @Module({
@@ -19,7 +18,6 @@ import { MessagesService } from '../messages/messages.service';
     DatabaseModule,
     AuthModule,
     ChannelModule,
-    MessagesModule,
   ],
   controllers: [UserController],
   providers: [UserService, MessagesService],
