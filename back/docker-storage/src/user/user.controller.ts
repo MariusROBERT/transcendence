@@ -143,6 +143,7 @@ export class UserController {
   // --------- MSG & CHANNEL --------- :
 
   @Patch('remove_last_msg')
+  @UseGuards(JwtAuthGuard)
   async removeLastMessage(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
@@ -150,23 +151,22 @@ export class UserController {
     await this.userService.removeLastMsg(id);
   }
 
-  // get_message_from_channel
-  @Get('/get_msg/:id_chan')
-  @UseGuards(JwtAuthGuard)
-  async getMessages(
-    @User() user: UserEntity,
-    @Param('id_chan', ParseIntPipe) id: number,
-    channels: ChannelEntity[],
-  ): Promise<MessageEntity[]> {
-    return await this.userService.getMsgsByChannel(user, channels, id);
-  }
-
   @Get('/:id')
+  @UseGuards(JwtAuthGuard)
   async GetUserById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserEntity> {
     // ==> renvoi toutes les infos channels
     return await this.userService.getUserById(id);
+  }
+
+  @Get('is_in_channel/:channel_id')
+  @UseGuards(JwtAuthGuard)
+  async IsInChannel(
+    @User() user: UserEntity,
+    @Param('channel_id', ParseIntPipe) channel_id: number,
+  ): Promise<boolean> {
+    return await this.userService.isInChannel(user, channel_id);
   }
 
   // Game ----------------------------------------------------------------------------------------------------------- //
