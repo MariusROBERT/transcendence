@@ -41,9 +41,10 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
 
   const onclick = async () => {
     if (!usr || !notifMsg) return;
-    OnJoinChannel(notifMsg.channel_name);
     if (setNotifsMsg && notifsMsg)
       setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== notifMsg.channel_id));
+    if (!(await Fetch('user/is_in_channel/' + notifMsg.channel_id, 'GET'))?.json) return;
+    OnJoinChannel(notifMsg.channel_name);
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {

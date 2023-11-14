@@ -268,10 +268,10 @@ export class UserService {
 
   // CHANNEL & MESSAGE :
 
-  async isInChannel(id: number) {
-    const user = await this.ChannelRepository.findOne({ where: { id } });
-    return !!user;
+  async isInChannel(user : UserEntity, channel_id: number) : Promise<boolean> {
+    return !!user.channels?.some((c) => c.id === channel_id);
   }
+
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')
       .innerJoin('user.channels', 'channel')
@@ -333,23 +333,6 @@ export class UserService {
     if (user.last_msg_date)
       user.last_msg_date = null;
     await this.UserRepository.save(user)
-  }
-
-  async getMsgsByChannel(
-    // pas testé
-    user: UserEntity,
-    channels: ChannelEntity[],
-    id: number,
-  ): Promise<MessageEntity[]> {
-    let channel;
-    try {
-      channel = await this.ChannelRepository.findOne({ where: { id } });
-    }
-    catch {}
-    if (!channel)
-      throw new BadRequestException(`le channel d'id ${id} n'existe pas`);
-    if (await this.isInChannel(user.id)) return channel.messages;
-    throw new BadRequestException(`le user ${id} n'appartient pas a ce channel`);
   }
 
   // UTILS :
