@@ -59,7 +59,7 @@ export function SidePanel({
     if (isMoving) return;
     setContextIsOpen(false);
     if (!isLeftPanel) {
-      // socket?.emit('leave');
+      //socket?.emit('leave');
       SetCurrChan('');
     }
     setIsAnim(true);
