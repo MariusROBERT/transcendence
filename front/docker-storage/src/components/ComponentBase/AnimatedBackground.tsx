@@ -3,6 +3,7 @@ import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { AutonomousBall, baseSize, MouseBall, Size } from '../Game/game.utils';
 import { Viewport } from '../../utils';
+import {useUIContext} from '../../contexts';
 
 interface Props {
   viewport: Viewport;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function AnimatedBackground(props: Props) {
+  const { paused } = useUIContext();
   const [size, setSize] = useState<Size>(baseSize);
   const [balls] = useState<AutonomousBall[]>([]);
 
@@ -40,7 +42,7 @@ export function AnimatedBackground(props: Props) {
     } catch (e) {
       canvas.parent('container');
     }
-    for (let i = 0; i < (props.ballNumber || 1); i++) {
+    while (balls.length < (props.ballNumber || 1)) {
       balls.push(new AutonomousBall(p5, {
           x: Math.random() * (props.viewport.width - (size.ball * 3)) + (size.ball * 1.5),
           y: Math.random() * (props.viewport.height - (size.ball * 3)) + (size.ball * 1.5),
@@ -50,8 +52,11 @@ export function AnimatedBackground(props: Props) {
           y: Math.random() - 0.5,
         }));
     }
-    mouseBall = new MouseBall(p5, { x: p5.mouseX, y: p5.mouseY }, { x: 0, y: 0 });
-    balls.push(mouseBall);
+
+    if (balls.length <= (props.ballNumber || 1)) {
+      mouseBall = new MouseBall(p5, {x: p5.mouseX, y: p5.mouseY}, {x: 0, y: 0});
+      balls.push(mouseBall);
+    }
   }
 
   function draw(p5: p5Types) {
@@ -78,7 +83,11 @@ export function AnimatedBackground(props: Props) {
   }
 
   return (
-    <Sketch draw={draw} setup={setup} mouseClicked={magnetballs}
+    <>
+      {!paused &&
+      <Sketch draw={draw} setup={setup} mouseClicked={magnetballs}
             style={{ position: 'absolute', top: 0, left: 0, height: '100vh', width: '100vw', ...props.style }} />
+      }
+    </>
   );
 }

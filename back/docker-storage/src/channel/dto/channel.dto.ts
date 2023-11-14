@@ -41,11 +41,6 @@ export class PublicChannelDto {
 }
 
 // ------- name :
-export class ChannelNameDto {
-  @IsNotEmpty()
-  @IsString()
-  channel_name: string;
-}
 
 // ------- create :
 export class CreateChannelDto {
@@ -86,25 +81,3 @@ export class EditChannelDto {
   chan_status: ChanStateEnum;
 }
 
-export class UpdateChannelDto {
-  @IsNotEmpty()
-  @IsString()
-  channel_name: string;
-
-  @IsNotEmpty()
-  priv: boolean;
-
-  @IsOptional()
-  @IsString()
-  password: string;
-
-  @IsOptional() // because public by default
-  @IsEnum(ChanStateEnum)
-  chan_status: ChanStateEnum;
-
-  @IsOptional()
-  owner_id: UserEntity;
-
-  @IsOptional()
-  admins: UserEntity[];
-}

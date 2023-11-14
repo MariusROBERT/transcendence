@@ -2,8 +2,7 @@ import { CSSProperties, useEffect, useState } from 'react';
 import { Popup, SearchBar, UserBanner } from '..';
 import { IUser } from '../../utils/interfaces';
 import { Fetch, color } from '../../utils';
-import { useFriendsRequestContext, useUserContext } from '../../contexts';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
 
 export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string, setSearchTerm: (value: string) => void }) {
   const [userElements, setUserElements] = useState<JSX.Element[]>([]);

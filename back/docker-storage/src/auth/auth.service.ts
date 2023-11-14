@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
@@ -31,8 +30,8 @@ export class AuthService {
     // Create User
     if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
       throw new BadRequestException('Password must contain between 8 and 50 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
-    if (!/[a-zA-Z0-9\-_+.]{1,10}/.test(userData.username))
-      throw new BadRequestException('Username must contain between 1 and 10 characters, only letters, numbers and -_+. are allowed');
+    if (!/[a-zA-Z0-9\-_+.]{1,11}/.test(userData.username))
+      throw new BadRequestException('Username must contain between 1 and 11 characters, only letters, numbers and -_+. are allowed');
     const user = this.userRepository.create({
       ...userData,
     });
@@ -67,27 +66,26 @@ export class AuthService {
       .where('user.username = :username', { username })
       .getOne();
     if (!user) {
-      throw new NotFoundException('username not found');
-    }
-
-    if (user.is2fa_active) {
-      if (creditentials.twoFactorCode) {
-        if (
-          !authenticator.verify({
-            token: creditentials.twoFactorCode,
-            secret: user.secret2fa,
-          })
-        ) {
-          throw new UnauthorizedException('Invalid 2fa code');
-        }
-      } else {
-        throw new UnauthorizedException('Missing 2fa code');
-      }
+      throw new BadRequestException('username not found');
     }
 
     const hashedPwd = await bcrypt.hash(password, user.salt);
 
     if (hashedPwd === user.password) {
+      if (user.is2fa_active) {
+        if (creditentials.twoFactorCode) {
+          if (
+              !authenticator.verify({
+                token: creditentials.twoFactorCode,
+                secret: user.secret2fa,
+              })
+          ) {
+            throw new UnauthorizedException('Invalid 2fa code');
+          }
+        } else {
+          throw new UnauthorizedException('Missing 2fa code');
+        }
+      }
       // JWT
       // TODO : change payload: put only user.id
       const payload = {
@@ -98,7 +96,6 @@ export class AuthService {
       // secu for friendsRequest
       user.sentInvitesTo.forEach(id => {
         if (user.friends.includes(id)) {
-          const friend = this.userRepository.findOne({where: {id}});
           user.sentInvitesTo.filter((el) => el !== id);
         }
       });
@@ -107,7 +104,7 @@ export class AuthService {
       const jwt = this.jwtService.sign(payload);
       return { 'access-token': jwt };
     }
-    throw new NotFoundException('wrong password');
+    throw new BadRequestException('wrong password');
 
   }
 
@@ -167,7 +164,7 @@ export class AuthService {
       .where('user.username = :ftLogin', { ftLogin })
       .getOne();
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new BadRequestException('user not found');
     }
     if (user.is2fa_active) {
       if (

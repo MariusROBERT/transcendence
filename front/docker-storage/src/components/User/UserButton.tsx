@@ -1,8 +1,7 @@
 import { Flex, RoundButton } from '..';
 import { IUser } from '../../utils/interfaces';
 import { openChat } from '../../utils/user_functions';
-import { useFriendsRequestContext, useGameContext, useUserContext } from '../../contexts';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useFriendsRequestContext, useGameContext, useUserContext, useUIContext } from '../../contexts';
 
 interface Props {
   otherUser: IUser;

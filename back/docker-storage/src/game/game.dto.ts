@@ -1,11 +1,8 @@
 import {
-    IsBoolean,
-    IsEnum,
     IsNotEmpty,
     IsNumber,
-    IsOptional,
     IsString,
-    isNumber,
+
   } from 'class-validator';
 
 export class PublicGameDto {

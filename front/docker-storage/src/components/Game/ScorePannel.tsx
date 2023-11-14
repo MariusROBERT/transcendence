@@ -1,7 +1,8 @@
 import {Flex} from '..';
 import {IUser} from '../../utils/interfaces';
-import React from 'react';
+import React, {useEffect} from 'react';
 import ScoreUser from './ScoreUser';
+import {useUIContext} from '../../contexts';
 
 interface Props {
   user2: IUser;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
+  const { setPaused } = useUIContext();
+  useEffect(() => { setPaused(false)}, []);
   return (
     <div style={{
       background: won? 'radial-gradient(circle, rgba(9,6,64,1) 0%, rgba(0,212,255,1) 100%)':

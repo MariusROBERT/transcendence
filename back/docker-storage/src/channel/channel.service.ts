@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ChannelEntity,
@@ -115,9 +114,12 @@ export class ChannelService {
     dto: EditChannelDto,
     id: number,
   ): Promise<PublicChannelDto> {
-    const channel = await this.getChannelById(id);
+    let channel;
+    try {
+      channel = await this.getChannelById(id);
+    } catch {}
 
-    if (!channel) throw new NotFoundException(`channel ${id} does not exist`);
+    if (!channel) throw new BadRequestException(`channel ${id} does not exist`);
     channel.password = null;
     if (dto.password.length > 0)
       channel.password = await bcrypt.hash(dto.password, channel.salt);
@@ -136,11 +138,14 @@ export class ChannelService {
    @throw {NotFoundException} - If channel not found
    */
   async getChannelById(id: number): Promise<ChannelEntity> {
-    const channel = await this.ChannelRepository.findOne({
-      where: { id },
-    });
+    let channel;
+    try {
+      channel = await this.ChannelRepository.findOne({
+        where: { id },
+      });
+    } catch {}
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -151,7 +156,9 @@ export class ChannelService {
    @throw {NotFoundException} - If channel not found
    */
   async getPublicChannelById(id: number): Promise<PublicChannelDto> {
-    const channel = await this.ChannelRepository.createQueryBuilder('channel')
+    let channel;
+    try {
+     channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoin('channel.owner', 'owner')
       .select([
         'channel.id',
@@ -162,8 +169,9 @@ export class ChannelService {
       ])
       .where('channel.id = :id', { id })
       .getRawOne();
+    } catch {}
     if (!channel)
-      throw new NotFoundException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
     return channel;
   }
 
@@ -218,7 +226,7 @@ export class ChannelService {
       //relations: ['admins'],
     });
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -235,7 +243,7 @@ export class ChannelService {
       .where('channel.channel_name = :channel_name', { channel_name })
       .getOne();
     if (!channel)
-      throw new NotFoundException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
     return channel;
   }
 
@@ -245,17 +253,25 @@ export class ChannelService {
    @return {MessageEntity[]} - The channel messages
    */
   async getChannelMessages(id: number): Promise<MessageEntity[]> {
-    if (!id) throw new NotFoundException('Channel Not Found');
-    return await this.msgService.getMsg(id);
+    if (!id) throw new BadRequestException('Channel Not Found');
+    try {
+      return await this.msgService.getMsg(id);
+    } catch {
+      throw new BadRequestException('Channel not found');
+    }
   }
 
   /**
    @description Get channel users
-   @param {number} - The channel id
+   @param {number} id - The channel id
    @return {UserEntity[]} - The channel users
    */
   async getChannelUsers(id: number): Promise<UserEntity[]> {
-    return await this.userService.getUsersInChannels(id);
+    try {
+      return await this.userService.getUsersInChannels(id);
+    } catch {
+      throw new BadRequestException('Channel not found');
+    }
   }
 
   /**
@@ -265,13 +281,18 @@ export class ChannelService {
    @return {any} - The channel users
    */
   async getChannelUserRights(id: number, user: UserEntity) {
-    const usersInChannel = await this.userService.getUsersInChannels(id);
+    let usersInChannel;
+    try {
+      usersInChannel = await this.userService.getUsersInChannels(id);
+    } catch {
+      throw new BadRequestException('User Not Found');
+    }
     for (const currentUser of usersInChannel) {
       if (currentUser.id === user.id) {
         return { currentUser };
       }
     }
-    throw new NotFoundException('User Not Found');
+    throw new BadRequestException('User Not Found');
   }
 
   /**
@@ -446,14 +467,6 @@ export class ChannelService {
       console.log(e);
     }
     return this.returnPublicData(channel);
-  }
-
-  //  Check if user is muted
-  async isMuted(user: UserEntity, chan: ChannelEntity): Promise<number> {
-    for (let i = 0; i < chan.mutedUsers.length; i++) {
-      if (chan.mutedUsers[i].user == user) return i;
-    }
-    return -1;
   }
 
   /**

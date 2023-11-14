@@ -2,32 +2,6 @@
 
 import { Socket } from 'socket.io-client';
 
-// --------------------------- Register :
-
-export interface FormDataRegister {
-  pseudo: string;
-  password: string;
-  confirmPassword: string;
-}
-
-// --------------------------- Login :
-
-export interface FormData {
-  pseudo: string;
-  password: string;
-}
-
-// --------------------------- MainPage :
-
-export interface UserAndInvites {
-  id: number;
-  pseudo: string;
-  urlImg: string;
-  user_status: string;
-  winrate: number;
-  recvInvitesFrom: number;
-}
-
 // --------------------------- Channels :
 
 export interface PublicChannelDto {
@@ -64,11 +38,6 @@ export interface ChannelUsers {
   type: string;
 }
 
-export interface SocketMessage {
-  name: string;
-  id: number;
-}
-
 export interface ChannelPublic {
   channel_id: number,
   channel_name: string,
@@ -86,12 +55,6 @@ export interface ChannelPublicPass {
 }
 
 // --------------------------- LeaderBoard & Profil :
-
-export interface UserInfos {
-  id: number;
-  urlImg: string;
-  pseudo: string;
-}
 
 export interface IUser {
   id: number;
@@ -127,15 +90,7 @@ export interface GameHistory{
   
 }
 
-export interface UserButtonsProps {
-  id: number | undefined;
-}
-
 // --------------------------- Notifs :
-
-export interface NotificationBadgeProps {
-  showBadge: boolean;
-}
 
 export interface NotifMsg {
   id: number;
@@ -155,19 +110,6 @@ export interface NotifMsg {
 // export interface PwdModif {
 //   password: string;
 // }
-
-export interface Modifications {
-  img: string | File;
-  password: string | undefined;
-  confirmpwd: string | undefined;
-  is2fa_active: boolean | undefined;
-}
-
-export interface settingInfos {
-  urlImg: string;
-  is2fa_active: boolean;
-  pseudo: string;
-}
 
 export interface UserInfosForSetting {
   urlImg: string;

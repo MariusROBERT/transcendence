@@ -1,5 +1,5 @@
 import { Fetch } from '../../utils';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUIContext } from '../../contexts';
 
 /*
   //  If channel exist just join it and open right pannel

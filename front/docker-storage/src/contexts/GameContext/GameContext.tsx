@@ -78,7 +78,7 @@ interface Props {
 }
 
 export function GameContextProvider({ children }: Props) {
-  const { setIsLeaderboardOpen, setIsSettingsOpen, setIsProfileOpen, setIsChatMenuOpen, setIsChatOpen, setIsContactOpen } = useUIContext();
+  const { setIsLeaderboardOpen, setIsSettingsOpen, setIsProfileOpen, setIsChatMenuOpen, setIsChatOpen, setIsContactOpen, setPaused } = useUIContext();
   const { socket, id } = useUserContext();
   const navigate = useNavigate();
 
@@ -285,6 +285,7 @@ export function GameContextProvider({ children }: Props) {
     setInviteFrom(undefined);
     setInviteTo(undefined);
     setIsInQueue(undefined);
+    setPaused(true);
     setIsInGameWith(id === body.p1 ? body.p2 : body.p1);
     navigate('/game');
   }

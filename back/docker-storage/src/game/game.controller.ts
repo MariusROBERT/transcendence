@@ -38,6 +38,7 @@ export class GameController {
   async isInGame(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ isInGameWith: number | undefined }> {
+
     const game = await this.matchmaking.getGame(id);
     if (!game) return { isInGameWith: undefined };
 

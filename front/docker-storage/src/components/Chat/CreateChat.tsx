@@ -11,9 +11,8 @@ import {
   SetCurrChan,
   UpdateChannels,
 } from '../../utils/channel_functions';
-import { useUserContext } from '../../contexts';
+import { useUserContext, useUIContext } from '../../contexts';
 import {Popup} from '../index';
-import {useUIContext} from '../../contexts/UIContext/UIContext';
 
 
 

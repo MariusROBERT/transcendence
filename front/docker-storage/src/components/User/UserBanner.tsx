@@ -2,8 +2,7 @@ import { Flex, RoundButton } from '..';
 import { UserButton } from './UserButton';
 import { IUser } from '../../utils/interfaces';
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { useUserContext } from '../../contexts';
-import { useUIContext } from '../../contexts/UIContext/UIContext';
+import { useUserContext, useUIContext } from '../../contexts';
 import { color } from '../../utils';
 
 interface Props {
