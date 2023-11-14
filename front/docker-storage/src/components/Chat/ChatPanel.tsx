@@ -46,6 +46,7 @@ export function ChatPanel({ viewport, width }: Props) {
       setPrintMsgs([]);
       setMessage(event.detail.value);
       setChannelId(event.detail.id);
+      setMuted(false);
     });
     if (isChatOpen)
       document.getElementById('inpt')?.focus();
