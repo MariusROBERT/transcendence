@@ -53,9 +53,11 @@ export class BlockGuard implements CanActivate {
     if (!channel.priv_msg) return true;
     const users = await this.userService.getFullUsersInChannels(channel.id);
     if (users.at(0)?.blocked.includes(users.at(1).id))
-      throw new Error('Blocked by ' + users.at(0).username);
+      return false;
+      //throw new Error('Blocked by ' + users.at(0).username);
     if (users.at(1)?.blocked.includes(users.at(0).id))
-      throw new Error('Blocked by ' + users.at(1).username);
+      return false;
+      //throw new Error('Blocked by ' + users.at(1).username);
     return true;
   }
 }
