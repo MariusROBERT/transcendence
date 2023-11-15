@@ -32,9 +32,10 @@ export function MainPage({ panelWidth, viewport }: Props) {
   // functions -------------------------------------------------------------------------------------------------------//
 
   useEffect(() => {
-    if (focused)
+    if (focused) {
       fetchContext();
       fetchGameContext();
+    }
     // eslint-disable-next-line
   }, [focused]);
 

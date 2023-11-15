@@ -17,11 +17,9 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
   }, [window.innerWidth]);
 
   useEffect(() => {
-    fetchContext();
-    // eslint-disable-next-line
-  }, [isLeaderboardOpen]);
+    if (!isLeaderboardOpen)
+      return;
 
-  useEffect(() => {
     const getAllProfil = async () => {
       await fetchFriendsRequestContext();
       const users = (await Fetch('user/get_all_public_profile', 'GET'))?.json;
@@ -30,6 +28,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
       setAllUsers(users);
     };
     getAllProfil();
+    fetchContext();
     // eslint-disable-next-line
   }, [isLeaderboardOpen]);
 
@@ -43,7 +42,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
           user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
           && user.rank != 0
         )
-        .sort((a: IUser, b: IUser) => (a.rank - b.rank)); // TODO: sort by ELO
+        .sort((a: IUser, b: IUser) => (a.rank - b.rank));
        const unrankedUsers =  allUsers.filter((user: IUser) =>
        user.pseudo.toLowerCase().includes(searchTerm.toLowerCase())
        && user.rank == 0);
@@ -60,7 +59,7 @@ export function Leaderboard({ searchTerm, setSearchTerm }: { searchTerm: string,
     }
 
     filterAndSortUsers();
-  }, [searchTerm, allUsers, user]);
+  }, [searchTerm, allUsers, user, isLeaderboardOpen]);
 
   const container: CSSProperties = {
     background: '#00375C',
