@@ -110,7 +110,6 @@ export default function Settings() {
     if (password !== '' && confirmPassword !== '' && oldPassword !== '') {
       if (password !== confirmPassword)
         return setErrorMessage('passwords doesn\'t match !');
-
       const user = (await Fetch('user/update_password', 'PATCH', JSON.stringify({
         newPassword: password,
         oldPassword: oldPassword,
@@ -125,22 +124,22 @@ export default function Settings() {
       setOldPassword('');
       setPassword('');
       setConfirmPassword('');
+
     }
 
     //PSEUDO
-    if (newName !== '' && newName !== userInfosSettings?.pseudo)
-    {
+    if (newName !== '' && newName !== userInfosSettings?.pseudo) {
       if (newName.endsWith('_42') && newName !== userInfosSettings?.username) {
         setErrorMessage('Le new name ne peut pas finir par _42');
-        return ;
+        return;
       }
-      const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({pseudo:newName})))?.json;
+      const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({ pseudo: newName })))?.json;
       if (!user)
-        return ;
+        return;
       if (user.message === 'Pseudo already exists') {
         return (setPseudoError(user.message));
       }
-      if( user.message === 'Pseudo must contains only alphanums characters') {
+      if (user.message === 'Pseudo must contains only alphanums characters') {
         return (setPseudoError(user.message));
       }
       setNewName('');
@@ -221,9 +220,9 @@ export default function Settings() {
             <h3>{userInfosSettings?.pseudo}</h3> :
             <h2>{userInfosSettings?.pseudo}</h2>
           }
-          <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <div style={modifContainerImage}>
-              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg || ''} icon_size={200} onClick={() => null}/>
+              <RoundButton isDisabled={true} icon={newImageUrl || userInfosSettings?.urlImg || ''} icon_size={200} onClick={() => null} />
               <input
                 id={'image'}
                 type='file'
@@ -246,12 +245,12 @@ export default function Settings() {
             </div>
             <div className="change_name">
               <input id='change_name'
-                     type="text"
-                     placeholder='New name'
-                     onChange={(e) => setNewName(e.target.value)}
-                     pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
+                type="text"
+                placeholder='New name'
+                onChange={(e) => setNewName(e.target.value)}
+                pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
               />
-              <p style={{color:'red', textAlign:'center', marginBottom:'0px'}}>{pseudoError}</p>
+              <p style={{ color: 'red', textAlign: 'center', marginBottom: '0px' }}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
             </div>
             <p style={{ color: 'red', textAlign: 'center' }}>{pictureError}</p>
@@ -293,7 +292,7 @@ export default function Settings() {
           <button style={Btn} type='submit'><p style={{ margin: 'auto' }}>Save</p></button>
         </form>
         {qrCode2fa && qrCode2fa !== '' &&
-          <Popup isVisible={qrCode2fa !== ''} onClose={ () => {
+          <Popup isVisible={qrCode2fa !== ''} onClose={() => {
             setIs2fa(false);
             setQrCode2fa('');
             saveModifications(null);
@@ -311,40 +310,40 @@ export default function Settings() {
               <img src={qrCode2fa} alt='qrCode2fa' />
               <p style={code2faStyle}>{code2fa}</p>
               <p style={{ backgroundColor: color.blue, padding: '.5em', borderRadius: 5 }}>
-                  <strong>Enter a first code to validate</strong>
+                <strong>Enter a first code to validate</strong>
               </p>
               <input id={'2faConfirm'}
-                     type='number'
-                     name={'twoFactorCode'}
-                     autoComplete={'one-time-code'}
-                     maxLength={6}
-                     value={confirm2fa}
-                     onKeyDown={(e) => {
-                       if (e.key === 'Enter')
-                         validate2fa(Number(confirm2fa));
-                     }}
-                     onChange={(e) => {
-                       if (e.target.value.length > 6)
-                         e.target.value = e.target.value.slice(0, 6);
-                       setConfirm2fa(e.target.value.replace(/[^0-9]/g, ''));
-                     }}
-                     style={{
-                       width: '6ch',
-                       height: '2em',
-                       fontSize: '2.5em',
-                       textAlign: 'center',
-                       backgroundColor: 'white',
-                       borderRadius: 5,
-                     }}
+                type='number'
+                name={'twoFactorCode'}
+                autoComplete={'one-time-code'}
+                maxLength={6}
+                value={confirm2fa}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter')
+                    validate2fa(Number(confirm2fa));
+                }}
+                onChange={(e) => {
+                  if (e.target.value.length > 6)
+                    e.target.value = e.target.value.slice(0, 6);
+                  setConfirm2fa(e.target.value.replace(/[^0-9]/g, ''));
+                }}
+                style={{
+                  width: '6ch',
+                  height: '2em',
+                  fontSize: '2.5em',
+                  textAlign: 'center',
+                  backgroundColor: 'white',
+                  borderRadius: 5,
+                }}
               />
-              <div style={{display: 'flex', flexDirection: 'row'}}>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <button id={'2faCancel'} onClick={() => {
                   setIs2fa(false);
                   setQrCode2fa('');
                   saveModifications(null);
                 }} style={{ display: 'none' }} />
                 <label htmlFor={'2faCancel'}>
-                  <p style={{backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color : 'red' }}><strong>Cancel</strong></p>
+                  <p style={{ backgroundColor: color.green, padding: '.7em', borderRadius: 5, margin: 10, color: 'red' }}><strong>Cancel</strong></p>
                 </label>
                 <button id={'2faDone'} onClick={() => validate2fa(Number(confirm2fa))} style={{ display: 'none' }} />
                 <label htmlFor={'2faDone'}>

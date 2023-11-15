@@ -70,7 +70,7 @@ const UserBanner = ({ otherUser }: Props) => {
       <div style={userBannerStyle}>
         <Flex flex_direction='row'>
           <img style={statusStyle}
-               src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : userBanner.user_status === 'off' ? require('../../assets/imgs/icon_red_disconnect.png') : require('../../assets/imgs/pngwing.com (3).png')}
+               src={userBanner.user_status === 'on' ? require('../../assets/imgs/icon_green_connect.png') : userBanner.user_status === 'off' ? require('../../assets/imgs/icon_red_disconnect.png') : require('../../assets/imgs/icon_blue_in_game.png')}
                alt={userBanner.user_status ? 'connected' : 'disconnected'} />
           <RoundButton icon={userBanner.urlImg} icon_size={50}
                        onClick={() => setIsProfileOpen(userBanner?.id || 0)} />
