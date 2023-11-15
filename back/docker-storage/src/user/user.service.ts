@@ -63,7 +63,7 @@ export class UserService {
   }
 
   async update2Fa(profile: UpdateUserDto, user: UserEntity) {
-
+    
     const id: number = user.id;
     const errors = await validate(profile);
     if (errors.length > 0) {
