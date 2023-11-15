@@ -4,7 +4,7 @@ import { RoundButton } from '../ComponentBase/RoundButton';
 import { Button } from '../ComponentBase/Button';
 import { IChatUser, IUser } from '../../utils/interfaces';
 import { ErrorPanel } from '../Error/ErrorPanel';
-import { UpdateChannelUsers, UpdateChannels } from '../../utils/channel_functions';
+import { UpdateChannelUsers, UpdateChannels, current_chan } from '../../utils/channel_functions';
 import { createChatStyle, inputStyle } from './CreateChat';
 import { useUserContext, useUIContext } from '../../contexts';
 import { Flex } from '../ComponentBase/FlexBox';
@@ -25,6 +25,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
   const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
   const { socket, id } = useUserContext();
   const [type, setType] = useState<string>('noperm');
+  const [chanid, setchanid] = useState<number>()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +52,8 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
         setCurrentUser(rep2?.json);
       }
     };
+    setchanid(data?.channel_id);
+
     fetchData();
   }, [visibility, data?.channel_id, data?.sender_id]);
 
@@ -69,24 +72,24 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       if (data?.channel_id) UpdateChannelUsers(data?.channel_id);
       if (command === 'kick' || command === 'ban') {
         const user = data?.sender_id;
-        socket?.emit('remove', { user: user });
+        socket?.emit('remove', { user_id: user, channel_name: current_chan });
       }
     }
   }
 
   useEffect(() => {
-    async function onRemove(user: number) {
-
-      if (user === id) {
+    async function onRemove(msg: { user_id_to_remove: number, channel_name: string }) {
+      console.log('');
+      if (msg.user_id_to_remove !== id) return;
+      if (msg.channel_name === current_chan)
         publish('close_chat', undefined);
-        await UpdateChannels();
-      }
+      await UpdateChannels();
     }
     socket?.on('remove', onRemove);
     return (() => {
       socket?.off('remove', onRemove);
     })
-  }, [id, socket])
+  }, [id, socket, chanid])
 
   async function OnKick() {
     execCommand('kick');
@@ -185,7 +188,7 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
       {type === 'perm' &&
         <Popup isVisible={visibility} onClose={onClose}>
           <div style={createChatStyle}>
-            <div style={{visibility: errorVisible ? 'inherit' : 'hidden'}}>
+            <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
               <ErrorPanel text={errorMessage}></ErrorPanel>
             </div>
             <h2>
