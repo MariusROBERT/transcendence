@@ -49,8 +49,8 @@ export class UserService {
 
     if (!profile.pseudo.match(/^[a-zA-Z0-9\-_+.]{1,11}$/))
       return new BadRequestException('Pseudo must contains only alphanums characters');
-    if (await this.UserRepository.findOne({ where: { pseudo:profile.pseudo} }))
-        return new BadRequestException('Pseudo already exists');
+    if (await this.UserRepository.findOne({ where: { pseudo: profile.pseudo } }))
+      return new BadRequestException('Pseudo already exists');
     const newProfile = await this.UserRepository.preload({
       id, // search user == id
       ...profile, // modif seulement les differences
@@ -62,7 +62,7 @@ export class UserService {
   }
 
   async update2Fa(profile: UpdateUserDto, user: UserEntity) {
-    
+
     const id: number = user.id;
     const errors = await validate(profile);
     if (errors.length > 0) {
@@ -109,31 +109,35 @@ export class UserService {
 
     const id = user.id;
     const name = user.username;
-    const currentUser = await this.UserRepository.createQueryBuilder('user') // honnetement je comprend pas pourquoi le salt n'est pas dans mon user du parametre...
-      .where('user.username = :name', { name })
-      .getOne();
-    if (currentUser.username.endsWith('_42'))
-      throw new UnauthorizedException('Oauth42 user can\'t change password');
-    const oldHash = await bcrypt.hash(
-      updatePwdDto.oldPassword,
-      currentUser.salt,
-    );
-    if (oldHash !== currentUser.password) {
-      throw new UnauthorizedException('Wrong password');
+    try {
+      const currentUser = await this.UserRepository.createQueryBuilder('user')
+        .where('user.username = :name', { name })
+        .getOne();
+      if (currentUser.username.endsWith('_42'))
+        throw new UnauthorizedException('Oauth42 user can\'t change password');
+      const oldHash = await bcrypt.hash(
+        updatePwdDto.oldPassword,
+        currentUser.salt,
+      );
+      if (oldHash !== currentUser.password) {
+        throw new BadRequestException('Wrong password');
+      }
+
+      if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
+        return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
+
+      const newPassword = await bcrypt.hash(
+        updatePwdDto.newPassword,
+        currentUser.salt,
+      );
+      const newProfil = await this.UserRepository.preload({
+        id, // search user == id
+        password: newPassword, // modif seulement password
+      });
+      return (await this.UserRepository.save(newProfil));
+    } catch (e) {
+      throw new BadRequestException('Wrong password');
     }
-
-    if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(updatePwdDto.newPassword))
-      return new BadRequestException('Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character');
-
-    const newPassword = await bcrypt.hash(
-      updatePwdDto.newPassword,
-      currentUser.salt,
-    );
-    const newProfil = await this.UserRepository.preload({
-      id, // search user == id
-      password: newPassword, // modif seulement password
-    });
-    return await this.UserRepository.save(newProfil);
   }
 
   // Log IN / OUT -------------------------------------------------------------------------------- //
@@ -158,7 +162,7 @@ export class UserService {
     try {
       profile = await this.UserRepository.findOne({ where: { id } });
     }
-    catch {}
+    catch { }
     if (!profile) throw new BadRequestException(`le user ${id} n'existe pas`);
 
     const PublicProfile = new PublicProfileDto();
@@ -268,7 +272,7 @@ export class UserService {
 
   // CHANNEL & MESSAGE :
 
-  async isInChannel(user : UserEntity, channel_id: number) : Promise<boolean> {
+  async isInChannel(user: UserEntity, channel_id: number): Promise<boolean> {
     return !!user.channels?.some((c) => c.id === channel_id);
   }
 
@@ -329,7 +333,7 @@ export class UserService {
   }
 
   async removeLastMsg(id: number) {
-    const user = await this.UserRepository.findOne({where: {id}})    
+    const user = await this.UserRepository.findOne({ where: { id } })
     if (user.last_msg_date)
       user.last_msg_date = null;
     await this.UserRepository.save(user)
@@ -354,8 +358,8 @@ export class UserService {
   async getUserById(id: number): Promise<UserEntity> {
     let user;
     try {
-      user = await this.UserRepository.findOne({where: {id}});
-    } catch {}
+      user = await this.UserRepository.findOne({ where: { id } });
+    } catch { }
     if (!user) return;
     return user;
   }
@@ -387,10 +391,10 @@ export class UserService {
       throw new BadRequestException('You don\' have to validate 2fa');
     }
     if (
-        !authenticator.verify({
-          token: String(code),
-          secret: user.secret2fa,
-        })
+      !authenticator.verify({
+        token: String(code),
+        secret: user.secret2fa,
+      })
     ) {
       throw new BadRequestException('Invalid 2fa code');
     }
@@ -436,8 +440,8 @@ export class UserService {
   }
 
   // GAME SAVING 
-  async endOfGameUpdatingProfile(gameId:number, user1:UserEntity, user2:UserEntity, won:boolean){
-  
+  async endOfGameUpdatingProfile(gameId: number, user1: UserEntity, user2: UserEntity, won: boolean) {
+
     user1.gamesPlayed += 1;
     user2.gamesPlayed += 1;
     let winner = won ? user1 : user2;
@@ -463,17 +467,16 @@ export class UserService {
     winner.winrate = winner.gamesWon / winner.gamesPlayed * 100;
     await this.UserRepository.save(loser);
     await this.UserRepository.save(winner);
-    return ;
+    return;
   }
 
 
-  async rankUpdate(){
-    let users =  await this.UserRepository.find({order: { elo: 'DESC' }});
-    users = users.filter(user=> (user.gamesPlayed !== 0));
+  async rankUpdate() {
+    let users = await this.UserRepository.find({ order: { elo: 'DESC' } });
+    users = users.filter(user => (user.gamesPlayed !== 0));
     let length = users.length;
     let position = 0;
-    while (position < length)
-    {
+    while (position < length) {
       users[position].rank = position + 1;
       this.UserRepository.save(users[position]);
       position += 1;

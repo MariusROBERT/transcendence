@@ -116,7 +116,7 @@ export class UserController {
     @Body() updatePwdDto: UpdatePwdDto,
     @User() user: UserEntity,
   ) {
-    return this.userService.updatePassword(updatePwdDto, user);
+    return await this.userService.updatePassword(updatePwdDto, user);
   }
 
   // -- PUBLIC -- :
