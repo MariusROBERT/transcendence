@@ -4,6 +4,7 @@ import { Background, RoundButton, ChatMessage, ChanUserList, SidePanel } from '.
 import { useUserContext } from '../../contexts';
 import { subscribe } from '../../utils/event';
 import {
+  current_chan,
   GetCurrChan,
   UpdateChannelUsers,
 } from '../../utils/channel_functions';
@@ -100,7 +101,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }, [socket]);
 
   useEffect(() => {
-    socket?.on('leave', UpdateChannelUsers);
+    socket?.on('leave', (msg: {channel_name: string, channel_id: number}) => {if (msg.channel_name === current_chan) UpdateChannelUsers(msg.channel_id)});
     return () => {
       socket?.off('leave', UpdateChannelUsers);
     };

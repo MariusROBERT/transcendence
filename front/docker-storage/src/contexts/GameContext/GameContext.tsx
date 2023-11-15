@@ -95,6 +95,7 @@ export function GameContextProvider({ children }: Props) {
   }, [id, socket, navigate]);
 
   async function fetchGameContext(): Promise<void> {
+    if (id <= 0) return;
     // fetch invite status
     const inviteStatus: {
       gameInvitationFrom: number,

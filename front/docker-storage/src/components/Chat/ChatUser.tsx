@@ -79,7 +79,6 @@ export default function ChatUser({ data, visibility, onClose }: Props) {
 
   useEffect(() => {
     async function onRemove(msg: { user_id_to_remove: number, channel_name: string }) {
-      console.log('');
       if (msg.user_id_to_remove !== id) return;
       if (msg.channel_name === current_chan)
         publish('close_chat', undefined);
