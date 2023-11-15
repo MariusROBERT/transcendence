@@ -23,7 +23,7 @@ export class AuthController {
   }
 
   @Post('/register')
-  async Register(@Body() userData: UserSubDto): Promise<Partial<UserEntity>> {
+  async Register(@Body() userData: UserSubDto): Promise<{id: number, username: string }> {
     return await this.authService.register(userData);
   }
 
@@ -41,7 +41,7 @@ export class AuthController {
   @Get('callback/42')
   @UseGuards(FtOAuthGuard)
   @UseFilters(FtAuthFilter)
-  async auth42callback(@Req() req, @Res() res) {
+  async auth42callback(@Req() req, @Res() res) : Promise<void> {
     const token = await this.authService.ftLogin({
       username: req.user.username,
       urlImg: req.user._json.image.link,
@@ -54,7 +54,7 @@ export class AuthController {
   }
 
   @Post('2fa/42')
-  async twoFa42(@Body() body, @Req() req) {
+  async twoFa42(@Body() body, @Req() req) : Promise<{ 'access-token': string }> {
     return await this.authService.ftLogin2fa(req, body.code2fa);
   }
 }
