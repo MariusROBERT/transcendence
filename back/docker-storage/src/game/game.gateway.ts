@@ -139,8 +139,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       gameType: 'normal' | 'special';
     },
   ) {
-    // Update Database
-    //TODO: group the call to call only 1 time save
+    if (this.controller.matchmaking.getGame(msg.sender) !== undefined || this.controller.matchmaking.getGame(msg.receiver) !== undefined)
+      return;
+
     const sender = await this.userService.getUserById(msg.sender);
     await this.userService.setUserSendInvitationTo(sender, undefined);
     await this.userService.setUserReceivedInvitationFrom(sender, undefined);
@@ -199,6 +200,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinQueue(
     @MessageBody() msg: { sender: number; gameType: 'normal' | 'special' },
   ) {
+    if (this.controller.matchmaking.getGame(msg.sender))
+      return;
     if (msg.gameType === 'normal')
       return this.controller.matchmaking.joinQueue(msg.sender, false);
     if (msg.gameType === 'special')

@@ -149,6 +149,8 @@ export function GameContextProvider({ children }: Props) {
   }
 
   function acceptGameInvite(from: number) {
+    if (isInGameWith)
+      return declineGameInvite(from);
     // Auto cancel and decline send invites
     if (inviteTo && inviteTo !== from)
       cancelGameInvite();
