@@ -18,6 +18,7 @@ import {
   SelfCommand,
   SelfInChannelGuard,
 } from './guards/chan-basic.guards';
+import {ChanStateEnum} from "../utils/enums/channel.enum";
 
 @Controller('channel')
 export class ChannelController {
@@ -34,17 +35,23 @@ export class ChannelController {
 
   @Get('/public_all')
   @UseGuards(JwtAuthGuard)
-  async GetPublicChannelsData(@User() user: UserEntity) {
+  async GetPublicChannelsData(@User() user: UserEntity): Promise<{
+    id: number,
+    channel_name: string,
+    chan_status: ChanStateEnum,
+    priv_msg: boolean,
+    has_password: boolean,
+  }[]> {
     return await this.channelService.getPublicChannelsData(user);
   }
 
   @Get('/name/:chan_name')
   //@UseGuards(JwtAuthGuard)
-  async GetChannelIdByName(@Param('chan_name') chan_name: string) {
+  async GetChannelIdByName(@Param('chan_name') chan_name: string) : Promise<{channel_id: number}> {
     return await this.channelService.getChannelIdByName(chan_name);
   }
 
-  @Get('/msg/:id')
+  @Get('/msgs/:id')
   @UseGuards(SelfInChannelGuard)
   @UseGuards(JwtAuthGuard)
   async GetChannelMessages(
@@ -72,7 +79,7 @@ export class ChannelController {
 
   @Get('/of_user')
   @UseGuards(JwtAuthGuard)
-  async GetChannelOfUser(@User() user: UserEntity): Promise<ChannelEntity[]> {
+  async GetChannelOfUser(@User() user: UserEntity): Promise<PublicChannelDto[]> {
     return await this.channelService.getChannelOfUser(user.id);
   }
 
@@ -92,7 +99,7 @@ export class ChannelController {
   async JoinPrivate(
     @Body() second_user: any, // Create private user dto
     @User() user: UserEntity,
-  ) {
+  ): Promise<{ channel_id: number, channel_name: string }> {
     return await this.channelService.joinPrivate(second_user, user);
   }
 
@@ -234,14 +241,5 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.channelService.UnBanUserFromChannel(uDto.id, id);
-  }
-
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard)
-  async GetChannelById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChannelEntity> {
-    // ==> renvoi toutes les infos channels
-    return await this.channelService.getChannelById(id);
   }
 }

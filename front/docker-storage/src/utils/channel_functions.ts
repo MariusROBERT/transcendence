@@ -2,7 +2,7 @@ import { Fetch } from '.';
 import { publish } from './event';
 
 export async function UpdateChannelMessage(id: number) {
-  const res2 = await Fetch('channel/msg/' + id, 'GET');
+  const res2 = await Fetch('channel/msgs/' + id, 'GET');
   const msgs = res2?.json;
   if (msgs.statusCode === 400) return;
   publish('enter_chan', {

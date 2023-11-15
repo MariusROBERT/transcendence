@@ -22,6 +22,8 @@ import { ChanStateEnum } from 'src/utils/enums/channel.enum';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import {MutedEntity} from "../database/entities/muted.entity";
+import {UserRoleEnum} from "../utils/enums/user.enum";
+import {GameEntity} from "../database/entities/game.entity";
 
 @Injectable()
 export class ChannelService {
@@ -76,13 +78,22 @@ export class ChannelService {
     return this.returnPublicData(chan);
   }
 
+  async isInChannel(user_id: number, channelId: number): Promise<boolean> {
+    const channel = await this.ChannelRepository.createQueryBuilder('channel')
+      .innerJoin('channel.users', 'user')
+      .where('channel.id = :channel_id', { channel_id: channelId })
+      .andWhere('user.id = :userId', { userId: user_id })
+      .getOne();
+    return !!channel;
+  }
+
   /**
    @description Join a private channel if exist, else create it
    @param {any} second_user - The second user to join the private channel
    @param {UserEntity} user - The user that create the private channel
    @return {ChannelEntity} - Public channel data
    */
-  async joinPrivate(second_user: any, user: UserEntity) {
+  async joinPrivate(second_user: any, user: UserEntity): Promise<{ channel_id: number, channel_name: string }> {
     const user_two = await this.userService.getUserById(second_user.id);
     let channel = await this.ChannelRepository.createQueryBuilder('channel')
       .innerJoin('channel.users', 'user')
@@ -100,7 +111,7 @@ export class ChannelService {
       });
       await this.ChannelRepository.save(channel);
     }
-    return { id: channel.id, channel_name: channel.channel_name };
+    return { channel_id: channel.id, channel_name: channel.channel_name };
   }
 
   /**
@@ -236,7 +247,7 @@ export class ChannelService {
    @return {ChannelEntity} - The channel entity
    @throw {NotFoundException} - If channel not found
    */
-  async getChannelIdByName(channel_name: string) {
+  async getChannelIdByName(channel_name: string): Promise<{channel_id: number}> {
     const channel = await this.ChannelRepository.createQueryBuilder('channel')
       .leftJoin('channel.owner', 'owner')
       .select(['channel.id'])
@@ -244,7 +255,7 @@ export class ChannelService {
       .getOne();
     if (!channel)
       throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
-    return channel;
+    return {channel_id: channel.id};
   }
 
   /**
@@ -319,7 +330,7 @@ export class ChannelService {
    @param {number} id - The user id
    @return {ChannelEntity[]} - The channels user
    */
-  async getChannelOfUser(id: number): Promise<ChannelEntity[]> {
+  async getChannelOfUser(id: number): Promise<PublicChannelDto[]> {
     const chans = await this.getChannelOfUserByType('users', id);
     const admchans = await this.getChannelOfUserByType('admins', id);
     const ownchans = await this.getChannelOfUserByType('owner', id);

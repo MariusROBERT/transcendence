@@ -27,9 +27,9 @@ export default function CreateChat() {
   const { isCreateChannelOpen, setIsCreateChannelOpen } = useUIContext();
 
   async function OnJoinChannel(channelName: string) {
-    const chan = (await Fetch(`channel/name/${channelName}`, 'GET'))?.json;
-    UpdateChannelMessage(chan.id);
-    UpdateChannelUsers(chan.id);
+    const chan: {channel_id: number} = (await Fetch(`channel/name/${channelName}`, 'GET'))?.json;
+    UpdateChannelMessage(chan.channel_id);
+    UpdateChannelUsers(chan.channel_id);
     SetCurrChan(channelName);
     socket?.emit('join', { channel: channelName } as any);
     publish('open_chat', undefined);
