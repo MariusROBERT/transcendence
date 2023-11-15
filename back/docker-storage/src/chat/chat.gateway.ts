@@ -13,6 +13,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BlockGuard, ChatCheckGuard } from './guards/chat.guards';
 import { FRONT_URL } from '../utils/Globals';
+import { MutedService } from 'src/muted/muted.service';
 
 export interface ChannelMessage {
   sender_id: number;
@@ -35,6 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private chanService: ChannelService,
     private messService: MessagesService,
+    private muteService: MutedService,
     private userService: UserService,
     private jwtService: JwtService,
   ) { }
@@ -71,6 +73,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(channel).emit('join', chan.id);
   }
 
+  @SubscribeMessage('leave')
+  async handleLeave(client: Socket, body: any) {
+    const { channel } = body;
+    try {
+      const chan = await this.chanService.getChannelByName(channel);
+      this.server.to(channel).emit('leave', chan.id);
+    } catch (error) {}
+    // client.rooms.forEach((room) => {
+    //   if (room !== 'user' + client.id) {
+    //     client.leave(room);
+    //   }
+    // });
+  }
+
   @SubscribeMessage('remove')
   async handleRemove(client: Socket, body: {user_id: number, channel_name:string}) {
     this.server.emit('remove', {user_id_to_remove: body.user_id, channel_name: body.channel_name});
@@ -105,6 +121,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     
     const userE = await this.userService.getUserByUsername(payload.username);
+
+    // Check if mute
+    if (
+      (await this.muteService.getMutedInChannel(chanE.id, userE.id))
+        ?.endDate > new Date()
+    )
+    {
+      this.server.to('user' + userE.id).emit('muted', (await this.muteService.getMutedInChannel(chanE.id, userE.id)).endDate);
+      return;
+    }
     this.chanService.AddMessageToChannel(message, userE, chanE);
     this.messages.push({ msg: message, sock_id: client.id });
     const data: ChannelMessage = {

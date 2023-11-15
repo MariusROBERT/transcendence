@@ -15,7 +15,6 @@ export class ChatCheckGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Mettez en œuvre votre logique pour vérifier si l'utilisateur est banni
     const client = context.switchToWs().getClient();
     const data = context.switchToWs().getData();
 
@@ -28,12 +27,11 @@ export class ChatCheckGuard implements CanActivate {
     const users = await this.userService.getUsersInChannels(chanE.id);
     const is_here = users.some((user) => user.id === userE.id);
     if (is_here) {
-      if (
-        (await this.muteService.getMutedInChannel(chanE.id, userE.id))
-          ?.endDate > new Date()
-      )
-        // throw new Error('You are muted');
-        return;
+      //if (
+      //  (await this.muteService.getMutedInChannel(chanE.id, userE.id))
+      //    ?.endDate > new Date()
+      //)
+      //  return;
       return true;
     }
     // throw new Error('You are not in channel');
@@ -55,9 +53,11 @@ export class BlockGuard implements CanActivate {
     if (!channel.priv_msg) return true;
     const users = await this.userService.getFullUsersInChannels(channel.id);
     if (users.at(0)?.blocked.includes(users.at(1).id))
-      throw new Error('Blocked by ' + users.at(0).username);
+      return false;
+      //throw new Error('Blocked by ' + users.at(0).username);
     if (users.at(1)?.blocked.includes(users.at(0).id))
-      throw new Error('Blocked by ' + users.at(1).username);
+      return false;
+      //throw new Error('Blocked by ' + users.at(1).username);
     return true;
   }
 }

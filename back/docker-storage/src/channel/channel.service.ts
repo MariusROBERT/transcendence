@@ -289,7 +289,6 @@ export class ChannelService {
     }
     for (const currentUser of usersInChannel) {
       if (currentUser.id === user.id) {
-        // L'utilisateur actuel est le même que l'utilisateur passé en paramètre
         return { currentUser };
       }
     }
@@ -381,6 +380,8 @@ export class ChannelService {
         }
         const usr = users[0];
         channel.users = this.removeFrom(users, usr.id);
+        if ((await this.mutedService.getMutedInChannel(channel.id, usr.id))?.endDate > new Date())
+          this.UnMuteUserFromChannel(usr.id, channel.id);
         channel.owner = usr;
       }
     } else {
