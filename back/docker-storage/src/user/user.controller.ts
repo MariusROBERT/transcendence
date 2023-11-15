@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChannelEntity } from '../database/entities/channel.entity';
-import { MessageEntity } from '../database/entities/message.entity';
 import { UserEntity } from '../database/entities/user.entity';
 import { User } from '../utils/decorators/user.decorator';
 import { UserService } from './user.service';
@@ -25,11 +24,13 @@ import { userPictureFileInterception } from './utils/user.picture.fileIntercepto
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserStateEnum } from "../utils/enums/user.enum";
+import {ChannelService} from "../channel/channel.service";
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
+    private readonly channelService: ChannelService,
     @InjectRepository(ChannelEntity)
     private readonly channelRepository: Repository<ChannelEntity>,) {
   }
@@ -151,22 +152,14 @@ export class UserController {
     await this.userService.removeLastMsg(id);
   }
 
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard)
-  async GetUserById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserEntity> {
-    // ==> renvoi toutes les infos channels
-    return await this.userService.getUserById(id);
-  }
-
   @Get('is_in_channel/:channel_id')
   @UseGuards(JwtAuthGuard)
   async IsInChannel(
     @User() user: UserEntity,
     @Param('channel_id', ParseIntPipe) channel_id: number,
   ): Promise<boolean> {
-    return await this.userService.isInChannel(user, channel_id);
+    const channelsOfUser = await this.channelService.getChannelOfUser(user.id);
+    return (await this.channelService.isInChannel(user.id, channel_id) || channelsOfUser.some((channel) => channel.id === channel_id));
   }
 
   // Game ----------------------------------------------------------------------------------------------------------- //

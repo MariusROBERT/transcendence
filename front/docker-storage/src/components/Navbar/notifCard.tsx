@@ -29,22 +29,16 @@ const NotifCard = ({ notifFriends, notifMsg, setNotifsMsg, notifsMsg, otherUserI
     getOtherUser();
   }, [])
 
-  async function OnJoinChannel(name: string) {
-    if (!usr || !notifMsg) return;
-    const chan_id = notifMsg?.channel_id;
-    UpdateChannelMessage(chan_id);
-    UpdateChannelUsers(chan_id);
-    SetCurrChan(name);
-    socket?.emit('join', { channel: name });
-    publish('open_chat', undefined);
-  }
-
   const onclick = async () => {
     if (!usr || !notifMsg) return;
     if (setNotifsMsg && notifsMsg)
       setNotifsMsg(notifsMsg.filter((el) => el.channel_id !== notifMsg.channel_id));
     if (!(await Fetch('user/is_in_channel/' + notifMsg.channel_id, 'GET'))?.json) return;
-    OnJoinChannel(notifMsg.channel_name);
+    UpdateChannelMessage(notifMsg.channel_id);
+    UpdateChannelUsers(notifMsg.channel_id);
+    SetCurrChan(notifMsg.channel_name);
+    socket?.emit('join', { channel: notifMsg.channel_name });
+    publish('open_chat', undefined);
   }
 
   if (recvInvitesFrom.includes(otherUserId)) {

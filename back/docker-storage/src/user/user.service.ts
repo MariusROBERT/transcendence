@@ -22,6 +22,7 @@ import * as fs from 'fs';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 import { API_URL } from '../utils/Globals';
+import {PublicChannelDto} from "../channel/dto/channel.dto";
 
 @Injectable()
 export class UserService {
@@ -62,7 +63,7 @@ export class UserService {
   }
 
   async update2Fa(profile: UpdateUserDto, user: UserEntity) {
-
+    
     const id: number = user.id;
     const errors = await validate(profile);
     if (errors.length > 0) {
@@ -271,10 +272,6 @@ export class UserService {
   }
 
   // CHANNEL & MESSAGE :
-
-  async isInChannel(user: UserEntity, channel_id: number): Promise<boolean> {
-    return !!user.channels?.some((c) => c.id === channel_id);
-  }
 
   async getUsersInChannels(channelId: number) {
     const users = await this.UserRepository.createQueryBuilder('user')

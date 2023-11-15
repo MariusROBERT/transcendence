@@ -25,7 +25,7 @@ export class AuthService {
   ) {
   }
 
-  async register(userData: UserSubDto): Promise<Partial<UserEntity>> {
+  async register(userData: UserSubDto): Promise<{id: number, username: string }>{
     // on veut crypter le pwd avec la bibliotheque bcrypt
     // Create User
     if (!/^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,50})$/.test(userData.password))
