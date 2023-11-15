@@ -11,7 +11,7 @@ import {
 } from '..';
 import React, { useEffect, useState } from 'react';
 import { Search } from '../Search/Search';
-import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
+import {useFriendsRequestContext, useUserContext, useUIContext, useGameContext} from '../../contexts';
 import JoinChat from '../Chat/JoinChat';
 import CreateChat from '../Chat/CreateChat';
 
@@ -26,14 +26,15 @@ export function MainPage({ panelWidth, viewport }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const { fetchContext, user } = useUserContext();
   const { fetchFriendsRequestContext } = useFriendsRequestContext();
+  const { fetchGameContext } = useGameContext();
   const { loadUIContext  } = useUIContext();
 
   // functions -------------------------------------------------------------------------------------------------------//
 
   useEffect(() => {
-    if (focused) {
+    if (focused)
       fetchContext();
-    }
+      fetchGameContext();
     // eslint-disable-next-line
   }, [focused]);
 
