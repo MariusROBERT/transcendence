@@ -20,9 +20,10 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
       background: won? 'radial-gradient(circle, rgba(9,6,64,1) 0%, rgba(0,212,255,1) 100%)':
         'radial-gradient(circle, rgba(62,6,64,1) 14%, rgba(255,4,108,1) 100%)',
       borderRadius:'50px',
+      maxWidth: '95vw',
     }}>
-    <Flex flex_direction="row" flex_alignItems="center" flex_gap={'0'}>
-      {<ScoreUser user={user1}/>}
+    <Flex flex_direction="column" flex_alignItems="center" flex_gap={'0'} flex_wrap={'wrap'}>
+      <ScoreUser user={user1}/>
       <div style={{
         position: 'relative',
         minWidth: '200px',
@@ -50,8 +51,6 @@ const ScorePannel = ({user1, user2, score1, score2, won}: Props) => {
             fontFamily:'title'
             }}>
           {(score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)}
-            {/* {won ? ((score1 === -1 ? 'FF' : score1) + ' VS ' + (score2 === -1 ? 'FF' : score2)):
-              ((score2 === -1 ? 'FF' : score2) + ' VS ' + (score1 === -1 ? 'FF' : score1))} */}
           </p>
         </div>
       </div>
