@@ -106,7 +106,7 @@ export default function CreateChat() {
             pattern={passwordRegex.source} 
             onBlur={() => {
               if (!passwordRegex.test(password))
-                setPasswordError('Password must contains at least 1 Maj, 1 Min, and be between 8 and 30 char');
+                setPasswordError('Password must contains only alphanums char and at least 1 Maj, 1 Min, and be between 8 and 30 char');
               else 
                 setPasswordError('');
             }}
