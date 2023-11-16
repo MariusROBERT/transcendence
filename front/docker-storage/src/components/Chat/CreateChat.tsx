@@ -72,7 +72,7 @@ export default function CreateChat() {
     setChecked(!checked);
   }
 
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,30}$/;
   const [passwordError, setPasswordError] = useState<string>('');
 
   return (
