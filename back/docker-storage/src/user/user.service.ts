@@ -45,6 +45,8 @@ export class UserService {
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
+    if (!profile.pseudo || profile.pseudo === '')
+      throw new BadRequestException('New pseudo can\'t be empty');
     if (profile.pseudo.endsWith('_42') && profile.pseudo !== user.username)
       throw new BadRequestException('New pseudo can\'t end with "_42"');
 
@@ -397,7 +399,7 @@ export class UserService {
     }
     user.is2fa_active = true;
     await this.UserRepository.save(user);
-    return ([]);
+    return [];
   }
 
   // Game Invites Management ---------------------------------------------------------------------------------------- //
