@@ -237,7 +237,7 @@ export class ChannelService {
       //relations: ['admins'],
     });
     if (!channel)
-      throw new BadRequestException(`The channel ${id}, doesn't exist`);
+      throw new BadRequestException(`The channel ${channel_name}, doesn't exist`);
     return channel;
   }
 
