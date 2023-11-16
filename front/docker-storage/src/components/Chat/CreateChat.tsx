@@ -97,6 +97,7 @@ export default function CreateChat() {
             placeholder='Optional password'
             style={inputStyle}
             value={password}
+            type='password'
             onChange={(evt) => {
               setPassword(evt.target.value);
               setPasswordError(''); 
