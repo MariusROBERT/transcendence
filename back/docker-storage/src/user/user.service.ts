@@ -166,7 +166,7 @@ export class UserService {
       profile = await this.UserRepository.findOne({ where: { id } });
     }
     catch { }
-    if (!profile) throw new BadRequestException(`le user ${id} n'existe pas`);
+    if (!profile) throw new BadRequestException(`User of id ${id}, doesn't exist`);
 
     const PublicProfile = new PublicProfileDto();
     PublicProfile.id = profile.id;
@@ -199,7 +199,7 @@ export class UserService {
   async askFriend(user: UserEntity, id: number) {
     const userAsked = await this.UserRepository.findOne({ where: { id } });
     if (!userAsked) {
-      throw new BadRequestException(`le user d'id ${id} n'existe pas`);
+      throw new BadRequestException(`The user id: ${id} doesn't exist`);
     }
 
     if (userAsked.blocked.includes(user.id)) return;

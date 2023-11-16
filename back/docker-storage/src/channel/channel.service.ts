@@ -62,14 +62,17 @@ export class ChannelService {
     channel: CreateChannelDto,
     user: UserEntity,
   ): Promise<PublicChannelDto> {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     const chan = this.ChannelRepository.create({
       ...channel,
     });
     chan.owner = user;
     chan.admins = [];
     chan.salt = await bcrypt.genSalt();
-    if (chan.password)
+    if (chan.password) {
+      if (!passwordRegex.test(chan.password)) return;
       chan.password = await bcrypt.hash(chan.password, chan.salt);
+    }
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
@@ -156,7 +159,7 @@ export class ChannelService {
       });
     } catch {}
     if (!channel)
-      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`The channel ${id}, doesn't exist`);
     return channel;
   }
 
@@ -182,7 +185,7 @@ export class ChannelService {
       .getRawOne();
     } catch {}
     if (!channel)
-      throw new BadRequestException(`Le channel d'id ${id}, n'existe pas`);
+      throw new BadRequestException(`The channel ${id}, doesn't exist`);
     return channel;
   }
 
@@ -237,7 +240,7 @@ export class ChannelService {
       //relations: ['admins'],
     });
     if (!channel)
-      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`The channel ${channel_name}, doesn't exist`);
     return channel;
   }
 
@@ -254,7 +257,7 @@ export class ChannelService {
       .where('channel.channel_name = :channel_name', { channel_name })
       .getOne();
     if (!channel)
-      throw new BadRequestException(`Le channel ${channel_name}, n'existe pas`);
+      throw new BadRequestException(`The channel ${channel_name}, doesn't exist`);
     return {channel_id: channel.id};
   }
 

@@ -187,6 +187,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
               <form onSubmit={handleSubmit}>
                 <Background bg_color={color.clear} flex_alignItems={'stretch'} padding={'10px 30px 10px 10px'}
                   forceStyle={{ overflow: '' }}>
+                  {!signIn && <p>Password Politic: 1 Maj, 1 Min, <br></br>1 chiffre, 1 char special, 8 char mini</p>}
                   {errorMessage && <div style={{ color: 'red', marginTop: '5px' }}>{errorMessage}</div>}
                   <input
                     style={{ minWidth: 100 + 'px', minHeight: 30 + 'px' }}
@@ -196,6 +197,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder='login...'
+                    maxLength={11}
                     pattern={!signIn ? /[a-zA-Z0-9\\-_+.]{1,11}/.source : undefined}
                     required
                   />

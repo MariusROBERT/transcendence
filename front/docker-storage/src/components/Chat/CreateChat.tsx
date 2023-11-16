@@ -40,10 +40,12 @@ export default function CreateChat() {
       setChannelName('');
       setPassword('');
       setErrorVisible(false);
+      setPasswordError(''); 
     }
   }, [isCreateChannelOpen]);
 
   async function OnButtonClick() {
+    if (password != '' && !passwordRegex.test(password)) return;
     if (channelName === '') return;
     const rep = await Fetch(
       'channel',
@@ -64,15 +66,19 @@ export default function CreateChat() {
     UpdateChannels();
     OnJoinChannel(channelName);
     setIsCreateChannelOpen(false);
+    setPasswordError('');
   }
 
   function OnChange() {
     setChecked(!checked);
   }
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,30}$/;
+  const [passwordError, setPasswordError] = useState<string>('');
+
   return (
     <Popup isVisible={isCreateChannelOpen} onClose={() => setIsCreateChannelOpen(false)}>
-      <div style={{ ...createChatStyle, padding: mobile ? 10 : 42 }}>
+      <div style={{ ...createChatStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: mobile ? 10 : 42 }}>
         <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
           <ErrorPanel text={errorMessage}></ErrorPanel>
         </div>
@@ -87,15 +93,25 @@ export default function CreateChat() {
             }}
           ></input>
         </p>
-        <p>
+        <p style={{ display: 'flex', flexDirection: 'column', margin: '0 auto', justifyContent: 'center', alignItems: 'center'}}>
           <input
             placeholder='Optional password'
             style={inputStyle}
             value={password}
+            type='password'
             onChange={(evt) => {
               setPassword(evt.target.value);
+              setPasswordError(''); 
+            }}
+            pattern={passwordRegex.source} 
+            onBlur={() => {
+              if (!passwordRegex.test(password))
+                setPasswordError('Password must contains only alphanums char and at least 1 Maj, 1 Min, and be between 8 and 30 char');
+              else 
+                setPasswordError('');
             }}
           ></input>
+          <span style={{ color: 'red', fontSize: '12px', width:'60%' }}>{passwordError}</span>
         </p>
         <Flex flex_direction={'row'}>
           <p>Private Channel:</p>

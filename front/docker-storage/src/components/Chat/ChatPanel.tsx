@@ -38,7 +38,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   const getMsg = async (message: ChannelMessage) => {
-    if (message.channel_id !== channelId) return;
+    if (message.channel_name !== current_chan) return;
     setMessage([...msg, message]);
   };
 
@@ -101,11 +101,22 @@ export function ChatPanel({ viewport, width }: Props) {
   }, [socket]);
 
   useEffect(() => {
-    socket?.on('leave', (msg: {channel_name: string, channel_id: number}) => {if (msg.channel_name === current_chan) UpdateChannelUsers(msg.channel_id)});
+    function leaveChannel(msg:{sender_id: number, channel_id: number, channel_name: string}){
+      if (msg.channel_name !== current_chan) return;
+      if (msg.sender_id === id) {
+        setIsChatOpen(false);
+        setChannelId(-1);
+        setChannel(undefined);
+      }
+      else
+        UpdateChannelUsers(msg.channel_id);
+    }
+
+    socket?.on('leave', leaveChannel);
     return () => {
-      socket?.off('leave', UpdateChannelUsers);
+      socket?.off('leave', leaveChannel);
     };
-  }, [socket]);
+  }, [socket, current_chan]);
 
   async function onEnterPressed() {
     if (muted)

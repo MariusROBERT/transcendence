@@ -52,13 +52,13 @@ export function MainPage({ panelWidth, viewport }: Props) {
         flex_alignItems={'stretch'} forceStyle={{ zIndex: 2, position: 'relative' }}>
         <ContactPanel viewport={viewport} />
         <div style={CenterStyle}>
-          <div style={{ height: '350px' }}>
+          <div style={{ height: '400px' }}>
             <h2 className={'rainbow'} style={{margin: '50px', fontSize: '130px', zIndex: '20', fontFamily: 'title' }}>PONG</h2>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeHolder={'Leader Board...'} user={user} />
             <Navbar />
           </div>
           <PlayButton />
-          <div style={{ height: '350px' }} />
+          <div style={{ height: '400px' }} />
         </div>
         <ChatPanel viewport={viewport} width={panelWidth} />
       </Background>

@@ -29,13 +29,13 @@ export function Game({ viewport, theme }: {
     if (!isInGameWith)
       return navigate('/');
     socket?.emit('start_game', { id: id });
-    socket?.on('get_usernames', (body: { p1: string, p2: string }) => {
+    socket?.on('get_pseudos', (body: { p1: string, p2: string }) => {
       setPseudos([body.p1, body.p2]);
     });
 
     return (
       () => {
-        socket?.off('get_usernames');
+        socket?.off('get_pseudos');
         socket?.off('start_game');
       }
     );
