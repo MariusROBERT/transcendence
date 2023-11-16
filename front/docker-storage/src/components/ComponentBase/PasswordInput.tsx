@@ -49,11 +49,11 @@ export function PasswordInput(props: Props) {
     right: -25,
   };
 
-  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?.,<>~\-\\]).{8,})$/;
+  const mainRegex = /^((?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#+=`'";:?*.,<>~\-\\]).{8,50})$/;
   const minMaj = /[A-Z]/;
   const minMin = /[a-z]/;
   const minDigit = /[0-9]/;
-  const minSpecial = /[!@#\-+=[\]\\/`'";:?.,<>~]/;
+  const minSpecial = /[!@#+=`'";:?*.,<>~\-\\]/;
   const len = /.{8,50}/;
 
   function errorsInfo() {
@@ -116,7 +116,7 @@ export function PasswordInput(props: Props) {
         onChange={(e) => props.setPassword(e.target.value)}
         style={{ ...props.style, width: '100%' }}
         required={props.required}
-        pattern={props.noVerify ? undefined : (props.confirmPassword || mainRegex.source)}
+        pattern={props.noVerify ? /.*/.source : (props.confirmPassword?.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') || /.{1,50}/.source)}
         onInvalid={async (e) => {
           e.preventDefault();
           for (let i = 0; i < 3; i++) {
