@@ -130,7 +130,19 @@ export default function Settings() {
     //PSEUDO
     if (newName !== '' && newName !== userInfosSettings?.pseudo) {
       if (newName.endsWith('_42') && newName !== userInfosSettings?.username) {
-        setErrorMessage('Le new name ne peut pas finir par _42');
+        setErrorMessage('Pseudo can\'t end with _42');
+        return;
+      }
+      if (newName.length > 11) {
+        setErrorMessage('Pseudo can\'t be longer than 11 characters');
+        return;
+      }
+      if (newName.length <= 1) {
+        setErrorMessage('Pseudo should be at least 2 characters long');
+        return;
+      }
+      if (newName.match(/[^a-zA-Z0-9\-_+.]/)) {
+        setErrorMessage('Pseudo can only contain alphanumerical characters, \'-\', \'+\', \'_\' and \'.\'');
         return;
       }
       const user = (await Fetch('user/update_pseudo', 'PATCH', JSON.stringify({ pseudo: newName })))?.json;
@@ -248,7 +260,7 @@ export default function Settings() {
                 type="text"
                 placeholder='New name'
                 onChange={(e) => setNewName(e.target.value)}
-                pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
+                //pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
               />
               <p style={{ color: 'red', textAlign: 'center', marginBottom: '0px' }}>{pseudoError}</p>
               <label htmlFor="change_name"></label>
