@@ -44,6 +44,7 @@ export default function CreateChat() {
   }, [isCreateChannelOpen]);
 
   async function OnButtonClick() {
+    if (password != '' && !passwordRegex.test(password)) return;
     if (channelName === '') return;
     const rep = await Fetch(
       'channel',
@@ -64,11 +65,15 @@ export default function CreateChat() {
     UpdateChannels();
     OnJoinChannel(channelName);
     setIsCreateChannelOpen(false);
+    setPasswordError('');
   }
 
   function OnChange() {
     setChecked(!checked);
   }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  const [passwordError, setPasswordError] = useState<string>('');
 
   return (
     <Popup isVisible={isCreateChannelOpen} onClose={() => setIsCreateChannelOpen(false)}>
@@ -87,15 +92,24 @@ export default function CreateChat() {
             }}
           ></input>
         </p>
-        <p>
+        <p style={{ display: 'flex', flexDirection: 'column'}}>
           <input
             placeholder='Optional password'
             style={inputStyle}
             value={password}
             onChange={(evt) => {
               setPassword(evt.target.value);
+              setPasswordError(''); 
+            }}
+            pattern={passwordRegex.source} 
+            onBlur={() => {
+              if (!passwordRegex.test(password))
+                setPasswordError('Password doit contenir 1 Maj, 1 Min, et 8 char mini');
+              else 
+                setPasswordError('');
             }}
           ></input>
+          <span style={{ color: 'red', fontSize: '12px' }}>{passwordError}</span>
         </p>
         <Flex flex_direction={'row'}>
           <p>Private Channel:</p>
