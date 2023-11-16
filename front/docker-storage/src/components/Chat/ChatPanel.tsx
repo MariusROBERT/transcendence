@@ -38,7 +38,7 @@ export function ChatPanel({ viewport, width }: Props) {
   }
 
   const getMsg = async (message: ChannelMessage) => {
-    if (message.channel_id !== channelId) return;
+    if (message.channel_name !== current_chan) return;
     setMessage([...msg, message]);
   };
 

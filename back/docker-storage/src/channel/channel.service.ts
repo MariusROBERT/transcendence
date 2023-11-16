@@ -62,14 +62,17 @@ export class ChannelService {
     channel: CreateChannelDto,
     user: UserEntity,
   ): Promise<PublicChannelDto> {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     const chan = this.ChannelRepository.create({
       ...channel,
     });
     chan.owner = user;
     chan.admins = [];
     chan.salt = await bcrypt.genSalt();
-    if (chan.password)
+    if (chan.password) {
+      if (!passwordRegex.test(chan.password)) return;
       chan.password = await bcrypt.hash(chan.password, chan.salt);
+    }
     try {
       await this.ChannelRepository.save(chan);
     } catch (e) {
