@@ -40,6 +40,7 @@ export default function CreateChat() {
       setChannelName('');
       setPassword('');
       setErrorVisible(false);
+      setPasswordError(''); 
     }
   }, [isCreateChannelOpen]);
 
@@ -77,7 +78,7 @@ export default function CreateChat() {
 
   return (
     <Popup isVisible={isCreateChannelOpen} onClose={() => setIsCreateChannelOpen(false)}>
-      <div style={{ ...createChatStyle, padding: mobile ? 10 : 42 }}>
+      <div style={{ ...createChatStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: mobile ? 10 : 42 }}>
         <div style={{ visibility: errorVisible ? 'inherit' : 'hidden' }}>
           <ErrorPanel text={errorMessage}></ErrorPanel>
         </div>
@@ -92,7 +93,7 @@ export default function CreateChat() {
             }}
           ></input>
         </p>
-        <p style={{ display: 'flex', flexDirection: 'column'}}>
+        <p style={{ display: 'flex', flexDirection: 'column', margin: '0 auto', justifyContent: 'center', alignItems: 'center'}}>
           <input
             placeholder='Optional password'
             style={inputStyle}
@@ -105,12 +106,12 @@ export default function CreateChat() {
             pattern={passwordRegex.source} 
             onBlur={() => {
               if (!passwordRegex.test(password))
-                setPasswordError('Password doit contenir 1 Maj, 1 Min, et 8 char mini');
+                setPasswordError('Password must contains at least 1 Maj, 1 Min, and be between 8 and 30 char');
               else 
                 setPasswordError('');
             }}
           ></input>
-          <span style={{ color: 'red', fontSize: '12px' }}>{passwordError}</span>
+          <span style={{ color: 'red', fontSize: '12px', width:'60%' }}>{passwordError}</span>
         </p>
         <Flex flex_direction={'row'}>
           <p>Private Channel:</p>
