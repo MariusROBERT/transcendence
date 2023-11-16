@@ -259,6 +259,7 @@ export default function Settings() {
               <input id='change_name'
                 type="text"
                 placeholder='New name'
+                maxLength={11}
                 onChange={(e) => setNewName(e.target.value)}
                 //pattern={'[a-zA-Z0-9\\-_+.]{1,11}'}
               />

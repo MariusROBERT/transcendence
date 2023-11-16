@@ -12,8 +12,6 @@ interface Props {
 
 export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, style }: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length > 15)
-      return;
     setSearchTerm(event.target.value);
   };
 
@@ -47,6 +45,7 @@ export function SearchBar({ setSearchTerm, onClick, children, isVisible, id, sty
           // width: mobile ? 200 : 315,
           backgroundColor: color.white,
         }}
+        maxLength={25}
         placeholder={children}
         onChange={handleInputChange}
         onClick={onClick || undefined}
