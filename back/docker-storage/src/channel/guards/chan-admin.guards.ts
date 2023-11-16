@@ -37,7 +37,7 @@ export class AdminGuard implements CanActivate {
 
     const channel = await this.channelService.getChannelById(params.id);
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
-    const has_perm = findPerm(user.username, users_of_chan, ['owner', 'admin']);
+    const has_perm = findPerm(user.pseudo, users_of_chan, ['owner', 'admin']);
     if (has_perm) return true;
     throw new BadRequestException('User is not Owner or Admin');
   }
@@ -60,7 +60,7 @@ export class TargetIsAdminGuard implements CanActivate {
     const channel = await this.channelService.getChannelById(params.id);
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
     const user = await this.userService.getUserById(body.id);
-    const has_perm = findPerm(user.username, users_of_chan, ['owner', 'admin']);
+    const has_perm = findPerm(user.pseudo, users_of_chan, ['owner', 'admin']);
     if (has_perm === undefined) return true;
     throw new BadRequestException('User is Admin or Owner');
   }
@@ -82,7 +82,7 @@ export class OwnerGuard implements CanActivate {
 
     const channel = await this.channelService.getChannelById(params.id);
     const users_of_chan = await this.userService.getUsersInChannels(channel.id);
-    const has_perm = findPerm(user.username, users_of_chan, ['owner']);
+    const has_perm = findPerm(user.pseudo, users_of_chan, ['owner']);
     if (has_perm) return true;
     throw new BadRequestException('User is Owner');
   }
