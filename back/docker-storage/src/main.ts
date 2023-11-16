@@ -48,7 +48,7 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.use('/public', express.static(join(__dirname, '..', 'public')));
 
-  await app.listen(parseInt(process.env.BACK_PORT));
+  await app.listen(3001);
 }
 
 bootstrap();
