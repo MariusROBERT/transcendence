@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
     flexDirection: 'column',
     top: '420px',
     background: 'transparent',
-    zIndex: 100,
+    zIndex: 10,
   };
 
   return (
