@@ -26,6 +26,7 @@ const Authguard: React.FC<AuthGuardProps> = ({ children }): any => {
 
   useEffect(() => {
     if (!auth && !is2fa) {
+      Cookies.remove('jwtToken')
       navigate('/login');
     }
   }, [auth, navigate]);
