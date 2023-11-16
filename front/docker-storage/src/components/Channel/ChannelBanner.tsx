@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react';
 import { publish } from '../../utils/event';
 import { useUIContext } from '../../contexts';
 
-export function ChannelBanner({ id, name, type }: ChannelInfos) {
+export function ChannelBanner(props: ChannelInfos) {
   const { setIsChatOpen } = useUIContext();
-  const { socket } = useUserContext();
+  const { socket, id } = useUserContext();
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [publicData, setPublicData] = useState<ChannelPublic | undefined>(undefined);
   const [mobile, setMobile] = useState<boolean>(window.innerWidth < 650);
@@ -27,16 +27,18 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
   }, [window.innerWidth]);
 
   async function OnJoinChannel() {
-    UpdateChannelMessage(id);
-    UpdateChannelUsers(id);
-    SetCurrChan(name);
-    socket?.emit('join', { channel: name } as any);
+    UpdateChannelMessage(props.id);
+    UpdateChannelUsers(props.id);
+    SetCurrChan(props.name);
+    socket?.emit('join', { channel: props.name } as any);
     publish('open_chat', undefined);
     document.getElementById('inpt')?.focus();
   }
 
   async function OnLeave() {
-    const res = await Fetch('channel/leave/' + id, 'PATCH');
+    if (props.id <= 0) return;
+    if (props.id <= 0) return;
+    const res = await Fetch('channel/leave/' + props.id, 'PATCH');
     publish('update_chan', {
       detail: {
         value: res?.json?.channel_name,
@@ -49,12 +51,12 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         },
       });
     }
-    socket?.emit('leave', { user_id: id, channel_name: name } as any);
+    socket?.emit('leave', { user_id: id, channel_name: props.name });
   }
 
   async function OnSetting() {
-    if (id == -1) return;
-    const res = await Fetch('channel/public/' + id, 'GET');
+    if (props.id == -1) return;
+    const res = await Fetch('channel/public/' + props.id, 'GET');
     await setPublicData(res?.json);
     setEditVisible(true);
   }
@@ -67,7 +69,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
         justifyContent: 'space-between',
         borderRadius: '12.5px',
         fontWeight: 'bold',
-        color: type === 'owner' ? color.green : color.white,
+        color: props.type === 'owner' ? color.green : color.white,
         backgroundColor:
           color.light_blue,
         height: '25px',
@@ -85,12 +87,12 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
           onClick={() => {
             OnJoinChannel();
             setIsChatOpen(true);
-            setMsgs(msgs.filter(el => el.channel_id !== id))
+            setMsgs(msgs.filter(el => el.channel_id !== props.id))
           }}
         />
         <p style={{ fontSize: '20px' }}>
-          {name.slice(0, 25)}
-          {name.length > 25 ? '...' : ''}
+          {props.name.slice(0, 25)}
+          {props.name.length > 25 ? '...' : ''}
         </p>
       </Flex>
       <Flex
@@ -103,7 +105,7 @@ export function ChannelBanner({ id, name, type }: ChannelInfos) {
           icon={require('../../assets/imgs/icons8-exiting-from-shopping-mall-with-arrow-outside-96.png')}
           onClick={OnLeave}
         />
-        {type === 'owner' &&
+        {props.type === 'owner' &&
           <RoundButton
             icon_size={50}
             icon={require('../../assets/imgs/settings-svgrepo-com.png')}

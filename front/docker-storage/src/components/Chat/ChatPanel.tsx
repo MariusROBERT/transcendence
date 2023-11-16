@@ -102,7 +102,6 @@ export function ChatPanel({ viewport, width }: Props) {
 
   useEffect(() => {
     function leaveChannel(msg:{sender_id: number, channel_id: number, channel_name: string}){
-      console.log('received leave');
       if (msg.channel_name !== current_chan) return;
       if (msg.sender_id === id) {
         setIsChatOpen(false);
