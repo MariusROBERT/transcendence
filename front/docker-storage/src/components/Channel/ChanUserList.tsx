@@ -1,5 +1,6 @@
 import { ChannelMessage, ChannelUsers } from '../../utils/interfaces';
 import { ChanUser } from './ChanUser';
+import { current_chan } from '../../utils/channel_functions';
 
 interface Props {
   chan_id: number;
@@ -39,7 +40,7 @@ export function ChanUserList({ chan_id, onClick, users }: Props) {
         }}
       >
         {unique.map((item, idx) => (
-          <ChanUser key={idx} item={item} chan_id={chan_id} onClick={onClick} />
+          <ChanUser key={idx} item={item} chan_name={current_chan} chan_id={chan_id} onClick={onClick} />
         ))}
       </div>
     </div>

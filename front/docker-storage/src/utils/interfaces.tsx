@@ -21,7 +21,8 @@ export interface ChannelMessage {
   sender_urlImg: string;
   sender_pseudo: string;
   message_content: string;
-  channel_id: number;
+  channel_name: string;
+  channel_id: number
 }
 
 export interface IChatUser {
