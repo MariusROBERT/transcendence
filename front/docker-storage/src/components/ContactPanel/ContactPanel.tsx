@@ -8,7 +8,7 @@ import {
   UserBanner,
   SidePanel
 } from '..';
-import { color, Fetch, Viewport } from '../../utils';
+import {color, Fetch, useIsWindowFocused, Viewport} from '../../utils';
 import { useFriendsRequestContext, useUserContext, useUIContext } from '../../contexts';
 import { ChannelInfos, IUser } from '../../utils/interfaces';
 import { useEffect, useState } from 'react';
@@ -19,6 +19,7 @@ interface Props {
 }
 export function ContactPanel({ viewport }: Props) {
   const { isContactOpen, setIsCreateChannelOpen, setIsContactOpen } = useUIContext()
+  const focused = useIsWindowFocused();
   const { socket } = useUserContext();
   const { friends } = useFriendsRequestContext();
   const [friendList, setFriendList] = useState<IUser[]>([]);
@@ -33,10 +34,10 @@ export function ContactPanel({ viewport }: Props) {
       setFriendList(users.filter((u: IUser) => friends?.includes(u.id)));
     };
     getFriends();
-  }, [friends, isContactOpen]);
+  }, [friends, isContactOpen, focused]);
 
   async function FetchChannels() {
-    const channels = (await Fetch('channel/of_user', 'GET'))?.json;
+    const channels: ChannelInfos[] = (await Fetch('channel/of_user', 'GET'))?.json;
     if (!channels)
       return setChannelList([]);
     setChannelList(channels);
@@ -48,7 +49,7 @@ export function ContactPanel({ viewport }: Props) {
       if (event.detail)
         await FetchChannels();
     });
-  }, [isContactOpen]);
+  }, [isContactOpen, focused]);
 
   useEffect(() => {
     socket?.on('join', FetchChannels);

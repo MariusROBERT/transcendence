@@ -247,9 +247,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const p1 = await this.userService.getUserById(playerIds[0]);
     const p2 = await this.userService.getUserById(playerIds[1]);
 
-    this.server.to('user' + msg.id).emit('get_usernames', {
-      p1: p1.username,
-      p2: p2.username,
+    this.server.to('user' + msg.id).emit('get_pseudos', {
+      p1: p1.pseudo,
+      p2: p2.pseudo,
     });
     this.server.emit('user_start_game', { userId: playerIds[0]});
     this.server.emit('user_start_game', { userId: playerIds[1]});

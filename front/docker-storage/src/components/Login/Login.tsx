@@ -197,6 +197,7 @@ export function Login({ duration_ms = 900, viewport }: Props) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder='login...'
+                    maxLength={11}
                     pattern={!signIn ? /[a-zA-Z0-9\\-_+.]{1,11}/.source : undefined}
                     required
                   />
